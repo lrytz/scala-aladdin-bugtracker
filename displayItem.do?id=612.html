@@ -1,0 +1,138 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#612]</th>
+		<th><strong>project:</strong> specification</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> missing feature</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Sean</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">open</td>
+          <td align="center" bgcolor="#FFFFFF">2006-05-19 17:09:23.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">requires only applies to this???</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>package test2;
+
+abstract class Test {
+  type A &lt;: Ax;
+  def foo(a : A) : Unit;
+  def ax : Ax;
+  abstract class Ax requires A {
+    foo(this);
+  }
+  foo(ax);
+}</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>The first call to foo (foo(this)) passes type checking, the second call to foo (foo(ax)) does not:
+
+type mismatch;
+ found   : Test.this.Ax
+ required: Test.this.A	test/src/test2	Test.scala	
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >I would exect that if Ax.this is a subtype of A, then any value of type Ax is also a subtype of A.</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-05-27 11:16:09.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+`requires' currently does not affect subtyping, nor member access from outside an object. It is an open question whether it should. Compare also with bug 511.
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2006-05-28 22:29:15.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+As I argued under <a href="displayItem.do%3Fid=511&gt;[bug&#32;.html#511]</a>every Ax is an A, so it would make sense to treat it Ax as a subtype of A. The spec does not say too much on 'requires', but I think we all agree that all instances of Ax are also instances of A, due to the `require'. By "extension", this is just another way of saying that they are in the subtyping relation.
+<br/>
+Expressivity for free! `requires' is then more obviously a way of splitting a class into different parts, which is nice for modularity.  
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2006-05-28 22:31:02.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+sorry, trying again: As I argued under <a href="displayItem.do%3Fid=511.html">[bug #511]</a>every Ax is an A, so it would make sense to treat it Ax as a subtype of A. The spec does not say too much on 'requires', but I think we all agree that all instances of Ax are also instances of A, due to the `require'. By "extension, this is just another way of saying that they are in the subtyping relation.
+><br/>
+
+Expressivity for free! `requires' is then more obviously a way of splitting a class into different parts, which is nice for modularity. 
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-08-20 18:42:22.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+The spec says otherwise. It's open to review, though.
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

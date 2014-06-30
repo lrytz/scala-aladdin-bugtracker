@@ -1,0 +1,139 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#1180]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> medium</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Nikolay</td>
+	  <td align="center" bgcolor="#FFFFFF">Lex</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2007-06-17 19:01:10.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">[contrib #653] scanner can fall to endless loop</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>in CharArrayReader.scala:53
+
+  def next: Char = {
+    //cline = nextline
+    //ccol = nextcol
+    if(!hasNext) 
+      return SU  // there is an endless stream of SU's at the end 
+    oldBp = bp
+    oldCh = ch;
+    ch = buf(bp)
+
+in Scanners.scala:395
+    private def fetchToken(): unit = {
+      if (token == EOF) return
+      lastPos = in.cpos - 1 // Position.encode(in.cline, in.ccol)
+      //var index = bp
+      while (true) {
+        in.ch match {
+          case ' ' | '\t' | CR | LF | FF =&gt;
+            in.next</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>when called nextToken at end of file, endless loop begins in fetchToken. This is due of in.ch not updated and un\
+conditional while(true) loop executed. token never set to EOF due of SU (SU never assigned to in.ch)
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >chararray should set ch to SU and optionally while(true) should be replaced while(in.hasNext)
+
+minimal fix:
+  def next: Char = {
+    //cline = nextline
+    //ccol = nextcol
+    if(!hasNext) { 
+      ch = SU
+      return SU  // there is an endless stream of SU's at the end 
+    }
+</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Nikolay&nbsp; edited on &nbsp;2007-06-17 19:02:33.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+I'm confused. Is this really a bug? What input can trigger it?
+</td></tr>
+<tr>
+        <td>
+        <strong>Stephane&nbsp; edited on &nbsp;2007-06-26 14:57:50.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+reassigned to Lex
+</td></tr>
+<tr>
+        <td>
+        <strong>Lex&nbsp; edited on &nbsp;2007-07-13 21:26:05.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+I agree about setting ch to SU, and have changed it.  I disagree about changing the while(true), because the handling for the case of !in.hasNext is already included inside the loop.
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

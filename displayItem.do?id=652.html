@@ -1,0 +1,191 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#652]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Sean</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2006-07-11 12:17:16.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">resident compiler crash with traits and name conflicts</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>// pkg1/Test.scala
+package pkg1;
+
+trait Test {
+  type Node &lt;: NodeImpl;
+  trait NodeImpl;
+}
+// pkg2/Test.scala
+package pkg2;
+
+trait Test extends pkg1.Test {
+  type Node &lt;: NodeImpl;
+  trait NodeImpl extends super.NodeImpl;
+}
+
+// pkg3/Test.scala
+package pkg3;
+trait Test extends pkg2.Test {
+  type Node &lt;: NodeImpl;
+  trait NodeImpl extends super.NodeImpl;
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre><pre>
+nsc> pkg3/Test.scala
+
+nsc> pkg3/Test.scala
+Exception in thread "main" java.lang.Error: assertion failed: trait Test
+        at scala.Predef$.assert(Predef.scala:182)
+        at scala.tools.nsc.symtab.Symbols$TypeSymbol$$anonfun$17.apply(Symbols.scala:958)
+        at scala.tools.nsc.symtab.Symbols$TypeSymbol$$anonfun$17.apply(Symbols.scala:958)
+        at scala.List.foreach(List.scala:681)
+        at scala.tools.nsc.symtab.Symbols$TypeSymbol.setInfo(Symbols.scala:958)
+        at scala.tools.nsc.symtab.Symbols$TypeSymbol.setInfo(Symbols.scala:918)
+        at scala.tools.nsc.symtab.Types$Type.complete(Types.scala:345)
+        at scala.tools.nsc.symtab.Symbols$Symbol.info(Symbols.scala:346)
+        at scala.tools.nsc.symtab.Symbols$Symbol.initialize(Symbols.scala:423)
+        at scala.tools.nsc.typechecker.Typers$Typer.parentTypes(Typers.scala:537)
+        at scala.tools.nsc.typechecker.Namers$Namer.templateSig(Namers.scala:388)
+        at scala.tools.nsc.typechecker.Namers$Namer.classSig(Namers.scala:399)
+        at scala.tools.nsc.typechecker.Namers$Namer.scala$tools$nsc$typechecker$Namers$Namer$$typeSig(Namers.sca\
+la:468)
+        at scala.tools.nsc.typechecker.Namers$Namer$$anon$0.complete(Namers.scala:312)
+        at scala.tools.nsc.symtab.Symbols$Symbol.info(Symbols.scala:346)
+        at scala.tools.nsc.symtab.Symbols$Symbol.initialize(Symbols.scala:423)
+        at scala.tools.nsc.typechecker.Typers$Typer.checkNotLocked$0(Typers.scala:162)
+        at scala.tools.nsc.typechecker.Typers$Typer.checkNonCyclic(Typers.scala:169)
+        at scala.tools.nsc.typechecker.Typers$Typer.checkNonCyclic(Typers.scala:176)
+        at scala.tools.nsc.typechecker.Typers$Typer.checkNonCyclic(Typers.scala:188)
+        at scala.tools.nsc.typechecker.Typers$Typer.checkNonCyclic(Typers.scala:171)
+        at scala.tools.nsc.typechecker.Typers$Typer.checkNonCyclic(Typers.scala:194)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedAbsTypeDef(Typers.scala:831)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1378)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1746)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1773)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$47.apply(Typers.scala:990)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$47.apply(Typers.scala:980)
+        at scala.List$.loop$0(List.scala:232)
+        at scala.List$.mapConserve(List.scala:249)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:980)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedTemplate(Typers.scala:698)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedClassDef(Typers.scala:629)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1366)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1746)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1773)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$47.apply(Typers.scala:990)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$47.apply(Typers.scala:980)
+        at scala.List$.loop$0(List.scala:232)
+        at scala.List$.mapConserve(List.scala:249)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:980)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1362)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1746)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1773)
+        at scala.tools.nsc.typechecker.Analyzer$typerFactory$$anon$1.apply(Analyzer.scala:38)
+        at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:216)
+        at scala.tools.nsc.Global$GlobalPhase$$anonfun$1.apply(Global.scala:205)
+        at scala.tools.nsc.Global$GlobalPhase$$anonfun$1.apply(Global.scala:205)
+        at scala.Iterator$class.foreach(Iterator.scala:304)
+        at scala.collection.mutable.ListBuffer$$anon$0.foreach(ListBuffer.scala:216)
+        at scala.tools.nsc.Global$GlobalPhase.run(Global.scala:205)
+        at scala.tools.nsc.Global$Run.compileSources(Global.scala:467)
+        at scala.tools.nsc.Global$Run.compile(Global.scala:527)
+        at scala.tools.nsc.Main$$anonfun$0.apply(Main.scala:39)
+        at scala.tools.nsc.Main$$anonfun$0.apply(Main.scala:36)
+        at scala.tools.nsc.EvalLoop$class.loop(EvalLoop.scala:17)
+        at scala.tools.nsc.Main$.loop(Main.scala:16)
+        at scala.tools.nsc.EvalLoop$class.loop(EvalLoop.scala:18)
+        at scala.tools.nsc.Main$.loop(Main.scala:16)
+        at scala.tools.nsc.Main$.resident(Main.scala:36)
+        at scala.tools.nsc.Main$.process(Main.scala:71)
+        at scala.tools.nsc.Main$.main(Main.scala:98)
+        at scala.tools.nsc.Main.main(Main.scala)
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >If you change pkg2.Test or pkg1.Test to some other name, the crash does not occur. </td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Sean&nbsp; edited on &nbsp;2006-07-11 12:20:31.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-07-11 16:10:32.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

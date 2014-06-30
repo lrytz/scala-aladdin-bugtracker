@@ -1,0 +1,214 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#489]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Sean</td>
+	  <td align="center" bgcolor="#FFFFFF">_</td>
+	  <td align="center" bgcolor="#FFFFFF">_</td>
+          <td align="center" bgcolor="#FFFFFF">2005-11-17 11:12:11.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">internal compiler error in scalac</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>
+&lt;pre&gt;
+package scala.tools.nsc.models;
+
+import scala.tools.nsc.ast.Trees;
+
+[_trait_] abstract class Models {
+  val trees : Trees;
+  import trees._;
+
+  abstract class Model {
+  }
+  abstract class HasTree extends Model {
+    type TREE : SymTree;
+    var tree : TREE = _;
+    def update(tree0 : TREE): Boolean = {
+      tree = tree0;
+      false;
+    }
+  }
+  abstract class MemberMod extends HasTree {
+    type TREE : MemberDef;
+    // internal following error if line not commented out
+    // NOTE: using modified MemberDef class with val name0 constructor arg
+    def name  = tree.name0;
+  }
+}
+&lt;/pre&gt;
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre><pre>
+      [osc] scala.tools.util.debug.AbortError: illegal case: scalac.symtab.Type$$Var[NoType](notype)
+      [osc]     at scala.tools.util.debug.Debug.abort(Debug.java:70)
+      [osc]     at scala.tools.util.debug.Debug.abort(Debug.java:76)
+      [osc]     at scala.tools.util.debug.Debug.abortIllegalCase(Debug.java:87)
+      [osc]     at scalac.transformer.ExplicitOuterClassesPhase.collect(ExplicitOuterClassesPhase.java:230)
+      [osc]     at scalac.transformer.ExplicitOuterClassesPhase.getFlatArgs(ExplicitOuterClassesPhase.java:203)\
+
+      [osc]     at scalac.transformer.ExplicitOuterClassesPhase.access$22(ExplicitOuterClassesPhase.java:48)
+      [osc]     at scalac.transformer.ExplicitOuterClassesPhase$TypeTransformer.apply(ExplicitOuterClassesPhase.\
+java:262)
+      [osc]     at scalac.symtab.Type$Map.map(Type.java:1225)
+      [osc]     at scalac.transformer.ExplicitOuterClassesPhase$TypeTransformer.apply(ExplicitOuterClassesPhase.\
+java:286)
+      [osc]     at scalac.transformer.ExplicitOuterClassesPhase.transformInfo(ExplicitOuterClassesPhase.java:79)\
+
+      [osc]     at scalac.symtab.Symbol.transformInfo(Symbol.java:1441)
+      [osc]     at scalac.symtab.Symbol.rawInfoAt(Symbol.java:1378)
+      [osc]     at scalac.symtab.Symbol.rawInfo(Symbol.java:1352)
+      [osc]     at scalac.symtab.Symbol.info(Symbol.java:1326)
+      [osc]     at scalac.symtab.Symbol.type(Symbol.java:1470)
+      [osc]     at scalac.symtab.TermSymbol.typeParams(Symbol.java:1905)
+      [osc]     at scalac.symtab.Symbol.nextTypeParams(Symbol.java:1035)
+      [osc]     at scalac.ast.TreeGen.mkTypeParamsOf(TreeGen.java:974)
+      [osc]     at scalac.ast.TreeGen.DefDef(TreeGen.java:1108)
+      [osc]     at scalac.transformer.ExplicitOuterClassesPhase$12.transform(ExplicitOuterClassesPhase.java:339)\
+
+      [osc]     at scalac.ast.GenTransformer.transform(Transformer.java:605)
+      [osc]     at scalac.transformer.ExplicitOuterClassesPhase$12.transform(ExplicitOuterClassesPhase.java:318)\
+
+      [osc]     at scalac.ast.GenTransformer.transform(Transformer.java:610)
+      [osc]     at scalac.transformer.ExplicitOuterClassesPhase$12.transform(ExplicitOuterClassesPhase.java:318)\
+
+      [osc]     at scalac.ast.GenTransformer.transform(Transformer.java:605)
+      [osc]     at scalac.ast.GenTransformer.transform(Transformer.java:456)
+      [osc]     at scalac.transformer.ExplicitOuterClassesPhase$12.transform(ExplicitOuterClassesPhase.java:382)\
+
+      [osc]     at scalac.ast.GenTransformer.transform(Transformer.java:605)
+      [osc]     at scalac.ast.GenTransformer.transform(Transformer.java:456)
+      [osc]     at scalac.transformer.ExplicitOuterClassesPhase$12.transform(ExplicitOuterClassesPhase.java:382)\
+
+      [osc]     at scalac.ast.GenTransformer.transform(Transformer.java:605)
+      [osc]     at scalac.ast.GenTransformer.transform(Transformer.java:456)
+      [osc]     at scalac.transformer.ExplicitOuterClassesPhase$12.transform(ExplicitOuterClassesPhase.java:382)\
+
+      [osc]     at scalac.ast.GenTransformer.transform(Transformer.java:605)
+      [osc]     at scalac.ast.GenTransformer.transform(Transformer.java:456)
+      [osc]     at scalac.transformer.ExplicitOuterClassesPhase$12.transform(ExplicitOuterClassesPhase.java:382)\
+
+      [osc]     at scalac.ast.GenTransformer.transform(Transformer.java:605)
+      [osc]     at scalac.ast.GenTransformer.apply(Transformer.java:405)
+      [osc]     at scalac.transformer.ExplicitOuterClassesPhase.apply(ExplicitOuterClassesPhase.java:69)
+      [osc]     at scalac.CompilationLoop.loop(CompilationLoop.java:102)
+      [osc]     at scalac.CompilationLoop.compile(CompilationLoop.java:60)
+      [osc]     at scalac.Global.compile(Global.java:392)
+      [osc]     at scalac.Global.compile(Global.java:367)
+      [osc]     at scala.tools.scalac.ant.Scalac.execute(Scalac.java:431)
+      [osc]     at org.apache.tools.ant.UnknownElement.execute(UnknownElement.java:275)
+      [osc]     at org.apache.tools.ant.Task.perform(Task.java:364)
+      [osc]     at org.apache.tools.ant.Target.execute(Target.java:341)
+      [osc]     at org.apache.tools.ant.Target.performTasks(Target.java:369)
+      [osc]     at org.apache.tools.ant.Project.executeSortedTargets(Project.java:1216)
+      [osc]     at org.apache.tools.ant.Project.executeTarget(Project.java:1185)
+      [osc]     at org.apache.tools.ant.helper.DefaultExecutor.executeTargets(DefaultExecutor.java:40)
+      [osc]     at org.apache.tools.ant.Project.executeTargets(Project.java:1068)
+      [osc]     at org.apache.tools.ant.Main.runBuild(Main.java:668)
+      [osc]     at org.apache.tools.ant.Main.startAnt(Main.java:187)
+      [osc]     at org.apache.tools.ant.launch.Launcher.run(Launcher.java:246)
+      [osc]     at org.apache.tools.ant.launch.Launcher.main(Launcher.java:67)
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >expected compiler not to crash.
+
+The following code seems to work:
+
+<pre>
+
+package scala.tools.nsc.models;
+
+import scala.tools.nsc.Global;
+import scala.collection.mutable._;
+
+[_trait_] abstract class Models {
+  val trees : Global;
+
+  import trees._;
+  abstract class Model {
+  }
+  abstract class HasTree extends Model {
+    type TREE : SymTree;
+    var tree : TREE = _;
+    def update(tree0 : TREE): Boolean = {
+      tree = tree0;
+      false;
+    }
+  }
+  abstract class MemberMod extends HasTree {
+    type TREE : MemberDef;
+    def name : trees.Name = { tree.name0; }
+  }
+}
+
+</pre></td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

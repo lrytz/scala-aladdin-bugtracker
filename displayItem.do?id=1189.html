@@ -1,0 +1,121 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#1189]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> high</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Stephane</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2007-06-20 15:35:07.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">type mismatch error</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>object test extends Application {
+  case class Cell[T](x: T)
+  type U = Cell[T1] forSome { type T1 }
+  def f[T](x: Any): U = x match { case y: Cell[T] =&gt; y }
+
+  var x: U = Cell(1)
+  println(x)
+}</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>test.scala:6: error: type mismatch;
+ found   : Int(1)
+ required: >: Nothing <: Any
+  var x: U = Cell(1)
+                  ^
+one error found
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >compiles silently when using type itself instead of U</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Stephane&nbsp; edited on &nbsp;2007-06-20 15:48:08.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Stephane&nbsp; edited on &nbsp;2007-06-26 14:56:06.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2007-07-02 11:56:09.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

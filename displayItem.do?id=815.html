@@ -1,0 +1,198 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#815]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> medium</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Sean</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2006-11-11 13:51:44.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">nferencer really slow with error message that is really long (retry of #807)</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>trait BraceMatcherXXX {
+    trait BraceImpl {
+      type Self &lt;: BraceImpl;
+      type Match &lt;: BraceImpl { type Match = BraceImpl.this.Self; }
+      protected def toSelf : BraceImpl =&gt; Self;
+      protected def toMatch : BraceImpl =&gt; Match;
+    }
+    trait OpenImpl extends BraceImpl {
+      final type Self = OpenImpl;
+      final type Match = CloseImpl;
+      protected override def toSelf : BraceImpl =&gt; OpenImpl;
+      protected override def toMatch : BraceImpl =&gt; CloseImpl;
+    }
+    trait CloseImpl extends BraceImpl {
+      final type Self = CloseImpl;
+      final type Match = OpenImpl;
+      protected override def toSelf : BraceImpl =&gt; CloseImpl;
+      protected override def toMatch : BraceImpl =&gt; OpenImpl;
+    }
+    def xxx(brace : BraceImpl) = {
+      val yyy =
+      if (brace.isInstanceOf[OpenImpl]) brace.asInstanceOf[OpenImpl];
+      else brace.asInstanceOf[CloseImpl];
+      yyy
+    }
+}</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre><br>WARNING: redirect compiler's error output to a file, or your terminal might crash (mine did).</br>
+
+<pre>sean-mcdirmid:~/workspace/lampion/src mcdirmid$ time ../../scala/build/quick/bin/scalac -d ../bin -sourcepa\
+th . lampion/matcher/BraceMatcherXXX.scala >& out
+
+real	0m39.947s
+user	0m39.130s
+sys	0m0.749s
+sean-mcdirmid:~/workspace/lampion/src mcdirmid$ ls -l out
+-rw-r--r--    1 mcdirmid  mcdirmid  1728822 Nov 11 10:07 out</pre>
+
+<br>
+I'm not going to bother posting the compiler-generated error message here (it is just a 1.7 megabyte approximate\
+d type string along the lines of the one that the bug tracking system chocked on).
+</br><br>
+Note also that the 40 second compile time will also show up in the presentation compiler IDE, effectively causin\
+g a long very annoying pause. In a larger code context, it will be interpreted as a crash.
+</br><br>
+The problem will get significantly more worse in the context of more code. If I add type parameters back in, thi\
+s will blow up to 2.5 minutes (though the approximated type doesn't seem to get much bigger). If I put this code\
+ in the context of the entire Lampion framework, it won't finish within any amount of time that I'm willing to w\
+ait (much longer than 15 minutes), effectively locking up the IDE. This basically is why I initially thought thi\
+s bug was a non-termination bug.
+</br><br>
+Note also that the overrides of toSelf and toMatch in OpenImpl and CloseImpl are useless but relevant wrt the pe\
+rformance of the inference algorithm. Getting rid of the toMatch overrides reduces the compile time to 13 second\
+s with a 500K approximated type. Getting rid of the toSelf methods reduces the compile time to around 4 seconds \
+with an 88K approximated type. The latter case is similar to the code that I posted in #807. My guess is that th\
+e inferencer gets exponentially worse as the number of overridden methods in OpenImpl and CloseImpl increases. C\
+hecking my hypothesis: add a toSelf0 : BraceImpl => Self method to BraceImpl with corresponding overrides in Ope\
+nImpl and CloseImpl, compile time is 2 minutes 14 seconds with no output, instead we get an OutOfMemory error (m\
+eaning exhausted heap space, recursion isn't the problem!). Not sure how to adjust heap space for scalac, but in\
+ the IDE, I've set my heap space to around 1 GB (for dealing with NSC), so it is able to go a lot longer (causin\
+g a lock up rather than a crash).
+</br><br>
+Also, if toSelf/toMatch are simplified to toSelf : Self and toMatch : Match, the problem becomes worse much more\
+ quickly.
+</br><br>
+Of course, a type annotation on yyy will fix the problem by avoiding having the inferencer run. But if someone f\
+orgets, the compiler will probably lock up or crash if there is a lot of code around it.
+</br><br>
+Motivation: the type refinement used in brace expresses a standard male/female connector type, so this is not an\
+ esoteric example. The type is intuitively not that complicated: the brace has a self type and a match type whos\
+e own match type is the brace's self type. As a result, we can express a two-way link between two different type\
+s without downcasting:
+</br>
+<pre>
+val brace : Self = ...;
+val found : Match = ...;
+// trait BraceImpl { ... var matching : Match = _; }
+brace.matching = found;
+found.matching = brace;
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >My guess is that the inferencer has to bail on computing the type of yyy much sooner than it currently does. This would make the compilation time more reasonable and lead to a smaller approximated type, which would solve the error message problem. Something like limitRecursion is needed although recursion isn't really the problem in this case. Maybe there is a nested for loop construction somewhere in the inferencer? (could be tail-cursive optimized recursion).
+
+What I don't understand is why the inferencer is even looking at def/val/var members to approximate a type? Maybe that is a bug?
+
+For my part, I'll fix the IDE so it doesn't try to display error messages that are more than 100 or so characters long. Any longer and they won't display well anyways, perhaps we could provide an auxiliary view mechanism for longer multi-line error messages. But this isn't really a fix for the 1.7MB approximated type problem.</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Sean&nbsp; edited on &nbsp;2006-11-11 13:57:12.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Sean&nbsp; edited on &nbsp;2006-11-11 13:57:46.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Sean&nbsp; edited on &nbsp;2006-11-11 13:58:58.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-11-11 21:32:59.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

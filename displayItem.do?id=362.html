@@ -1,0 +1,131 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#362]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Michel</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2004-09-21 11:04:31.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">Wrong code for sub-classes of inner classes defined inside functions</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>class O {
+  class I { }
+}
+
+object Main {
+  def f(x: O) = {
+    class C extends x.I;
+  }
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>It compiled.
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >An error. Although I cannot really say what the problem is, the code after AddConstructors is definitely wrong, type-wise. The class <code>C</code> then looks like this (simplified):
+<pre>
+  class C$0[outer$0$Main$Main &lt;: Main]() extends <b>I[x$0.type]()</b> with ScalaObject() {
+    def &lt;init&gt;(outer$0$Main: outer$0$Main$Main, x$0: O): Unit = {
+      {
+        C$0.super.&lt;init&gt;(x$0);
+        ()
+      };
+      ()
+    }
+  };
+</pre>
+The <code>extends I[x$0.type]()</code> is clearly wrong, as <code>x$0</code> is not in scope at this point.
+
+<p> The problem here is that LambdaLift, when it extracts <code>C</code> from <code>f</code>, adds a value parameter to <code>C</code> to represent <code>x</code>. This parameter is then directly used in the <code>extends</code> clause, as the prefix for <code>I</code>. This is something that cannot be done by hand, and maybe the compiler shouldn't do it either. But I don't really know. Any ideas?</p></td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2004-11-19 19:39:59.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+I would expect the program to compile correctly! The problem is that after lambda lift, the program is no longer well typed. This is inherent in the specification of lambda lift.
+Two possible solutions:
+
+(1) somehow ignore that the program is illtyped.
+(2) do erasure and run-time types before lambda lift.
+
+Others solutions?
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-03-30 18:43:36.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Problem does not apply in version 2, because lambdalift is now done after erasure
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

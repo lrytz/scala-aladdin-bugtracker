@@ -1,0 +1,139 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#126]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Erik</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2003-09-10 17:10:06.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">Wrapping a value in an object makes a definition recursive</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>class O {
+  val Bar:Any =&gt; Any = ((x:Any) =&gt; Bar(x));
+  val Tuple1(foo:(Any =&gt; Any)) = Tuple1((x:Any) =&gt; foo(x));
+}</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>~/scala/bin/scalac O.scala 
+O.scala:3: recursive value foo$ needs type
+  val Tuple1(foo:(Any => Any)) = Tuple1((x:Any) => foo(x));
+      ^
+one error found
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >Why is it OK to define Bar as a recursive funtion, but not foo, just because foo is passed inside a tuple?</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2003-09-10 17:38:28.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Because the second definition is a pattern definition, which is taken to be equivalent to the following code:
+<pre>
+val foo = Tuple1(((x: Any) => foo(x))).match({
+    case Tuple1((foo) : (Any)=>Any) => foo
+  })
+</pre>
+Note that even if we added a type to foo, the definition would still be recurive, and therefore illegal. The error message is, admittedly, not very helpful here.
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2003-09-23 18:26:29.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+change priority
+</td></tr>
+<tr>
+        <td>
+        <strong>Lex&nbsp; edited on &nbsp;2006-03-28 13:43:46.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+At the least the error message here is confusing.  But, what <em>should</em> this code do?
+
+<p>If you do <code>val x = exp</code>, can exp refer to x?  I would think no, that it cannot.  In that case, this example is a pattern match and should compile fine.
+
+<p>If, in <code>val x = exp</code>, exp <em>can</em> refer to x, then I believe the error is that the reference is not underneath a lambda.
+
+<p>A third possibility is that exp cannot refer to x and furthermore any attempt to do so should signal an error.  In that case, the error message should be cleaned up....
+
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-05-28 15:05:40.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

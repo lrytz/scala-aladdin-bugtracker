@@ -1,0 +1,148 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#822]</th>
+		<th><strong>project:</strong> eclipse-plugin</th>
+		<th><strong>priority:</strong> medium</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Iulian</td>
+	  <td align="center" bgcolor="#FFFFFF">Sean</td>
+	  <td align="center" bgcolor="#FFFFFF">_</td>
+          <td align="center" bgcolor="#FFFFFF">2006-11-15 18:22:49.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">non-existent Scala file prevents eclipse from starting</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>Eclipse can't start at all! Apparently, it crashes because a file which was open in the workspace does not exist anymore, and the compiler fails an assertion. Somehow this makes Eclipse think nothing works, and just exits. With no way to get it working again.
+
+Probably this bug is just an effect of a different cause, since the path it checks is clearly wrong (I didn't delete any file).</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre><pre>
+!ENTRY org.eclipse.osgi 4 0 2006-11-15 18:13:40.146
+!MESSAGE Application error
+!STACK 1
+java.lang.AssertionError: assertion failed: non-existent file: /home/dragos/www/trunk/teaching/type-systems/exer\
+cises/1-arithmetic/solution/solution/src/arithmetic/ArithmeticParser.scala
+        at scala.Predef$.assert(Predef.scala:100)
+        at scala.tools.nsc.io.PlainFile.<init>(PlainFile.scala:31)
+        at ch.epfl.lamp.sdt.ui.scalaeditor.ScalaEditor.path(ScalaEditor.java:138)
+        at ch.epfl.lamp.sdt.ui.scalaeditor.ScalaEditor.tokens(ScalaEditor.java:145)
+        at ch.epfl.lamp.sdt.ui.actions.AbstractSearchAction.token(AbstractSearchAction.java:30)
+        at ch.epfl.lamp.sdt.ui.actions.AbstractSearchAction.update(AbstractSearchAction.java:51)
+        at org.eclipse.ui.texteditor.TextEditorAction.<init>(TextEditorAction.java:49)
+        at ch.epfl.lamp.sdt.ui.actions.AbstractSearchAction.<init>(AbstractSearchAction.java:25)
+        at ch.epfl.lamp.sdt.ui.actions.SearchUses.<init>(SearchUses.java:27)
+        at ch.epfl.lamp.sdt.ui.scalaeditor.ScalaEditor.createActions(ScalaEditor.java:83)
+        at org.eclipse.ui.texteditor.AbstractTextEditor.createPartControl(AbstractTextEditor.java:2682)
+        at org.eclipse.ui.texteditor.StatusTextEditor.createPartControl(StatusTextEditor.java:53)
+        at org.eclipse.ui.texteditor.AbstractDecoratedTextEditor.createPartControl(AbstractDecoratedTextEditor.j\
+ava:367)
+        at ch.epfl.lamp.sdt.ui.scalaeditor.ScalaEditor.createPartControl(ScalaEditor.java:255)
+        at org.eclipse.ui.internal.EditorReference.createPartHelper(EditorReference.java:596)
+        at org.eclipse.ui.internal.EditorReference.createPart(EditorReference.java:372)
+        at org.eclipse.ui.internal.WorkbenchPartReference.getPart(WorkbenchPartReference.java:566)
+        at org.eclipse.ui.internal.PartPane.setVisible(PartPane.java:290)
+        at org.eclipse.ui.internal.presentations.PresentablePart.setVisible(PresentablePart.java:140)
+        at org.eclipse.ui.internal.presentations.util.PresentablePartFolder.select(PresentablePartFolder.java:26\
+8)
+        at org.eclipse.ui.internal.presentations.util.LeftToRightTabOrder.select(LeftToRightTabOrder.java:65)
+        at org.eclipse.ui.internal.presentations.util.TabbedStackPresentation.selectPart(TabbedStackPresentation\
+.java:394)
+        at org.eclipse.ui.internal.PartStack.refreshPresentationSelection(PartStack.java:1144)
+        at org.eclipse.ui.internal.PartStack.handleDeferredEvents(PartStack.java:1112)
+        at org.eclipse.ui.internal.LayoutPart.deferUpdates(LayoutPart.java:400)
+        at org.eclipse.ui.internal.PartSashContainer.handleDeferredEvents(PartSashContainer.java:1369)
+        at org.eclipse.ui.internal.LayoutPart.deferUpdates(LayoutPart.java:400)
+        at org.eclipse.ui.internal.WorkbenchPage.handleDeferredEvents(WorkbenchPage.java:1305)
+        at org.eclipse.ui.internal.WorkbenchPage.deferUpdates(WorkbenchPage.java:1295)
+        at org.eclipse.ui.internal.WorkbenchPage.restoreState(WorkbenchPage.java:2967)
+        at org.eclipse.ui.internal.WorkbenchWindow.restoreState(WorkbenchWindow.java:1936)
+        at org.eclipse.ui.internal.Workbench.doRestoreState(Workbench.java:2857)
+        at org.eclipse.ui.internal.Workbench.access$14(Workbench.java:2805)
+        at org.eclipse.ui.internal.Workbench$19.run(Workbench.java:1681)
+...
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >Scala compiler crashes should not crash Eclipse.</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Iulian&nbsp; edited on &nbsp;2006-11-15 18:23:00.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Sean&nbsp; edited on &nbsp;2006-11-16 14:12:36.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Oops, looks like I forgot to catch/log an NSC exception somewhere. I'll add that. Note that doing CLI development in an Eclipse workspace is really dangerous, as the workspace becomes out of synch with the file system, and lots of fun crashes will occur. To get out of it, you can -rm -rf workspace/.metadata
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

@@ -1,0 +1,122 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#1023]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Sean</td>
+	  <td align="center" bgcolor="#FFFFFF">Iulian</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2007-03-26 12:29:43.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">Badness with trait nested in trait named Class</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>package test;
+trait Mix {
+  abstract class Entity(string: String);
+  trait ClassOrObject extends Entity;
+  trait TopLevel extends ClassOrObject;
+  trait Class extends ClassOrObject;
+  class TopLevelClass(string : String) extends Entity(string) with TopLevel with Class;
+}
+object Main extends Mix {
+  def main(args : Array[String]) : Unit = new TopLevelClass(&quot;hello&quot;);
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>On run:
+<pre>Exception in thread "main" java.lang.NoClassDefFoundError: test/Mix$class (wrong name: test/Mix$Class)
+	at java.lang.ClassLoader.defineClass1(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:620)
+	at java.security.SecureClassLoader.defineClass(SecureClassLoader.java:124)
+	at java.net.URLClassLoader.defineClass(URLClassLoader.java:260)
+	at java.net.URLClassLoader.access$100(URLClassLoader.java:56)
+	at java.net.URLClassLoader$1.run(URLClassLoader.java:195)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at java.net.URLClassLoader.findClass(URLClassLoader.java:188)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:306)
+	at sun.misc.Launcher$AppClassLoader.loadClass(Launcher.java:268)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:251)
+	at java.lang.ClassLoader.loadClassInternal(ClassLoader.java:319)
+	at test.Main$.<init>(Main.scala:10)
+	at test.Main$.<clinit>(Main.scala)
+	at test.Main.main(Main.scala)</pre>
+
+Somebody is probably being case insensitive somewhere. Is either a problem with our compiler or the VM.
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" ></td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Iulian&nbsp; edited on &nbsp;2007-05-01 09:58:31.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+It seems to have been fixed by some other bugfix.
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

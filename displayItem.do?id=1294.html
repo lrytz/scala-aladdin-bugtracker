@@ -1,0 +1,153 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#1294]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Stephane</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">moved to trac</td>
+          <td align="center" bgcolor="#FFFFFF">2007-08-27 18:02:47.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">[contrib #766] AST browser exception</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>test1.scala:
+
+package foo.bar
+class Bar
+
+---
+test2.scala:
+
+package foo
+import bar._
+class Foo
+
+---
+
+&gt; scalac -Ybrowse:namer test1.scala test2.scala
+
+In tree, click on the CompilationUnit[test2.scala]/PackageDef/Import =&gt; exception gets thrown, and RH information panel is missing.
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>Exception in thread "AWT-EventQueue-0" java.lang.Error: Unknown case: ImportType(bar)
+        at scala.tools.nsc.ast.TreeBrowsers$TypePrinter$.toDocument(TreeBrowsers.scala:663)
+        at scala.tools.nsc.ast.TreeBrowsers$TreeInfo$.symbolTypeDoc(TreeBrowsers.scala:545)
+        at scala.tools.nsc.ast.TreeBrowsers$TextInfoPanel.update(TreeBrowsers.scala:220)
+        at scala.tools.nsc.ast.TreeBrowsers$BrowserFrame$$anon$2.valueChanged(TreeBrowsers.scala:178)
+        at javax.swing.JTree.fireValueChanged(JTree.java:2399)
+        at javax.swing.JTree$TreeSelectionRedirector.valueChanged(JTree.java:2770)
+        at javax.swing.tree.DefaultTreeSelectionModel.fireValueChanged(DefaultTreeSelectionModel.java:629)
+        at javax.swing.tree.DefaultTreeSelectionModel.notifyPathChange(DefaultTreeSelectionModel.java:1078)
+        at javax.swing.tree.DefaultTreeSelectionModel.setSelectionPaths(DefaultTreeSelectionModel.java:287)
+        at javax.swing.tree.DefaultTreeSelectionModel.setSelectionPath(DefaultTreeSelectionModel.java:170)
+        at javax.swing.JTree.setSelectionPath(JTree.java:1174)
+        at javax.swing.plaf.basic.BasicTreeUI.selectPathForEvent(BasicTreeUI.java:2296)
+        at javax.swing.plaf.basic.BasicTreeUI$Handler.handleSelectionImpl(BasicTreeUI.java:3509)
+        at javax.swing.plaf.basic.BasicTreeUI$Handler.handleSelection(BasicTreeUI.java:3484)
+        at javax.swing.plaf.basic.BasicTreeUI$Handler.mousePressed(BasicTreeUI.java:3465)
+        at java.awt.AWTEventMulticaster.mousePressed(AWTEventMulticaster.java:222)
+        at java.awt.Component.processMouseEvent(Component.java:5498)
+        at javax.swing.JComponent.processMouseEvent(JComponent.java:3135)
+        at java.awt.Component.processEvent(Component.java:5266)
+        at java.awt.Container.processEvent(Container.java:1966)
+        at java.awt.Component.dispatchEventImpl(Component.java:3968)
+        at java.awt.Container.dispatchEventImpl(Container.java:2024)
+        at java.awt.Component.dispatchEvent(Component.java:3803)
+        at java.awt.LightweightDispatcher.retargetMouseEvent(Container.java:4212)
+        at java.awt.LightweightDispatcher.processMouseEvent(Container.java:3889)
+        at java.awt.LightweightDispatcher.dispatchEvent(Container.java:3822)
+        at java.awt.Container.dispatchEventImpl(Container.java:2010)
+        at java.awt.Window.dispatchEventImpl(Window.java:1778)
+        at java.awt.Component.dispatchEvent(Component.java:3803)
+        at java.awt.EventQueue.dispatchEvent(EventQueue.java:463)
+        at java.awt.EventDispatchThread.pumpOneEventForHierarchy(EventDispatchThread.java:242)
+        at java.awt.EventDispatchThread.pumpEventsForHierarchy(EventDispatchThread.java:163)
+        at java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:157)
+        at java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:149)
+        at java.awt.EventDispatchThread.run(EventDispatchThread.java:110)
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >No exception, and display of RH information panel.</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Stephane&nbsp; edited on &nbsp;2007-08-27 18:03:58.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+ImportType declared in trait Contexts and not in trait Types
+</td></tr>
+<tr>
+        <td>
+        <strong>Gilles&nbsp; edited on &nbsp;2007-08-29 09:55:16.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

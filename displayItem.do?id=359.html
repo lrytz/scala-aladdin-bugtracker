@@ -1,0 +1,148 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#359]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> high</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">Philippe</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2004-08-24 19:27:49.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">assertion violation in explciit outer</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>object Test {
+  class C;
+  def f(xs: List[C]): C = {
+    g {
+      xs =&gt;
+        if (false)
+          f(xs)
+        else {
+          val a: C = null;
+          val b: C = null;
+          if (xs.isEmpty) a else b
+        }
+    }
+  }
+  private def g(op: List[C] =&gt; C): C =
+    null;
+}
+
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre><pre>
+Exception in thread "main" java.lang.AssertionError:
+tree    : {
+  val a: C[outer$0$Test$Test] = null;
+  val b: C[outer$0$Test$Test] = null;
+  if (xs.isEmpty())
+    a
+  else
+     b
+}
+type    : C[outer$0$Test$Test]
+expected: C[outer$0$Test$Test]
+        at scalac.ast.TreeGen.assertTreeSubTypeOf(TreeGen.java:1154)
+        at scalac.ast.TreeGen.If(TreeGen.java:751)
+        at scalac.ast.TreeGen.If(TreeGen.java:771)
+        at scalac.ast.GenTransformer.transform(Transformer.java:519)
+        at scalac.transformer.ExplicitOuterClassesPhase$12.transform(ExplicitOu
+terClassesPhase.java:497)
+        at scalac.transformer.ExplicitOuterClassesPhase$12.transform(ExplicitOu
+terClassesPhase.java:417)
+        at scalac.ast.GenTransformer.transform(Transformer.java:595)
+        at scalac.transformer.ExplicitOuterClassesPhase$12.transform(ExplicitOu
+terClassesPhase.java:397)
+        at scalac.ast.GenTransformer.transform(Transformer.java:600)
+        at scalac.transformer.ExplicitOuterClassesPhase$12.transform(ExplicitOu
+terClassesPhase.java:397)
+        at scalac.ast.GenTransformer.transform(Transformer.java:595)
+        at scalac.ast.GenTransformer.apply(Transformer.java:409)
+        at scalac.ast.GenTransformer.apply(Transformer.java:403)
+        at scalac.transformer.ExplicitOuterClassesPhase.apply(ExplicitOuterClas
+sesPhase.java:73)
+        at scalac.Global.compile(Global.java:386)
+        at scalac.Global.compile(Global.java:356)
+        at scala.tools.scalac.Main$.main1(Main.scala:42)
+        at scala.tools.scalac.Main$.main(Main.scala:28)
+        at scala.tools.scalac.Main.main(Main.scala:28)
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >succesful compilation</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Philippe&nbsp; edited on &nbsp;2004-08-25 17:06:52.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Fixed <code>Type.isSubType</code> (added missing call to <code>isSameAs</code> in first <code>case ThisType/SingleType</code>).
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

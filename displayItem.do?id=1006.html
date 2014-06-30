@@ -1,0 +1,147 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#1006]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Nikolay</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2007-03-15 10:45:59.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">[contrib #376] Generic type + subclass runs when compiled but not in interpreter</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>Tested on: OSX 10.4 (JDK 1.5) and Windows XP (JDK 1.6)
+Scala version: 2.3.3
+
+I have two programs, almost identical. The first one is compiled with scalac and run with &quot;scalac generic1.scala; scala RunMe&quot;.
+
+----------------- generic1.scala ----------------------
+abstract class A[T] {
+  def myVal: T
+}
+
+class B[T](value: T) extends A[T] {
+  def myVal = value
+}
+
+object RunMe extends Application {
+  Console.println(new B[int](23).myVal)
+}
+--------------------------------------------------------------
+
+The second one is run in script mode, &quot;scala generic2.scala&quot;
+
+----------------- generic2.scala ----------------------
+abstract class A[T] {
+  def myVal: T
+}
+
+class B[T](value: T) extends A[T] {
+  def myVal = value
+}
+
+Console.println(new B[int](23).myVal)
+--------------------------------------------------------------
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>generic1.scala compiles and runs, printing "23".
+
+generic2.scala gives an error message:
+
+generic2.scala:6: error: error overriding method myVal in class A of type => T;
+ method myVal has incompatible type => T
+  def myVal = value
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >Both programs should run and produce the same output.</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Nikolay&nbsp; edited on &nbsp;2007-03-15 10:46:26.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+contribution #376
+</td></tr>
+<tr>
+        <td>
+        <strong>Lex&nbsp; edited on &nbsp;2007-03-16 14:13:05.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+This is something in the type checker.  The programs behave differently due, in one case, to the A and B classes being embedded inside a method.  Having classes inherit from each other inside a method looks odd to me, but I see no reason to disallow it.  Anyway, I have comitted the modified version as test/pending/run/bug1006.scala.
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2007-03-19 15:19:25.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

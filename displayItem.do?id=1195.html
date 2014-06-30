@@ -1,0 +1,105 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#1195]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Burak</td>
+	  <td align="center" bgcolor="#FFFFFF">_</td>
+	  <td align="center" bgcolor="#FFFFFF">_</td>
+          <td align="center" bgcolor="#FFFFFF">2007-07-03 18:04:08.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">crash for malformed annotations</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>object Foo {
+  @throws(classOf(java.net.MalformedURLException))
+  def bar() {}
+}</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>Burak-Emirs-MacBook-Pro:~/Documents/svn/scala buraq$ ./build/quick/bin/scalac -d /tmp /tmp/bugparam.scala 
+/tmp/bugparam.scala:2: error: scala.this.Predef.classOf[T] does not take parameters
+  @throws(classOf(java.net.MalformedURLException))
+                 ^
+Exception in thread "main" java.lang.Error: no-symbol does not have owner
+        at scala.tools.nsc.symtab.Symbols$NoSymbol$.owner(Symbols.scala:1400)
+        at scala.tools.nsc.transform.SymbolReifier$class.reify(SymbolReifier.scala:24)
+        at scala.tools.nsc.transform.LiftCode$Reifier.reify(LiftCode.scala:176)
+        at scala.tools.nsc.transform.LiftCode$Reifier.reify(LiftCode.scala:76)
+...
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >no crash; the program has an error, it should be classOf[...] not (...)</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2007-07-03 18:05:01.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+more precise "what expected"
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

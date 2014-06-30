@@ -1,0 +1,129 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#166]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> high</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Burak</td>
+	  <td align="center" bgcolor="#FFFFFF">Michel</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2003-09-30 17:13:25.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">compilation of HashMap</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>import scala.collection.mutable.HashMap ;
+
+object ga { 
+
+  def main(args:Array[String]) = {
+    val m:HashMap[String,String] = new HashMap[String,String];
+    m.update(&quot;foo&quot;,&quot;bar&quot;);
+  }
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre><pre>
+/tmp> java ga
+Exception in thread "main" java.lang.AbstractMethodError: scala.collection.mutable.HashMap$class.entryKey(Ljava/\
+lang/Object;)Ljava/lang/Object;
+	at scala.collection.mutable.HashMap$class.addEntry(sources/scala/collection/mutable/HashMap.scala:65)
+	at scala.collection.mutable.HashMap$class.update(sources/scala/collection/mutable/HashMap.scala:34)
+	at ga$.main(testMapGa.scala:8)
+	at ga.main(testMapGa.scala)
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >compile and run without errors. </td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2003-09-30 17:15:01.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+seems related to bug#37
+</td></tr>
+<tr>
+        <td>
+        <strong>Philippe&nbsp; edited on &nbsp;2003-10-03 13:41:35.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+<p> The last update of <ocde>AsSeenFrom</code> fixed the <code>AbstractMethodError</code> problem. The program now runs correctly with the compiler, but with this interpreter, it raises the following error: 
+
+<pre>
+Exception in thread "main" java.lang.ArrayStoreException
+        at scala.runtime.RunTime.oarray_set(RunTime.java:589)
+        at scala.collection.mutable.HashMap$class.initTable(HashMap.scala:112)
+        at scala.collection.mutable.HashMap$class.<init>(HashMap.scala:47)
+        at Test.main(test.scala:6)
+</pre>
+
+but this is probably another bug.</p>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

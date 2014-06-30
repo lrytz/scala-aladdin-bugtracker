@@ -1,0 +1,360 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#717]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> missing feature</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Burak</td>
+	  <td align="center" bgcolor="#FFFFFF">Burak</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2006-08-30 14:54:09.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">pattern matching ignores paths</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>class Foo(j:Int) {
+  case class Bar(i:Int)
+}
+object testob {
+  val foo1 = new Foo(1)
+  val foo2 = new Foo(2)
+  def main(args:Array[String]) = {
+    (foo1.Bar(2):Any) match {
+      case foo2.Bar(2) =&gt; Console.println(false)
+      case foo1.Bar(2) =&gt; Console.println(true)
+    }
+  }
+}
+
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>ignores prefix when matching
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >prints true</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2006-08-30 17:33:13.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+I tried to get this implemented. However, it requires swapping transmatch with the immediately succeeding explicitOuter.
+<br/>
+Try to do that and bootstrap. It fails with an obscure internal error. If anybody could explain me why it fails, I can insert the outer-comparing code and enable this feature.
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2006-08-30 20:08:54.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+The problem, when compiling scala.tools.nsc.ast.SyntaxAnalyzer, is that normally, Erasure calls OverridingPairs, which computes the following scope:
+<pre>computing bridges for class ParserPhase
+OverridingPairs: decls is {
+  <deferred> <method> def run(): scala.this.Unit;
+  <deferred> <method> def name(): lang.this.String;
+  <deferred> <method> def apply(Global.this.CompilationUnit): scala.this.Unit;
+  final <method> def asInstanceOf$erased[<deferred> <param> T0](): T0;
+  final <method> def isInstanceOf$erased[<deferred> <param> T0](): scala.this.Boolean;
+  final <method> def asInstanceOf[<deferred> <param> T0](): T0;
+  final <method> def isInstanceOf[<deferred> <param> T0](): scala.this.Boolean;
+  <method> def toString(): lang.this.String;
+  <method> def hashCode(): scala.this.Int;
+  <method> def equals(scala.this.Any): scala.this.Boolean;
+  final <method> def !=(scala.this.Any): scala.this.Boolean;
+  final <method> def ==(scala.this.Any): scala.this.Boolean;
+  final <method> def $asInstanceOf[<deferred> <param> T0](): T0;
+  final <method> def $isInstanceOf[<deferred> <param> T0](): scala.this.Boolean;
+  final <method> def synchronized[<deferred> <param> T0](T0): T0;
+  final <method> def ne(lang.this.Object): scala.this.Boolean;
+  final <method> def eq(lang.this.Object): scala.this.Boolean;
+  final <method> def !=(lang.this.Object): scala.this.Boolean;
+  final <method> def ==(lang.this.Object): scala.this.Boolean;
+  protected <method> <java> def finalize(): scala.this.Unit;
+  final <method> <java> def wait(): scala.this.Unit;
+  final <method> <java> def wait(scala.this.Long,scala.this.Int): scala.this.Unit;
+  final <method> <java> def wait(scala.this.Long): scala.this.Unit;
+  final <method> <java> def notifyAll(): scala.this.Unit;
+  final <method> <java> def notify(): scala.this.Unit;
+  <method> <java> def toString(): lang.this.String;
+  protected <method> <java> def clone(): lang.this.Object;
+  <method> <java> def equals(scala.this.Any): scala.this.Boolean;
+  <method> <java> def hashCode(): scala.this.Int;
+  final <method> <java> def getClass(): lang.this.Class;
+  <method> def $tag: scala.tools.nsc.symtab.classfile.UnPickler$UnPickle$LazyTypeRef@6779e6;
+  override <method> def toString(): lang.this.String;
+  <method> def flatClasses(): scala.this.Boolean;
+  <method> def erasedTypes(): scala.this.Boolean;
+  <method> def description: scala.tools.nsc.symtab.classfile.UnPickler$UnPickle$LazyTypeRef@a00185;
+  <method> def next: scala.tools.nsc.symtab.classfile.UnPickler$UnPickle$LazyTypeRef@c3c315;
+  <method> def flagMask: scala.tools.nsc.symtab.classfile.UnPickler$UnPickle$LazyTypeRef@1a4ded3;
+  <method> def newFlags(): scala.this.Long;
+  <method> <stable> <accessor> def id: scala.tools.nsc.symtab.classfile.UnPickler$UnPickle$LazyTypeRef@134ce4a;
+  <method> <stable> <accessor> <paramaccessor> def prev: scala.tools.nsc.symtab.classfile.UnPickler$UnPickle$LazyTypeRef@f01771;
+  final <method> def applyPhase: scala.tools.nsc.symtab.classfile.UnPickler$UnPickle$LazyTypeRef@933bcb;
+  override <method> def flatClasses(): scala.this.Boolean;
+  override <method> def erasedTypes(): scala.this.Boolean;
+  <method> def run(): scala.this.Unit;
+  override <method> def newFlags(): scala.this.Long;
+  <method> def name(): lang.this.String;
+  <method> def apply(SyntaxAnalyzer.this.global.CompilationUnit): scala.this.Unit
+}
+</pre>
+
+however, when swapping explicitouter and transmatch, we get the following scope:
+<pre>
+base.isTrait: false
+computing bridges for class ParserPhase
+OverridingPairs: decls is {
+  <deferred> <method> def run(): scala.this.Unit;
+  <deferred> <method> def name(): lang.this.String;
+  <deferred> <method> def apply(Global.this.CompilationUnit): scala.this.Unit;
+  final <method> def asInstanceOf$erased[<deferred> <param> T0](): T0;
+  final <method> def isInstanceOf$erased[<deferred> <param> T0](): scala.this.Boolean;
+  final <method> def asInstanceOf[<deferred> <param> T0](): T0;
+  final <method> def isInstanceOf[<deferred> <param> T0](): scala.this.Boolean;
+  <method> def toString(): lang.this.String;
+  <method> def hashCode(): scala.this.Int;
+  <method> def equals(scala.this.Any): scala.this.Boolean;
+  final <method> def !=(scala.this.Any): scala.this.Boolean;
+  final <method> def ==(scala.this.Any): scala.this.Boolean;
+  final <method> def $asInstanceOf[<deferred> <param> T0](): T0;
+  final <method> def $isInstanceOf[<deferred> <param> T0](): scala.this.Boolean;
+  final <method> def synchronized[<deferred> <param> T0](T0): T0;
+  final <method> def ne(lang.this.Object): scala.this.Boolean;
+  final <method> def eq(lang.this.Object): scala.this.Boolean;
+  final <method> def !=(lang.this.Object): scala.this.Boolean;
+  final <method> def ==(lang.this.Object): scala.this.Boolean;
+  protected <method> <java> def finalize(): scala.this.Unit;
+  final <method> <java> def wait(): scala.this.Unit;
+  final <method> <java> def wait(scala.this.Long,scala.this.Int): scala.this.Unit;
+  final <method> <java> def wait(scala.this.Long): scala.this.Unit;
+  final <method> <java> def notifyAll(): scala.this.Unit;
+  final <method> <java> def notify(): scala.this.Unit;
+  <method> <java> def toString(): lang.this.String;
+  protected <method> <java> def clone(): lang.this.Object;
+  <method> <java> def equals(scala.this.Any): scala.this.Boolean;
+  <method> <java> def hashCode(): scala.this.Int;
+  final <method> <java> def getClass(): lang.this.Class;
+  <method> def $tag: scala.tools.nsc.symtab.classfile.UnPickler$UnPickle$LazyTypeRef@6779e6;
+  override <method> def toString(): lang.this.String;
+  <method> def flatClasses(): scala.this.Boolean;
+  <method> def erasedTypes(): scala.this.Boolean;
+  <method> def description: scala.tools.nsc.symtab.classfile.UnPickler$UnPickle$LazyTypeRef@a00185;
+  <method> def next: scala.tools.nsc.symtab.classfile.UnPickler$UnPickle$LazyTypeRef@c3c315;
+  <method> def flagMask: scala.tools.nsc.symtab.classfile.UnPickler$UnPickle$LazyTypeRef@1a4ded3;
+  <method> def newFlags(): scala.this.Long;
+  <method> <stable> <accessor> def id: scala.tools.nsc.symtab.classfile.UnPickler$UnPickle$LazyTypeRef@134ce4a;
+  <method> <stable> <accessor> <paramaccessor> def prev: scala.tools.nsc.symtab.classfile.UnPickler$UnPickle$LazyTypeRef@f01771;
+  <method> <stable> <accessor> <paramaccessor> def $outer(): Global.this.type;
+  final <method> def applyPhase: scala.tools.nsc.symtab.classfile.UnPickler$UnPickle$LazyTypeRef@933bcb;
+  override <method> def flatClasses(): scala.this.Boolean;
+  override <method> def erasedTypes(): scala.this.Boolean;
+  <method> def run(): scala.this.Unit;
+  <method> <stable> <accessor> <paramaccessor> def $outer(): SubComponent.this.type;
+  override <method> def newFlags(): scala.this.Long;
+  <method> def name(): lang.this.String;
+  <method> <stable> <accessor> <paramaccessor> def $outer(): SyntaxAnalyzer.this.type;
+  <method> def apply(SyntaxAnalyzer.this.global.CompilationUnit): scala.this.Unit
+}
+</pre>
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2006-08-31 12:08:20.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+The problem, when compiling scala.tools.nsc.ast.SyntaxAnalyzer, is that normally, Erasure calls OverridingPairs, which computes the following scope:
+<pre>computing bridges for class ParserPhase
+OverridingPairs: decls is {
+  <deferred> <method> def run(): scala.this.Unit;
+  <deferred> <method> def name(): lang.this.String;
+  <deferred> <method> def apply(Global.this.CompilationUnit): scala.this.Unit;
+  final <method> def asInstanceOf$erased[<deferred> <param> T0](): T0;
+  final <method> def isInstanceOf$erased[<deferred> <param> T0](): scala.this.Boolean;
+  final <method> def asInstanceOf[<deferred> <param> T0](): T0;
+  final <method> def isInstanceOf[<deferred> <param> T0](): scala.this.Boolean;
+  <method> def toString(): lang.this.String;
+  <method> def hashCode(): scala.this.Int;
+  <method> def equals(scala.this.Any): scala.this.Boolean;
+  final <method> def !=(scala.this.Any): scala.this.Boolean;
+  final <method> def ==(scala.this.Any): scala.this.Boolean;
+  final <method> def $asInstanceOf[<deferred> <param> T0](): T0;
+  final <method> def $isInstanceOf[<deferred> <param> T0](): scala.this.Boolean;
+  final <method> def synchronized[<deferred> <param> T0](T0): T0;
+  final <method> def ne(lang.this.Object): scala.this.Boolean;
+  final <method> def eq(lang.this.Object): scala.this.Boolean;
+  final <method> def !=(lang.this.Object): scala.this.Boolean;
+  final <method> def ==(lang.this.Object): scala.this.Boolean;
+  protected <method> <java> def finalize(): scala.this.Unit;
+  final <method> <java> def wait(): scala.this.Unit;
+  final <method> <java> def wait(scala.this.Long,scala.this.Int): scala.this.Unit;
+  final <method> <java> def wait(scala.this.Long): scala.this.Unit;
+  final <method> <java> def notifyAll(): scala.this.Unit;
+  final <method> <java> def notify(): scala.this.Unit;
+  <method> <java> def toString(): lang.this.String;
+  protected <method> <java> def clone(): lang.this.Object;
+  <method> <java> def equals(scala.this.Any): scala.this.Boolean;
+  <method> <java> def hashCode(): scala.this.Int;
+  final <method> <java> def getClass(): lang.this.Class;
+  <method> def $tag: scala.tools.nsc.symtab.classfile.UnPickler$UnPickle$LazyTypeRef@6779e6;
+  override <method> def toString(): lang.this.String;
+  <method> def flatClasses(): scala.this.Boolean;
+  <method> def erasedTypes(): scala.this.Boolean;
+  <method> def description: scala.tools.nsc.symtab.classfile.UnPickler$UnPickle$LazyTypeRef@a00185;
+  <method> def next: scala.tools.nsc.symtab.classfile.UnPickler$UnPickle$LazyTypeRef@c3c315;
+  <method> def flagMask: scala.tools.nsc.symtab.classfile.UnPickler$UnPickle$LazyTypeRef@1a4ded3;
+  <method> def newFlags(): scala.this.Long;
+  <method> <stable> <accessor> def id: scala.tools.nsc.symtab.classfile.UnPickler$UnPickle$LazyTypeRef@134ce4a;
+  <method> <stable> <accessor> <paramaccessor> def prev: scala.tools.nsc.symtab.classfile.UnPickler$UnPickle$LazyTypeRef@f01771;
+  final <method> def applyPhase: scala.tools.nsc.symtab.classfile.UnPickler$UnPickle$LazyTypeRef@933bcb;
+  override <method> def flatClasses(): scala.this.Boolean;
+  override <method> def erasedTypes(): scala.this.Boolean;
+  <method> def run(): scala.this.Unit;
+  override <method> def newFlags(): scala.this.Long;
+  <method> def name(): lang.this.String;
+  <method> def apply(SyntaxAnalyzer.this.global.CompilationUnit): scala.this.Unit
+}
+</pre>
+
+however, when swapping explicitouter and transmatch, we get the following scope:
+<pre>
+base.isTrait: false
+computing bridges for class ParserPhase
+OverridingPairs: decls is {
+  <deferred> <method> def run(): scala.this.Unit;
+  <deferred> <method> def name(): lang.this.String;
+  <deferred> <method> def apply(Global.this.CompilationUnit): scala.this.Unit;
+  final <method> def asInstanceOf$erased[<deferred> <param> T0](): T0;
+  final <method> def isInstanceOf$erased[<deferred> <param> T0](): scala.this.Boolean;
+  final <method> def asInstanceOf[<deferred> <param> T0](): T0;
+  final <method> def isInstanceOf[<deferred> <param> T0](): scala.this.Boolean;
+  <method> def toString(): lang.this.String;
+  <method> def hashCode(): scala.this.Int;
+  <method> def equals(scala.this.Any): scala.this.Boolean;
+  final <method> def !=(scala.this.Any): scala.this.Boolean;
+  final <method> def ==(scala.this.Any): scala.this.Boolean;
+  final <method> def $asInstanceOf[<deferred> <param> T0](): T0;
+  final <method> def $isInstanceOf[<deferred> <param> T0](): scala.this.Boolean;
+  final <method> def synchronized[<deferred> <param> T0](T0): T0;
+  final <method> def ne(lang.this.Object): scala.this.Boolean;
+  final <method> def eq(lang.this.Object): scala.this.Boolean;
+  final <method> def !=(lang.this.Object): scala.this.Boolean;
+  final <method> def ==(lang.this.Object): scala.this.Boolean;
+  protected <method> <java> def finalize(): scala.this.Unit;
+  final <method> <java> def wait(): scala.this.Unit;
+  final <method> <java> def wait(scala.this.Long,scala.this.Int): scala.this.Unit;
+  final <method> <java> def wait(scala.this.Long): scala.this.Unit;
+  final <method> <java> def notifyAll(): scala.this.Unit;
+  final <method> <java> def notify(): scala.this.Unit;
+  <method> <java> def toString(): lang.this.String;
+  protected <method> <java> def clone(): lang.this.Object;
+  <method> <java> def equals(scala.this.Any): scala.this.Boolean;
+  <method> <java> def hashCode(): scala.this.Int;
+  final <method> <java> def getClass(): lang.this.Class;
+  <method> def $tag: scala.tools.nsc.symtab.classfile.UnPickler$UnPickle$LazyTypeRef@6779e6;
+  override <method> def toString(): lang.this.String;
+  <method> def flatClasses(): scala.this.Boolean;
+  <method> def erasedTypes(): scala.this.Boolean;
+  <method> def description: scala.tools.nsc.symtab.classfile.UnPickler$UnPickle$LazyTypeRef@a00185;
+  <method> def next: scala.tools.nsc.symtab.classfile.UnPickler$UnPickle$LazyTypeRef@c3c315;
+  <method> def flagMask: scala.tools.nsc.symtab.classfile.UnPickler$UnPickle$LazyTypeRef@1a4ded3;
+  <method> def newFlags(): scala.this.Long;
+  <method> <stable> <accessor> def id: scala.tools.nsc.symtab.classfile.UnPickler$UnPickle$LazyTypeRef@134ce4a;
+  <method> <stable> <accessor> <paramaccessor> def prev: scala.tools.nsc.symtab.classfile.UnPickler$UnPickle$LazyTypeRef@f01771;
+  <method> <stable> <accessor> <paramaccessor> def $outer(): Global.this.type;
+  final <method> def applyPhase: scala.tools.nsc.symtab.classfile.UnPickler$UnPickle$LazyTypeRef@933bcb;
+  override <method> def flatClasses(): scala.this.Boolean;
+  override <method> def erasedTypes(): scala.this.Boolean;
+  <method> def run(): scala.this.Unit;
+  <method> <stable> <accessor> <paramaccessor> def $outer(): SubComponent.this.type;
+  override <method> def newFlags(): scala.this.Long;
+  <method> def name(): lang.this.String;
+  <method> <stable> <accessor> <paramaccessor> def $outer(): SyntaxAnalyzer.this.type;
+  <method> def apply(SyntaxAnalyzer.this.global.CompilationUnit): scala.this.Unit
+}
+</pre>
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2006-08-31 22:41:52.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+phases swapped, Erasure use phase.prev.prev, and part of ExplicitOuter is duplicated (to be refactored into some framework class, e.g. TreeGen).
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2006-09-01 15:42:25.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+I changed the example a bit, so it's easier to put in the test suite (expected outcome now "prints true")
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

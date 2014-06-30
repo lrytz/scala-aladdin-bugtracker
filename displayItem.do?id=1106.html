@@ -1,0 +1,222 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#1106]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Nikolay</td>
+	  <td align="center" bgcolor="#FFFFFF">Adriaan</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2007-05-14 16:58:38.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">[contrib #469] Passing singleton type as type constructor parameter crashes compiler</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>class Par[S]
+val p = new Par[String]
+class Foo[T[x]&lt;:Par[x]](t: T[String])
+
+new Foo[p.type](p) // crashes compiler
+
+The following works, however:
+
+class Foo[T[x]&lt;:Par[x]]
+new Foo[p.type]
+
+and
+
+def f[T[x]&lt;:Par[x]](t: T[String]) {}
+f[p.type](p)
+
+give errors: type arguments [Test.this.p.type] do not conform to method f's type parameter bounds [T&amp;lt;: [x]&gt;: Nothing &amp;lt;: Test.this.Par[x]]
+
+(The syntax of the parameter bounds in the compiler message is weird. I don't understand the &amp;lt;: between the T and [x]. Does the Nothing refer to the [x]? ...)</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>class scala.tools.nsc.symtab.Types$$anon$1
+-1356532724
+Exception in thread "main" java.lang.Error
+        at scala.tools.nsc.symtab.Types$class.appliedType(Types.scala:1689)
+        at scala.tools.nsc.symtab.SymbolTable.appliedType(SymbolTable.scala:10)
+        at scala.tools.nsc.symtab.Types$AsSeenFromMap.instParam$0(Types.scala:1947)
+        at scala.tools.nsc.symtab.Types$AsSeenFromMap.toInstance$0(Types.scala:1959)
+        at scala.tools.nsc.symtab.Types$AsSeenFromMap.apply(Types.scala:1965)
+        at scala.tools.nsc.symtab.Types$AsSeenFromMap.apply(Types.scala:1900)
+        at scala.List$.loop$0(List.scala:243)
+        at scala.List$.mapConserve(List.scala:260)
+        at scala.tools.nsc.symtab.Types$TypeMap.mapOver(Types.scala:1819)
+        at scala.tools.nsc.symtab.Types$AsSeenFromMap.apply(Types.scala:1967)
+        at scala.tools.nsc.symtab.Types$Type.asSeenFrom(Types.scala:314)
+        at scala.tools.nsc.symtab.Types$Type.memberType(Types.scala:343)
+        at scala.tools.nsc.typechecker.Infer$Inferencer.checkAccessible(Infer.scala:370)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedSelect$0(Typers.scala:2193)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:2589)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2650)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$96.apply(Typers.scala:2013)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$96.apply(Typers.scala:2013)
+        at scala.tools.nsc.typechecker.Typers$Typer.silent(Typers.scala:517)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedApply$0(Typers.scala:2013)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:2567)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2650)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2694)
+        at scala.tools.nsc.typechecker.Typers$Typer.computeType(Typers.scala:2734)
+        at scala.tools.nsc.typechecker.Namers$Namer.typeSig(Namers.scala:683)
+        at scala.tools.nsc.typechecker.Namers$Namer$$anon$0.complete(Namers.scala:356)
+        at scala.tools.nsc.symtab.Symbols$Symbol.info(Symbols.scala:413)
+        at scala.tools.nsc.symtab.Symbols$Symbol.initialize(Symbols.scala:521)
+        at scala.tools.nsc.typechecker.Typers$Typer.addGetterSetter(Typers.scala:989)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$30.apply(Typers.scala:1056)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$30.apply(Typers.scala:1056)
+        at scala.List.flatMap(List.scala:966)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedTemplate(Typers.scala:1056)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedModuleDef(Typers.scala:969)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:2418)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2650)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2683)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedStat$0(Typers.scala:1398)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$58.apply(Typers.scala:1428)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$58.apply(Typers.scala:1428)
+        at scala.List$.loop$0(List.scala:243)
+        at scala.List$.mapConserve(List.scala:260)
+        at scala.List$.loop$0(List.scala:247)
+        at scala.List$.mapConserve(List.scala:260)
+        at scala.List$.loop$0(List.scala:247)
+        at scala.List$.mapConserve(List.scala:260)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:1428)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedTemplate(Typers.scala:1058)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedModuleDef(Typers.scala:969)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:2418)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2650)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2683)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedStat$0(Typers.scala:1398)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$58.apply(Typers.scala:1428)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$58.apply(Typers.scala:1428)
+        at scala.List$.loop$0(List.scala:243)
+        at scala.List$.mapConserve(List.scala:260)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:1428)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedTemplate(Typers.scala:1058)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedModuleDef(Typers.scala:969)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:2418)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2650)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2683)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedStat$0(Typers.scala:1398)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$58.apply(Typers.scala:1428)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$58.apply(Typers.scala:1428)
+        at scala.List$.loop$0(List.scala:243)
+        at scala.List$.mapConserve(List.scala:260)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:1428)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:2411)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2650)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2683)
+        at scala.tools.nsc.typechecker.Analyzer$typerFactory$$anon$1.apply(Analyzer.scala:38)
+        at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:241)
+        at scala.tools.nsc.Global$GlobalPhase$$anonfun$2.apply(Global.scala:230)
+        at scala.tools.nsc.Global$GlobalPhase$$anonfun$2.apply(Global.scala:230)
+        at scala.Iterator$class.foreach(Iterator.scala:369)
+        at scala.collection.mutable.ListBuffer$$anon$0.foreach(ListBuffer.scala:245)
+        at scala.tools.nsc.Global$GlobalPhase.run(Global.scala:230)
+        at scala.tools.nsc.Global$Run.compileSources(Global.scala:498)
+        at scala.tools.nsc.Interpreter$Request.compile(Interpreter.scala:669)
+        at scala.tools.nsc.Interpreter.interpret(Interpreter.scala:433)
+        at scala.tools.nsc.InterpreterLoop.interpretStartingWith(InterpreterLoop.scala:236)
+        at scala.tools.nsc.InterpreterLoop.command(InterpreterLoop.scala:223)
+        at scala.tools.nsc.InterpreterLoop.repl(InterpreterLoop.scala:136)
+        at scala.tools.nsc.InterpreterLoop.main(InterpreterLoop.scala:271)
+        at scala.tools.nsc.MainGenericRunner$.main(MainGenericRunner.scala:92)
+        at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >Compiler error message</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Nikolay&nbsp; edited on &nbsp;2007-05-14 16:59:05.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Adriaan&nbsp; edited on &nbsp;2007-05-16 01:28:56.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+I agree that the internal representation of higher-kinded types isn't optimal -- suggestions welcome
+
+<p> here, T's info is a polytype that contains a typebounds: [x]  (>: Nothing <: Par[x])
+the polytype denotes that the type takes one type argument
+
+<p> should be fixed in r11056
+</td></tr>
+<tr>
+        <td>
+        <strong>Adriaan&nbsp; edited on &nbsp;2007-05-16 01:29:08.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

@@ -1,0 +1,126 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#614]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> feature</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Nikolay</td>
+	  <td align="center" bgcolor="#FFFFFF">Burak</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2006-05-26 12:07:17.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">[contrib #149] XML attribute values are not escaped</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>object Test
+{
+        def main(argv : Array[String]) : Unit = {
+                val x = &quot;foo &amp; bar&quot;
+                val y = (&lt;elem attrib={ x }/&gt;)
+                Console.println(y.toString())
+        }
+}</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>At runtime:
+
+<pre>
+Exception in thread "main" scala.xml.MalformedAttributeException: malformed entity reference in attribute value \
+[foo & bar]
+        at scala.xml.UnprefixedAttribute.<init>(UnprefixedAttribute.scala:22)
+        at Test$.main(test.scala:5)
+        at Test.main(test.scala)
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >Output:
+
+<pre>
+&lt;elem attrib="foo &amp;amp; bar">&lt;/elem>
+</pre>
+
+Expression results are correctly escaped when they appear within nodes, and the spec. does not distinguish between the node and attribute case, so I presume this is a bug.</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Nikolay&nbsp; edited on &nbsp;2006-05-26 12:07:51.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2006-05-29 11:44:59.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+I see the point, but it's not a bug (changing to "feature"). The spec does not talk on escaping. There is no difference in handling node and attribute values for *construction*, and the parser ensures that the XML is well-formed. The parser cannot do this for expression results, so the library does the escaping.
+<br/>
+It seems like an arbitrary choice to enable escaping for attributes, but it would break backwards compatibility and it would not be possible to write correct XHTML in Scala and get the expected result <a href="http://www.w3.org/TR/xhtml1/#C_12">[see "ampersand in XHTML"]</a>.
+<br/>
+Please note that the library *does* some automation for you, for instance if you use quotes &quot; inside an attribute it will print surrounding apostrophes &apos; when serializing and vice versa.
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

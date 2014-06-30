@@ -1,0 +1,162 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#557]</th>
+		<th><strong>project:</strong> nsc</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Francois</td>
+	  <td align="center" bgcolor="#FFFFFF">Gilles</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2006-03-23 19:21:17.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">faulty memory requirement verification in build.xml</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>huitseeker@norrell:~/Scala/scala$ ant dist 
+Buildfile: build.xml
+     [echo] Running SABBUS for scala-core...
+
+BUILD FAILED
+/home/huitseeker/Scala/scala/build.xml:21: SABBUS requires additional memory. Please set the 'ANT_OPTS' environment
+    property to '-Xmx512M' or more.
+
+Total time: 0 seconds
+huitseeker@norrell:~/Scala/scala$ export ANT_OPTS='-Xmx128M'
+huitseeker@norrell:~/Scala/scala$ ant dist  </pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre><pre>
+Buildfile: build.xml
+     [echo] Running SABBUS for scala-core...
+
+clean.build:
+   [delete] Deleting directory /home/huitseeker/Scala/scala/build
+
+init:
+     [echo] OS:   UNIX (Linux i386 2.6.14);
+     [echo] Java: 1.4.2<em>05 (&apos;/usr/java/j2re1.4.2</em>05&apos;);
+     [echo] JVM:  Java HotSpot(TM) Client VM 1.4.2_05-b04;
+     [echo] Ant:  Apache Ant version 1.6.5 compiled on February 1 2006.
+
+setup:
+
+build.locker:
+    [mkdir] Created dir: /home/huitseeker/Scala/scala/build/locker/library
+     [pico] Compiling 36 source files to /home/huitseeker/Scala/scala/build/locker/library
+    [starr] Compiling 2 source files to /home/huitseeker/Scala/scala/build/locker/library
+    [starr] Compiling 179 source files to /home/huitseeker/Scala/scala/build/locker/library
+    [mkdir] Created dir: /home/huitseeker/Scala/scala/build/locker/compiler
+     [pico] Compiling 11 source files to /home/huitseeker/Scala/scala/build/locker/compiler
+    [starr] Compiling 140 source files to /home/huitseeker/Scala/scala/build/locker/compiler
+^T[stopwatch] [timer.locker: 2:33.126 sec]
+     [copy] Copying 9 files to /home/huitseeker/Scala/scala/build/locker/compiler
+
+setup.locker:
+
+build:
+    [mkdir] Created dir: /home/huitseeker/Scala/scala/build/quick/library
+     [pico] Compiling 36 source files to /home/huitseeker/Scala/scala/build/quick/library
+   [locker] Compiling 2 source files to /home/huitseeker/Scala/scala/build/quick/library
+   [locker] Compiling 179 source files to /home/huitseeker/Scala/scala/build/quick/library
+   [locker] java.lang.OutOfMemoryError
+
+BUILD FAILED
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >Specifying a wrong (insufficient) maximum memory allocation pool size in $ANT_OPTS lets you launch the ant build. The build.xml script should have rejected the build request. The condition currently checking the maximum memory allocation is : 
+<pre>
+&lt;condition property=&quot;memory.set&quot;&gt;
+    &lt;contains string=&quot;${env.ANT_OPTS}&quot; substring=&quot;-Xmx&quot;/&gt;
+ &lt;/condition&gt;
+</pre>
+
+It doesn't check the actual value of the $ANT_OPTS variable. It might be possible to do so through the use of a custom condition : <a href="http://ant.apache.org/manual/CoreTypes/custom-programming.html">[Ant manual reference link]</a></td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Francois&nbsp; edited on &nbsp;2006-03-23 19:21:43.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Francois&nbsp; edited on &nbsp;2006-03-23 19:22:54.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Gilles&nbsp; edited on &nbsp;2006-03-24 17:33:14.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Bug fixed.
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

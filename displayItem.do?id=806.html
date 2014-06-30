@@ -1,0 +1,280 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#806]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Sean</td>
+	  <td align="center" bgcolor="#FFFFFF">Burak</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2006-11-07 12:50:22.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">crash in match with type parameter on trait</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>trait IfElseMatcher { 
+  type Node &lt;: NodeImpl;
+  trait NodeImpl;
+  trait IfImpl; 
+  private def coerceIf(node : Node) = node match {
+  case node : IfImpl =&gt; node;
+  case _ =&gt; null;
+  }
+}</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre><pre>sean-mcdirmids-computer:~/workspace/lampion/src mcdirmid$ ../../scala/build/quick/bin/scalac -d ../bin/ -so\
+urcepath . newparser/IfElseMatcher.scala
+exception when transforming private def coerceIf(node: IfElseMatcher.this.Node): IfElseMatcher.this.NodeImpl wit\
+h IfElseMatcher.this.IfImpl = node match {
+  case (node @ (_) : IfElseMatcher.this.IfImpl) => node
+  case _ => null
+}
+exception when transforming java.lang.Object with scala.ScalaObject {
+  type Node >: scala.Nothing <: IfElseMatcher.this.NodeImpl;
+  abstract trait NodeImpl extends java.lang.Object with scala.ScalaObject;
+  abstract trait IfImpl extends java.lang.Object with scala.ScalaObject;
+  private def coerceIf(node: IfElseMatcher.this.Node): IfElseMatcher.this.NodeImpl with IfElseMatcher.this.IfImp\
+l = node match {
+    case (node @ (_) : IfElseMatcher.this.IfImpl) => node
+    case _ => null
+  }
+}
+exception when transforming abstract trait IfElseMatcher extends java.lang.Object with scala.ScalaObject {
+  type Node >: scala.Nothing <: IfElseMatcher.this.NodeImpl;
+  abstract trait NodeImpl extends java.lang.Object with scala.ScalaObject;
+  abstract trait IfImpl extends java.lang.Object with scala.ScalaObject;
+  private def coerceIf(node: IfElseMatcher.this.Node): IfElseMatcher.this.NodeImpl with IfElseMatcher.this.IfImp\
+l = node match {
+    case (node @ (_) : IfElseMatcher.this.IfImpl) => node
+    case _ => null
+  }
+}
+exception when transforming package newparser {
+  abstract trait IfElseMatcher extends java.lang.Object with scala.ScalaObject {
+    type Node >: scala.Nothing <: IfElseMatcher.this.NodeImpl;
+    abstract trait NodeImpl extends java.lang.Object with scala.ScalaObject;
+    abstract trait IfImpl extends java.lang.Object with scala.ScalaObject;
+    private def coerceIf(node: IfElseMatcher.this.Node): IfElseMatcher.this.NodeImpl with IfElseMatcher.this.IfI\
+mpl = node match {
+      case (node @ (_) : IfElseMatcher.this.IfImpl) => node
+      case _ => null
+    }
+  }
+}
+Exception in thread "main" scala.tools.nsc.symtab.Types$TypeError: type mismatch;
+found   : IfElseMatcher.this.IfImpl
+required: IfElseMatcher.this.NodeImpl with IfElseMatcher.this.IfImpl
+	at scala.tools.nsc.typechecker.Contexts$Context.error(Contexts.scala:252)
+	at scala.tools.nsc.typechecker.Infer$Inferencer.error(Infer.scala:245)
+	at scala.tools.nsc.typechecker.Infer$Inferencer.typeError(Infer.scala:254)
+	at scala.tools.nsc.typechecker.Infer$Inferencer.typeErrorTree(Infer.scala:263)
+	at scala.tools.nsc.typechecker.Typers$Typer.adapt(Typers.scala:633)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2110)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedArg(Typers.scala:1226)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$52.apply(Typers.scala:1243)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$52.apply(Typers.scala:1243)
+	at scala.List$.map2(List.scala:271)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedArgs(Typers.scala:1243)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedApply(Typers.scala:1270)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1971)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2108)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2140)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedStat$0(Typers.scala:1199)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$48.apply(Typers.scala:1220)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$48.apply(Typers.scala:1220)
+	at scala.List$.loop$0(List.scala:238)
+	at scala.List$.mapConserve(List.scala:255)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:1220)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedBlock(Typers.scala:1075)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1772)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2108)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedArg(Typers.scala:1226)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$52.apply(Typers.scala:1243)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$52.apply(Typers.scala:1243)
+	at scala.List$.map2(List.scala:271)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedArgs(Typers.scala:1243)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedApply(Typers.scala:1270)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1971)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2108)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedQualifier(Typers.scala:2160)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:2027)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2108)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1960)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2108)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2140)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedStat$0(Typers.scala:1199)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$48.apply(Typers.scala:1220)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$48.apply(Typers.scala:1220)
+	at scala.List$.loop$0(List.scala:238)
+	at scala.List$.mapConserve(List.scala:255)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:1220)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedBlock(Typers.scala:1075)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1772)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2108)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2151)
+	at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer.transform(ExplicitOuter.scala:404)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$20.apply(Trees.scala:1036)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$20.apply(Trees.scala:1035)
+	at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1143)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:32)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:26)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1034)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:45)
+	at scala.tools.nsc.transform.ExplicitOuter$OuterPathTransformer.transform(ExplicitOuter.scala:191)
+	at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer.transform(ExplicitOuter.scala:354)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$30.apply(Trees.scala:1137)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$30.apply(Trees.scala:1135)
+	at scala.List$.loop$0(List.scala:238)
+	at scala.List$.mapConserve(List.scala:255)
+	at scala.tools.nsc.ast.Trees$Transformer.transformStats(Trees.scala:1135)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1055)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.scala$tools$nsc$transform$TypingTransformers$\
+TypingTransformer$$super$transform(TypingTransformers.scala:43)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer$$anonfun$0.apply(TypingTransformers.scala:43)\
+
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer$$anonfun$0.apply(TypingTransformers.scala:43)\
+
+	at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1143)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:32)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:26)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:43)
+	at scala.tools.nsc.transform.ExplicitOuter$OuterPathTransformer.transform(ExplicitOuter.scala:191)
+	at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer.transform(ExplicitOuter.scala:331)
+	at scala.tools.nsc.ast.Trees$Transformer.transformTemplate(Trees.scala:1123)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$17.apply(Trees.scala:1023)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$17.apply(Trees.scala:1022)
+	at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1143)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:32)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:26)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1021)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:45)
+	at scala.tools.nsc.transform.ExplicitOuter$OuterPathTransformer.transform(ExplicitOuter.scala:191)
+	at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer.transform(ExplicitOuter.scala:415)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$30.apply(Trees.scala:1137)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$30.apply(Trees.scala:1135)
+	at scala.List$.loop$0(List.scala:238)
+	at scala.List$.mapConserve(List.scala:255)
+	at scala.tools.nsc.ast.Trees$Transformer.transformStats(Trees.scala:1135)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$16.apply(Trees.scala:1018)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$16.apply(Trees.scala:1018)
+	at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1143)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:32)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:26)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1017)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:45)
+	at scala.tools.nsc.transform.ExplicitOuter$OuterPathTransformer.transform(ExplicitOuter.scala:191)
+	at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer.transform(ExplicitOuter.scala:415)
+	at scala.tools.nsc.ast.Trees$Transformer.transformUnit(Trees.scala:1138)
+	at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer.scala$tools$nsc$transform$ExplicitOuter$Exp\
+licitOuterTransformer$$super$transformUnit(ExplicitOuter.scala:422)
+	at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer$$anonfun$7.apply(ExplicitOuter.scala:422)
+	at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer$$anonfun$7.apply(ExplicitOuter.scala:422)
+	at scala.tools.nsc.symtab.SymbolTable.atPhase(SymbolTable.scala:71)
+	at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer.transformUnit(ExplicitOuter.scala:422)
+	at scala.tools.nsc.transform.Transform$Phase.apply(Transform.scala:30)
+	at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:219)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$1.apply(Global.scala:208)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$1.apply(Global.scala:208)
+	at scala.Iterator$class.foreach(Iterator.scala:316)
+	at scala.collection.mutable.ListBuffer$$anon$0.foreach(ListBuffer.scala:244)
+	at scala.tools.nsc.Global$GlobalPhase.run(Global.scala:208)
+	at scala.tools.nsc.Global$Run.compileSources(Global.scala:473)
+	at scala.tools.nsc.Global$Run.compile(Global.scala:542)
+	at scala.tools.nsc.Main$.process(Main.scala:74)
+	at scala.tools.nsc.Main$.main(Main.scala:96)
+	at scala.tools.nsc.Main.main(Main.scala)
+sean-mcdirmids-computer:~/workspace/lampion/src mcdirmid$</pre>
+
+Strange, it seems like this problem would crash a lot more code.
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" ></td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-11-10 18:52:41.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Bug happens in pattern matching code, reassigned to Burak. Maybe bug811 is a duplicate?
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2006-11-10 18:59:35.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+yes it is obviously a duplicate, considering the "with"
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2006-11-13 13:20:37.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+fixed along with #811
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

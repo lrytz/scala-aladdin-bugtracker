@@ -1,0 +1,254 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#987]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Nikolay</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2007-03-12 08:51:34.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">[contrib #362] NullPointerException in Type.closurePos</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>// tested using Scala compiler version 2.4.0-RC1 -- (c) 2002-2007 LAMP/EPFL
+
+// Many thanks to all at LAMP for the work that goes into Scala.
+
+
+class A {}
+
+trait B[T &lt;: B[T]] requires T {}
+
+abstract class C extends A with B[C]
+{
+    protected val data: List[Int]
+}
+
+class E extends D
+{
+    val data = Nil
+}
+
+class F extends D
+{
+    val data = Nil
+}
+
+abstract class D extends C with B[D] {}
+
+
+/* With the code as submitted, the compiler crashes:-
+
+error: the type intersection B[D] with B[C] is malformed
+ --- because ---
+no common type instance of base types B[C] and B[D] exists
+class E extends D
+
+^
+error: illegal inheritance;
+ self-type F does not conform to D's selftype D
+class F extends D
+
+                ^
+Exception in thread &quot;main&quot; java.lang.NullPointerException
+	at scala.tools.nsc.symtab.Types$Type.closurePos(Types.scala:335)
+	at scala.tools.nsc.symtab.Types$CompoundType.isNew$0(Types.scala:781)
+	at scala.tools.nsc.symtab.Types$CompoundType.addMixinBaseClasses$0(Types.scala:790)
+	at scala.tools.nsc.symtab.Types$CompoundType.computeBaseClasses$0(Types.scala:792)
+	at scala.tools.nsc.symtab.Types$CompoundType.baseClasses(Types.scala:802)
+	at scala.tools.nsc.symtab.Types$TypeRef.baseClasses(Types.scala:1087)
+	at scala.tools.nsc.symtab.Types$SubType.baseClasses(Types.scala:519)
+	at scala.tools.nsc.symtab.Types$Type.findMember(Types.scala:422)
+	at scala.tools.nsc.symtab.Types$Type.member(Types.scala:182)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedIdent$0(Typers.scala:1853)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:2332)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2417)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2461)
+	at scala.tools.nsc.typechecker.Typers$Typer.computeType(Typers.scala:2493)
+	at scala.tools.nsc.typechecker.Namers$Namer.typeSig(Namers.scala:607)
+	at scala.tools.nsc.typechecker.Namers$Namer$$anon$0.complete(Namers.scala:336)
+	at scala.tools.nsc.symtab.Symbols$Symbol.info(Symbols.scala:401)
+	at scala.tools.nsc.symtab.Symbols$Symbol.initialize(Symbols.scala:509)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1938)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2417)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2450)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedStat$0(Typers.scala:1339)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$55.apply(Typers.scala:1362)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$55.apply(Typers.scala:1362)
+	at scala.List$.loop$0(List.scala:243)
+	at scala.List$.mapConserve(List.scala:260)
+	at scala.List$.loop$0(List.scala:247)
+	at scala.List$.mapConserve(List.scala:260)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:1362)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedTemplate(Typers.scala:973)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedClassDef(Typers.scala:870)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1947)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2417)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2450)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedStat$0(Typers.scala:1339)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$55.apply(Typers.scala:1362)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$55.apply(Typers.scala:1362)
+	at scala.List$.loop$0(List.scala:243)
+	at scala.List$.mapConserve(List.scala:260)
+	at scala.List$.loop$0(List.scala:247)
+	at scala.List$.mapConserve(List.scala:260)
+	at scala.List$.loop$0(List.scala:247)
+	at scala.List$.mapConserve(List.scala:260)
+	at scala.List$.loop$0(List.scala:247)
+	at scala.List$.mapConserve(List.scala:260)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:1362)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1943)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2417)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2450)
+	at scala.tools.nsc.typechecker.Analyzer$typerFactory$$anon$1.apply(Analyzer.scala:38)
+	at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:231)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$2.apply(Global.scala:220)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$2.apply(Global.scala:220)
+	at scala.Iterator$class.foreach(Iterator.scala:380)
+	at scala.collection.mutable.ListBuffer$$anon$0.foreach(ListBuffer.scala:245)
+	at scala.tools.nsc.Global$GlobalPhase.run(Global.scala:220)
+	at scala.tools.nsc.Global$Run.compileSources(Global.scala:488)
+	at scala.tools.nsc.Global$Run.compile(Global.scala:559)
+	at scala.tools.nsc.Main$.process(Main.scala:57)
+	at scala.tools.nsc.Main$.main(Main.scala:79)
+	at scala.tools.nsc.Main.main(Main.scala)
+
+*/
+
+
+
+/*
+If we replace
+  abstract class C extends A with B[C]
+with
+  abstract class C extends A
+we have successful compilation.
+*/
+
+/*
+If we omit class F:-
+
+error: the type intersection B[D] with B[C] is malformed
+ --- because ---
+no common type instance of base types B[C] and B[D] exists
+class E extends D
+^
+one error found
+*/
+
+/*
+If we move the definition of class D so that it appears in the source file between the definitions of C and E
+(not an ideal workaround as the definitions were from different files)
+
+error: the type intersection B[D] with B[C] is malformed
+ --- because ---
+no common type instance of base types B[C] and B[D] exists
+abstract class D extends C with B[D] {}
+         ^
+
+error: the type intersection D with scala.ScalaObject{def thi
+s: &lt;?&gt;; def data: &lt;?&gt;; private val data: &lt;?&gt;} is malformed
+ --- because ---
+no common type instance of base types B[D] and B[C] exists
+class E extends D
+^
+
+error: the type intersection D with scala.ScalaObject{def thi
+s: &lt;?&gt;; def data: &lt;?&gt;; private val data: &lt;?&gt;} is malformed
+ --- because ---
+no common type instance of base types B[D] and B[C] exists
+class F extends D
+^
+three errors found
+
+*/
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>Exception in thread "main" java.lang.NullPointerException
+	at scala.tools.nsc.symtab.Types$Type.closurePos(Types.scala:335)
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >compile error, e.g. as occurs when we move the definition of D to between the definitions of C and E</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Nikolay&nbsp; edited on &nbsp;2007-03-12 08:52:05.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+contribution #362
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2007-03-12 13:04:17.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

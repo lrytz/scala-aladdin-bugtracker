@@ -1,0 +1,140 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#375]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Burak</td>
+	  <td align="center" bgcolor="#FFFFFF">Philippe</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2004-11-12 14:03:55.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">method of same name as constr.arg. in case class</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>case class Foo(s: String) {
+  def s(): String = s;
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre><pre>
+Exception in thread "main" scalac.ApplicationError:  no method $eq$eq of required kind among (scala.Any)scala.Bo\
+olean at Foo.this.s.type
+	at scala.tools.scalac.typechecker.RefCheck$class.scala$tools$scalac$typechecker$RefCheck$getUnaryMemberMethod(R\
+efCheck.scala:652)
+	at scala.tools.scalac.typechecker.RefCheck$class.scala$tools$scalac$typechecker$RefCheck$eqOp$0(RefCheck.scala:\
+785)
+	at scala.tools.scalac.typechecker.RefCheck$class.scala$tools$scalac$typechecker$RefCheck$equalsMethod(RefCheck.\
+scala:794)
+	at scala.tools.scalac.typechecker.RefCheck$class.scala$tools$scalac$typechecker$RefCheck$addSyntheticMethods(Re\
+fCheck.scala:871)
+	at scala.tools.scalac.typechecker.RefCheck$class.transform(RefCheck.scala:1031)
+	at scala.tools.scalac.typechecker.RefCheck$class.transformStat(RefCheck.scala:1014)
+	at scala.tools.scalac.typechecker.RefCheck$class.transformStats(RefCheck.scala:973)
+	at scala.tools.scalac.typechecker.RefCheck$class.apply(RefCheck.scala:67)
+	at scala.tools.scalac.typechecker.RefCheckPhase$class.apply(RefCheckPhase.scala:25)
+	at scalac.Global.compile(Global.java:390)
+	at scalac.Global.compile(Global.java:360)
+	at scala.tools.scalac.Main$.main1(Main.scala:45)
+	at scala.tools.scalac.Main$.main(Main.scala:28)
+	at scala.tools.scalac.Main.main(Main.scala:28)
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >error "double declaration ... have same types after erasure". This is the behaviour when compiling "class Foo(val s:String) { def s():String = s; }"</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2004-11-12 14:10:01.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2004-11-19 17:36:03.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+The problem seems to be in gen.Select, which calls Type.memberStabilizedType, which in turn calls singleType. What happens is that we create a reference
+<pre>
+that1.s
+</pre>
+where s is an alternative of a symbol that is overloaded.
+Here, Type.singleType will do a *rebind* of the symbol. The rebind "snaps back from the alternative to the overloaded symbol. This should not happen.
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2004-11-19 18:27:37.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+I fixed it by changing singleType.
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

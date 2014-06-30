@@ -1,0 +1,129 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#1121]</th>
+		<th><strong>project:</strong> api</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> feature</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Nikolay</td>
+	  <td align="center" bgcolor="#FFFFFF">Sean</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2007-05-21 08:43:15.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">[contrib #512] make def underlying public in jcl.*</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>Please make all def underlying public in jcl.*, so it could be possible to write something like:
+
+===
+import scala.collection.jcl
+
+// some external java library method that accepts j.u.Collection
+def someJavaLibraryMethod(c: java.util.Collection) = ()
+
+// my function that returns collection. I do not want to specify what concrete collection I return
+def someMyFunction: jcl.CollectionWrapper[Int] = new jcl.ArrayList[Int]
+
+val l = someMyFunction
+
+someJavaLibraryMethod(l.underlying)
+===
+
+error: method underlying cannot be accessed in scala.collection.jcl.CollectionWrapper[Int]
+
+This change will also make easier to write implicit converters from jcl collections to java.util collections.</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" ></td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Nikolay&nbsp; edited on &nbsp;2007-05-21 08:44:15.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Lex&nbsp; edited on &nbsp;2007-05-21 10:31:32.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+<p>I don't know, that looks like a class use of "private" or "protected".  If you start monkeying with the underlying collection directly, then the wrapped version can get confused.</p>
+
+<p>For the specific case of getting a collection of a different type, it is best to create a new collection and copy the elements over.  If the poster has other functionality desired, then please follow up and we can investigate ways to help support it.</p>
+</td></tr>
+<tr>
+        <td>
+        <strong>Sean&nbsp; edited on &nbsp;2007-05-21 14:28:49.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Changed in my local copy, will be fixed when I check into trunk.
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

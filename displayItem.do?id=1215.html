@@ -1,0 +1,143 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#1215]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> high</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Philipp</td>
+	  <td align="center" bgcolor="#FFFFFF">Burak</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2007-07-16 17:16:44.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">Backend chokes on unapply</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>package test
+
+class Async {
+  def unapply(scrut: Any): Option[Any] = None
+}
+
+class Buffer {
+  val Put = new Async
+  //case class Put(x: int)
+
+  def joinPat(x: Any): Unit =
+    x match {
+      case Put(y) =&gt;
+        println(&quot;returning &quot;+y)
+    }
+}</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>Exception in thread "main" java.lang.ArrayIndexOutOfBoundsException: 10
+        at ch.epfl.lamp.fjbg.JExtendedCode.emitT2T(JExtendedCode.java:426)
+        at scala.tools.nsc.backend.jvm.GenJVM$BytecodeGenerator.genPrimitive(GenJVM.scala:1156)
+        at scala.tools.nsc.backend.jvm.GenJVM$BytecodeGenerator$$anonfun$45.apply(GenJVM.scala:758)
+        at scala.tools.nsc.backend.jvm.GenJVM$BytecodeGenerator$$anonfun$45.apply(GenJVM.scala:663)
+        at scala.Iterator$class.foreach(Iterator.scala:364)
+        at scala.runtime.BoxedArray$$anon$0.foreach(BoxedArray.scala:46)
+        at scala.Iterable$class.foreach(Iterable.scala:226)
+        at scala.runtime.BoxedArray.foreach(BoxedArray.scala:25)
+        at scala.tools.nsc.backend.icode.BasicBlocks$BasicBlock.traverse(BasicBlocks.scala:102)
+        at scala.tools.nsc.backend.jvm.GenJVM$BytecodeGenerator.genBlock(GenJVM.scala:663)
+        at scala.tools.nsc.backend.jvm.GenJVM$BytecodeGenerator.genBlocks(GenJVM.scala:584)
+        at scala.tools.nsc.backend.jvm.GenJVM$BytecodeGenerator.genCode(GenJVM.scala:573)
+        at scala.tools.nsc.backend.jvm.GenJVM$BytecodeGenerator.genMethod(GenJVM.scala:458)
+        at scala.tools.nsc.backend.jvm.GenJVM$BytecodeGenerator$$anonfun$7.apply(GenJVM.scala:198)
+        at scala.tools.nsc.backend.jvm.GenJVM$BytecodeGenerator$$anonfun$7.apply(GenJVM.scala:198)
+        at scala.List.foreach(List.scala:707)
+        at scala.tools.nsc.backend.jvm.GenJVM$BytecodeGenerator.genClass(GenJVM.scala:198)
+        at scala.tools.nsc.backend.jvm.GenJVM$JvmPhase$$anonfun$1.apply(GenJVM.scala:47)
+        at scala.tools.nsc.backend.jvm.GenJVM$JvmPhase$$anonfun$1.apply(GenJVM.scala:47)
+        at scala.Iterator$class.foreach(Iterator.scala:364)
+        at scala.collection.Map$$anon$5.foreach(Map.scala:123)
+        at scala.tools.nsc.backend.jvm.GenJVM$JvmPhase.run(GenJVM.scala:47)
+        at scala.tools.nsc.Global$Run.compileSources(Global.scala:544)
+        at scala.tools.nsc.Global$Run.compile(Global.scala:623)
+        at scala.tools.nsc.Main$.process(Main.scala:84)
+        at scala.tools.nsc.Main$.main(Main.scala:105)
+        at scala.tools.nsc.Main.main(Main.scala)
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >Successful compilation</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Iulian&nbsp; edited on &nbsp;2007-07-16 23:39:46.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+This seems to be very similar to #1213, so I reassign to Burak. The problem in both cases is that the pattern matcher generates some references to a package used as a value. I added an assertion in gen icode so these bugs are cought earlier.
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2007-08-08 11:25:12.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+it is unrelated to the other bug, but fixed now.
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

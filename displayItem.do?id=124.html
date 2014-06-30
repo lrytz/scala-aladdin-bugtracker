@@ -1,0 +1,221 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#124]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> medium</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Erik</td>
+	  <td align="center" bgcolor="#FFFFFF">Burak</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2003-09-10 16:55:05.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">Types of lowercase identifiers are parsed differently than for upper case identifiers</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>class N{
+  val F: Any =&gt; Any  = (x:Any) =&gt; F(x);
+  val f:(Any =&gt; Any) = (x:Any) =&gt; f(x);
+  val f: Any =&gt; Any  = (x:Any) =&gt; f(x);
+}</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>Line 2 and line 3 parses fine but line 4 does not:
+<pre>
+~/scala/bin/scalac N.scala 
+N.scala:4: ';' expected but '=>' found.
+  val f: Any => Any  = (x:Any) => f(x);
+             ^
+one error found
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >That line 4 would be OK syntax, or possibly that line 2 also is illegal.</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Erik&nbsp; edited on &nbsp;2003-09-10 17:20:18.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Here is another example:
+class P {
+  val Tuple1(Foo):Tuple1[Any => Any] = Tuple1((x:Any) => Foo(x));
+  val Tuple1(foo:(Any => Any)) = Tuple1((x:Any) => foo(x));
+}
+
+~/scala/bin/scalac P.scala 
+P.scala:2: not found: value Foo
+  val Tuple1(Foo):Tuple1[Any => Any] = Tuple1((x:Any) => Foo(x));
+                                                         ^
+P.scala:2: not found: value Foo
+  val Tuple1(Foo):Tuple1[Any => Any] = Tuple1((x:Any) => Foo(x));
+             ^
+P.scala:2: object scala.Unit of type scala.Unit cannot be applied to ()
+  val Tuple1(Foo):Tuple1[Any => Any] = Tuple1((x:Any) => Foo(x));
+      ^
+P.scala:3: recursive value foo$ needs type
+  val Tuple1(foo:(Any => Any)) = Tuple1((x:Any) => foo(x));
+      ^
+four errors found
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Erik&nbsp; edited on &nbsp;2003-09-10 17:30:12.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+More readable version of my last comment:
+
+Here is another case where the case is important:
+
+<pre>
+
+~/scala/bin/scalac P.scala 
+P.scala:2: not found: value Foo
+  val Tuple1(Foo):Tuple1[Any => Any] = Tuple1((x:Any) => Foo(x));
+                                                         ^
+P.scala:2: not found: value Foo
+  val Tuple1(Foo):Tuple1[Any => Any] = Tuple1((x:Any) => Foo(x));
+             ^
+P.scala:2: object scala.Unit of type scala.Unit cannot be applied to ()
+  val Tuple1(Foo):Tuple1[Any => Any] = Tuple1((x:Any) => Foo(x));
+      ^
+P.scala:3: recursive value foo$ needs type
+  val Tuple1(foo:(Any => Any)) = Tuple1((x:Any) => foo(x));
+      ^
+four errors found
+</pre>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Erik&nbsp; edited on &nbsp;2003-09-10 17:31:34.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+And here is the code for the previous comment:
+
+<pre>
+class P {
+  val Tuple1(Foo):Tuple1[Any => Any] = Tuple1((x:Any) => Foo(x));
+  val Tuple1(foo:(Any => Any)) = Tuple1((x:Any) => foo(x));
+}
+</pre>
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2003-09-11 11:46:26.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+this is my fault.
+
+according to p.30 and p.69, an arbitrary type may appear,
+while I only parse type1 ( the "Any" ).
+
+Now you get, so parsing works as expected
+
+<pre>
+ga.scala:4: f is already defined as value f in class ga
+  val f: Any => Any  = (x:Any) => f(x);
+      ^
+ga.scala:3: ambiguous reference to overloaded definition,
+both value f$: (scala.Any) => scala.Any
+and  value f$: (scala.Any) => scala.Any
+match expected type (scala.Any) => scala.Any
+  val f:(Any => Any) = (x:Any) => f(x);
+      ^
+two errors found
+</pre>
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2003-09-11 12:38:51.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Unfortunately, it's not so easy. The existing grammar with
+pattern = variable : Type1 is necessary to avoid ambiguities. 
+If we change it to pattern = variable : Type, we get the build problems Erik notoced. I am still looking for a solution.
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Matthias&nbsp; edited on &nbsp;2003-09-12 12:52:27.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2003-09-16 15:40:10.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

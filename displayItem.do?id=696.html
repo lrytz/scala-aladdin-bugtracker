@@ -1,0 +1,154 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#696]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Sean</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2006-08-10 12:47:19.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">implicit parameter crash</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>object TypeUtil0 {
+  trait Type[+T];
+  implicit def WithType[S,T](implicit tpeS : Type[S], tpeT : Type[T]) : Type[S with T] = null
+  as[Any](null);
+  def as[T](x : Any)(implicit tpe : Type[T]) = null;
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre><pre>
+Exception in thread "main" java.lang.StackOverflowError
+	at scala.tools.nsc.symtab.Types$AsSeenFromMap.apply(Types.scala:1303)
+	at scala.tools.nsc.symtab.Types$TypeMap.mapOver(Types.scala:1227)
+	at scala.tools.nsc.symtab.Types$AsSeenFromMap.apply(Types.scala:1343)
+	at scala.tools.nsc.symtab.Types$AsSeenFromMap.apply(Types.scala:1303)
+	at scala.List$.loop$0(List.scala:232)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.tools.nsc.symtab.Types$TypeMap.mapOver(Types.scala:1287)
+	at scala.tools.nsc.symtab.Types$TypeMap.mapOver(Types.scala:1255)
+	at scala.tools.nsc.symtab.Types$AsSeenFromMap.apply(Types.scala:1343)
+	at scala.tools.nsc.symtab.Types$Type.asSeenFrom(Types.scala:194)
+	at scala.tools.nsc.symtab.Types$Type.memberType(Types.scala:221)
+	at scala.tools.nsc.typechecker.Infer$Inferencer.checkAccessible(Infer.scala:253)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedIdent$0(Typers.scala:1424)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1704)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedImplicit(Typers.scala:1874)
+        // begin infinite recursion here
+	at scala.tools.nsc.typechecker.Typers$Typer.isApplicable$0(Typers.scala:1934)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$87.apply(Typers.scala:1936)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$87.apply(Typers.scala:1936)
+	at scala.List.filter(List.scala:694)
+	at scala.tools.nsc.typechecker.Typers$Typer.applicableInfos$0(Typers.scala:1936)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$89.apply(Typers.scala:1941)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$89.apply(Typers.scala:1941)
+	at scala.List.map(List.scala:651)
+	at scala.tools.nsc.typechecker.Typers$Typer.searchImplicit$0(Typers.scala:1941)
+	at scala.tools.nsc.typechecker.Typers$Typer.inferImplicit(Typers.scala:1961)
+	at scala.tools.nsc.typechecker.Typers$Typer.implicitArg$0(Typers.scala:1970)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$95.apply(Typers.scala:1974)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$95.apply(Typers.scala:1974)
+	at scala.List.map(List.scala:651)
+	at scala.tools.nsc.typechecker.Typers$Typer.applyImplicitArgs(Typers.scala:1974)
+	at scala.tools.nsc.typechecker.Typers$Typer.adapt(Typers.scala:384)
+	at scala.tools.nsc.typechecker.Typers$Typer.adapt(Typers.scala:383)
+	at scala.tools.nsc.typechecker.Typers$Typer.adapt(Typers.scala:377)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedImplicit(Typers.scala:1876)
+        // repeat forever
+	at scala.tools.nsc.typechecker.Typers$Typer.isApplicable$0(Typers.scala:1934)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$87.apply(Typers.scala:1936)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$87.apply(Typers.scala:1936)
+	at scala.List.filter(List.scala:694)
+        ....
+</pre>
+
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" ></td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-08-20 13:12:45.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+We now get:
+<pre>
+bug696.scala:3 error: implicit method WithType is not contractive,
+ because the implicit parameter type TypeUtil0.this.Type[S]
+ is not strictly contained in the signature TypeUtil0.this.Type[S with T]
+  implicit def WithType[S,T](implicit tpeS : Type[S], tpeT : Type[T]) : Type[S with T] = null
+           ^
+bug696.scala:4 error: no implicit argument matching parameter type TypeUtil0.this.Type[scala.Any] was found.
+  as[Any](null);
+         ^
+two errors found
+</pre>
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

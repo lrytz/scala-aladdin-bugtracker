@@ -1,0 +1,148 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#1005]</th>
+		<th><strong>project:</strong> interpreter</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Nikolay</td>
+	  <td align="center" bgcolor="#FFFFFF">Lex</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2007-03-15 10:18:22.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">[contrib #378] Several exceptions raised on unconventional inputs</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>scala&gt; ' 
+scala&gt; `</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>Exception in thread "main" java.lang.ArrayIndexOutOfBoundsException: 4
+        at scala.tools.nsc.util.CharArrayReader.next(CharArrayReader.scala:53)
+        at scala.tools.nsc.ast.parser.Scanners$Scanner.getlitch(Scanners.scala:650)
+        at scala.tools.nsc.ast.parser.Scanners$Scanner.fetchToken(Scanners.scala:339)
+        at scala.tools.nsc.ast.parser.Scanners$Scanner.nextToken(Scanners.scala:167)
+        at scala.tools.nsc.ast.parser.Scanners$Scanner.<init>(Scanners.scala:991)
+        at scala.tools.nsc.ast.parser.Parsers$Parser.<init>(Parsers.scala:61)
+        at scala.tools.nsc.Interpreter$$anonfun$5.simpleParse$0(Interpreter.scala:187)
+        at scala.tools.nsc.Interpreter$$anonfun$5.apply(Interpreter.scala:192)
+        at scala.tools.nsc.Interpreter$$anonfun$5.apply(Interpreter.scala:181)
+        at scala.tools.nsc.reporters.Reporter.withIncompleteHandler(Reporter.scala:62)
+        at scala.tools.nsc.Interpreter.scala$tools$nsc$Interpreter$$parse(Interpreter.scala:181)
+        at scala.tools.nsc.Interpreter.interpret(Interpreter.scala:270)
+        at scala.tools.nsc.InterpreterLoop.interpretStartingWith(InterpreterLoop.scala:211)
+        at scala.tools.nsc.InterpreterLoop.command(InterpreterLoop.scala:198)
+        at scala.tools.nsc.InterpreterLoop.repl(InterpreterLoop.scala:111)
+        at scala.tools.nsc.InterpreterLoop.main(InterpreterLoop.scala:246)
+        at scala.tools.nsc.MainGenericRunner$.main(MainGenericRunner.scala:92)
+        at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
+
+and
+
+Exception in thread "main" java.lang.NullPointerException
+        at scala.tools.nsc.ast.parser.Parsers$Parser.ident(Parsers.scala:385)
+        at scala.tools.nsc.ast.parser.Parsers$Parser.path(Parsers.scala:421)
+        at scala.tools.nsc.ast.parser.Parsers$Parser.simpleExpr(Parsers.scala:1033)
+        at scala.tools.nsc.ast.parser.Parsers$Parser.prefixExpr(Parsers.scala:1008)
+        at scala.tools.nsc.ast.parser.Parsers$Parser.postfixExpr(Parsers.scala:961)
+        at scala.tools.nsc.ast.parser.Parsers$Parser.expr(Parsers.scala:908)
+        at scala.tools.nsc.ast.parser.Parsers$Parser.templateStatSeq(Parsers.scala:2145)
+        at The scanner and the parser seem to fail on some unconventional inputs such as the ' and the ` charact\
+er. I guess the two issues are somewhat unrelated but it would be nice to do some additional checks for this kin\
+d of input.scala.tools.nsc.Interpreter$$anonfun$5.simpleParse$0(Interpreter.scala:187)
+        at scala.tools.nsc.Interpreter$$anonfun$5.apply(Interpreter.scala:192)
+        at scala.tools.nsc.Interpreter$$anonfun$5.apply(Interpreter.scala:181)
+        at scala.tools.nsc.reporters.Reporter.withIncompleteHandler(Reporter.scala:62)
+        at scala.tools.nsc.Interpreter.scala$tools$nsc$Interpreter$$parse(Interpreter.scala:181)
+        at scala.tools.nsc.Interpreter.interpret(Interpreter.scala:270)
+        at scala.tools.nsc.InterpreterLoop.interpretStartingWith(InterpreterLoop.scala:211)
+        at scala.tools.nsc.InterpreterLoop.command(InterpreterLoop.scala:198)
+        at scala.tools.nsc.InterpreterLoop.repl(InterpreterLoop.scala:111)
+        at scala.tools.nsc.InterpreterLoop.main(InterpreterLoop.scala:246)
+        at scala.tools.nsc.MainGenericRunner$.main(MainGenericRunner.scala:92)
+        at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >The scanner and the parser seem to fail on some unconventional inputs such as the ' and the ` characters. I guess the two issues are somewhat unrelated but it would be nice to do some additional checks for this kind of input.
+
+$ scala -version
+Scala code runner version 2.4.0-RC1 -- (c) 2002-2007 LAMP/EPFL</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Nikolay&nbsp; edited on &nbsp;2007-03-15 10:21:46.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+contribution #378. Assigned to Lex because it only crashes the interpreter. Keep in mind that the first example crashes the scanner, whereas the second crashes the parser.
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2007-04-17 16:33:02.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+I noted these are fixed now.
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

@@ -1,0 +1,146 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#950]</th>
+		<th><strong>project:</strong> eclipse-plugin</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Nikolay</td>
+	  <td align="center" bgcolor="#FFFFFF">Sean</td>
+	  <td align="center" bgcolor="#FFFFFF">won't fix</td>
+          <td align="center" bgcolor="#FFFFFF">2007-02-15 08:19:49.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">[contrib #335] scala.actors not recognized</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>package examples.actors
+
+import scala.actors._
+import scala.actors.Actor._
+
+object Message {
+  def main(args: Array[String]) = {
+    val n = try {
+      Integer.parseInt(args(0))
+    }
+    catch {
+      case _ =&gt;
+        scala.Console.println(&quot;Usage: examples.actors.Message &lt;n&gt;&quot;)
+        Predef.exit
+    }
+    val nActors = 500
+    val finalSum = n * nActors
+    Scheduler.impl = new SingleThreadedScheduler
+
+    def beh(next: Actor, sum: int): unit =
+      react {
+        case value: int =&gt;
+          val j = value + 1; val nsum = sum + j
+          if (next == null &amp;&amp; nsum &gt;= finalSum) {
+            Console.println(nsum)
+            System.exit(0)
+          }
+          else {
+            if (next != null) next ! j
+            beh(next, nsum)
+          }
+      }
+
+    def actorChain(i: Int, a: Actor): Actor =
+      if (i &gt; 0) actorChain(i-1, actor(beh(a, 0))) else a
+
+    val firstActor = actorChain(nActors, null)
+    var i = n; while (i &gt; 0) { firstActor ! 0; i = i-1 }
+  }
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>import scala.actors._
+------------^
+shows as erroneous
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >Expected it to find scala.actors</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Nikolay&nbsp; edited on &nbsp;2007-02-15 08:21:22.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+contribution #335.
+I guess the actors library is not part of the plugin. What is the policy for such things (actors, dbc, etc) WRT the plugin?
+</td></tr>
+<tr>
+        <td>
+        <strong>Sean&nbsp; edited on &nbsp;2007-04-22 04:25:43.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Actors can be added as an external dependency by managing the classpath. On the other hand, we should maybe throw actors into the scala-library.jar so it is always available. I wanted to play around with the SCALA_LIB classpath variable, but its not as easy I thought. We could also add a SCALA_ACTOR variable...or try to deal with this using a module system.
+
+Won't fix for now. 
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

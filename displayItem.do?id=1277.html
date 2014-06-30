@@ -1,0 +1,135 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#1277]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> high</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Sean</td>
+	  <td align="center" bgcolor="#FFFFFF">Burak</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2007-08-19 09:59:20.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">False coverage error and exit</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>package test
+object Go {
+  trait Core {
+    var next : Position = null
+  }
+  trait Dir
+  val NEXT = new Dir{}
+  val PREV = new Dir{}
+
+  trait Position extends Core
+  object head extends Core
+  def current : Core = null
+  def go(n : Dir) = (current,n) match {
+  case (at,NEXT) if at.next == null =&gt; false
+  case (at:Position,dir) =&gt; true
+  }
+  def main(args : Array[String]) = {
+  }
+}
+
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>The IDE just closes (must be a System.exit), the command line says:
+test/Go.scala:17: error: consistency problem ! List(Go.this.Position)
+  case (at:Position,dir) => true
+
+
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" ></td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Sean&nbsp; edited on &nbsp;2007-08-19 09:59:36.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Sean&nbsp; edited on &nbsp;2007-08-20 08:43:19.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+This one seems to still be there and is preventing me from building. Let me know if you need a different test case.
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2007-08-20 10:40:56.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+it's fine. fixed in 12571.
+
+BTW "consistency problem" means translation has generated a jump to a label with the wrong number of arguments... if I wouldn't catch this error, it would blow up only when reaching GenICode.
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

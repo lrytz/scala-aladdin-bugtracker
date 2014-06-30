@@ -1,0 +1,162 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#1193]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">Adriaan</td>
+	  <td align="center" bgcolor="#FFFFFF">open</td>
+          <td align="center" bgcolor="#FFFFFF">2007-06-29 15:20:28.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">Higher kinded existential types have problems.</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>class C[T](x: T)
+object existentials {
+  val x = { class D[T]; new C(new D[Int]) }
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>C:\scala\test\files\run>java -Xms20m -Xmx256m -ea scala.tools.nsc.Main -d \classes  existentials.scala -explaint\
+ypes 
+existentials.scala:86: error: type mismatch;
+ found   : C[D(in object Test)[Int]]
+ required: C[D(in value x)[Int]] forSome { type D(in value x)[T] <: AnyRef with ScalaObject }
+  val x = { class D[T]; new C(new D[Int]) }
+      ^
+C[D(in object Test)[Int]] < C[D(in value x)[Int]] forSome { type D(in value x)[T] <: AnyRef with ScalaObject }?\
+
+  C[D(in object Test)[Int]] < C[?*D(in value x)[T]]?
+    ?*D(in value x)[T] < D(in object Test)[Int]?
+    true
+    D(in object Test)[Int] < ?*D(in value x)[T]?
+    true
+  true
+  [T]AnyRef with ScalaObject = D(in value x)[T]?
+  false
+  D(in object Test)[Int] < >: [T]Nothing <: [T]AnyRef with ScalaObject?
+  false
+  [T]Nothing < D(in object Test)[Int]?
+  true
+  D(in object Test)[Int] < [T]AnyRef with ScalaObject?
+  false
+false
+one error found
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >Successful compilation. The -explaintypes trace gives some clue what goes wrong:
+
+The type checker needs to prove
+<pre>
+C[D(in object Test)[Int]] < C[D(in value x)[Int]] forSome { type D(in value x)[T] <: AnyRef with ScalaObject }?
+</pre>
+To do that, it converts the right hand side to a type variable (here named ?*D)
+<pre>
+C[D(in object Test)[Int]] < C[?*D(in value x)[T]]?
+</pre>
+Solving this equation yields a solution of D[Int] for ?*D. This is already wrong; it should be just D. Incidentally, the solve method in nsc is exactly the same which is used for inferring type parameters -- it was moved from Infer to Types.
+
+Then, the type checker tries to prove that the inferred solution D[Int] conforms to the type variable bounds which are
+<pre>
+[T] >: Nothing <: AnyRef with ScalaObject
+</pre>
+and that fails, of course, because the bounds are higher-kinded but the type is not.
+
+Btw if you want more info there are two commented lines in the case for
+ExistentialType in method isSubType0 in Types.scala:
+<pre>
+      case (_, ExistentialType(tparams2, res2)) =>
+        val tvars = tparams2 map (tparam => new TypeVar(tparam.tpe, new TypeConstraint))
+        val ires2 = res2.instantiateTypeParams(tparams2, tvars)
+        (tp1 <:< ires2) && {
+//          println("solve: "+tparams2)
+          solve(tvars, tparams2, tparams2 map (x => 0), false)
+//          println("check bounds: "+tparams2+" aginst "+(tvars map (_.constr.inst)))
+          isWithinBounds(NoPrefix, NoSymbol, tparams2, tvars map (_.constr.inst))
+        }
+</pre>
+If you uncomment these you see exactly what the result of solve is.
+</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Adriaan&nbsp; edited on &nbsp;2007-06-29 16:07:36.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+On first exploration, it seems relevant to note that this compiles:
+
+<pre>
+class C[T](x: T)
+object existentials {
+  val x: C[SomeD[Int]] forSome { type SomeD[x] } = { class D[T]; new C(new D[Int]) }
+}
+</pre>
+
+I haven't looked at the code yet, but my guess would be that SomeD[T] is inferred as a kind-* type applied to some unknown T, instead of the higher-kinded SomeD. I hope my intuition turns out to be wrong, as fixing higher-order type inference is going to be nontrivial (for me, at least).. I'll report back once I actually looked at the code ;-)
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

@@ -1,0 +1,142 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#400]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Nikolay</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2005-02-21 13:51:50.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">[contrib #54] Creating a String class in package java.lang</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>package java.lang;
+class String {}</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>Exception in thread "main" java.lang.ArrayIndexOutOfBoundsException: 2
+        at scala.tools.scalac.typechecker.Analyzer$class.validateParentClasses(Analyzer.scala:314)
+        at scala.tools.scalac.typechecker.Analyzer$class.transformTemplate(Analyzer.scala:1924)
+        at scala.tools.scalac.typechecker.Analyzer$$anon$21.apply(Analyzer.scala:2250)
+        at scala.tools.scalac.typechecker.Analyzer$$anon$21.apply(Analyzer.scala:2180)
+        at scala.runtime.ResultOrException.tryBlock(ResultOrException.java:34)
+        at scala.runtime.ScalaRunTime$.Try(ScalaRunTime.scala:29)
+        at scala.tools.scalac.typechecker.Analyzer$class.transform(Analyzer.scala:2179)
+        at scalac.ast.Transformer.transform(Transformer.java:284)
+        at scala.tools.scalac.typechecker.Analyzer$class.transform(Analyzer.scala:2154)
+        at scala.tools.scalac.typechecker.Analyzer$$anon$21.apply(Analyzer.scala:2225)
+        at scala.tools.scalac.typechecker.Analyzer$$anon$21.apply(Analyzer.scala:2180)
+        at scala.runtime.ResultOrException.tryBlock(ResultOrException.java:34)
+        at scala.runtime.ScalaRunTime$.Try(ScalaRunTime.scala:29)
+        at scala.tools.scalac.typechecker.Analyzer$class.transform(Analyzer.scala:2179)
+        at scalac.ast.Transformer.transform(Transformer.java:284)
+        at scala.tools.scalac.typechecker.Analyzer$class.transform(Analyzer.scala:2154)
+        at scala.tools.scalac.typechecker.Analyzer$$anon$21.apply(Analyzer.scala:2225)
+        at scala.tools.scalac.typechecker.Analyzer$$anon$21.apply(Analyzer.scala:2180)
+        at scala.runtime.ResultOrException.tryBlock(ResultOrException.java:34)
+        at scala.runtime.ScalaRunTime$.Try(ScalaRunTime.scala:29)
+        at scala.tools.scalac.typechecker.Analyzer$class.transform(Analyzer.scala:2179)
+        at scala.tools.scalac.typechecker.Analyzer$class.transform(Analyzer.scala:2121)
+        at scala.tools.scalac.typechecker.Analyzer$class.transformStatSeq(Analyzer.scala:1868)
+        at scala.tools.scalac.typechecker.Analyzer$class.apply(Analyzer.scala:131)
+        at scalac.ast.Transformer.apply(Transformer.java:64)
+        at scala.tools.scalac.typechecker.Analyzer$class.apply(Analyzer.scala:67)
+        at scala.tools.scalac.typechecker.AnalyzerPhase$class.apply(AnalyzerPhase.scala:69)
+        at scalac.Global.compile(Global.java:393)
+        at scalac.Global.compile(Global.java:363)
+        at scala.tools.scalac.Main$.main1(Main.scala:45)
+        at scala.tools.scalac.Main$.main(Main.scala:28)
+        at scala.tools.scalac.Main.main(Main.scala:28)
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >Silent compilation.</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Nikolay&nbsp; edited on &nbsp;2005-02-21 13:59:09.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+As we agreed, I enter this bug contribution into the main bugtracking system. The problem is also exhibited if we define class <code>java.lang.Object</code> in Scala. Then there's a "error overriding method ..." message (no crash).
+</td></tr>
+<tr>
+        <td>
+        <strong>Nikolay&nbsp; edited on &nbsp;2006-08-16 11:36:25.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Defining java.lang.String is now ok. Defining java.lang.Object crashes the compiler (issues "illegal cyclic reference involving class Object" first).
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-10-30 16:47:53.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

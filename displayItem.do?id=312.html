@@ -1,0 +1,215 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#312]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Michel</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2004-03-22 16:36:21.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">Single types should not contain null</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>object O {
+  val x = &quot;a&quot;;
+  val y: x.type = null;
+}</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>No error.
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >An error stating that <code>null</code> is not of type <code>x.type</code>, since <code>x.type</code> should "contain" only one value, namely <code>x</code>.</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Matthias&nbsp; edited on &nbsp;2004-03-22 21:57:39.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+I don't think that this is a bug. If "x.type" is a reference type and "null" is of type "AllRef," which is a subtype of all reference types, then it must be possible to assign "null" to a variable of a type like "x.type". What is an alternative subtype relationship? And what would we do for the following definition:
+<pre>
+var a: a.type = _;
+</pre>
+What value should we assign to variable a?
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Michel&nbsp; edited on &nbsp;2004-03-23 07:41:59.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+<p>What we discussed during the meeting is that the only value of type <code>x.type</code> is <code>x</code> itself. <code>x.type</code> is therefore completely isolated in the hierarchy. Your example would indeed be tricky if it was accepted, but right now the compiler says:</p>
+<pre>
+test_single.scala:5: illegal cyclic reference involving variable y
+  var y: y.type = _;
+         ^
+one error found
+</pre>
+<p>
+In the general case, the default value for something of type <code>x.type</code> should be <code>x</code> itself.</p>
+<p>
+Since we discuss this, the current solution has a problem (which can be seen as another bug of the constant folder, or as a symptom of why allowing <code>null</code> here is a bad idea). The following program does not throw a <code>NullPointerException</code> although it should:</p>
+<pre>
+final class C { def f = 1 }
+object O with Application {
+  val x = new C;
+  var y: x.type = null;
+  val z = y.f;
+  Console.println("z=" + z);
+}
+</pre>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Matthias&nbsp; edited on &nbsp;2004-03-23 08:37:06.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Here's the full code:
+<pre>
+object A {
+    var b: Any = _;
+    var a: b.type = _;
+}
+</pre>
+To what value shall we initialize variable a? Obviously
+not to null, because according to what you seem to have
+discussed in the meeting, this is not of type b.type.
+<p>
+I could now go on and introduce recursive dependencies
+where the Java runtime will automatically initialize such
+variables to null, no matter what you put in manually. This
+alone should show that taking identity/self types out of
+the type hierarchy is a bad idea.
+</p>
+<p>
+Finally, I would like to point out difficulties with type
+inference. I have the impression that taking identity/self
+types out of the regular type hierarchy will result in an
+undecidable type inference mechanism.
+</p>
+<p>
+There's also an issue with the usability of such types.
+Is x.type a subtype of Any? I guess it should, because
+otherwise we deconstruct what C# calls a unified type
+system.
+</p>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Michel&nbsp; edited on &nbsp;2004-03-23 10:21:30.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+<p>
+So, I have to say that the simple fact that you are allowed to write <code>x.type</code> when <code>x</code> is a variable confuses me quite a lot, as you can write this:
+<pre>
+abstract class C { def f: Int };
+class C1 extends C { def f = 1; }
+class C2 extends C { def f = 2; }
+
+object O with Application {
+  var c1: C = new C1;
+  var c2: c1.type = c1;
+  c1 = new C2;
+  Console.println("c1.f=" + c1.f + "  c2.f=" + c2.f);
+}
+</pre>
+Here, <code>c2</code> is supposed to have type <code>c1.type</code> but in fact after the assignment, <code>c1</code> and <code>c2</code> are not even the same value...
+</p>
+<p>
+Another thing which I find confusing when thinking a bit about them are default values. What is the default value of a variable of type <code>scala.All</code>? As far as I know, we don't have a single value of this type in Scala. The same goes for <code>scala.AnyVal</code>.
+</p>
+<p>
+All in all, I'm pretty confused and I would like to take all this to the next meeting, if you don't mind, the bug tracking is not the best place for discussion. You have some convincing arguments that the change proposed here is not right, but on the other hand, there are some examples with the current solution that I think show problems with it.
+</p>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2004-04-08 20:00:23.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+I changed the spec to demand that the prefix of a singelton type is a path (i.e. stable) of a type conforming to AnyRef:
+The type now includes null as a value:
+<p>
+
+A singleton type is of the form \lstinline@$p$.type@, where $p$ is a
+path pointing to a value expected to conform to
+\lstinline@scala.AnyRef@.  The type denotes the set of values
+consisting of the value denoted by $p$ and \lstinline@null@.
+<p>
+
+
+I changed the compiler to conform to the new spec.
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

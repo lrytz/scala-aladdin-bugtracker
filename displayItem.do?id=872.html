@@ -1,0 +1,138 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#872]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> medium</th>
+		<th><strong>category:</strong> missing feature</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Burak</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">won't fix</td>
+          <td align="center" bgcolor="#FFFFFF">2006-12-24 23:00:32.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">stable, mutable patterns?</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>object Foo {
+  var Bar = 23
+  42 match {
+    case Bar =&gt; 
+  }
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre><pre>
+/tmp/xmasbug.scala:4 error: stable identifier required, but Foo.this.Bar found.
+    case Bar => 
+         ^
+one error found
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >allow all stable patterns (esp. named constant patterns referencing class members) to be mutable</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2007-01-06 15:56:00.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2007-01-06 15:56:25.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+That would be a spec change. I am not sure we should do this, though.
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2007-01-08 11:36:27.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Here are the relevant parts of the spec (so I change this to feature request, although I leave status at 'won't fix')
+<p>
+§8 
+...
+A named pattern constant r is a stable identifier (§3.1). To resolve the syntactic over- 
+lap with a variable pattern, a named pattern constant may not be a simple name 
+starting with a lower-case letter. The type of r must conform to the expected type of 
+the pattern. The pattern matches any value v such that r == v (§12.1). 
+</p>
+<p>
+§3.1
+A stable identifier is a path that ends in an identifier
+
+and the text further restricts paths such that
+</p>
+<p>
+• p .x where p is a path and x is a stable member of p . Stable members are 
+members introduced by value or object definitions, as well as packages. 
+</p>
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

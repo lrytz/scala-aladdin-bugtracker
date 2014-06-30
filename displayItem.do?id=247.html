@@ -1,0 +1,174 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#247]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> missing feature</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Erik</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2003-12-03 16:41:20.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">Secondary constructors</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>class Order[t](less:(t,t) =&gt; Boolean,equal:(t,t) =&gt; Boolean) {}
+
+trait Map[A, B](factory:MapFactory[A]) with scala.collection.Map[A, B] {}
+abstract class MapFactory[A] {
+  def Empty[B]:Map[A,B];
+}
+
+class TreeMapFactory[KEY](newOrder:Order[KEY]) with MapFactory[KEY] {
+  val order = newOrder;
+  def Empty[V] = new TreeMap[KEY,V](new TreeMapFactory[KEY](order));
+}
+
+class Tree[KEY,Entry](order:Order[KEY]) { 
+  def size =0;
+}
+
+class TreeMap[KEY,VALUE](factory:TreeMapFactory[KEY]) extends Tree[KEY,Pair[KEY,VALUE]](factory.order) with Map[KEY, VALUE](factory) {
+  val order = factory.order;
+  def this(newOrder:Order[KEY]) = this(new TreeMapFactory[KEY](newOrder));
+  def get(key:KEY) = null;
+  def elements:Iterator[Pair[KEY,VALUE]] = null;
+}
+
+
+
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>scalac -d ~/tmp/classes ~/tmp/Test.scala 
+Exception in thread "main" java.lang.AssertionError: type KEY in constructor TreeMap
+        at scalac.transformer.LambdaLift$FreeVars.markFree(LambdaLift.java:178)
+        at scalac.transformer.LambdaLift$FreeVars.markFree(LambdaLift.java:182)
+        at scalac.transformer.LambdaLift$FreeVars.markFree(LambdaLift.java:182)
+        at scalac.transformer.LambdaLift$FreeVars.access$116(LambdaLift.java:109)
+        at scalac.transformer.LambdaLift$FreeVars$16.apply(LambdaLift.java:210)
+        at scalac.symtab.Type$Map.map(Type.java:1078)
+        at scalac.symtab.Type$Map.map(Type.java:989)
+        at scalac.transformer.LambdaLift$FreeVars$16.apply(LambdaLift.java:220)
+        at scalac.transformer.LambdaLift$FreeVars.transform(LambdaLift.java:227)
+        at scalac.transformer.OwnerTransformer.transform(OwnerTransformer.java:125)
+        at scalac.transformer.LambdaLift$FreeVars.transform(LambdaLift.java:268)
+        at scalac.ast.Transformer.transform(Transformer.java:291)
+        at scalac.ast.Transformer.transform(Transformer.java:305)
+        at scalac.transformer.OwnerTransformer.transform(OwnerTransformer.java:57)
+        at scalac.transformer.OwnerTransformer.transform(OwnerTransformer.java:116)
+        at scalac.transformer.LambdaLift$FreeVars.transform(LambdaLift.java:235)
+        at scalac.transformer.OwnerTransformer.transform(OwnerTransformer.java:41)
+        at scalac.transformer.OwnerTransformer.transformTemplateStat(OwnerTransformer.java:87)
+        at scalac.transformer.OwnerTransformer.transformTemplateStats(OwnerTransformer.java:76)
+        at scalac.transformer.OwnerTransformer.transform(OwnerTransformer.java:68)
+        at scalac.transformer.OwnerTransformer.transform(OwnerTransformer.java:100)
+        at scalac.transformer.LambdaLift$FreeVars.transform(LambdaLift.java:235)
+        at scalac.ast.Transformer.transform(Transformer.java:282)
+        at scalac.transformer.OwnerTransformer.apply(OwnerTransformer.java:35)
+        at scalac.transformer.LambdaLift$FreeVars.initialize(LambdaLift.java:315)
+        at scalac.transformer.LambdaLift.apply(LambdaLift.java:54)
+        at scalac.transformer.LambdaLiftPhase.apply(LambdaLiftPhase.java:28)
+        at scalac.Global.compile(Global.java:300)
+        at scalac.Global.compile(Global.java:272)
+        at scala.tools.scalac.Main$.main(sources/scala/tools/scalac/Main.scala:33)
+        at scala.tools.scalac.Main.main(sources/scala/tools/scalac/Main.scala)
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >Not a compiler crash.</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Erik&nbsp; edited on &nbsp;2003-12-03 16:41:52.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Michel&nbsp; edited on &nbsp;2003-12-03 16:56:09.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+The problem is due to the secondary constructor of class <code>TreeMap</code>, and is the general problem discussed once during some meeting related to secondary constructors and type arguments.
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2004-01-08 15:40:29.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+I cathc this case now with a message `secondary constructors for parameterized classes not yet implemented'. We need to come back to this later.
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-03-30 19:00:00.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Fixed in version 2
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

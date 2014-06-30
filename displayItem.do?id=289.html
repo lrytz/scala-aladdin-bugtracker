@@ -1,0 +1,124 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#289]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> medium</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Erik</td>
+	  <td align="center" bgcolor="#FFFFFF">Philippe</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2004-01-30 17:50:58.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">Mixing in an object craches cloneSymbol</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>class A {
+  object B;
+}
+
+object C with A;</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>Exception in thread "main" java.lang.AssertionError: A$class.B
+        at scalac.symtab.SymbolCloner.cloneSymbol(SymbolCloner.java:74)
+        at scalac.transformer.ExpandMixinsPhase$TypeTransformer.createMixedInMemberSymbols(ExpandMixinsPhase.jav\
+a:407)
+        at scalac.transformer.ExpandMixinsPhase$TypeTransformer.initialize(ExpandMixinsPhase.java:386)
+        at scalac.transformer.ExpandMixinsPhase$TypeTransformer.<init>(ExpandMixinsPhase.java:365)
+        at scalac.transformer.ExpandMixinsPhase.getTypeExpander(ExpandMixinsPhase.java:321)
+        at scalac.transformer.ExpandMixinsPhase.getExpandedBody(ExpandMixinsPhase.java:333)
+        at scalac.transformer.ExpandMixinsPhase.access$13(ExpandMixinsPhase.java:53)
+        at scalac.transformer.ExpandMixinsPhase$TreeExpander.transform(ExpandMixinsPhase.java:165)
+        at scalac.ast.GenTransformer.transform(Transformer.java:574)
+        at scalac.ast.GenTransformer.apply(Transformer.java:402)
+        at scalac.transformer.ExpandMixinsPhase$TreeExpander.apply(ExpandMixinsPhase.java:157)
+        at scalac.ast.GenTransformer.apply(Transformer.java:396)
+        at scalac.transformer.ExpandMixinsPhase.apply(ExpandMixinsPhase.java:98)
+        at scalac.Global.compile(Global.java:313)
+        at scalac.Global.compile(Global.java:285)
+        at scala.tools.scalac.Main$.main(sources/scala/tools/scalac/Main.scala:33)
+        at scala.tools.scalac.Main.main(sources/scala/tools/scalac/Main.scala)
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >Silent compilation...</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Michel&nbsp; edited on &nbsp;2004-02-03 07:39:40.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+I just refiled this bug to Philippe, who authored the current version of <code>ExpandMixin</code>. Further bug notices concerning this phase can be assigned directly to him, and the same goes for <code>ExplicitOuter</code> and <code>AddAccessors</code>.
+</td></tr>
+<tr>
+        <td>
+        <strong>Philippe&nbsp; edited on &nbsp;2004-04-15 13:45:25.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Replaced method <code>Symbol.module()</code> by method <code>Symbol.sourceModule()</code> and removed assertion in class <code>SymbolCloner</code>.
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

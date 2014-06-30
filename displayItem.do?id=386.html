@@ -1,0 +1,128 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#386]</th>
+		<th><strong>project:</strong> specification</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> feature</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Philippe</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">open</td>
+          <td align="center" bgcolor="#FFFFFF">2004-12-13 18:40:28.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">Identifiers can't contain the character `</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre></pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>With the notation `stringLit` it is possible to form identifiers containing any character excepted `. If it is u\
+sed as is, it terminates the identifier and escaped with \ it isn't recognised as an escapable character.
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >It should be possible to insert ` in identifiers.
+</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Philippe&nbsp; edited on &nbsp;2004-12-13 18:41:52.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Changed project to specification.
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2004-12-16 15:04:22.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+We could specify \x = x for all characters except n,t,b,r,\.
+<br/>
+Meanwhile I added a tentative case \` = ` to the scanner.
+</td></tr>
+<tr>
+        <td>
+        <strong>Philippe&nbsp; edited on &nbsp;2004-12-16 17:03:42.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Don't forget that the definition of <code>stringLit</code>
+is <code>as in Java</code> and in java, the expression
+<code>"\`"</code> represents the string containing the two
+characters '\\' and '`'. Therefore, you can't change the
+meaning of <code>\`</code> to designate the character '`',
+at least not within <code>stringLit</code>. Maybe, we could
+use the following definition for id:
+
+<pre>
+id         ::= ...
+            |  ``' stringLit2 ``'
+stringLit2 ::= "like stringLit + escape for character '`'"
+stringLit  ::= "as in Java"
+</pre>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

@@ -1,0 +1,134 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#490]</th>
+		<th><strong>project:</strong> nsc</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Iulian</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2005-11-17 18:01:46.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">wrong symbol referenced for mixed in objects</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>trait Definitions: Symtab {
+  object definitions {
+    val str = &quot;String&quot;;
+  }
+}
+
+class Symtab extends AnyRef with Definitions {
+  def main: Unit = {
+    definitions.str;
+  }
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>The reference to 'definitions' in method main will reference an non-existing symbol:
+<pre>
+  class Symtab#2263 extends java.lang.Object#802 with Definitions#2262 with scala.ScalaObject#456 {
+    def main#2270(): scala.Unit#345 = {
+      Symtab#2263.this.definitions#2266().str#2272();
+      ()
+    };
+    def <init>#2269(): Symtab#2263 = {
+      Symtab#2263.super.<init>#1554();
+      Definitions$class#2311.$init$#2298(Symtab#2263.this);
+      scala#234.ScalaObject$class#2312.$init$#2301(Symtab#2263.this);
+      ()
+    };
+    private <local> <synthetic> var definitions$module#2313: Definitions$definitions#2267 = _;
+    final <stable> def definitions#2309(): Definitions$definitions#2267 = {
+      if (Symtab#2263.this.definitions$module#2313.eq#1566(null))
+        Symtab#2263.this.definitions$module#2313 = new Definitions$definitions#2267.<init>#2271(Symtab#2263.this\
+);
+      Symtab#2263.this.definitions$module#2313
+    };
+    def $tag#2310(): scala.Int#447 = scala#234.ScalaObject$class#2312.$tag#2308(Symtab#2263.this)
+  };
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >..</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Iulian&nbsp; edited on &nbsp;2005-11-17 18:14:20.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2005-11-21 13:47:06.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

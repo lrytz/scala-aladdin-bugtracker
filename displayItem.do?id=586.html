@@ -1,0 +1,274 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#586]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Lex</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">_</td>
+          <td align="center" bgcolor="#FFFFFF">2006-05-04 14:57:29.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">unexpected tree <type ?> in Typer.typed1</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>(scala-analysis code.   I'll post a shorter example if I figure one out....)</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre><pre>      [scalac] java.lang.Error: unexpected tree: <type ?>
+      [scalac] 	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1615)
+      [scalac] 	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1625)
+      [scalac] 	at scala.tools.nsc.typechecker.Typers$Typer.typedType(Typers.scala:1671)
+      [scalac] 	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$70.apply(Typers.scala:1486)
+      [scalac] 	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$70.apply(Typers.scala:1486)
+      [scalac] 	at scala.List$.loop$0(List.scala:232)
+      [scalac] 	at scala.List$.mapConserve(List.scala:249)
+      [scalac] 	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1486)
+      [scalac] 	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1625)
+      [scalac] 	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1500)
+      [scalac] 	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1625)
+      [scalac] 	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1651)
+      [scalac] 	at scala.tools.nsc.typechecker.Typers$Typer.computeType(Typers.scala:1682)
+      [scalac] 	at scala.tools.nsc.typechecker.Namers$Namer.liftedTry0$0(Namers.scala:484)
+      [scalac] 	at scala.tools.nsc.typechecker.Namers$Namer.scala$tools$nsc$typechecker$Namers$Namer$$typeSig(Na\
+mers.scala:461)
+      [scalac] 	at scala.tools.nsc.typechecker.Namers$Namer$$anon$0.complete(Namers.scala:310)
+      [scalac] 	at scala.tools.nsc.symtab.Symbols$Symbol.info(Symbols.scala:346)
+      [scalac] 	at scala.tools.nsc.symtab.Symbols$Symbol.initialize(Symbols.scala:419)
+      [scalac] 	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1286)
+      [scalac] 	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1625)
+      [scalac] 	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1651)
+      [scalac] 	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$45.apply(Typers.scala:973)
+      [scalac] 	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$45.apply(Typers.scala:963)
+      [scalac] 	at scala.List$.loop$0(List.scala:232)
+      [scalac] 	at scala.List$.mapConserve(List.scala:249)
+      [scalac] 	at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:963)
+      [scalac] 	at scala.tools.nsc.typechecker.Typers$Typer.typedBlock(Typers.scala:866)
+      [scalac] 	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1347)
+      [scalac] 	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1625)
+      [scalac] 	at scala.tools.nsc.typechecker.Typers$Typer.typedArg$0(Typers.scala:1021)
+      [scalac] 	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$47.apply(Typers.scala:1025)
+      [scalac] 	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$47.apply(Typers.scala:1025)
+      [scalac] 	at scala.List$.loop$0(List.scala:232)
+      [scalac] 	at scala.List$.mapConserve(List.scala:249)
+      [scalac] 	at scala.tools.nsc.typechecker.Typers$Typer.typedArgs$0(Typers.scala:1025)
+      [scalac] 	at scala.tools.nsc.typechecker.Typers$Typer.tryTypedArgs$0(Typers.scala:1098)
+      [scalac] 	at scala.tools.nsc.typechecker.Typers$Typer.tryTypedApply$0(Typers.scala:1121)
+      [scalac] 	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1509)
+      [scalac] 	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1625)
+      [scalac] 	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1655)
+      [scalac] 	at scala.tools.nsc.typechecker.Typers$Typer.typedCase(Typers.scala:882)
+      [scalac] 	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$38.apply(Typers.scala:899)
+      [scalac] 	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$38.apply(Typers.scala:898)
+      [scalac] 	at scala.List$.loop$0(List.scala:232)
+      [scalac] 	at scala.List$.mapConserve(List.scala:249)
+      [scalac] 	at scala.tools.nsc.typechecker.Typers$Typer.typedCases(Typers.scala:898)
+      [scalac] 	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1421)
+      [scalac] 	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1625)
+      [scalac] 	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1651)
+      [scalac] 	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$45.apply(Typers.scala:973)
+      [scalac] 	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$45.apply(Typers.scala:963)
+      [scalac] 	at scala.List$.loop$0(List.scala:232)
+      [scalac] 	at scala.List$.mapConserve(List.scala:249)
+      [scalac] 	at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:963)
+      [scalac] 	at scala.tools.nsc.typechecker.Typers$Typer.typedBlock(Typers.scala:866)
+      [scalac] 	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1347)
+      [scalac] 	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1625)
+      [scalac] 	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1651)
+      [scalac] 	at scala.tools.nsc.matching.TransMatcher$TransMatch.transform(TransMatcher.scala:353)
+      [scalac] 	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:966)
+      [scalac] 	at scala.tools.nsc.matching.TransMatcher$TransMatch.transform(TransMatcher.scala:357)
+      [scalac] 	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$16.apply(Trees.scala:945)
+      [scalac] 	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$16.apply(Trees.scala:944)
+      [scalac] 	at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1046)
+      [scalac] 	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:943)
+      [scalac] 	at scala.tools.nsc.matching.TransMatcher$TransMatch.transform(TransMatcher.scala:357)
+      [scalac] 	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$25.apply(Trees.scala:1040)
+      [scalac] 	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$25.apply(Trees.scala:1038)
+      [scalac] 	at scala.List$.loop$0(List.scala:232)
+      [scalac] 	at scala.List$.mapConserve(List.scala:249)
+      [scalac] 	at scala.tools.nsc.ast.Trees$Transformer.transformStats(Trees.scala:1038)
+      [scalac] 	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:964)
+      [scalac] 	at scala.tools.nsc.matching.TransMatcher$TransMatch.transform(TransMatcher.scala:357)
+      [scalac] 	at scala.tools.nsc.ast.Trees$Transformer.transformTemplate(Trees.scala:1026)
+      [scalac] 	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$13.apply(Trees.scala:932)
+      [scalac] 	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$13.apply(Trees.scala:932)
+      [scalac] 	at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1046)
+      [scalac] 	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:931)
+      [scalac] 	at scala.tools.nsc.matching.TransMatcher$TransMatch.transform(TransMatcher.scala:357)
+      [scalac] 	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$25.apply(Trees.scala:1040)
+      [scalac] 	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$25.apply(Trees.scala:1038)
+      [scalac] 	at scala.List$.loop$0(List.scala:232)
+      [scalac] 	at scala.List$.mapConserve(List.scala:249)
+      [scalac] 	at scala.tools.nsc.ast.Trees$Transformer.transformStats(Trees.scala:1038)
+      [scalac] 	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$12.apply(Trees.scala:928)
+      [scalac] 	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$12.apply(Trees.scala:928)
+      [scalac] 	at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1046)
+      [scalac] 	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:927)
+      [scalac] 	at scala.tools.nsc.matching.TransMatcher$TransMatch.transform(TransMatcher.scala:357)
+      [scalac] 	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$25.apply(Trees.scala:1040)
+      [scalac] 	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$25.apply(Trees.scala:1038)
+      [scalac] 	at scala.List$.loop$0(List.scala:232)
+      [scalac] 	at scala.List$.mapConserve(List.scala:249)
+      [scalac] 	at scala.tools.nsc.ast.Trees$Transformer.transformStats(Trees.scala:1038)
+      [scalac] 	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$12.apply(Trees.scala:928)
+      [scalac] 	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$12.apply(Trees.scala:928)
+      [scalac] 	at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1046)
+      [scalac] 	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:927)
+      [scalac] 	at scala.tools.nsc.matching.TransMatcher$TransMatch.transform(TransMatcher.scala:357)
+      [scalac] 	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$25.apply(Trees.scala:1040)
+      [scalac] 	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$25.apply(Trees.scala:1038)
+      [scalac] 	at scala.List$.loop$0(List.scala:232)
+      [scalac] 	at scala.List$.mapConserve(List.scala:249)
+      [scalac] 	at scala.tools.nsc.ast.Trees$Transformer.transformStats(Trees.scala:1038)
+      [scalac] 	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$12.apply(Trees.scala:928)
+      [scalac] 	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$12.apply(Trees.scala:928)
+      [scalac] 	at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1046)
+      [scalac] 	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:927)
+      [scalac] 	at scala.tools.nsc.matching.TransMatcher$TransMatch.transform(TransMatcher.scala:357)
+      [scalac] 	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$25.apply(Trees.scala:1040)
+      [scalac] 	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$25.apply(Trees.scala:1038)
+      [scalac] 	at scala.List$.loop$0(List.scala:232)
+      [scalac] 	at scala.List$.mapConserve(List.scala:249)
+      [scalac] 	at scala.tools.nsc.ast.Trees$Transformer.transformStats(Trees.scala:1038)
+      [scalac] 	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$12.apply(Trees.scala:928)
+      [scalac] 	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$12.apply(Trees.scala:928)
+      [scalac] 	at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1046)
+      [scalac] 	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:927)
+      [scalac] 	at scala.tools.nsc.matching.TransMatcher$TransMatch.transform(TransMatcher.scala:357)
+      [scalac] 	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$25.apply(Trees.scala:1040)
+      [scalac] 	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$25.apply(Trees.scala:1038)
+      [scalac] 	at scala.List$.loop$0(List.scala:232)
+      [scalac] 	at scala.List$.mapConserve(List.scala:249)
+      [scalac] 	at scala.tools.nsc.ast.Trees$Transformer.transformStats(Trees.scala:1038)
+      [scalac] 	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$12.apply(Trees.scala:928)
+      [scalac] 	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$12.apply(Trees.scala:928)
+      [scalac] 	at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1046)
+      [scalac] 	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:927)
+      [scalac] 	at scala.tools.nsc.matching.TransMatcher$TransMatch.transform(TransMatcher.scala:357)
+      [scalac] 	at scala.tools.nsc.ast.Trees$Transformer.transformUnit(Trees.scala:1041)
+      [scalac] 	at scala.tools.nsc.transform.Transform$Phase.apply(Transform.scala:22)
+      [scalac] 	at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:210)
+      [scalac] 	at scala.tools.nsc.Global$GlobalPhase$$anonfun$1.apply(Global.scala:199)
+      [scalac] 	at scala.tools.nsc.Global$GlobalPhase$$anonfun$1.apply(Global.scala:199)
+      [scalac] 	at scala.Iterator$class.foreach(Iterator.scala:285)
+      [scalac] 	at scala.collection.mutable.ListBuffer$$anon$0.foreach(ListBuffer.scala:216)
+      [scalac] 	at scala.tools.nsc.Global$GlobalPhase.run(Global.scala:199)
+      [scalac] 	at scala.tools.nsc.Global$Run.compileSources(Global.scala:429)
+      [scalac] 	at scala.tools.nsc.Global$Run.compile(Global.scala:487)
+      [scalac] 	at scala.tools.ant.Scalac.execute(Scalac.scala:469)
+      [scalac] 	at org.apache.tools.ant.UnknownElement.execute(UnknownElement.java:275)
+      [scalac] 	at org.apache.tools.ant.Task.perform(Task.java:364)
+      [scalac] 	at org.apache.tools.ant.Target.execute(Target.java:341)
+      [scalac] 	at org.apache.tools.ant.Target.performTasks(Target.java:369)
+      [scalac] 	at org.apache.tools.ant.Project.executeSortedTargets(Project.java:1216)
+      [scalac] 	at org.apache.tools.ant.Project.executeTarget(Project.java:1185)
+      [scalac] 	at org.apache.tools.ant.helper.DefaultExecutor.executeTargets(DefaultExecutor.java:40)
+      [scalac] 	at org.eclipse.ant.internal.core.ant.EclipseDefaultExecutor.executeTargets(EclipseDefaultExecuto\
+r.java:32)
+      [scalac] 	at org.apache.tools.ant.Project.executeTargets(Project.java:1068)
+      [scalac] 	at org.eclipse.ant.internal.core.ant.InternalAntRunner.run(InternalAntRunner.java:704)
+      [scalac] 	at org.eclipse.ant.internal.core.ant.InternalAntRunner.run(InternalAntRunner.java:455)
+      [scalac] 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+      [scalac] 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+      [scalac] 	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+      [scalac] 	at java.lang.reflect.Method.invoke(Method.java:585)
+      [scalac] 	at org.eclipse.ant.core.AntRunner.run(AntRunner.java:356)
+      [scalac] 	at org.eclipse.ant.internal.ui.launchConfigurations.AntLaunchDelegate.runInSameVM(AntLaunchDeleg\
+ate.java:234)
+      [scalac] 	at org.eclipse.ant.internal.ui.launchConfigurations.AntLaunchDelegate.launch(AntLaunchDelegate.j\
+ava:196)
+      [scalac] 	at org.eclipse.debug.internal.core.LaunchConfiguration.launch(LaunchConfiguration.java:639)
+      [scalac] 	at org.eclipse.debug.internal.core.LaunchConfiguration.launch(LaunchConfiguration.java:565)
+      [scalac] 	at org.eclipse.debug.internal.core.LaunchConfiguration.launch(LaunchConfiguration.java:558)
+      [scalac] 	at org.eclipse.ui.externaltools.internal.model.ExternalToolBuilder.launchBuild(ExternalToolBuild\
+er.java:176)
+      [scalac] 	at org.eclipse.ui.externaltools.internal.model.ExternalToolBuilder.doBuildBasedOnScope(ExternalT\
+oolBuilder.java:164)
+      [scalac] 	at org.eclipse.ui.externaltools.internal.model.ExternalToolBuilder.build(ExternalToolBuilder.jav\
+a:83)
+      [scalac] 	at org.eclipse.core.internal.events.BuildManager$2.run(BuildManager.java:593)
+      [scalac] 	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:37)
+      [scalac] 	at org.eclipse.core.runtime.Platform.run(Platform.java:785)
+      [scalac] 	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:168)
+      [scalac] 	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:202)
+      [scalac] 	at org.eclipse.core.internal.events.BuildManager$1.run(BuildManager.java:231)
+      [scalac] 	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:37)
+      [scalac] 	at org.eclipse.core.runtime.Platform.run(Platform.java:785)
+      [scalac] 	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:234)
+      [scalac] 	at org.eclipse.core.internal.events.BuildManager.build(BuildManager.java:303)
+      [scalac] 	at org.eclipse.core.internal.resources.Project.build(Project.java:110)
+      [scalac] 	at org.eclipse.ui.actions.BuildAction.invokeOperation(BuildAction.java:190)
+      [scalac] 	at org.eclipse.ui.actions.WorkspaceAction.execute(WorkspaceAction.java:133)
+      [scalac] 	at org.eclipse.ui.actions.WorkspaceAction$2.runInWorkspace(WorkspaceAction.java:424)
+      [scalac] 	at org.eclipse.core.internal.resources.InternalWorkspaceJob.run(InternalWorkspaceJob.java:38)
+      [scalac] 	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:58)
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >A meaningful error message. </td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

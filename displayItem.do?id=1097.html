@@ -1,0 +1,142 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#1097]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Iulian</td>
+	  <td align="center" bgcolor="#FFFFFF">Iulian</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2007-05-10 15:54:01.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">[contrib #465] Early definitions in object causes runtime exception</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>When using early definitions in an object definition, you get a NullPointerException at runtime. The following code compiles fine:
+
+abstract class B {
+  val v: String
+}
+
+object A extends {
+  val v = &quot;foo&quot;
+} with B {}
+
+object Test {
+
+  def main(args: Array[String]) = {
+    Console.println(A.v)
+  }
+
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>When you run Test, you get the following exception:
+
+Exception in thread "main" java.lang.ExceptionInInitializerError
+        at Test$.main(Test.scala:12)
+        at Test.main(Test.scala)
+Caused by: java.lang.NullPointerException
+        at A$.<init>(Test.scala:6)
+        at A$.<clinit>(Test.scala)
+        ... 2 more
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >Successful execution</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2007-05-11 00:41:13.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+It seems the backend is changing the reference
+
+A.this.v = "foo"
+
+to 
+
+A$.MODULE$.v = "foo"
+
+Because A$.MODULE is assigned only after the superclass constructor is called we get an NullPointerException.
+You can verify by printing the constructor of A at phase cleanup (then it looks still OK) and doing a javap afterwards. 
+
+Question: Why the replacement? Would it not be more efficient in general to keep `this' references?
+
+ 
+
+
+ 
+</td></tr>
+<tr>
+        <td>
+        <strong>Iulian&nbsp; edited on &nbsp;2007-05-11 16:43:45.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Fixed. The problem was treating object values too uniformly. Actually the tree is not A.this.v = ... but simply A.v, where A carries the module symbol. The code generator blindly generated the same code for all module references, by reading the MODULE$ field. Now it checks first to see if the module we're accessing is the same as the class we're generating, in which case it replaces it by 'this'.
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

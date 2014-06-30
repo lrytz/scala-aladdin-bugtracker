@@ -1,0 +1,129 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#145]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> medium</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Matthias</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2003-09-16 14:25:06.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">Specific super class reference yields IncompatibleClassChangeError</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>trait J[T] {
+  def foo(x: T): Int;
+}
+trait I[T] with J[T] {
+  override def foo(x: T): Int = super[J].foo(x) + 1;
+}
+class C {
+  def foo(x: Int): Int = x;
+}
+class D extends C with I[Int];
+object T with Executable {
+  System.out.println((new D).foo(3));
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>Compiles, but at runtime we get:
+<pre>
+Exception in thread "main" java.lang.IncompatibleClassChangeError
+        at D$class.foo(Y.scala:5)
+        at D$class.foo(Y.scala:5)
+        at T$.<init>(Y.scala:12)
+        at T$.<clinit>(Y.scala)
+        at T.main(Y.scala)
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >Compiles & runs.</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Michel&nbsp; edited on &nbsp;2003-09-30 10:59:27.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+<p>
+In my opinion the code above should be rejected by the compiler, for the following reason: we have two kinds of <code>super</code> in Scala.
+
+<p>
+The first kind (written simply <code>super</code>) is used to refer to methods of the superclass, which is unknown at the point where the reference appears (because of mixins, as discussed in another "bug" that I incorrectly filed). I now agree that it's fine that these references designate abstract methods, provided that the class containing such a reference is used only as a mixin and its superclass contains appropriate definitions.
+
+<p>
+Ths second kind of super, which refers to methods of mixins (written <code>super[mixin]</code>), should IMO not be allowed to refer to abstract methods. The reason is that such references are really purely static: they refer to a specific method in a specific mixin. At the point where such a reference appear, you know exactly what method is referenced, and I fail to see through which mechanism this could later change. But please, Martin or Matthias, correct me if I'm wrong.
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2003-10-08 20:48:25.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

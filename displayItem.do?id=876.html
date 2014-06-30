@@ -1,0 +1,214 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#876]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Nikolay</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2007-01-08 22:58:54.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">[contrib #278] typechecker AssertionError</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>import scala.collection.mutable.HashMap
+
+object AssertionError extends AnyRef with Application
+{
+    abstract class A {}
+
+    object A1 extends A {}
+
+    object A2 extends A {}
+
+    class Manager
+    {
+        final class B {}
+    
+        val map = new HashMap[A, B]
+    }
+    
+        
+    def test[T](f: =&gt; T) { f }
+
+    test {
+        val manager = new Manager
+
+        // This line is illegal and causes a compiler crash with Scala 2.3.1
+        assert(manager.map(A2) == List(manager.map(A2, A1)))
+    }
+
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>Exception in thread "main" java.lang.AssertionError: assertion failed
+	at scala.Predef$.assert(Predef.scala:76)
+	at scala.tools.nsc.typechecker.Typers$Typer.stabilizeFun(Typers.scala:457)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:2059)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2214)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedQualifier(Typers.scala:2267)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:2127)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2214)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:2058)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2214)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedArg(Typers.scala:1291)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$49.apply(Typers.scala:1295)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$49.apply(Typers.scala:1295)
+	at scala.List$.loop$0(List.scala:244)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedArgs(Typers.scala:1295)
+	at scala.tools.nsc.typechecker.Typers$Typer.tryTypedArgs$0(Typers.scala:1553)
+	at scala.tools.nsc.typechecker.Typers$Typer.tryTypedApply$0(Typers.scala:1586)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:2067)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2214)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedBlock(Typers.scala:1129)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1870)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2214)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedArg(Typers.scala:1291)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedArgToPoly$0(Typers.scala:1371)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$58.apply(Typers.scala:1380)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$58.apply(Typers.scala:1380)
+	at scala.List$.map2(List.scala:277)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedApply(Typers.scala:1380)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:2069)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2214)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2247)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedStat$0(Typers.scala:1264)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$48.apply(Typers.scala:1285)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$48.apply(Typers.scala:1285)
+	at scala.List$.loop$0(List.scala:244)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:1285)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedTemplate(Typers.scala:911)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedModuleDef(Typers.scala:832)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1840)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2214)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2247)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedStat$0(Typers.scala:1264)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$48.apply(Typers.scala:1285)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$48.apply(Typers.scala:1285)
+	at scala.List$.loop$0(List.scala:244)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:1285)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1833)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2214)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2247)
+	at scala.tools.nsc.typechecker.Analyzer$typerFactory$$anon$1.apply(Analyzer.scala:38)
+	at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:220)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$1.apply(Global.scala:209)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$1.apply(Global.scala:209)
+	at scala.Iterator$class.foreach(Iterator.scala:341)
+	at scala.collection.mutable.ListBuffer$$anon$0.foreach(ListBuffer.scala:244)
+	at scala.tools.nsc.Global$GlobalPhase.run(Global.scala:209)
+	at scala.tools.nsc.Global$Run.compileSources(Global.scala:474)
+	at scala.tools.nsc.Global$Run.compile(Global.scala:545)
+	at scala.tools.nsc.Main$.process(Main.scala:58)
+	at scala.tools.nsc.Main$.main(Main.scala:80)
+	at scala.tools.nsc.Main.main(Main.scala)
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >Compiler error report instead of crash. 
+
+With a small change to the source (removing the word assert, or replacing class Manager with object manager and removing the val manager line) I receive:-
+
+error: wrong number of arguments for method apply:
+        assert(manager.map(A2) == List(manager.map(A2, A1)))
+                                                  ^
+one error found
+</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Nikolay&nbsp; edited on &nbsp;2007-01-08 22:59:23.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+contribution #278
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2007-01-09 16:45:09.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

@@ -1,0 +1,120 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#396]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> high</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">Philippe</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2005-01-31 11:24:50.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">incorrect code for super calls in deep mixins</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>package mixins {
+
+  class A {
+    class I {
+      def run = System.out.print(&quot;A&quot;);
+    }
+  }
+  class B extends A {
+    class I extends super.I {
+      override def run = { super.run; System.out.print(&quot;B&quot;); }
+    }
+  }
+  class C extends A {
+    class I extends super.I {
+      override def run = { super.run; System.out.print(&quot;C&quot;); }
+    }
+  }
+  object Test extends B with C with Application {
+    class I2 extends super[B].I with super[C].I;
+    (new I2).run
+  }
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>prints "AB"
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >should print "ABC". 
+
+The problem is a condensation of a proposed solution to the EPL problem posed by Cook and Batory in the paper that I have sent around. I have to send the review report by the end fo the week. It would be great if we had a fix by then, as this could significantly change the way Scala is represented in this paper.
+
+</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Philippe&nbsp; edited on &nbsp;2005-02-09 15:18:11.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+The problem was mainly due to an incorrect implementation of the symbol lookup method in class <code>Type</code>. The problem has been resolved be rewriting this method in such a way that it uses the same lookup algorithm as the name lookup method.
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

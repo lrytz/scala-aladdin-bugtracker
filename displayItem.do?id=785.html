@@ -1,0 +1,207 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#785]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Sean</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2006-10-23 05:42:07.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">resident compiler crash</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>// In two files
+// test/ScalaNewTyper.scala
+package test;
+trait ScalaNewTyperX {
+  private var typed : String = null;
+  trait HasSymbol { 
+    protected def foo : Unit = {}
+  }
+  trait HasArgsTypeParametersImpl extends HasSymbol {
+    private var argss : List[List[String]] = Nil;
+  }
+}
+// test/ScalaTrees.scala
+package test;
+
+trait ScalaTreesX extends ScalaNewTyperX {
+  trait TraitClassImpl extends HasArgsTypeParametersImpl {
+    argss(null);
+    protected def argss(tree : String) : List[List[String]] = Nil;
+  }
+}
+
+&lt;pre&gt;sean-mcdirmids-computer:~/workspace/test21/src mcdirmid$ ../../scala/build/quick/bin/scalac -sourcepath . -d ../bin/ -resident
+
+nsc&gt; test/ScalaTreesX.scala
+
+nsc&gt; test/ScalaTreesX.scala
+Exception in thread &quot;main&quot; java.lang.AssertionError: assertion failed: ScalaNewTyperX.this.type.trait HasSymbol$class does no longer exist, phase = erasure
+at scala.Predef$.assert(Predef.scala:92)
+at scala.tools.nsc.symtab.Types$adaptToNewRunMap$.adaptToNewRun(Types.scala:1601)
+at scala.tools.nsc.symtab.Types$adaptToNewRunMap$.apply(Types.scala:1634)
+at scala.tools.nsc.symtab.Types$adaptToNewRunMap$.apply(Types.scala:1590)
+at scala.List$.loop$0(List.scala:238)
+at scala.List$.mapConserve(List.scala:255)
+at scala.tools.nsc.symtab.Types$adaptToNewRunMap$.apply(Types.scala:1643)
+at scala.tools.nsc.symtab.Types$Type.complete(Types.scala:370)
+at scala.tools.nsc.symtab.Symbols$Symbol.info(Symbols.scala:395)
+at scala.tools.nsc.symtab.Symbols$Symbol.closureLength$0(Symbols.scala:523)
+at scala.tools.nsc.symtab.Symbols$Symbol.isLess(Symbols.scala:526)
+at scala.tools.nsc.symtab.Types$Type.closurePos(Types.scala:331)
+at scala.tools.nsc.symtab.Symbols$Symbol.isNonBottomSubClass(Symbols.scala:542)
+at scala.tools.nsc.symtab.Types$AsSeenFromMap.toPrefix$0(Types.scala:1410)
+at scala.tools.nsc.symtab.Types$AsSeenFromMap.apply(Types.scala:1417)
+at scala.tools.nsc.symtab.Types$AsSeenFromMap.apply(Types.scala:1403)
+at scala.tools.nsc.symtab.Types$TypeMap.mapOver(Types.scala:1322)
+at scala.tools.nsc.symtab.Types$AsSeenFromMap.apply(Types.scala:1448)
+at scala.tools.nsc.symtab.Types$AsSeenFromMap.apply(Types.scala:1403)
+at scala.tools.nsc.symtab.Types$TypeMap.mapOver(Types.scala:1355)
+at scala.tools.nsc.symtab.Types$AsSeenFromMap.apply(Types.scala:1448)
+at scala.tools.nsc.symtab.Types$Type.asSeenFrom(Types.scala:201)
+at scala.tools.nsc.symtab.Types$Type.memberType(Types.scala:229)
+at scala.tools.nsc.symtab.Types$Type.findMember(Types.scala:447)
+at scala.tools.nsc.symtab.Types$Type.member(Types.scala:176)
+at scala.tools.nsc.typechecker.Typers$Typer.typedIdent$0(Typers.scala:1474)
+at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1862)
+at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1933)
+at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1783)
+at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1933)
+at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1961)
+at scala.tools.nsc.typechecker.Typers$Typer.typedStat$0(Typers.scala:1104)
+at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$47.apply(Typers.scala:1125)
+at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$47.apply(Typers.scala:1125)
+at scala.List$.loop$0(List.scala:238)
+at scala.List$.mapConserve(List.scala:255)
+at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:1125)
+at scala.tools.nsc.typechecker.Typers$Typer.typedTemplate(Typers.scala:786)
+at scala.tools.nsc.typechecker.Typers$Typer.typedClassDef(Typers.scala:707)
+at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1565)
+at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1933)
+at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1961)
+at scala.tools.nsc.typechecker.Typers$Typer.typedStat$0(Typers.scala:1104)
+at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$47.apply(Typers.scala:1125)
+at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$47.apply(Typers.scala:1125)
+at scala.List$.loop$0(List.scala:238)
+at scala.List$.mapConserve(List.scala:255)
+at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:1125)
+at scala.tools.nsc.typechecker.Typers$Typer.typedTemplate(Typers.scala:786)
+at scala.tools.nsc.typechecker.Typers$Typer.typedClassDef(Typers.scala:707)
+at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1565)
+at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1933)
+at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1961)
+at scala.tools.nsc.typechecker.Typers$Typer.typedStat$0(Typers.scala:1104)
+at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$47.apply(Typers.scala:1125)
+at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$47.apply(Typers.scala:1125)
+at scala.List$.loop$0(List.scala:238)
+at scala.List$.mapConserve(List.scala:255)
+at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:1125)
+at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1561)
+at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1933)
+at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1961)
+at scala.tools.nsc.typechecker.Analyzer$typerFactory$$anon$1.apply(Analyzer.scala:38)
+at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:218)
+at scala.tools.nsc.Global$GlobalPhase$$anonfun$1.apply(Global.scala:207)
+at scala.tools.nsc.Global$GlobalPhase$$anonfun$1.apply(Global.scala:207)
+at scala.Iterator$class.foreach(Iterator.scala:316)
+at scala.collection.mutable.ListBuffer$$anon$0.foreach(ListBuffer.scala:220)
+at scala.tools.nsc.Global$GlobalPhase.run(Global.scala:207)
+at scala.tools.nsc.Global$Run.compileSources(Global.scala:472)
+at scala.tools.nsc.Global$Run.compile(Global.scala:541)
+at scala.tools.nsc.Main$$anonfun$0.apply(Main.scala:39)
+at scala.tools.nsc.Main$$anonfun$0.apply(Main.scala:36)
+at scala.tools.nsc.EvalLoop$class.loop(EvalLoop.scala:17)
+at scala.tools.nsc.Main$.loop(Main.scala:16)
+at scala.tools.nsc.EvalLoop$class.loop(EvalLoop.scala:18)
+at scala.tools.nsc.Main$.loop(Main.scala:16)
+at scala.tools.nsc.Main$.resident(Main.scala:36)
+at scala.tools.nsc.Main$.process(Main.scala:71)
+at scala.tools.nsc.Main$.main(Main.scala:98)
+at scala.tools.nsc.Main.main(Main.scala)
+sean-mcdirmids-computer:~/workspace/test21/src mcdirmid$&lt;/pre&gt;
+
+This bug was hard to track down. Its seems fairly arbitrary in how it is triggered (everything in the above code is significant for the crash, remove anything and the crash does not occur). In particular, the argss var and argss def must have the same name.
+
+
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" ></td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-10-26 16:14:44.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

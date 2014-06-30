@@ -1,0 +1,293 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#811]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Sean</td>
+	  <td align="center" bgcolor="#FFFFFF">Burak</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2006-11-10 12:19:29.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">match broken for traits (again???)</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>package test;
+trait Core {
+  trait NodeImpl;
+  trait OtherImpl extends NodeImpl;
+  trait DoubleQuoteImpl extends NodeImpl;
+  def asDQ(node : OtherImpl) = node match {
+  case dq : DoubleQuoteImpl =&gt; dq;
+  }
+}</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>Could be a bad check-in as I would be surprised if there was not a test case for this. Anyways, the current comp\
+iler is recently very broken (this crash wasn't in my pull last week):
+
+<pre>sean-mcdirmid:~/workspace/test32/src mcdirmid$ ../../scala/build/quick/bin/scalac -sourcepath . -d ../bin t\
+est/Test.scala
+exception when transforming def asDQ(node: Core.this.OtherImpl): Core.this.OtherImpl with Core.this.DoubleQuoteI\
+mpl = node match {
+  case (dq @ (_) : Core.this.DoubleQuoteImpl) => dq
+}
+exception when transforming java.lang.Object with scala.ScalaObject {
+  abstract trait NodeImpl extends java.lang.Object with scala.ScalaObject;
+  abstract trait OtherImpl extends java.lang.Object with Core.this.NodeImpl with scala.ScalaObject;
+  abstract trait DoubleQuoteImpl extends java.lang.Object with Core.this.NodeImpl with scala.ScalaObject;
+  def asDQ(node: Core.this.OtherImpl): Core.this.OtherImpl with Core.this.DoubleQuoteImpl = node match {
+    case (dq @ (_) : Core.this.DoubleQuoteImpl) => dq
+  }
+}
+exception when transforming abstract trait Core extends java.lang.Object with scala.ScalaObject {
+  abstract trait NodeImpl extends java.lang.Object with scala.ScalaObject;
+  abstract trait OtherImpl extends java.lang.Object with Core.this.NodeImpl with scala.ScalaObject;
+  abstract trait DoubleQuoteImpl extends java.lang.Object with Core.this.NodeImpl with scala.ScalaObject;
+  def asDQ(node: Core.this.OtherImpl): Core.this.OtherImpl with Core.this.DoubleQuoteImpl = node match {
+    case (dq @ (_) : Core.this.DoubleQuoteImpl) => dq
+  }
+}
+exception when transforming package test {
+  abstract trait Core extends java.lang.Object with scala.ScalaObject {
+    abstract trait NodeImpl extends java.lang.Object with scala.ScalaObject;
+    abstract trait OtherImpl extends java.lang.Object with Core.this.NodeImpl with scala.ScalaObject;
+    abstract trait DoubleQuoteImpl extends java.lang.Object with Core.this.NodeImpl with scala.ScalaObject;
+    def asDQ(node: Core.this.OtherImpl): Core.this.OtherImpl with Core.this.DoubleQuoteImpl = node match {
+      case (dq @ (_) : Core.this.DoubleQuoteImpl) => dq
+    }
+  }
+}
+Exception in thread "main" scala.tools.nsc.symtab.Types$TypeError: type mismatch;
+found   : Core.this.DoubleQuoteImpl
+required: Core.this.OtherImpl with Core.this.DoubleQuoteImpl
+	at scala.tools.nsc.typechecker.Contexts$Context.error(Contexts.scala:252)
+	at scala.tools.nsc.typechecker.Infer$Inferencer.error(Infer.scala:245)
+	at scala.tools.nsc.typechecker.Infer$Inferencer.typeError(Infer.scala:254)
+	at scala.tools.nsc.typechecker.Infer$Inferencer.typeErrorTree(Infer.scala:263)
+	at scala.tools.nsc.typechecker.Typers$Typer.adapt(Typers.scala:652)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2215)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedArg(Typers.scala:1285)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$52.apply(Typers.scala:1302)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$52.apply(Typers.scala:1302)
+	at scala.List$.map2(List.scala:276)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedArgs(Typers.scala:1302)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedApply(Typers.scala:1337)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:2069)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2213)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2245)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedStat$0(Typers.scala:1258)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$48.apply(Typers.scala:1279)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$48.apply(Typers.scala:1279)
+	at scala.List$.loop$0(List.scala:243)
+	at scala.List$.mapConserve(List.scala:260)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:1279)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedBlock(Typers.scala:1122)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1870)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2213)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedArg(Typers.scala:1285)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$52.apply(Typers.scala:1302)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$52.apply(Typers.scala:1302)
+	at scala.List$.map2(List.scala:276)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedArgs(Typers.scala:1302)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedApply(Typers.scala:1337)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:2069)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2213)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2245)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedStat$0(Typers.scala:1258)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$48.apply(Typers.scala:1279)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$48.apply(Typers.scala:1279)
+	at scala.List$.loop$0(List.scala:243)
+	at scala.List$.mapConserve(List.scala:260)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:1279)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedBlock(Typers.scala:1122)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1870)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2213)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2256)
+	at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer.transform(ExplicitOuter.scala:404)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$20.apply(Trees.scala:1082)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$20.apply(Trees.scala:1081)
+	at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1189)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:33)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:27)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1080)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:46)
+	at scala.tools.nsc.transform.ExplicitOuter$OuterPathTransformer.transform(ExplicitOuter.scala:191)
+	at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer.transform(ExplicitOuter.scala:354)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$30.apply(Trees.scala:1183)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$30.apply(Trees.scala:1181)
+	at scala.List$.loop$0(List.scala:243)
+	at scala.List$.mapConserve(List.scala:260)
+	at scala.tools.nsc.ast.Trees$Transformer.transformStats(Trees.scala:1181)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1101)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.scala$tools$nsc$transform$TypingTransformers$\
+TypingTransformer$$super$transform(TypingTransformers.scala:44)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer$$anonfun$0.apply(TypingTransformers.scala:44)\
+
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer$$anonfun$0.apply(TypingTransformers.scala:44)\
+
+	at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1189)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:33)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:27)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:44)
+	at scala.tools.nsc.transform.ExplicitOuter$OuterPathTransformer.transform(ExplicitOuter.scala:191)
+	at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer.transform(ExplicitOuter.scala:331)
+	at scala.tools.nsc.ast.Trees$Transformer.transformTemplate(Trees.scala:1169)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$17.apply(Trees.scala:1069)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$17.apply(Trees.scala:1068)
+	at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1189)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:33)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:27)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1067)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:46)
+	at scala.tools.nsc.transform.ExplicitOuter$OuterPathTransformer.transform(ExplicitOuter.scala:191)
+	at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer.transform(ExplicitOuter.scala:415)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$30.apply(Trees.scala:1183)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$30.apply(Trees.scala:1181)
+	at scala.List$.loop$0(List.scala:243)
+	at scala.List$.mapConserve(List.scala:260)
+	at scala.tools.nsc.ast.Trees$Transformer.transformStats(Trees.scala:1181)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$16.apply(Trees.scala:1064)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$16.apply(Trees.scala:1064)
+	at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1189)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:33)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:27)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1063)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:46)
+	at scala.tools.nsc.transform.ExplicitOuter$OuterPathTransformer.transform(ExplicitOuter.scala:191)
+	at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer.transform(ExplicitOuter.scala:415)
+	at scala.tools.nsc.ast.Trees$Transformer.transformUnit(Trees.scala:1184)
+	at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer.scala$tools$nsc$transform$ExplicitOuter$Exp\
+licitOuterTransformer$$super$transformUnit(ExplicitOuter.scala:422)
+	at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer$$anonfun$7.apply(ExplicitOuter.scala:422)
+	at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer$$anonfun$7.apply(ExplicitOuter.scala:422)
+	at scala.tools.nsc.symtab.SymbolTable.atPhase(SymbolTable.scala:71)
+	at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer.transformUnit(ExplicitOuter.scala:422)
+	at scala.tools.nsc.transform.Transform$Phase.apply(Transform.scala:30)
+	at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:219)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$1.apply(Global.scala:208)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$1.apply(Global.scala:208)
+	at scala.Iterator$class.foreach(Iterator.scala:319)
+	at scala.collection.mutable.ListBuffer$$anon$0.foreach(ListBuffer.scala:244)
+	at scala.tools.nsc.Global$GlobalPhase.run(Global.scala:208)
+	at scala.tools.nsc.Global$Run.compileSources(Global.scala:473)
+	at scala.tools.nsc.Global$Run.compile(Global.scala:542)
+	at scala.tools.nsc.Main$.process(Main.scala:74)
+	at scala.tools.nsc.Main$.main(Main.scala:96)
+	at scala.tools.nsc.Main.main(Main.scala)</pre>
+
+
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" ></td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Sean&nbsp; edited on &nbsp;2006-11-10 12:26:08.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Maybe a duplicate of #806, but I thought this bug went away for awhile without #806 being closed. At anyrate, I'm still running into this problem.
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-11-10 18:36:11.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+It's code generated by pattern matcher so I reassign to Burak.
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2006-11-10 18:55:00.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+I can tell without looking at any code that the reason for this are Martin's latest GADT hacks (why would we require an OtherImpl with DoubleQuotedImpl?)
+
+The following problem works, so it is not clear to me what I should do fix:
+<pre>
+  def asDQ(node : OtherImpl) = node match {
+    case dq : DoubleQuoteImpl => dq:DoubleQuoteImpl;
+  }
+</pre>
+IMHO the "better" types that the typer spits out after inference must be communicated to the pattern matcher somehow. I guess it is just a matter of assigning the right type to the typed pattern in the typer, but have to check.
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2006-11-13 13:20:10.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+I fixed this in a way that is robust again typer - behavior by using the type of the symbol rather than the type in the tree. However, I still think it odd that the tree does not fully reflect the type, the tree should be rewritten to
+<pre>
+//after typer
+case dq: OtherImpl with DoubleQuoteImpl =>
+</pre>
+but that's just a maintainability issue.
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

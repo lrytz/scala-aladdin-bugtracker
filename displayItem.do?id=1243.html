@@ -1,0 +1,132 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#1243]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> medium</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Gilles</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2007-07-25 18:30:36.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">Extending and requiring classes that define homonymous case classes crashes fjbg</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>trait A {  }
+trait X { case class Error }
+trait B extends X { a: A =&gt;
+  Error match { case Error() =&gt; }
+}</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>Exception in thread "main" java.lang.ArrayIndexOutOfBoundsException: 10
+        at ch.epfl.lamp.fjbg.JExtendedCode.emitT2T(JExtendedCode.java:426)
+        at scala.tools.nsc.backend.jvm.GenJVM$BytecodeGenerator.genPrimitive(GenJVM.scala:1153)
+        at scala.tools.nsc.backend.jvm.GenJVM$BytecodeGenerator$$anonfun$44.apply(GenJVM.scala:753)
+        at scala.tools.nsc.backend.jvm.GenJVM$BytecodeGenerator$$anonfun$44.apply(GenJVM.scala:658)
+        at scala.Iterator$class.foreach(Iterator.scala:375)
+        at scala.runtime.BoxedArray$$anon$0.foreach(BoxedArray.scala:46)
+        at scala.Iterable$class.foreach(Iterable.scala:241)
+        at scala.runtime.BoxedArray.foreach(BoxedArray.scala:25)
+        at scala.tools.nsc.backend.icode.BasicBlocks$BasicBlock.traverse(BasicBlocks.scala:102)
+        at scala.tools.nsc.backend.jvm.GenJVM$BytecodeGenerator.genBlock(GenJVM.scala:658)
+        at scala.tools.nsc.backend.jvm.GenJVM$BytecodeGenerator.genBlocks(GenJVM.scala:579)
+        at scala.tools.nsc.backend.jvm.GenJVM$BytecodeGenerator.genCode(GenJVM.scala:568)
+        at scala.tools.nsc.backend.jvm.GenJVM$BytecodeGenerator.genMethod(GenJVM.scala:453)
+        at scala.tools.nsc.backend.jvm.GenJVM$BytecodeGenerator$$anonfun$5.apply(GenJVM.scala:195)
+        at scala.tools.nsc.backend.jvm.GenJVM$BytecodeGenerator$$anonfun$5.apply(GenJVM.scala:195)
+        ...
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >The compiler not crashing.</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Iulian&nbsp; edited on &nbsp;2007-08-06 17:06:40.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+It has nothing to do with the fact that both A and X define a case class Error. It crashes the same with an empty 'A'. I updated the example and the icode generator to crash on invalid code. The invalid tree is:
+
+def /*B$class*/$init$($this: A): Unit = {
+   <synthetic> val temp6: X$Error = new X$Error($this);
+   ..
+}
+
+and X$Error constructor:
+
+ def this($outer: X): X$Error = {
+
+So we pass an 'A' instead of an 'X', erasure should insert a cast.
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2007-08-22 15:13:30.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

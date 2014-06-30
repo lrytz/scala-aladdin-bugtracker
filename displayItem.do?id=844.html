@@ -1,0 +1,152 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#844]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Nikolay</td>
+	  <td align="center" bgcolor="#FFFFFF">Burak</td>
+	  <td align="center" bgcolor="#FFFFFF">not repro</td>
+          <td align="center" bgcolor="#FFFFFF">2006-11-28 11:21:38.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">[contrib #268] XML.loadString fails to load &amp; inside attributes</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>scala.xml.XML.loadString(&quot;&lt;x y=\&quot;&amp;amp;\&quot;/&gt;&quot;) // fails
+scala.xml.XML.loadString(&quot;&lt;x y=\&quot;&amp;amp;amp;\&quot;/&gt;&quot;) // loads &lt;x y=&quot;&amp;amp;&quot;/&gt;
+scala.xml.XML.loadString(&lt;x y=&quot;&amp;amp;&quot;/&gt;.toString) // fails
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre><pre>
+java.lang.StringIndexOutOfBoundsException: String index out of range: 1
+        at java.lang.String.charAt(String.java:558)
+        at scala.Iterator$$anon$1.next(Iterator.scala:66)
+        at scala.Iterator$$anon$1.next(Iterator.scala:62)
+        at scala.xml.Utility$.parseAttributeValue(Utility.scala:279)
+        at scala.xml.UnprefixedAttribute.<init>(UnprefixedAttribute.scala:25)
+        at scala.xml.parsing.FactoryAdapter$$anonfun$0.apply(FactoryAdapter.scala:156)
+        at scala.xml.parsing.FactoryAdapter$$anonfun$0.apply(FactoryAdapter.scala:135)
+        at scala.List.foreach(List.scala:687)
+        at scala.xml.parsing.FactoryAdapter.startElement(FactoryAdapter.scala:135)
+        at com.sun.org.apache.xerces.internal.parsers.AbstractSAXParser.startElement(AbstractSAXParser.java:533)\
+
+        at com.sun.org.apache.xerces.internal.impl.dtd.XMLDTDValidator.startElement(XMLDTDValidator.java:798)
+        at com.sun.org.apache.xerces.internal.impl.XMLDocumentFragmentScannerImpl.scanStartElement(XMLDocumentFr\
+agmentScannerImpl.java:878)
+        at com.sun.org.apache.xerces.internal.impl.XMLDocumentScannerImpl$ContentDispatcher.scanRootElementHook(\
+XMLDocumentScannerImpl.java:1157)
+        at com.sun.org.apache.xerces.internal.impl.XMLDocumentFragmentScannerImpl$FragmentContentDispatcher.disp\
+atch(XMLDocumentFragmentScannerImpl.java:1794)
+        at com.sun.org.apache.xerces.internal.impl.XMLDocumentFragmentScannerImpl.scanDocument(XMLDocumentFragme\
+ntScannerImpl.java:368)
+        at com.sun.org.apache.xerces.internal.parsers.XML11Configuration.parse(XML11Configuration.java:834)
+        at com.sun.org.apache.xerces.internal.parsers.XML11Configuration.parse(XML11Configuration.java:764)
+        at com.sun.org.apache.xerces.internal.parsers.XMLParser.parse(XMLParser.java:148)
+        at com.sun.org.apache.xerces.internal.parsers.AbstractSAXParser.parse(AbstractSAXParser.java:1242)
+        at javax.xml.parsers.SAXParser.parse(SAXParser.java:375)
+        at scala.xml.parsing.FactoryAdapter.loadXML(FactoryAdapter.scala:287)
+        at scala.xml.parsing.NoBindingFactoryAdapter.loadXML(NoBindingFactoryAdapter.scala:55)
+        at scala.xml.XML$.load(XML.scala:66)
+        at scala.xml.XML$.loadString(XML.scala:82)
+        at line13$object$.<init>(<console>:4)
+        at line13$object$.<clinit>(<console>)
+        at RequestResult$line13$object$.<init>(<console>:3)
+        at RequestResult$line13$object$.<clinit>(<console>)
+        at RequestResult$line13$object.result(<console>)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+        at java.lang.reflect.Method.invoke(Method.java:585)
+        at scala.tools.nsc.Interpreter$Request.loadAndRun(Interpreter.scala:568)
+        at scala.tools.nsc.Interpreter.interpret(Interpreter.scala:284)
+        at scala.tools.nsc.InterpreterLoop.command(InterpreterLoop.scala:173)
+        at scala.tools.nsc.InterpreterLoop.repl(InterpreterLoop.scala:86)
+        at scala.tools.nsc.InterpreterLoop.main(InterpreterLoop.scala:192)
+        at scala.tools.nsc.MainGenericRunner$.main(MainGenericRunner.scala:82)
+        at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >returns <x y="&amp;"/>
+</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Nikolay&nbsp; edited on &nbsp;2006-11-28 11:23:03.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Contribution #268. BTW, in the scala 2.3.0 interpreter non of these examples crashes. But the entity is not replaced with what  it stands for.
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2006-11-28 23:10:12.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+I could not reproduce this bug -- maybe I got the contrib wrong, because I am really writing &amp;amp; (5 letters here). If you had only the ampersand by itself, it would not be wellformed XML.
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

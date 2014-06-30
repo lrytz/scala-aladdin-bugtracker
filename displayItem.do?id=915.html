@@ -1,0 +1,138 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#915]</th>
+		<th><strong>project:</strong> documentation</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Nikolay</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2007-01-28 22:55:47.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">[contrib #311] Identifiers and Literals</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>This is one of a few issues reporting minor concerns regarding  The Scala Language Specification, as supplied with 2.3.3.
+
+
+Section 1.1 (Identifiers) Discussion of underscore in identifier names
+
+The sentence &quot;This may be
+followed by underscore ‘_’ characters and other string composed of either letters
+and digits or of special characters&quot; doesn't make it clear that y_ , _MAX_LEN_ , dot_product_*  are valid identifiers (because '_' is a letter). Perhaps another identifier could appear in Example 1.1.1 to make it clear. Sorry, I don't have an alternate wording for the sentence.
+
+
+
+Section 1.1 (Identifiers) Suspicious identifier example
+
++_field is listed as an identifier in Example 1.1.1. Is this correct? It doesn't begin with an upper or lower case letter, and doesn't contain special characters exclusively. The compiler rejects it.
+
+
+
+Section 1.3 (cosmetic) missing comma
+
+There are literals for integer numbers floating point numbers
+should be
+There are literals for integer numbers, floating point numbers
+
+
+
+Section 1.3.2 (optional, cosmetic) grammar might be considered ambiguous
+
+
+| digit {digit} exponentPart [floatType]
+| digit {digit} [exponentPart] floatType
+
+could instead be
+
+| digit {digit} exponentPart [floatType]
+| digit {digit} floatType
+
+(otherwise  digit {digit} exponentPart floatType  matches both lines)
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" ></td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Nikolay&nbsp; edited on &nbsp;2007-01-28 23:01:55.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+contribution #311
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2007-01-29 17:13:08.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

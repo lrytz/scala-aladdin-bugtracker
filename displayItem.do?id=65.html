@@ -1,0 +1,144 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#65]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> medium</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Erik</td>
+	  <td align="center" bgcolor="#FFFFFF">Michel</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2003-07-10 14:12:53.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF"> java.lang.AbstractMethodError</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>class Queue[+A](elem: A*) {
+    protected val in:List[A] = Nil;
+    protected val out = elem as List[A];
+
+    protected def mkQueue[A](i:List[A], o:List[A]):Queue[A] = {
+	new Queue[A](){
+	    override protected val in = i;
+	    override protected val out = o
+	};
+    }
+
+    def +[B &gt;: A](elem: B) = {
+	mkQueue(elem::in,out);
+    }
+}
+
+
+object Test {
+  def main(args: Array[String]): Unit = {
+    val q = new Queue();
+    val q2 = q + 42 + 0;	
+
+    ();
+  }
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>~/scala/test/bin/scala-test --jvm --show-diff A.scala<br>
+[...]
+<pre>
+Testing jvm backend
+testing: A.scala                                                      [FAILED]
+1,4d0
+< Exception in thread "main" java.lang.AbstractMethodError
+<       at Queue$class.$plus(A.scala:13)
+<       at Test$.main(A.scala:21)
+<       at Test.main(A.scala)
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >No runtime excaption.</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Erik&nbsp; edited on &nbsp;2003-07-10 14:13:47.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Erik&nbsp; edited on &nbsp;2003-07-10 14:14:06.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Michel&nbsp; edited on &nbsp;2003-07-10 15:28:53.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+It was a bug in the backend, which I hacked.
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

@@ -1,0 +1,208 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#547]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Burak</td>
+	  <td align="center" bgcolor="#FFFFFF">_</td>
+	  <td align="center" bgcolor="#FFFFFF">_</td>
+          <td align="center" bgcolor="#FFFFFF">2006-03-14 15:12:36.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">xml patterns get wrongly translated</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>object Test extends Application {
+
+  &amp;lt;hello/&gt; match { case &amp;lt;hello/&gt; =&gt; true; case _ =&gt; false; };
+
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>if you compile, with <code>-print:transmatch</code> you see that it gets translated all wrongly. The reason seem\
+s to be that the XML pattern somehow
+is interpreted as being a sequence pattern.
+<pre>
+package &lt;empty> {
+  final class Test extends java.lang.Object with scala.Application with scala.ScalaObject {
+    def &lt;init>(): Test = {
+      Test.super.&lt;init>();
+      ()
+    };
+    {
+      var temp0: scala.xml.Elem = {
+        {
+          new scala.xml.Elem.&lt;init>(null, "hello", scala.xml.Null, scala.this.Predef.$scope(), Array[scala.xm\
+l.Node]{})
+        }
+      };
+      if (temp0.isInstanceOf[scala.xml.Elem]())
+        {
+          var temp1: scala.xml.Elem = temp0.asInstanceOf$erased[scala.xml.Elem]();
+          temp1.prefix().isInstanceOf[scala.Seq[scala.xml.Node]]().&amp;&amp;(temp1.prefix().asInstanceOf$erased\
+[scala.Seq[scala.xml.Node]]().length().==(1)).&amp;&amp;({
+            var temp2: scala.Seq[scala.xml.Node] = temp1.prefix().asInstanceOf$erased[scala.Seq[scala.xml.Node]]\
+();
+            if (temp2.apply(0).isInstanceOf[scala.xml.Elem]())
+              {
+                var temp3: scala.xml.Elem = temp2.apply(0).asInstanceOf$erased[scala.xml.Elem]();
+                if (temp3.label().==("hello"))
+                  temp3.child().isInstanceOf[scala.Seq[scala.xml.Node]]().&amp;&amp;(temp3.child().asInstanceOf$\
+erased[scala.Seq[scala.xml.Node]]().length().==(0)).&&({
+                    var temp4: scala.Seq[scala.xml.Node] = temp3.child().asInstanceOf$erased[scala.Seq[scala.xml\
+.Node]]();
+                    {
+                      {
+                        &lt;synthetic> val r$0: scala.Boolean = true;
+                        exit(r$0);
+                        true
+                      }
+                    }
+                  })
+                else
+                  false
+              }
+            else
+              false
+          })
+        }
+      else
+        false.||({
+        {
+          &lt;synthetic> val r$1: scala.Boolean = false;
+          exit(r$1);
+          true
+        }
+      });
+      throw new scala.MatchError.&lt;init>(temp0);
+      exit(result){
+        result
+      }
+    }
+  }
+}
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >That it behaves equivalent to the following code, which works
+<pre>
+object Test extends Application {
+
+  &lt;hello/> match { case scala.xml.Elem(_,"hello",_,_) => true; case _ => false; };
+
+}
+</pre>
+
+the result of translating pattern matching is:
+<pre>
+package &lt;empty> {
+  final class Test extends java.lang.Object with scala.Application with scala.ScalaObject {
+    def &lt;init>(): Test = {
+      Test.super.&lt;init>();
+      ()
+    };
+    {
+      var temp0: scala.xml.Elem = {
+        {
+          new scala.xml.Elem.&lt;init>(null, "hello", scala.xml.Null, scala.this.Predef.$scope(), Array[scala.xml.Node]{})
+        }
+      };
+      if (temp0.isInstanceOf[scala.xml.Elem]())
+        {
+          var temp1: scala.xml.Elem = temp0.asInstanceOf$erased[scala.xml.Elem]();
+          if (temp1.label().==("hello"))
+            temp1.child().isInstanceOf[scala.Seq[scala.xml.Node]]().&amp;&amp;(temp1.child().asInstanceOf$erased[scala.Seq[scala.xml.Node]]().length().==(0)).&amp;&amp;({
+              var temp2: scala.Seq[scala.xml.Node] = temp1.child().asInstanceOf$erased[scala.Seq[scala.xml.Node]]();
+              {
+                {
+                  &lt;synthetic> val r$0: scala.Boolean = true;
+                  exit(r$0);
+                  true
+                }
+              }
+            })
+          else
+            false
+        }
+      else
+        false.||({
+        {
+          &lt;synthetic> val r$1: scala.Boolean = false;
+          exit(r$1);
+          true
+        }
+      });
+      throw new scala.MatchError.&lt;init>(temp0);
+      exit(result){
+        result
+      }
+    }
+  }
+}
+</pre></td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

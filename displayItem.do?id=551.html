@@ -1,0 +1,151 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#551]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> medium</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Burak</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2006-03-17 03:17:18.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">ScalaRuntime._equals erroneous</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>case class A(x:int);
+class B(x:int) extends A(x);
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>The ScalaRuntime._equals method is called to test structural equality of case classes.
+
+It starts happily with (x.getClass() eq y.getClass()) && ... children equal to.
+
+Unfortunately, consider this:
+
+then B(3) should equal A(3), but it doesn't.
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >Proper structural equality that follows inheritance.</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-03-17 19:46:55.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+I am not sure. I think in this case we should pick the
+definition that is easier to spec. The current one reads:
+
+Two instances of case classes A(xs), B(ys) are equal if A == B and xs == ys.
+
+How do you spec the proposed change? And, what other motivation is there to change?
+
+ -- Martin
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2006-03-17 22:29:44.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+<p>oh, I was referring to the now outdated spec and was assuming that this part would not have changed.
+</p>
+
+<p>The right thing to do (spec and impl) is obviously "if (A &lt;: B or B &lt;: A) and xs==ys" where either A or B is a case class, then the instances are equal</p>
+
+<p>Surprise, this would then translate to the following code:</p>
+<code>
+val xc = x.getClass();
+val yc = y.getClass();
+(xc.isAssignableFrom(yc) || yc.isAssignableFrom(xc)) && xs==ys
+</code>
+
+<p>(I must admit that  java.lang.Class method has a mystifying name)</p>
+
+<p>I can't recollect whether case classes participate in mixin composition. Depending on how we compile case classes, it might be necessary to go to a super-interface for that assignableFrom check (since a Scala class becomes a Java class and a Java interface). Otherwise, the equal method would not be symmetric.</p>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2006-03-17 22:36:07.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+<p>
+Answering "what other motivation", well to use the above method would prevent some existing code from breaking and would preserve the Liskov Substitution Principle(tm) : )
+</p>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-05-27 11:34:39.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+This is finally put to rest now.
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

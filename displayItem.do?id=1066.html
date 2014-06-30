@@ -1,0 +1,134 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#1066]</th>
+		<th><strong>project:</strong> documentation</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Nikolay</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2007-04-24 10:16:34.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">[contrib #444] illegal code in two Language Spec examples</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>Section 5.1 talks about &quot;with ScalaObject&quot; being added implicitly. This may be confusing as mentioning  &quot;with ScalaObject&quot; explicitly, as in the example code below, leads to compile errors:-
+
+
+Example 5.1.3  (without the &quot;...&quot; )
+abstract class AbsIterator extends AnyRef with ScalaObject {  }
+
+The code is rejected by the compiler:-
+
+:30: error: trait ScalaObject is inherited twice
+abstract class AbsIterator extends AnyRef with ScalaObject {  }
+                                               ^
+:30: error: trait ScalaObject is inherited twice
+abstract class AbsIterator extends AnyRef with ScalaObject {  }
+                           ^
+two errors found
+
+
+
+&quot;
+Example 5.1.6 Consider the class definitions
+class A { def f: Int = 1 ; def g: Int = 2 ; def h: Int = 3 }
+abstract class B { def f: Int = 4 ; def g: Int }
+abstract class C extends A with B { def h: Int }
+&quot;
+
+&quot;trait B&quot; is needed instead of &quot;abstract class B&quot;
+
+The current code is rejected by the compiler:-
+
+error: class B needs to be a trait be mixed in
+abstract class C extends A with B { def h: Int }
+                                ^
+one error found
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" ></td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Nikolay&nbsp; edited on &nbsp;2007-04-24 10:31:52.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+contribution #444
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2007-04-29 16:57:10.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

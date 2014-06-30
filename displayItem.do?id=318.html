@@ -1,0 +1,133 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#318]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Philippe</td>
+	  <td align="center" bgcolor="#FFFFFF">Philippe</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2004-04-13 14:03:29.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">Inner classes of objects declared in a function  crash the compiler</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>object Test {
+  def fun: Int = {
+    object o {
+      def a: Int = 1;
+      class C { def b: Int =  a; }
+    }
+    0
+  }
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre><pre>
+Exception in thread "main" java.lang.AssertionError: 
+unit        : tmp/test.scala
+clasz       : Test.o$0.C$class
+member      : Test.o$0.C$class.b
+owner       : Test.o$0.C$class.b
+tree        : Test.Test$o$1.a
+tree.pos    : 5:31
+tree.symbol : Test.o$0.a
+tree.type   : ()Int
+	at scalac.checkers.TreeChecker.selection(TreeChecker.java:390)
+	at scalac.checkers.TreeChecker.function(TreeChecker.java:343)
+	at scalac.checkers.TreeChecker.expression(TreeChecker.java:284)
+	at scalac.checkers.TreeChecker.member(TreeChecker.java:168)
+	at scalac.checkers.TreeChecker.member(TreeChecker.java:135)
+	at scalac.checkers.TreeChecker.template(TreeChecker.java:111)
+	at scalac.checkers.TreeChecker.member(TreeChecker.java:147)
+	at scalac.checkers.TreeChecker.member(TreeChecker.java:135)
+	at scalac.checkers.TreeChecker.template(TreeChecker.java:111)
+	at scalac.checkers.TreeChecker.member(TreeChecker.java:147)
+	at scalac.checkers.TreeChecker.member(TreeChecker.java:135)
+	at scalac.checkers.TreeChecker.template(TreeChecker.java:111)
+	at scalac.checkers.TreeChecker.template(TreeChecker.java:91)
+	at scalac.checkers.TreeChecker.check(TreeChecker.java:81)
+	at scalac.transformer.MakeBoxingExplicitPhase.apply(MakeBoxingExplicitPhase.java:46)
+	at scalac.Global.compile(Global.java:371)
+	at scalac.Global.compile(Global.java:343)
+	at scala.tools.scalac.Main$.main1(Main.scala:35)
+	at scala.tools.scalac.Main$.main(Main.scala:27)
+	at scala.tools.scalac.Main.main(Main.scala:27)
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >No error. The problem is caused by phase ExplicitOuter which tries to replace the reference to the outer class <code>o.this</code> in method <code>b</code> by a reference to the outer object <code>o</code>.
+</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Philippe&nbsp; edited on &nbsp;2004-04-13 16:14:53.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Fixed ExplicitOuter
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

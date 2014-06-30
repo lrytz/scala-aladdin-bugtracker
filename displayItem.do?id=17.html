@@ -1,0 +1,131 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#17]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> medium</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Stephane</td>
+	  <td align="center" bgcolor="#FFFFFF">Nikolay</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2003-06-26 11:52:54.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">initialization of class parameters</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>class Quantity {
+    def getValue = 0;
+    def connect(c: Constraint) = c.newValue;
+}
+
+abstract class Constraint(q: Quantity) {
+    def newValue: Unit;
+    q connect this
+}
+
+class Adder(q: Quantity) extends Constraint(q) {
+    def newValue = System.out.println(q.getValue);
+}
+
+object Main {
+    def main(args: Array[String]): Unit = {
+        val x = new Quantity;
+        new Adder(x);
+        ()
+    }
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>Exception in thread "main" java.lang.NullPointerException
+        at Adder$class.newValue(src/Main.scala)
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >value 0 should be printed out !
+
+<p>
+<h4>Michel<h4>
+the problem is that the super-constructor is called before the fields of the class are initialized. I think addconstructors should be modified in order to place the call to the superconstructor just after all assignments to local fields
+</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Nikolay&nbsp; edited on &nbsp;2003-06-26 11:52:54.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Moved the initialzation of the class-parameters fields before the call to the super constructor. Regular ValDefs initialization is done after that. This still leaves room for initialization cycles but placing them before the call to the superconstructor breaks a much more common usage pattern, e.g.
+
+class A {
+  val a = 1;
+}
+
+class B extends A {
+  val b = a;
+  System.out.println(b);
+}
+
+doesn't even pass the verifier.
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

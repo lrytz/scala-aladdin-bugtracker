@@ -1,0 +1,285 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#895]</th>
+		<th><strong>project:</strong> documentation</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Nikolay</td>
+	  <td align="center" bgcolor="#FFFFFF">Burak</td>
+	  <td align="center" bgcolor="#FFFFFF">open</td>
+          <td align="center" bgcolor="#FFFFFF">2007-01-16 16:34:40.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">[contrib #283] Invalid code in ScalaOverview</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>A number of errors were encountered when I attempted to build the code fragments in &quot;An Overview of the Scala Programming Language&quot;
+
+
+page 6: forall doesn't compile
+
+error: ')' expected but identifier found.
+!exists(xs, x: T =&gt; !p(x))
+                     ^
+one error found
+
+Is this a compiler bug? The code compiles if we replace
+!exists(xs, x: T =&gt; !p(x))
+with
+!exists(xs, { x: T =&gt; !p(x) } )
+
+
+
+page 6: hasZeroRow doesn't compile
+
+error: ')' expected but '(' found.
+exists(matrix, row: Array[int] =&gt; forall(row, 0 ==))
+                                        ^
+one error found
+
+hasZeroRow does compile if we replace
+exists(matrix, row: Array[int] =&gt; forall(row, 0 ==))
+with
+exists(matrix, { row: Array[int] =&gt; forall[int](row, .==(0)) } )
+
+There may be other concise alternatives, I don't know.
+
+
+
+page 6: missing argument
+for (val x &lt;- xs; 0 &lt;= x) yield Math.sqrt
+should be
+for (val x &lt;- xs; 0 &lt;= x) yield Math.sqrt(x)
+
+
+
+(Optional) page 7: missing constructor argument
+val x: GenCell[String] = new GenCell[String]
+should be
+val x: GenCell[String] = new GenCell[String](&quot;abc&quot;)
+(string arbitrary)
+
+
+
+page 8: wrong return type
+def tail: List[Nothing] = throw new Error(&quot;Empty.tail&quot;)
+should be
+def tail: GenList[Nothing] = throw new Error(&quot;Empty.tail&quot;)
+
+
+
+(Difficult?) page 8: compile errors in GenList[+T].less
+
+error: value &lt; is not a member of T
+this.head &lt; that.head ||
+          ^
+error: lower bound T does not conform to upper bound Ordered[S]
+def less[S &gt;: T &lt;: Ordered[S]](that: List[S]) =
+           ^
+
+I don't have a suggestion for this one.
+
+
+
+page 10: Test.main instantiates abstract class
+
+Either change SensorReader.Display to not be abstract,
+or replace
+val d1 = new Display; val d2 = new Display
+with
+val d1 = new Display {}; val d2 = new Display {}
+
+
+
+page 11: missing [T]
+with RichIterator
+should be
+with RichIterator[T]
+
+
+
+page 12, 13: missing [T], trait not abstract class
+abstract class SyncIterator extends AbsIterator {
+should be
+trait SyncIterator[T] extends AbsIterator[T] {
+
+abstract class LoggedIterator extends AbsIterator {
+should be
+trait LoggedIterator[T] extends AbsIterator[T] {
+
+
+
+(Optional) page 12: missing [char]
+
+StringIterator(someString) with RichIterator
+with SyncIterator
+should be
+StringIterator(someString) with RichIterator[char]
+with SyncIterator[char]
+
+StringIterator(someString) with SyncIterator
+with RichIterator
+should be
+StringIterator(someString) with SyncIterator[char]
+with RichIterator[char]
+
+
+
+page 15: findRest doesn't compile
+
+error: illegal start of simple pattern
+rest@(_*)) =&gt; rest
+        ^
+error: ')' expected but '}' found.
+rest@(_*)) =&gt; rest
+                   ^
+two errors found
+
+
+I don't have a suggestion for this one.
+
+
+
+page 16: Missing &quot;)&quot; and incorrect argument order
+
+else m.add(xs.head, sum(m)(xs.tail)
+should be
+else m.add(xs.head, sum(xs.tail)(m))
+
+Note: this is the same example and error as in a different document
+http://scala-webapps.epfl.ch/bugtracking/contribs/display.do?id=281
+
+
+
+(Optional) page 16: Missing def and [a]
+sort(xs: List[a])
+can instead be
+def sort[a](xs: List[a])
+
+
+
+page 16: compile errors in expanded form of sort(yss)
+
+error: ')' expected but '(' found
+
+Is this a compiler bug? The code compiles if we replace
+sort(yss)(xs: List[int] =&gt; list2ordered[int](xs)(int2ordered))
+with
+sort(yss)( { xs: List[int] =&gt; list2ordered[int](xs)(int2ordered) } )
+
+
+
+page 17: compile errors in listToSet
+
+x prepend xs;
+should be
+xs prepend x;
+
+!isEmpty &amp;&amp; (xs.head == x || xs.tail contains x)
+should be
+!xs.isEmpty &amp;&amp; (xs.head == x || (xs.tail contains x))
+
+
+
+page 17: Incorrect type for xs
+a value xs of type List[T]
+should be
+a value xs of type GenList[T]
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>Compiler errors
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >Successful compiles</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Nikolay&nbsp; edited on &nbsp;2007-01-16 16:35:12.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+contribution #283
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2007-01-23 16:58:33.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+I fixed everything except:
+
+page 15: findRest doesn't compile
+
+error: illegal start of simple pattern
+rest@(_*)) => rest
+        ^
+error: ')' expected but '}' found.
+rest@(_*)) => rest
+                   ^
+two errors found
+
+This one if for Burak.
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

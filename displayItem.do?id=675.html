@@ -1,0 +1,257 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#675]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Sean</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2006-07-23 20:52:34.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">compiler crash with private</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>package test;
+
+trait Test {
+  private[Test] abstract class Foo;
+  private object FOO_0 extends Foo;
+  trait X {
+    private[Test] def foo : Foo = FOO_0;
+  }  
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre><pre>
+exception when traversing Test$X$class.this.test$Test$X$$$outer().$asInstanceOf[test.Test]().test$Test$$FOO_0
+exception when traversing Test$X$class.this.test$Test$X$$$outer().$asInstanceOf[test.Test]().test$Test$$FOO_0()\
+
+exception when traversing def foo(): test.Test$Foo = Test$X$class.this.test$Test$X$$$outer().$asInstanceOf[test.\
+Test]().test$Test$$FOO_0()
+exception when traversing java.lang.Object with scala.ScalaObject with test.Test$X {
+  def foo(): test.Test$Foo = Test$X$class.this.test$Test$X$$$outer().$asInstanceOf[test.Test]().test$Test$$FOO_0\
+();
+  private <local> <paramaccessor> val test$Test$X$$$outer : test.Test = _;
+  <stable> <accessor> <paramaccessor> def test$Test$X$$$outer(): test.Test = Test$X$class.this.test$Test$X$$$out\
+er ;
+  def /*Test$X$class*/$init$($outer: test.Test): scala.Unit = {
+    if ($outer.eq(null))
+      throw new java.lang.NullPointerException.this()
+    else
+      Test$X$class.this.test$Test$X$$$outer  = $outer;
+    ()
+  }
+}
+exception when traversing abstract trait Test$X$class extends java.lang.Object with scala.ScalaObject with test.\
+Test$X {
+  def foo(): test.Test$Foo = Test$X$class.this.test$Test$X$$$outer().$asInstanceOf[test.Test]().test$Test$$FOO_0\
+();
+  private <local> <paramaccessor> val test$Test$X$$$outer : test.Test = _;
+  <stable> <accessor> <paramaccessor> def test$Test$X$$$outer(): test.Test = Test$X$class.this.test$Test$X$$$out\
+er ;
+  def /*Test$X$class*/$init$($outer: test.Test): scala.Unit = {
+    if ($outer.eq(null))
+      throw new java.lang.NullPointerException.this()
+    else
+      Test$X$class.this.test$Test$X$$$outer  = $outer;
+    ()
+  }
+}
+exception when traversing package test {
+  abstract trait Test extends java.lang.Object with scala.ScalaObject;
+  abstract trait Test$class extends java.lang.Object with scala.ScalaObject with test.Test {
+    final <stable> def test$Test$$FOO_0(): object test.Test$FOO_0;
+    def /*Test$class*/$init$(): scala.Unit = {
+      ()
+    }
+  };
+  private[Test] abstract class Test$Foo extends java.lang.Object with scala.ScalaObject {
+    private <local> <paramaccessor> val $outer : test.Test = _;
+    <stable> <accessor> <paramaccessor> def $outer(): test.Test = Test$Foo.this.$outer ;
+    def this($outer: test.Test): test.Test$Foo = {
+      if ($outer.eq(null))
+        throw new java.lang.NullPointerException.this()
+      else
+        Test$Foo.this.$outer  = $outer;
+      {
+        Test$Foo.super.this();
+        ()
+      };
+      ()
+    }
+  };
+  final class Test$FOO_0 extends test.Test$Foo with scala.ScalaObject {
+    private <local> <paramaccessor> val $outer : test.Test = _;
+    <stable> <accessor> <paramaccessor> def $outer(): test.Test = Test$FOO_0.this.$outer ;
+    def this($outer: test.Test): object test.Test$FOO_0 = {
+      if ($outer.eq(null))
+        throw new java.lang.NullPointerException.this()
+      else
+        Test$FOO_0.this.$outer  = $outer;
+      {
+        Test$FOO_0.super.this($outer);
+        ()
+      };
+      ()
+    }
+  };
+  abstract trait Test$X extends java.lang.Object with scala.ScalaObject {
+    private[Test] def foo(): test.Test$Foo;
+    <stable> <accessor> <paramaccessor> def test$Test$X$$$outer(): test.Test
+  };
+  abstract trait Test$X$class extends java.lang.Object with scala.ScalaObject with test.Test$X {
+    def foo(): test.Test$Foo = Test$X$class.this.test$Test$X$$$outer().$asInstanceOf[test.Test]().test$Test$$FOO\
+_0();
+    private <local> <paramaccessor> val test$Test$X$$$outer : test.Test = _;
+    <stable> <accessor> <paramaccessor> def test$Test$X$$$outer(): test.Test = Test$X$class.this.test$Test$X$$$o\
+uter ;
+    def /*Test$X$class*/$init$($outer: test.Test): scala.Unit = {
+      if ($outer.eq(null))
+        throw new java.lang.NullPointerException.this()
+      else
+        Test$X$class.this.test$Test$X$$$outer  = $outer;
+      ()
+    }
+  }
+}
+Exception in thread "main" java.lang.AssertionError: assertion failed: object test$Test$$FOO_0
+	at scala.Predef$.assert(Predef.scala:182)
+	at scala.tools.nsc.transform.Mixin$MixinTransformer.scala$tools$nsc$transform$Mixin$MixinTransformer$$postTrans\
+form(Mixin.scala:416)
+	at scala.tools.nsc.transform.Mixin$MixinTransformer$$anonfun$31.apply(Mixin.scala:438)
+	at scala.tools.nsc.transform.Mixin$MixinTransformer$$anonfun$31.apply(Mixin.scala:438)
+	at scala.tools.nsc.symtab.SymbolTable.atPhase(SymbolTable.scala:71)
+	at scala.tools.nsc.transform.Mixin$MixinTransformer.transform(Mixin.scala:438)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1018)
+	at scala.tools.nsc.transform.Mixin$MixinTransformer.transform(Mixin.scala:437)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$16.apply(Trees.scala:963)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$16.apply(Trees.scala:962)
+	at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1064)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:961)
+	at scala.tools.nsc.transform.Mixin$MixinTransformer.transform(Mixin.scala:437)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$25.apply(Trees.scala:1058)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$25.apply(Trees.scala:1056)
+	at scala.List$.loop$0(List.scala:232)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.tools.nsc.ast.Trees$Transformer.transformStats(Trees.scala:1056)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:982)
+	at scala.tools.nsc.transform.Mixin$MixinTransformer.transform(Mixin.scala:437)
+	at scala.tools.nsc.ast.Trees$Transformer.transformTemplate(Trees.scala:1044)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$13.apply(Trees.scala:950)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$13.apply(Trees.scala:949)
+	at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1064)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:948)
+	at scala.tools.nsc.transform.Mixin$MixinTransformer.transform(Mixin.scala:437)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$25.apply(Trees.scala:1058)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$25.apply(Trees.scala:1056)
+	at scala.List$.loop$0(List.scala:232)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.List$.loop$0(List.scala:236)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.List$.loop$0(List.scala:236)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.List$.loop$0(List.scala:236)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.List$.loop$0(List.scala:236)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.List$.loop$0(List.scala:236)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.tools.nsc.ast.Trees$Transformer.transformStats(Trees.scala:1056)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$12.apply(Trees.scala:945)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$12.apply(Trees.scala:945)
+	at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1064)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:944)
+	at scala.tools.nsc.transform.Mixin$MixinTransformer.transform(Mixin.scala:437)
+	at scala.tools.nsc.ast.Trees$Transformer.transformUnit(Trees.scala:1059)
+	at scala.tools.nsc.transform.Transform$Phase.apply(Transform.scala:22)
+	at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:216)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$1.apply(Global.scala:205)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$1.apply(Global.scala:205)
+	at scala.Iterator$class.foreach(Iterator.scala:304)
+	at scala.collection.mutable.ListBuffer$$anon$0.foreach(ListBuffer.scala:216)
+	at scala.tools.nsc.Global$GlobalPhase.run(Global.scala:205)
+	at scala.tools.nsc.Global$Run.compileSources(Global.scala:467)
+	at scala.tools.nsc.Global$Run.compile(Global.scala:531)
+	at scala.tools.nsc.Main$.process(Main.scala:76)
+	at scala.tools.nsc.Main$.main(Main.scala:98)
+	at scala.tools.nsc.Main.main(Main.scala)
+</pre>
+
+Note: changing FOO_0 from private to private[Test] avoids the crash and compiles correctly.
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" ></td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-07-24 21:00:52.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

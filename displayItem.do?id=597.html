@@ -1,0 +1,178 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#597]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> high</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Sean</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2006-05-17 14:23:40.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">Resident compiler recursion gone wild.</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>test/Test.scala:
+
+package test;
+
+abstract class Base {
+  type A &lt;: Ax;
+  
+  abstract class Ax {
+    def a = null;
+    def string = &quot;A&quot;;
+  }
+}
+
+trait ExtA extends Base {
+  type A &lt;: Ax;
+  trait Ax extends super.Ax {
+    def b = null;
+    override def string = super.string + &quot;B&quot;;
+  }
+}
+trait ExtB extends Base {
+  type A &lt;: Ax;
+  trait Ax extends super.Ax {
+    def c = null;
+    override def string = super.string + &quot;C&quot;;
+  }
+}
+
+trait ExtC extends ExtA with ExtB {
+  type A &lt;: Ax;
+  trait Ax extends super[ExtA].Ax with super[ExtB].Ax {
+    a
+    b
+    c
+    def d = null;
+    override def string = super.string + &quot;D&quot;;
+  }
+}
+
+test/Main.scala
+
+package test;
+
+object Main {
+  def main(args : Array[String]) : Unit = {
+    new ExtC {
+      type A = Ax;
+      class Ax extends super.Ax;
+    }
+  }
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>Run in resident:
+<pre>
+bash-3.00$ ~/runtime-workspace/scala/dists/latest/bin/scalac -resident -d ../bin -sourcepath .
+
+nsc> test/Test.scala
+
+nsc> test/Main.scala
+Exception in thread "main" java.lang.OutOfMemoryError: Java heap space
+</pre>
+
+I think there is a recursive function gone crazy somewhere.
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" ></td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Sean&nbsp; edited on &nbsp;2006-05-17 15:30:22.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+This bug really sucks, its making the IDE pretty much useless. I think the problem has to do with using super so the names can remain the same. Before I was mangling my own class names because I wasn't sure how to use super, but at least the IDE didn't hang so much!
+</td></tr>
+<tr>
+        <td>
+        <strong>Sean&nbsp; edited on &nbsp;2006-05-17 15:54:44.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Found a better way to reproduce bug on command line!
+</td></tr>
+<tr>
+        <td>
+        <strong>Sean&nbsp; edited on &nbsp;2006-05-17 15:55:06.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-05-18 18:29:59.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

@@ -1,0 +1,127 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#965]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> missing feature</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Nikolay</td>
+	  <td align="center" bgcolor="#FFFFFF">Burak</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2007-02-23 15:32:46.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">[contrib #351] Ignore whitespace nodes in literal XML</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre></pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >There should be a compiler option to ignore all whitespace-only text nodes in literal XML.
+I use it for source code readability, but it screws up further processing, e.g., my pattern matching.
+
+Right now I have to dump my literal XML nodes to String and reparse them to get rid of the whitespace.</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Nikolay&nbsp; edited on &nbsp;2007-02-23 15:33:16.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+contribution #351
+</td></tr>
+<tr>
+        <td>
+        <strong>Lex&nbsp; edited on &nbsp;2007-02-23 17:18:50.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+<p>There is no one right answer about whitespace.  Sometimes you want whitespace-only nodes.  Additionally, compiler options are awkward to work with.  They essentially define multiple languages, and if you work with a large code base you have to keep track of which files are in which dialect of Scala.</p>
+
+<p>Here's another approach which works with the above forces: have library routines that clean up XML in various ways.  See the methods of scala.runtime.RichString for examples.  There could just as well be a removeSpaceOnlyNodes.  With this approach, the XML literals should give you a node that drops as little information as possible, and then you call the correct cleanup routine for your application if the default is not good enough.</p>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2007-02-27 09:12:03.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+There is an "xml:space" kind of option we could support (in a cleverer way than how it is specified in XML) -- however this would also be implemented as a transformation of the XML at runtime.
+<br/>
+Whitespace in XML hurts Scala programmers more than others, because we are used to structural equality "just working".
+<br/>
+So here's a spec: if the node contains an attribute scala-xml:space="trim", then all nodes that are not marked scala-xml:space="default" will have their whitespace trimmed (all ws nodes disappear). We'd also have "collapse" which furthermore reduces all occurrences of ws(ws*) to a single space. This attribute only plays the role of a compiler directive and disappears after the whitespace handling.
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2007-02-27 10:41:57.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+ok there is now a Utility.trim function that goes and kills whitespace... also within the text. I did not add any syntactic support (some XML attribute), seems too nonstandard.
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

@@ -1,0 +1,183 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#169]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> medium</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Erik</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2003-10-01 12:23:39.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">Typechecker crashes on bad program</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>import scala.concurrent.Process._;
+
+class D() {
+ def start_listener(Child:Process) = {
+    var running = true;	
+    while (running) {
+      receiveWithin(0) {
+        case TIMEOUT() =&gt; {
+	    Child ! 'foo;
+        }
+      }
+    }
+  }
+}</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>This incorrect program crashes the compiler:
+<pre>
+>scalac -d classes D.scala 
+D.scala:8: not found: type TIMEOUT
+        case TIMEOUT() => {
+             ^
+D.scala:9: value ! is not a member of java.lang.Process
+            Child ! 'foo;
+                  ^
+java.lang.NullPointerException
+        at scalac.typechecker.Infer$Substituter$18.matches(Infer.java:87)
+        at scalac.typechecker.Infer$Substituter.transform(Infer.java:120)
+        at scalac.ast.Transformer.transform(Transformer.java:206)
+        at scalac.typechecker.Infer$Substituter.transform(Infer.java:156)
+        at scalac.ast.Transformer.transform(Transformer.java:139)
+        at scalac.typechecker.Infer$Substituter.transform(Infer.java:156)
+        at scalac.ast.Transformer.transform(Transformer.java:332)
+        at scalac.ast.Transformer.transform(Transformer.java:172)
+        at scalac.typechecker.Infer$Substituter.transform(Infer.java:156)
+        at scalac.ast.Transformer.transform(Transformer.java:276)
+        at scalac.ast.Transformer.transform(Transformer.java:206)
+        at scalac.typechecker.Infer$Substituter.transform(Infer.java:156)
+        at scalac.ast.Transformer.transform(Transformer.java:112)
+        at scalac.typechecker.Infer$Substituter.transform(Infer.java:156)
+        at scalac.ast.Transformer.transform(Transformer.java:276)
+        at scalac.ast.Transformer.transform(Transformer.java:143)
+        at scalac.typechecker.Infer$Substituter.transform(Infer.java:156)
+        at scalac.ast.Transformer.transform(Transformer.java:271)
+        at scalac.ast.Transformer.transform(Transformer.java:85)
+        at scalac.typechecker.Infer$Substituter.transform(Infer.java:156)
+        at scalac.ast.Transformer.transform(Transformer.java:276)
+        at scalac.ast.Transformer.transform(Transformer.java:156)
+        at scalac.typechecker.Infer$Substituter.transform(Infer.java:156)
+        at scalac.ast.Transformer.transform(Transformer.java:276)
+        at scalac.ast.Transformer.transform(Transformer.java:206)
+        at scalac.typechecker.Infer$Substituter.transform(Infer.java:156)
+        at scalac.typechecker.Infer$Substituter.apply(Infer.java:91)
+        at scalac.typechecker.Infer.mkTypeApply(Infer.java:717)
+        at scalac.typechecker.Infer.exprInstance(Infer.java:780)
+        at scalac.typechecker.Analyzer.adapt(Analyzer.java:1204)
+        at scalac.typechecker.Analyzer.transform(Analyzer.java:1730)
+        at scalac.typechecker.Analyzer.transform(Analyzer.java:1745)
+        at scalac.typechecker.Analyzer.transform(Analyzer.java:1911)
+        at scalac.typechecker.Analyzer.transform(Analyzer.java:1730)
+        at scalac.typechecker.Analyzer.transform(Analyzer.java:2023)
+        at scalac.typechecker.Analyzer.transform(Analyzer.java:1730)
+        at scalac.typechecker.Analyzer.transform(Analyzer.java:2440)
+        at scalac.typechecker.Analyzer.transform(Analyzer.java:1730)
+        at scalac.typechecker.Analyzer.transform(Analyzer.java:1913)
+        at scalac.typechecker.Analyzer.transform(Analyzer.java:1730)
+        at scalac.typechecker.Analyzer.transform(Analyzer.java:1745)
+        at scalac.typechecker.Analyzer.defineSym(Analyzer.java:1027)
+        at scalac.typechecker.Analyzer$LazyTreeType.complete(Analyzer.java:629)
+        at scalac.symtab.Symbol.info(Symbol.java:752)
+        at scalac.symtab.Symbol.initialize(Symbol.java:718)
+        at scalac.typechecker.Analyzer.transform(Analyzer.java:1778)
+        at scalac.typechecker.Analyzer.transform(Analyzer.java:1749)
+        at scalac.typechecker.Analyzer.transformStatSeq(Analyzer.java:1552)
+        at scalac.typechecker.Analyzer.transformTemplate(Analyzer.java:1611)
+        at scalac.typechecker.Analyzer.transform(Analyzer.java:1816)
+        at scalac.typechecker.Analyzer.transform(Analyzer.java:1749)
+        at scalac.typechecker.Analyzer.transformStatSeq(Analyzer.java:1552)
+        at scalac.typechecker.Analyzer.apply(Analyzer.java:111)
+        at scalac.ast.Transformer.apply(Transformer.java:62)
+        at scalac.typechecker.Analyzer.apply(Analyzer.java:59)
+        at scalac.typechecker.AnalyzerPhase.apply(AnalyzerPhase.java:107)
+        at scalac.Global.compile(Global.java:293)
+        at scalac.Global.compile(Global.java:266)
+        at scalac.Main.main(Main.java:32)
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >Error messages but not a NullPointerException...</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Matthias&nbsp; edited on &nbsp;2003-10-03 11:56:43.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2003-10-09 12:27:10.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

@@ -1,0 +1,820 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#1252]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">noise</td>
+          <td align="center" bgcolor="#FFFFFF">2007-07-28 11:02:10.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">[contrib #721] Compiler crash with pattern match on existential type</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>package com.milessabin.sparsec;
+
+class HMap[A[_], B[_]] {
+	val kvs = List[Pair[A[T], B[T]] forSome { type T }]()
+  
+  def this(kvs: List[Pair[A[T], B[T]] forSome { type T }]) = { this() }
+  
+  def apply[T](k: A[T]) : B[T] = get(k) match {
+    case Some(v) =&gt; v
+    case None =&gt; default(k)
+  }
+  
+  def get[T](k: A[T]) : Option[B[T]] = {
+    //kvs.foreach({ case Pair(k, v) =&gt; return Some(v)})
+    kvs.foreach({ case Pair(k, v: B[T]) =&gt; return Some(v)})
+    //kvs.foreach({ case p: Pair[A[T], B[T]] =&gt; return Some(p._2) })
+    //for(kv &lt;- kvs) kv match {
+    //  case p: Pair[A[T], B[T]] =&gt; return Some(p._2)
+    //}
+    
+    return None
+  }
+
+  def +[T](kv: (A[T], B[T])): HMap[A, B] = {
+    new HMap[A, B](kv :: kvs.remove({ case Pair(kv._1, _) =&gt; true ; case _ =&gt; false }))
+  }
+  
+  def default[T](k: A[T]): B[T] =
+    throw new NoSuchElementException(&quot;key not found: &quot; + k)
+}
+
+object Test extends Application {
+
+  case class Foo[A](v: A)
+  case class Bar[A] {
+    def apply(a: A) = println(a)
+  }
+  
+  val k1 = Foo[Int](123)
+  val k2 = Foo[String](&quot;abc&quot;)
+  
+  val hmap = new HMap[Foo, Bar]+(k1-&gt;Bar[Int])+(k2-&gt;Bar[String])
+
+  val v1 = hmap(k1) ; v1(k1.v)
+  val v2 = hmap(k2) ; v2(k2.v)
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>exception when traversing return new Some[B[T]](v)
+exception when traversing case scala.this.Predef.Pair.unapply[A[T], B[T]](<unapply-selector>) <unapply> ((k @ _)\
+, (v @ (_: B[T]))) => return new Some[B[T]](v)
+exception when traversing x$1 match {
+  case scala.this.Predef.Pair.unapply[A[T], B[T]](<unapply-selector>) <unapply> ((k @ _), (v @ (_: B[T]))) => re\
+turn new Some[B[T]](v)
+}
+exception when traversing final def apply(x$1: (A[T], B[T]) forSome { type T }): Unit = x$1 match {
+  case scala.this.Predef.Pair.unapply[A[T], B[T]](<unapply-selector>) <unapply> ((k @ _), (v @ (_: B[T]))) => re\
+turn new Some[B[T]](v)
+}
+exception when traversing java.lang.Object with ((A[T], B[T]) forSome { type T }) => Unit with ScalaObject {
+  def this(): template $anonfun = {
+    $anonfun.super.this();
+    ()
+  };
+  final def apply(x$1: (A[T], B[T]) forSome { type T }): Unit = x$1 match {
+    case scala.this.Predef.Pair.unapply[A[T], B[T]](<unapply-selector>) <unapply> ((k @ _), (v @ (_: B[T]))) => \
+return new Some[B[T]](v)
+  }
+}
+exception when traversing @serializable final <synthetic> class $anonfun extends java.lang.Object with ((A[T], B\
+[T]) forSome { type T }) => Unit with ScalaObject {
+  def this(): template $anonfun = {
+    $anonfun.super.this();
+    ()
+  };
+  final def apply(x$1: (A[T], B[T]) forSome { type T }): Unit = x$1 match {
+    case scala.this.Predef.Pair.unapply[A[T], B[T]](<unapply-selector>) <unapply> ((k @ _), (v @ (_: B[T]))) => \
+return new Some[B[T]](v)
+  }
+}
+exception when traversing ((x$1: (A[T], B[T]) forSome { type T }) => x$1 match {
+  case scala.this.Predef.Pair.unapply[A[T], B[T]](<unapply-selector>) <unapply> ((k @ _), (v @ (_: B[T]))) => re\
+turn new Some[B[T]](v)
+})
+exception when traversing HMap.this.kvs.foreach(((x$1: (A[T], B[T]) forSome { type T }) => x$1 match {
+  case scala.this.Predef.Pair.unapply[A[T], B[T]](<unapply-selector>) <unapply> ((k @ _), (v @ (_: B[T]))) => re\
+turn new Some[B[T]](v)
+}))
+exception when traversing {
+  HMap.this.kvs.foreach(((x$1: (A[T], B[T]) forSome { type T }) => x$1 match {
+    case scala.this.Predef.Pair.unapply[A[T], B[T]](<unapply-selector>) <unapply> ((k @ _), (v @ (_: B[T]))) => \
+return new Some[B[T]](v)
+  }));
+  return scala.None
+}
+exception when traversing def get[T >: Nothing <: Any](k: A[T]): Option[B[T]] = {
+  HMap.this.kvs.foreach(((x$1: (A[T], B[T]) forSome { type T }) => x$1 match {
+    case scala.this.Predef.Pair.unapply[A[T], B[T]](<unapply-selector>) <unapply> ((k @ _), (v @ (_: B[T]))) => \
+return new Some[B[T]](v)
+  }));
+  return scala.None
+}
+exception when traversing java.lang.Object with ScalaObject {
+  def this(): com.milessabin.sparsec.HMap[A,B] = {
+    HMap.super.this();
+    ()
+  };
+  private[this] val kvs: List[(A[T], B[T]) forSome { type T }] = scala.this.Nil;
+  <stable> <accessor> def kvs: List[(A[T], B[T]) forSome { type T }] = HMap.this.kvs;
+  def this(kvs: List[(A[T], B[T]) forSome { type T }]): com.milessabin.sparsec.HMap[A,B] = {
+    HMap.this.this();
+    ()
+  };
+  def apply[T >: Nothing <: Any](k: A[T]): B[T] = HMap.this.get[T](k) match {
+    case (B[T])Some[B[T]]((v @ _)) => v
+    case scala.None => HMap.this.default[T](k)
+  };
+  def get[T >: Nothing <: Any](k: A[T]): Option[B[T]] = {
+    HMap.this.kvs.foreach(((x$1: (A[T], B[T]) forSome { type T }) => x$1 match {
+      case scala.this.Predef.Pair.unapply[A[T], B[T]](<unapply-selector>) <unapply> ((k @ _), (v @ (_: B[T]))) =\
+> return new Some[B[T]](v)
+    }));
+    return scala.None
+  };
+  def +[T >: Nothing <: Any](kv: (A[T], B[T])): com.milessabin.sparsec.HMap[A,B] = new com.milessabin.sparsec.HM\
+ap[A,B]({
+    <synthetic> val x$0: (A[T], B[T]) = kv;
+    HMap.this.kvs.remove(((x$2: (A[T], B[T]) forSome { type T }) => x$2 match {
+      case scala.this.Predef.Pair.unapply[A[T], B[T]](<unapply-selector>) <unapply> (kv._1, _) => true
+      case _ => false
+    })).::[(A[T], B[T]) forSome { type T }](x$0)
+  });
+  def default[T >: Nothing <: Any](k: A[T]): B[T] = throw new scala.this.Predef.NoSuchElementException("key not \
+found: ".+(k))
+}
+exception when traversing class HMap[A[_ >: Nothing <: Any] >: [_]Nothing <: [_]Any, B[_ >: Nothing <: Any] >: [\
+_]Nothing <: [_]Any] extends java.lang.Object with ScalaObject {
+  def this(): com.milessabin.sparsec.HMap[A,B] = {
+    HMap.super.this();
+    ()
+  };
+  private[this] val kvs: List[(A[T], B[T]) forSome { type T }] = scala.this.Nil;
+  <stable> <accessor> def kvs: List[(A[T], B[T]) forSome { type T }] = HMap.this.kvs;
+  def this(kvs: List[(A[T], B[T]) forSome { type T }]): com.milessabin.sparsec.HMap[A,B] = {
+    HMap.this.this();
+    ()
+  };
+  def apply[T >: Nothing <: Any](k: A[T]): B[T] = HMap.this.get[T](k) match {
+    case (B[T])Some[B[T]]((v @ _)) => v
+    case scala.None => HMap.this.default[T](k)
+  };
+  def get[T >: Nothing <: Any](k: A[T]): Option[B[T]] = {
+    HMap.this.kvs.foreach(((x$1: (A[T], B[T]) forSome { type T }) => x$1 match {
+      case scala.this.Predef.Pair.unapply[A[T], B[T]](<unapply-selector>) <unapply> ((k @ _), (v @ (_: B[T]))) =\
+> return new Some[B[T]](v)
+    }));
+    return scala.None
+  };
+  def +[T >: Nothing <: Any](kv: (A[T], B[T])): com.milessabin.sparsec.HMap[A,B] = new com.milessabin.sparsec.HM\
+ap[A,B]({
+    <synthetic> val x$0: (A[T], B[T]) = kv;
+    HMap.this.kvs.remove(((x$2: (A[T], B[T]) forSome { type T }) => x$2 match {
+      case scala.this.Predef.Pair.unapply[A[T], B[T]](<unapply-selector>) <unapply> (kv._1, _) => true
+      case _ => false
+    })).::[(A[T], B[T]) forSome { type T }](x$0)
+  });
+  def default[T >: Nothing <: Any](k: A[T]): B[T] = throw new scala.this.Predef.NoSuchElementException("key not \
+found: ".+(k))
+}
+exception when traversing package sparsec {
+  class HMap[A[_ >: Nothing <: Any] >: [_]Nothing <: [_]Any, B[_ >: Nothing <: Any] >: [_]Nothing <: [_]Any] ext\
+ends java.lang.Object with ScalaObject {
+    def this(): com.milessabin.sparsec.HMap[A,B] = {
+      HMap.super.this();
+      ()
+    };
+    private[this] val kvs: List[(A[T], B[T]) forSome { type T }] = scala.this.Nil;
+    <stable> <accessor> def kvs: List[(A[T], B[T]) forSome { type T }] = HMap.this.kvs;
+    def this(kvs: List[(A[T], B[T]) forSome { type T }]): com.milessabin.sparsec.HMap[A,B] = {
+      HMap.this.this();
+      ()
+    };
+    def apply[T >: Nothing <: Any](k: A[T]): B[T] = HMap.this.get[T](k) match {
+      case (B[T])Some[B[T]]((v @ _)) => v
+      case scala.None => HMap.this.default[T](k)
+    };
+    def get[T >: Nothing <: Any](k: A[T]): Option[B[T]] = {
+      HMap.this.kvs.foreach(((x$1: (A[T], B[T]) forSome { type T }) => x$1 match {
+        case scala.this.Predef.Pair.unapply[A[T], B[T]](<unapply-selector>) <unapply> ((k @ _), (v @ (_: B[T])))\
+ => return new Some[B[T]](v)
+      }));
+      return scala.None
+    };
+    def +[T >: Nothing <: Any](kv: (A[T], B[T])): com.milessabin.sparsec.HMap[A,B] = new com.milessabin.sparsec.\
+HMap[A,B]({
+      <synthetic> val x$0: (A[T], B[T]) = kv;
+      HMap.this.kvs.remove(((x$2: (A[T], B[T]) forSome { type T }) => x$2 match {
+        case scala.this.Predef.Pair.unapply[A[T], B[T]](<unapply-selector>) <unapply> (kv._1, _) => true
+        case _ => false
+      })).::[(A[T], B[T]) forSome { type T }](x$0)
+    });
+    def default[T >: Nothing <: Any](k: A[T]): B[T] = throw new scala.this.Predef.NoSuchElementException("key no\
+t found: ".+(k))
+  };
+  final class Test extends java.lang.Object with Application with ScalaObject {
+    def this(): object com.milessabin.sparsec.Test = {
+      Test.super.this();
+      ()
+    };
+    @serializable case class Foo[A >: Nothing <: Any] extends java.lang.Object with ScalaObject with Product {
+      <caseaccessor> <paramaccessor> private[this] val v: A = _;
+      <stable> <caseaccessor> <accessor> <paramaccessor> def v: A = Foo.this.v;
+      def this(v: A): Test.this.Foo[A] = {
+        Foo.super.this();
+        ()
+      };
+      final override def $tag(): Int = -1685620837;
+      override def hashCode(): Int = ScalaRunTime.this._hashCode(Foo.this);
+      override def toString(): java.lang.String = ScalaRunTime.this._toString(Foo.this);
+      override def equals(x$1: Any): Boolean = x$1 match {
+        case (Any)Test.this.Foo[Any]((v$0 @ _)) if v$0.equals(v) => true
+        case _ => false
+      };
+      final override def productPrefix: java.lang.String = "Foo";
+      final override def productArity: Int = 1;
+      final override def productElement(x$1: Int): Any = x$1 match {
+        case 0 => v
+        case _ => throw new java.lang.IndexOutOfBoundsException(x$1.toString())
+      }
+    };
+    case def Foo[A >: Nothing <: Any](x$1: A): Test.this.Foo[A] = new Test.this.Foo[A](x$1);
+    @serializable case class Bar[A >: Nothing <: Any] extends java.lang.Object with ScalaObject with Product {
+      def this(): Test.this.Bar[A] = {
+        Bar.super.this();
+        ()
+      };
+      def apply(a: A): Unit = scala.this.Predef.println(a);
+      final override def $tag(): Int = -1685625112;
+      override def hashCode(): Int = ScalaRunTime.this._hashCode(Bar.this);
+      override def toString(): java.lang.String = ScalaRunTime.this._toString(Bar.this);
+      override def equals(x$1: Any): Boolean = x$1 match {
+        case ()Test.this.Bar[Any]() => true
+        case _ => false
+      };
+      final override def productPrefix: java.lang.String = "Bar";
+      final override def productArity: Int = 0;
+      final override def productElement(x$1: Int): Any = x$1 match {
+        case _ => throw new java.lang.IndexOutOfBoundsException(x$1.toString())
+      }
+    };
+    case def Bar[A >: Nothing <: Any](): Test.this.Bar[A] = new Test.this.Bar[A]();
+    private[this] val k1: Test.this.Foo[Int] = new Test.this.Foo[Int](123);
+    <stable> <accessor> def k1: Test.this.Foo[Int] = Test.this.k1;
+    private[this] val k2: Test.this.Foo[java.lang.String] = new Test.this.Foo[String]("abc");
+    <stable> <accessor> def k2: Test.this.Foo[java.lang.String] = Test.this.k2;
+    private[this] val hmap: com.milessabin.sparsec.HMap[Test.this.Foo,Test.this.Bar] = new com.milessabin.sparse\
+c.HMap[Test.this.Foo,Test.this.Bar]().+[Int]({
+      ((eta$1: Test.this.Foo[Int]) => scala.this.Predef.any2ArrowAssoc[Test.this.Foo[Int]](eta$1)).apply(Test.th\
+is.k1)
+    }.->[Test.this.Bar[Int]](new Test.this.Bar[Int]())).+[String]({
+      ((eta$1: Test.this.Foo[String]) => scala.this.Predef.any2ArrowAssoc[Test.this.Foo[String]](eta$1)).apply(T\
+est.this.k2)
+    }.->[Test.this.Bar[String]](new Test.this.Bar[String]()));
+    <stable> <accessor> def hmap: com.milessabin.sparsec.HMap[Test.this.Foo,Test.this.Bar] = Test.this.hmap;
+    private[this] val v1: Test.this.Bar[Int] = Test.this.hmap.apply[Int](Test.this.k1);
+    <stable> <accessor> def v1: Test.this.Bar[Int] = Test.this.v1;
+    Test.this.v1.apply(Test.this.k1.v);
+    private[this] val v2: Test.this.Bar[java.lang.String] = Test.this.hmap.apply[String](Test.this.k2);
+    <stable> <accessor> def v2: Test.this.Bar[java.lang.String] = Test.this.v2;
+    Test.this.v2.apply(Test.this.k2.v)
+  }
+}
+exception when traversing package milessabin {
+  package sparsec {
+    class HMap[A[_ >: Nothing <: Any] >: [_]Nothing <: [_]Any, B[_ >: Nothing <: Any] >: [_]Nothing <: [_]Any] e\
+xtends java.lang.Object with ScalaObject {
+      def this(): com.milessabin.sparsec.HMap[A,B] = {
+        HMap.super.this();
+        ()
+      };
+      private[this] val kvs: List[(A[T], B[T]) forSome { type T }] = scala.this.Nil;
+      <stable> <accessor> def kvs: List[(A[T], B[T]) forSome { type T }] = HMap.this.kvs;
+      def this(kvs: List[(A[T], B[T]) forSome { type T }]): com.milessabin.sparsec.HMap[A,B] = {
+        HMap.this.this();
+        ()
+      };
+      def apply[T >: Nothing <: Any](k: A[T]): B[T] = HMap.this.get[T](k) match {
+        case (B[T])Some[B[T]]((v @ _)) => v
+        case scala.None => HMap.this.default[T](k)
+      };
+      def get[T >: Nothing <: Any](k: A[T]): Option[B[T]] = {
+        HMap.this.kvs.foreach(((x$1: (A[T], B[T]) forSome { type T }) => x$1 match {
+          case scala.this.Predef.Pair.unapply[A[T], B[T]](<unapply-selector>) <unapply> ((k @ _), (v @ (_: B[T])\
+)) => return new Some[B[T]](v)
+        }));
+        return scala.None
+      };
+      def +[T >: Nothing <: Any](kv: (A[T], B[T])): com.milessabin.sparsec.HMap[A,B] = new com.milessabin.sparse\
+c.HMap[A,B]({
+        <synthetic> val x$0: (A[T], B[T]) = kv;
+        HMap.this.kvs.remove(((x$2: (A[T], B[T]) forSome { type T }) => x$2 match {
+          case scala.this.Predef.Pair.unapply[A[T], B[T]](<unapply-selector>) <unapply> (kv._1, _) => true
+          case _ => false
+        })).::[(A[T], B[T]) forSome { type T }](x$0)
+      });
+      def default[T >: Nothing <: Any](k: A[T]): B[T] = throw new scala.this.Predef.NoSuchElementException("key \
+not found: ".+(k))
+    };
+    final class Test extends java.lang.Object with Application with ScalaObject {
+      def this(): object com.milessabin.sparsec.Test = {
+        Test.super.this();
+        ()
+      };
+      @serializable case class Foo[A >: Nothing <: Any] extends java.lang.Object with ScalaObject with Product {\
+
+        <caseaccessor> <paramaccessor> private[this] val v: A = _;
+        <stable> <caseaccessor> <accessor> <paramaccessor> def v: A = Foo.this.v;
+        def this(v: A): Test.this.Foo[A] = {
+          Foo.super.this();
+          ()
+        };
+        final override def $tag(): Int = -1685620837;
+        override def hashCode(): Int = ScalaRunTime.this._hashCode(Foo.this);
+        override def toString(): java.lang.String = ScalaRunTime.this._toString(Foo.this);
+        override def equals(x$1: Any): Boolean = x$1 match {
+          case (Any)Test.this.Foo[Any]((v$0 @ _)) if v$0.equals(v) => true
+          case _ => false
+        };
+        final override def productPrefix: java.lang.String = "Foo";
+        final override def productArity: Int = 1;
+        final override def productElement(x$1: Int): Any = x$1 match {
+          case 0 => v
+          case _ => throw new java.lang.IndexOutOfBoundsException(x$1.toString())
+        }
+      };
+      case def Foo[A >: Nothing <: Any](x$1: A): Test.this.Foo[A] = new Test.this.Foo[A](x$1);
+      @serializable case class Bar[A >: Nothing <: Any] extends java.lang.Object with ScalaObject with Product {\
+
+        def this(): Test.this.Bar[A] = {
+          Bar.super.this();
+          ()
+        };
+        def apply(a: A): Unit = scala.this.Predef.println(a);
+        final override def $tag(): Int = -1685625112;
+        override def hashCode(): Int = ScalaRunTime.this._hashCode(Bar.this);
+        override def toString(): java.lang.String = ScalaRunTime.this._toString(Bar.this);
+        override def equals(x$1: Any): Boolean = x$1 match {
+          case ()Test.this.Bar[Any]() => true
+          case _ => false
+        };
+        final override def productPrefix: java.lang.String = "Bar";
+        final override def productArity: Int = 0;
+        final override def productElement(x$1: Int): Any = x$1 match {
+          case _ => throw new java.lang.IndexOutOfBoundsException(x$1.toString())
+        }
+      };
+      case def Bar[A >: Nothing <: Any](): Test.this.Bar[A] = new Test.this.Bar[A]();
+      private[this] val k1: Test.this.Foo[Int] = new Test.this.Foo[Int](123);
+      <stable> <accessor> def k1: Test.this.Foo[Int] = Test.this.k1;
+      private[this] val k2: Test.this.Foo[java.lang.String] = new Test.this.Foo[String]("abc");
+      <stable> <accessor> def k2: Test.this.Foo[java.lang.String] = Test.this.k2;
+      private[this] val hmap: com.milessabin.sparsec.HMap[Test.this.Foo,Test.this.Bar] = new com.milessabin.spar\
+sec.HMap[Test.this.Foo,Test.this.Bar]().+[Int]({
+        ((eta$1: Test.this.Foo[Int]) => scala.this.Predef.any2ArrowAssoc[Test.this.Foo[Int]](eta$1)).apply(Test.\
+this.k1)
+      }.->[Test.this.Bar[Int]](new Test.this.Bar[Int]())).+[String]({
+        ((eta$1: Test.this.Foo[String]) => scala.this.Predef.any2ArrowAssoc[Test.this.Foo[String]](eta$1)).apply\
+(Test.this.k2)
+      }.->[Test.this.Bar[String]](new Test.this.Bar[String]()));
+      <stable> <accessor> def hmap: com.milessabin.sparsec.HMap[Test.this.Foo,Test.this.Bar] = Test.this.hmap;
+      private[this] val v1: Test.this.Bar[Int] = Test.this.hmap.apply[Int](Test.this.k1);
+      <stable> <accessor> def v1: Test.this.Bar[Int] = Test.this.v1;
+      Test.this.v1.apply(Test.this.k1.v);
+      private[this] val v2: Test.this.Bar[java.lang.String] = Test.this.hmap.apply[String](Test.this.k2);
+      <stable> <accessor> def v2: Test.this.Bar[java.lang.String] = Test.this.v2;
+      Test.this.v2.apply(Test.this.k2.v)
+    }
+  }
+}
+exception when traversing package com {
+  package milessabin {
+    package sparsec {
+      class HMap[A[_ >: Nothing <: Any] >: [_]Nothing <: [_]Any, B[_ >: Nothing <: Any] >: [_]Nothing <: [_]Any]\
+ extends java.lang.Object with ScalaObject {
+        def this(): com.milessabin.sparsec.HMap[A,B] = {
+          HMap.super.this();
+          ()
+        };
+        private[this] val kvs: List[(A[T], B[T]) forSome { type T }] = scala.this.Nil;
+        <stable> <accessor> def kvs: List[(A[T], B[T]) forSome { type T }] = HMap.this.kvs;
+        def this(kvs: List[(A[T], B[T]) forSome { type T }]): com.milessabin.sparsec.HMap[A,B] = {
+          HMap.this.this();
+          ()
+        };
+        def apply[T >: Nothing <: Any](k: A[T]): B[T] = HMap.this.get[T](k) match {
+          case (B[T])Some[B[T]]((v @ _)) => v
+          case scala.None => HMap.this.default[T](k)
+        };
+        def get[T >: Nothing <: Any](k: A[T]): Option[B[T]] = {
+          HMap.this.kvs.foreach(((x$1: (A[T], B[T]) forSome { type T }) => x$1 match {
+            case scala.this.Predef.Pair.unapply[A[T], B[T]](<unapply-selector>) <unapply> ((k @ _), (v @ (_: B[T\
+]))) => return new Some[B[T]](v)
+          }));
+          return scala.None
+        };
+        def +[T >: Nothing <: Any](kv: (A[T], B[T])): com.milessabin.sparsec.HMap[A,B] = new com.milessabin.spar\
+sec.HMap[A,B]({
+          <synthetic> val x$0: (A[T], B[T]) = kv;
+          HMap.this.kvs.remove(((x$2: (A[T], B[T]) forSome { type T }) => x$2 match {
+            case scala.this.Predef.Pair.unapply[A[T], B[T]](<unapply-selector>) <unapply> (kv._1, _) => true
+            case _ => false
+          })).::[(A[T], B[T]) forSome { type T }](x$0)
+        });
+        def default[T >: Nothing <: Any](k: A[T]): B[T] = throw new scala.this.Predef.NoSuchElementException("ke\
+y not found: ".+(k))
+      };
+      final class Test extends java.lang.Object with Application with ScalaObject {
+        def this(): object com.milessabin.sparsec.Test = {
+          Test.super.this();
+          ()
+        };
+        @serializable case class Foo[A >: Nothing <: Any] extends java.lang.Object with ScalaObject with Product\
+ {
+          <caseaccessor> <paramaccessor> private[this] val v: A = _;
+          <stable> <caseaccessor> <accessor> <paramaccessor> def v: A = Foo.this.v;
+          def this(v: A): Test.this.Foo[A] = {
+            Foo.super.this();
+            ()
+          };
+          final override def $tag(): Int = -1685620837;
+          override def hashCode(): Int = ScalaRunTime.this._hashCode(Foo.this);
+          override def toString(): java.lang.String = ScalaRunTime.this._toString(Foo.this);
+          override def equals(x$1: Any): Boolean = x$1 match {
+            case (Any)Test.this.Foo[Any]((v$0 @ _)) if v$0.equals(v) => true
+            case _ => false
+          };
+          final override def productPrefix: java.lang.String = "Foo";
+          final override def productArity: Int = 1;
+          final override def productElement(x$1: Int): Any = x$1 match {
+            case 0 => v
+            case _ => throw new java.lang.IndexOutOfBoundsException(x$1.toString())
+          }
+        };
+        case def Foo[A >: Nothing <: Any](x$1: A): Test.this.Foo[A] = new Test.this.Foo[A](x$1);
+        @serializable case class Bar[A >: Nothing <: Any] extends java.lang.Object with ScalaObject with Product\
+ {
+          def this(): Test.this.Bar[A] = {
+            Bar.super.this();
+            ()
+          };
+          def apply(a: A): Unit = scala.this.Predef.println(a);
+          final override def $tag(): Int = -1685625112;
+          override def hashCode(): Int = ScalaRunTime.this._hashCode(Bar.this);
+          override def toString(): java.lang.String = ScalaRunTime.this._toString(Bar.this);
+          override def equals(x$1: Any): Boolean = x$1 match {
+            case ()Test.this.Bar[Any]() => true
+            case _ => false
+          };
+          final override def productPrefix: java.lang.String = "Bar";
+          final override def productArity: Int = 0;
+          final override def productElement(x$1: Int): Any = x$1 match {
+            case _ => throw new java.lang.IndexOutOfBoundsException(x$1.toString())
+          }
+        };
+        case def Bar[A >: Nothing <: Any](): Test.this.Bar[A] = new Test.this.Bar[A]();
+        private[this] val k1: Test.this.Foo[Int] = new Test.this.Foo[Int](123);
+        <stable> <accessor> def k1: Test.this.Foo[Int] = Test.this.k1;
+        private[this] val k2: Test.this.Foo[java.lang.String] = new Test.this.Foo[String]("abc");
+        <stable> <accessor> def k2: Test.this.Foo[java.lang.String] = Test.this.k2;
+        private[this] val hmap: com.milessabin.sparsec.HMap[Test.this.Foo,Test.this.Bar] = new com.milessabin.sp\
+arsec.HMap[Test.this.Foo,Test.this.Bar]().+[Int]({
+          ((eta$1: Test.this.Foo[Int]) => scala.this.Predef.any2ArrowAssoc[Test.this.Foo[Int]](eta$1)).apply(Tes\
+t.this.k1)
+        }.->[Test.this.Bar[Int]](new Test.this.Bar[Int]())).+[String]({
+          ((eta$1: Test.this.Foo[String]) => scala.this.Predef.any2ArrowAssoc[Test.this.Foo[String]](eta$1)).app\
+ly(Test.this.k2)
+        }.->[Test.this.Bar[String]](new Test.this.Bar[String]()));
+        <stable> <accessor> def hmap: com.milessabin.sparsec.HMap[Test.this.Foo,Test.this.Bar] = Test.this.hmap;\
+
+        private[this] val v1: Test.this.Bar[Int] = Test.this.hmap.apply[Int](Test.this.k1);
+        <stable> <accessor> def v1: Test.this.Bar[Int] = Test.this.v1;
+        Test.this.v1.apply(Test.this.k1.v);
+        private[this] val v2: Test.this.Bar[java.lang.String] = Test.this.hmap.apply[String](Test.this.k2);
+        <stable> <accessor> def v2: Test.this.Bar[java.lang.String] = Test.this.v2;
+        Test.this.v2.apply(Test.this.k2.v)
+      }
+    }
+  }
+}
+Exception in thread "main" scala.tools.nsc.symtab.Types$TypeError: type mismatch;
+ found   : Some[B[T(in method get)]]
+ required: Option[B[(some other)T(in method get)]]
+        at scala.tools.nsc.typechecker.Contexts$Context.error(Contexts.scala:283)
+        at scala.tools.nsc.typechecker.Infer$Inferencer.error(Infer.scala:218)
+        at scala.tools.nsc.typechecker.Infer$Inferencer.typeError(Infer.scala:228)
+        at scala.tools.nsc.typechecker.Infer$Inferencer.typeErrorTree(Infer.scala:234)
+        at scala.tools.nsc.typechecker.Typers$Typer.adapt(Typers.scala:770)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2888)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedArg(Typers.scala:1476)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$62.apply(Typers.scala:1492)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$62.apply(Typers.scala:1492)
+        at scala.List$.map2(List.scala:277)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedArgs(Typers.scala:1492)
+        at scala.tools.nsc.typechecker.Typers$Typer.doTypedApply(Typers.scala:1546)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedApply$0(Typers.scala:2228)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:2782)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2886)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2930)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:2715)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2886)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2919)
+        at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.scala$tools$nsc$transform$UnCurry$UnCurryTransfo\
+rmer$$nonLocalReturnThrow(UnCurry.scala:160)
+        at scala.tools.nsc.transform.UnCurry$UnCurryTransformer$$anonfun$17.apply(UnCurry.scala:546)
+        at scala.tools.nsc.transform.UnCurry$UnCurryTransformer$$anonfun$17.apply(UnCurry.scala:486)
+        at scala.tools.nsc.symtab.SymbolTable.atPhase(SymbolTable.scala:85)
+        at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.postTransform(UnCurry.scala:486)
+        at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.transform(UnCurry.scala:106)
+        at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.mainTransform(UnCurry.scala:463)
+        at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.transform(UnCurry.scala:106)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$31.apply(Trees.scala:1321)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$31.apply(Trees.scala:1321)
+        at scala.List$.loop$0(List.scala:244)
+        at scala.List$.mapConserve(List.scala:261)
+        at scala.tools.nsc.ast.Trees$Transformer.transformCaseDefs(Trees.scala:1321)
+        at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1263)
+        at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:46)\
+
+        at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.mainTransform(UnCurry.scala:472)
+        at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.transform(UnCurry.scala:106)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$24.apply(Trees.scala:1222)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$24.apply(Trees.scala:1221)
+        at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1333)
+        at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:33)
+        at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:27)
+        at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1220)
+        at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:46)\
+
+        at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.scala$tools$nsc$transform$UnCurry$UnCurryTransfo\
+rmer$$super$transform(UnCurry.scala:394)
+        at scala.tools.nsc.transform.UnCurry$UnCurryTransformer$$anonfun$5.apply(UnCurry.scala:394)
+        at scala.tools.nsc.transform.UnCurry$UnCurryTransformer$$anonfun$5.apply(UnCurry.scala:380)
+        at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.withNeedLift$0(UnCurry.scala:364)
+        at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.mainTransform(UnCurry.scala:379)
+        at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.transform(UnCurry.scala:106)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$33.apply(Trees.scala:1327)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$33.apply(Trees.scala:1325)
+        at scala.List$.loop$0(List.scala:244)
+        at scala.List$.mapConserve(List.scala:261)
+        at scala.List$.loop$0(List.scala:248)
+        at scala.List$.mapConserve(List.scala:261)
+        at scala.tools.nsc.ast.Trees$Transformer.transformStats(Trees.scala:1325)
+        at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1237)
+        at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.scala$tools$nsc$transform$TypingTransf\
+ormers$TypingTransformer$$super$transform(TypingTransformers.scala:44)
+        at scala.tools.nsc.transform.TypingTransformers$TypingTransformer$$anonfun$0.apply(TypingTransformers.sc\
+ala:44)
+        at scala.tools.nsc.transform.TypingTransformers$TypingTransformer$$anonfun$0.apply(TypingTransformers.sc\
+ala:44)
+        at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1333)
+        at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:33)
+        at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:27)
+        at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:44)\
+
+        at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.scala$tools$nsc$transform$UnCurry$UnCurryTransfo\
+rmer$$super$transform(UnCurry.scala:394)
+        at scala.tools.nsc.transform.UnCurry$UnCurryTransformer$$anonfun$16.apply(UnCurry.scala:469)
+        at scala.tools.nsc.transform.UnCurry$UnCurryTransformer$$anonfun$16.apply(UnCurry.scala:469)
+        at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.withInConstructorFlag$0(UnCurry.scala:372)
+        at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.mainTransform(UnCurry.scala:469)
+        at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.transform(UnCurry.scala:106)
+        at scala.tools.nsc.ast.Trees$Transformer.transformTemplate(Trees.scala:1311)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$21.apply(Trees.scala:1209)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$21.apply(Trees.scala:1209)
+        at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1333)
+        at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:33)
+        at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:27)
+        at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1208)
+        at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:46)\
+
+        at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.mainTransform(UnCurry.scala:472)
+        at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.transform(UnCurry.scala:106)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$33.apply(Trees.scala:1327)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$33.apply(Trees.scala:1325)
+        at scala.List$.loop$0(List.scala:244)
+        at scala.List$.mapConserve(List.scala:261)
+        at scala.tools.nsc.ast.Trees$Transformer.transformStats(Trees.scala:1325)
+        at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1239)
+        at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:46)\
+
+        at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.mainTransform(UnCurry.scala:472)
+        at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.mainTransform(UnCurry.scala:466)
+        at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.transform(UnCurry.scala:106)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$27.apply(Trees.scala:1309)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$27.apply(Trees.scala:1309)
+        at scala.List$.loop$0(List.scala:244)
+        at scala.List$.mapConserve(List.scala:261)
+        at scala.tools.nsc.ast.Trees$Transformer.transformTrees(Trees.scala:1309)
+        at scala.tools.nsc.transform.UnCurry$UnCurryTransformer$$anonfun$13.apply(UnCurry.scala:435)
+        at scala.tools.nsc.transform.UnCurry$UnCurryTransformer$$anonfun$13.apply(UnCurry.scala:433)
+        at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.withNeedLift$0(UnCurry.scala:364)
+        at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.mainTransform(UnCurry.scala:433)
+        at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.transform(UnCurry.scala:106)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$33.apply(Trees.scala:1327)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$33.apply(Trees.scala:1325)
+        at scala.List$.loop$0(List.scala:244)
+        at scala.List$.mapConserve(List.scala:261)
+        at scala.tools.nsc.ast.Trees$Transformer.transformStats(Trees.scala:1325)
+        at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1239)
+        at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:46)\
+
+        at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.mainTransform(UnCurry.scala:472)
+        at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.transform(UnCurry.scala:106)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$24.apply(Trees.scala:1222)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$24.apply(Trees.scala:1221)
+        at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1333)
+        at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:33)
+        at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:27)
+        at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1220)
+        at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:46)\
+
+        at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.scala$tools$nsc$transform$UnCurry$UnCurryTransfo\
+rmer$$super$transform(UnCurry.scala:394)
+        at scala.tools.nsc.transform.UnCurry$UnCurryTransformer$$anonfun$5.apply(UnCurry.scala:394)
+        at scala.tools.nsc.transform.UnCurry$UnCurryTransformer$$anonfun$5.apply(UnCurry.scala:380)
+        at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.withNeedLift$0(UnCurry.scala:364)
+        at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.mainTransform(UnCurry.scala:379)
+        at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.transform(UnCurry.scala:106)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$33.apply(Trees.scala:1327)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$33.apply(Trees.scala:1325)
+        at scala.List$.loop$0(List.scala:244)
+        at scala.List$.mapConserve(List.scala:261)
+        at scala.List$.loop$0(List.scala:248)
+        at scala.List$.mapConserve(List.scala:261)
+        at scala.List$.loop$0(List.scala:248)
+        at scala.List$.mapConserve(List.scala:261)
+        at scala.List$.loop$0(List.scala:248)
+        at scala.List$.mapConserve(List.scala:261)
+        at scala.List$.loop$0(List.scala:248)
+        at scala.List$.mapConserve(List.scala:261)
+        at scala.tools.nsc.ast.Trees$Transformer.transformStats(Trees.scala:1325)
+        at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1237)
+        at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.scala$tools$nsc$transform$TypingTransf\
+ormers$TypingTransformer$$super$transform(TypingTransformers.scala:44)
+        at scala.tools.nsc.transform.TypingTransformers$TypingTransformer$$anonfun$0.apply(TypingTransformers.sc\
+ala:44)
+        at scala.tools.nsc.transform.TypingTransformers$TypingTransformer$$anonfun$0.apply(TypingTransformers.sc\
+ala:44)
+        at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1333)
+        at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:33)
+        at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:27)
+        at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:44)\
+
+        at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.scala$tools$nsc$transform$UnCurry$UnCurryTransfo\
+rmer$$super$transform(UnCurry.scala:394)
+        at scala.tools.nsc.transform.UnCurry$UnCurryTransformer$$anonfun$16.apply(UnCurry.scala:469)
+        at scala.tools.nsc.transform.UnCurry$UnCurryTransformer$$anonfun$16.apply(UnCurry.scala:469)
+        at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.withInConstructorFlag$0(UnCurry.scala:372)
+        at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.mainTransform(UnCurry.scala:469)
+        at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.transform(UnCurry.scala:106)
+        at scala.tools.nsc.ast.Trees$Transformer.transformTemplate(Trees.scala:1311)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$21.apply(Trees.scala:1209)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$21.apply(Trees.scala:1209)
+        at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1333)
+        at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:33)
+        at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:27)
+        at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1208)
+        at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:46)\
+
+        at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.mainTransform(UnCurry.scala:472)
+        at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.transform(UnCurry.scala:106)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$33.apply(Trees.scala:1327)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$33.apply(Trees.scala:1325)
+        at scala.List$.loop$0(List.scala:244)
+        at scala.List$.mapConserve(List.scala:261)
+        at scala.tools.nsc.ast.Trees$Transformer.transformStats(Trees.scala:1325)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$20.apply(Trees.scala:1205)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$20.apply(Trees.scala:1205)
+        at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1333)
+        at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:33)
+        at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:27)
+        at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1204)
+        at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:46)\
+
+        at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.mainTransform(UnCurry.scala:472)
+        at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.transform(UnCurry.scala:106)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$33.apply(Trees.scala:1327)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$33.apply(Trees.scala:1325)
+        at scala.List$.loop$0(List.scala:244)
+        at scala.List$.mapConserve(List.scala:261)
+        at scala.tools.nsc.ast.Trees$Transformer.transformStats(Trees.scala:1325)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$20.apply(Trees.scala:1205)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$20.apply(Trees.scala:1205)
+        at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1333)
+        at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:33)
+        at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:27)
+        at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1204)
+        at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:46)\
+
+        at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.mainTransform(UnCurry.scala:472)
+        at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.transform(UnCurry.scala:106)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$33.apply(Trees.scala:1327)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$33.apply(Trees.scala:1325)
+        at scala.List$.loop$0(List.scala:244)
+        at scala.List$.mapConserve(List.scala:261)
+        at scala.tools.nsc.ast.Trees$Transformer.transformStats(Trees.scala:1325)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$20.apply(Trees.scala:1205)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$20.apply(Trees.scala:1205)
+        at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1333)
+        at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:33)
+        at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:27)
+        at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1204)
+        at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:46)\
+
+        at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.mainTransform(UnCurry.scala:472)
+        at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.transform(UnCurry.scala:106)
+        at scala.tools.nsc.ast.Trees$Transformer.transformUnit(Trees.scala:1328)
+        at scala.tools.nsc.transform.Transform$Phase.apply(Transform.scala:30)
+        at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:258)
+        at scala.tools.nsc.Global$GlobalPhase$$anonfun$2.apply(Global.scala:247)
+        at scala.tools.nsc.Global$GlobalPhase$$anonfun$2.apply(Global.scala:247)
+        at scala.Iterator$class.foreach(Iterator.scala:375)
+        at scala.collection.mutable.ListBuffer$$anon$0.foreach(ListBuffer.scala:255)
+        at scala.tools.nsc.Global$GlobalPhase.run(Global.scala:247)
+        at scala.tools.nsc.Global$Run.compileSources(Global.scala:542)
+        at scala.tools.nsc.Global$Run.compile(Global.scala:623)
+        at scala.tools.nsc.Main$.process(Main.scala:86)
+        at scala.tools.nsc.Main$.main(Main.scala:107)
+        at scala.tools.nsc.Main.main(Main.scala)
+make: *** [.scala-build-stamp] Error 1
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >I don't know about expected, but I'd be really pleased (and impressed) if this compiled and ran successfully.</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2007-07-28 11:02:41.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

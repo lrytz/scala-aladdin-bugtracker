@@ -1,0 +1,133 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#284]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> high</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Nikolay</td>
+	  <td align="center" bgcolor="#FFFFFF">Burak</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2004-01-26 11:37:08.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">Pattern matcher generates incorrect tree</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>// bug contribution #10
+
+trait Operator;
+case class Increment extends Operator;
+case class Decrement extends Operator;
+
+trait Expression {
+  def eval = match {
+    case Operation (v: Value, o: Increment) =&gt; v
+    case Operation (v: Value, d: Decrement) =&gt; v
+  }
+}
+
+case class Value extends Expression;
+case class Operation (e: Expression, o: Operator) extends Expression;
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre><pre>Exception in thread "main" java.lang.AssertionError:
+unit        : bug_contrib/bug_10.scala
+clasz       : Expression$class
+member      : Expression$class.eval
+owner       : Expression$class.eval.v
+tree        : temp$5
+tree.pos    : 8:22
+tree.symbol : Expression.eval.temp$5
+tree.type   : temp$5.type
+        at scalac.checkers.TreeChecker.location(TreeChecker.java:392)
+        at scalac.checkers.TreeChecker.expression(TreeChecker.java:309)
+        at scalac.checkers.TreeChecker.statement(TreeChecker.java:202)
+        at scalac.checkers.TreeChecker.expression(TreeChecker.java:241)
+        at scalac.checkers.TreeChecker.expression(TreeChecker.java:255)
+        at scalac.checkers.TreeChecker.expression(TreeChecker.java:256)
+        at scalac.checkers.TreeChecker.expression(TreeChecker.java:243)
+        at scalac.checkers.TreeChecker.expression(TreeChecker.java:255)
+        ...</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >Silent compilation. The problem seems to be a reference to an undefined identifier temp$5.</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Nikolay&nbsp; edited on &nbsp;2004-01-26 11:37:45.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2004-01-28 16:19:43.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Fixed. The pattern matcher optimises the number of node tests. Unfortunately, every test comes with a symbol of a temporary variable that holds the casted. Node reuse has to handle these names (a simple substitution).
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

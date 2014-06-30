@@ -1,0 +1,167 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#685]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> medium</th>
+		<th><strong>category:</strong> feature</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Burak</td>
+	  <td align="center" bgcolor="#FFFFFF">_</td>
+	  <td align="center" bgcolor="#FFFFFF">_</td>
+          <td align="center" bgcolor="#FFFFFF">2006-08-01 19:03:33.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">support for java1.5</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>package evx;
+
+// this is java1.5 code ... 
+
+public enum Event {
+    StartElem,
+    EndElem,
+    Literal
+}
+
+// and here's Scala code that uses it
+parser.nextEvent() match {
+   case Event.StartElem =&gt;
+   case Event.Literal =&gt;
+   case Event.EndElem =&gt;
+}</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>It seems like we support Java1.5 enums out of the box! Here's what javac 1.5 generates (the values are static me\
+mbers of the Event class) :
+<pre>
+[emir@lamppc31 xmlLibraryPush]$ javap -c -classpath classes evx.Event
+Compiled from "Event.java"
+public final class evx.Event extends java.lang.Enum{
+public static final evx.Event StartElem;
+
+public static final evx.Event EndElem;
+
+public static final evx.Event Literal;
+
+public static final evx.Event[] values();
+  Code:
+   0:   getstatic       #1; //Field $VALUES:[Levx/Event;
+   3:   invokevirtual   #2; //Method "[Levx/Event;".clone:()Ljava/lang/Object;
+   6:   checkcast       #3; //class "[Levx/Event;"
+   9:   areturn
+
+public static evx.Event valueOf(java.lang.String);
+  Code:
+   0:   ldc_w   #4; //class evx/Event
+   3:   aload_0
+   4:   invokestatic    #5; //Method java/lang/Enum.valueOf:(Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/Enum\
+;
+   7:   checkcast       #4; //class evx/Event
+   10:  areturn
+
+static {};
+  Code:
+   0:   new     #4; //class evx/Event
+   3:   dup
+   4:   ldc     #7; //String StartElem
+   6:   iconst_0
+   7:   invokespecial   #8; //Method "<init>":(Ljava/lang/String;I)V
+   10:  putstatic       #9; //Field StartElem:Levx/Event;
+   13:  new     #4; //class evx/Event
+   16:  dup
+   17:  ldc     #10; //String EndElem
+   19:  iconst_1
+   20:  invokespecial   #8; //Method "<init>":(Ljava/lang/String;I)V
+   23:  putstatic       #11; //Field EndElem:Levx/Event;
+   26:  new     #4; //class evx/Event
+   29:  dup
+   30:  ldc     #12; //String Literal
+   32:  iconst_2
+   33:  invokespecial   #8; //Method "<init>":(Ljava/lang/String;I)V
+   36:  putstatic       #13; //Field Literal:Levx/Event;
+   39:  iconst_3
+   40:  anewarray       #4; //class evx/Event
+   43:  dup
+   44:  iconst_0
+   45:  getstatic       #9; //Field StartElem:Levx/Event;
+   48:  aastore
+   49:  dup
+   50:  iconst_1
+   51:  getstatic       #11; //Field EndElem:Levx/Event;
+   54:  aastore
+   55:  dup
+   56:  iconst_2
+   57:  getstatic       #13; //Field Literal:Levx/Event;
+   60:  aastore
+   61:  putstatic       #1; //Field $VALUES:[Levx/Event;
+   64:  return
+
+}
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >People might ask for some more features related to Java1.5 enums.</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

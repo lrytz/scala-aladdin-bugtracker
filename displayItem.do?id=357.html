@@ -1,0 +1,123 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#357]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Philippe</td>
+	  <td align="center" bgcolor="#FFFFFF">Matthias</td>
+	  <td align="center" bgcolor="#FFFFFF">open</td>
+          <td align="center" bgcolor="#FFFFFF">2004-08-12 12:54:41.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">scalap bug: inferred compound type crash scalap</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>package test;
+
+class Bar;
+class Foo;
+class Foo1 extends Foo with Bar;
+class Foo2 extends Foo with Bar;
+
+trait Use {
+  def infer(b: Boolean) = if (b) new Foo1 else new Foo2;
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>The command <code>scalap test.Use</code> produces the following error:
+<pre>
+Exception in thread "main" java.lang.Error: symbol does not have members
+	at scala.Predef$.error(Predef.scala:65)
+	at scala.tools.scalap.Symbol$class.members(Entity.scala:124)
+	at scala.tools.scalap.ScalaWriter$class.printType0(ScalaWriter.scala:172)
+	at scala.tools.scalap.ScalaWriter$class.printType(ScalaWriter.scala:138)
+	at scala.tools.scalap.ScalaWriter$class.printType0(ScalaWriter.scala:183)
+	at scala.tools.scalap.ScalaWriter$class.printType(ScalaWriter.scala:138)
+	at scala.tools.scalap.ScalaWriter$class.printSymbol(ScalaWriter.scala:56)
+	at scala.tools.scalap.ScalaWriter$$anon$1.apply(ScalaWriter.scala:99)
+	at scala.tools.scalap.ScalaWriter$$anon$1.apply(ScalaWriter.scala:89)
+	at scala.Iterator$class.foreach(Iterator.scala:252)
+	at scala.tools.scalap.ScalaWriter$class.printScope(ScalaWriter.scala:88)
+	at scala.tools.scalap.ScalaWriter$class.printType0(ScalaWriter.scala:172)
+	at scala.tools.scalap.ScalaWriter$class.printType(ScalaWriter.scala:138)
+	at scala.tools.scalap.ScalaWriter$class.printSymbol(ScalaWriter.scala:42)
+	at scala.tools.scalap.Main$$anon$3.apply(Main.scala:73)
+	at scala.tools.scalap.Main$$anon$3.apply(Main.scala:73)
+	at scala.Iterator$class.foreach(Iterator.scala:252)
+	at scala.tools.scalap.Main$.process(Main.scala:72)
+	at scala.tools.scalap.Main$$anon$4.apply(Main.scala:146)
+	at scala.tools.scalap.Main$$anon$4.apply(Main.scala:146)
+	at scala.List$class.foreach(List.scala:472)
+	at scala.tools.scalap.Main$.main(Main.scala:146)
+	at scala.tools.scalap.Main.main(Main.scala:114)
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >No crash
+</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

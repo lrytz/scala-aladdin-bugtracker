@@ -1,0 +1,118 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#211]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> high</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">Michel</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2003-10-27 13:01:28.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">compound self types crash AddInterfaces</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>trait A;
+trait B;
+class Foo: (A with B) extends A with B;
+object Test with Executable {
+  new Foo();
+  System.out.println(&quot;bug211 completed&quot;);
+}
+
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>Exception in thread "main" scalac.ApplicationError: unexpected type for parent: CompoundType([TypeRef(ThisType(<\
+none>),A,[]),TypeRef(ThisType(<none>),B,[])],{},<none>.<ct>)
+	at scalac.util.Debug.abort(Debug.java:58)
+	at scalac.transformer.AddInterfacesPhase.getClassSymbol(AddInterfacesPhase.java:293)
+	at scalac.transformer.AddInterfaces.transform(AddInterfaces.java:254)
+	at scalac.transformer.AddInterfaces.transform(AddInterfaces.java:66)
+	at scalac.ast.Transformer.transform(Transformer.java:143)
+	at scalac.transformer.AddInterfaces.transform(AddInterfaces.java:275)
+	at scalac.ast.Transformer.transform(Transformer.java:271)
+	at scalac.ast.Transformer.transform(Transformer.java:85)
+	at scalac.transformer.AddInterfaces.transform(AddInterfaces.java:112)
+	at scalac.transformer.AddInterfaces.transform(AddInterfaces.java:66)
+	at scalac.ast.Transformer.apply(Transformer.java:67)
+	at scalac.transformer.AddInterfacesPhase.apply(AddInterfacesPhase.java:31)
+	at scalac.Global.compile(Global.java:290)
+	at scalac.Global.compile(Global.java:263)
+	at scalac.Main.main(Main.java:32)
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >Successful compilation. This bug is blocking a solution to bug210 (expression problem). I have added a hack in AddInterfaces.java to fix this (from line 244), but the fix is commented out right now, because I am not sure it is correct.
+</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Michel&nbsp; edited on &nbsp;2003-10-27 16:14:39.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

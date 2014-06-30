@@ -1,0 +1,129 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#628]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Lex</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2006-06-19 14:30:57.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">implicit conversion of (val * something)</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>object Test {
+  abstract class Unit
+  object NoUnit extends Unit
+  object Hour extends Unit
+
+  case class Measure(scalar: Double, unit: Unit) {
+    def *(newUnit: Unit) = Measure(scalar, newUnit)
+  }
+
+  implicit def double2Measure(scalar: Double) =
+    Measure(scalar, NoUnit)
+
+
+  def main(args: Array[String]): scala.Unit = {
+    Console.println(&quot;3.0 * Hour = &quot; + (3.0 * Hour))
+  }
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre><pre>/home/lex/eclipse/workspace/scala2/test/files/run/impconvtimes.scala:15 error: overloaded method value * wi\
+th alternatives (scala.Double)scala.Double <and> (scala.Float)scala.Double <and> (scala.Long)scala.Double <and> \
+(scala.Int)scala.Double <and> (scala.Char)scala.Double <and> (scala.Short)scala.Double <and> (scala.Byte)scala.D\
+ouble cannot be applied to (Test.this.Hour.type)
+    Console.println("3.0 * Hour = " + (3.0 * Hour))
+                                           ^
+one error found
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >It would be nice if this worked, although granted it is a corner case.  The value could be converted uing double2Measure.  If you change every "*" to "***", then it does work.
+
+The question is: do implicit conversions of the receiver happen when there is (1) no method with the correct name, or (2) no <em>type-compatible</em> method with the correct  name.  It would be nice if it was (2).</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Lex&nbsp; edited on &nbsp;2006-06-19 14:31:10.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-06-21 16:03:24.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+It's (2). The same case worked for Bigints. This example failed because of a tiny technical reason: the system was looking for a method *: Hour => ?. The * method in Measure did not qualify because it takes a measure, not an Hour. 
+This has been fixed: we now look for a method * whose parameter type is an arbitrary supertype of Hour.
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

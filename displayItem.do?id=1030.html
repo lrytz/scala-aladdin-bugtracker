@@ -1,0 +1,159 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#1030]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Adriaan</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">open</td>
+          <td align="center" bgcolor="#FFFFFF">2007-03-29 01:01:41.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">boxing&erasure for arrays inconsistent?</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>scala&gt; val line = &quot;Smith, John&quot;                                              
+line: java.lang.String = Smith, John
+
+scala&gt; val Array(lname, fname) = line split &quot;, &quot;</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>(in 2.4.0)
+<pre>
+scala.MatchError: [Ljava.lang.String;@b9371e
+        at line22$object$.<init>(<console>:5)
+        at line22$object$.<clinit>(<console>)
+        at RequestResult$line22$object$.<init>(<console>:3)
+        at RequestResult$line22$object$.<clinit>(<console>)
+        at RequestResult$line22$object.result(<console>)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+        at java.lang.reflect.Method.invoke(Method.java:585)
+        at scala.tools.nsc.Interpreter$Request.loadAndRun(Interpreter.scala:562)
+        at scala.tools.nsc.Interpreter.interpret(Interpreter.scala:285)
+        at scala.tools.nsc.InterpreterLoop.interpretStartingWith(InterpreterLoop.scala:211)
+        at scala.tools.nsc.InterpreterLoop.command(InterpreterLoop.scala:198)
+        at scala.tools.nsc.InterpreterLoop.repl(InterpreterLoop.scala:111)
+        at scala.tools.nsc.InterpreterLoop.main(InterpreterLoop.scala:246)
+        at scala.tools.nsc.MainGenericRunner$.main(MainGenericRunner.scala:92)
+        at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >no error
+
+Investigating some more:
+<pre>
+scala> val a:Array[String]=line split ", "
+a: scala.Array[java.lang.String] = [Ljava.lang.String;@2a5319
+</pre>
+
+I think the run-time type should be a BoxedAnyArray since `x.isInstanceOf[Array[A]]' gets erased to `x instanceof BoxedArray'</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Adriaan&nbsp; edited on &nbsp;2007-03-29 01:02:00.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Adriaan&nbsp; edited on &nbsp;2007-03-29 01:02:22.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Adriaan&nbsp; edited on &nbsp;2007-03-29 01:30:00.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+On further reflection, I think unapplySeq should be changed to:
+  def unapplySeq[A](x: Array[A]): Option[Seq[A]] = Some(x)
+
+Then it works.
+</td></tr>
+<tr>
+        <td>
+        <strong>Adriaan&nbsp; edited on &nbsp;2007-03-29 18:24:35.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Martin, I'd close this bug (I committed the change to Array), were it not for this somewhat surprising behaviour: passing an instance of Array[A] to something that expects an Any and then does instanceOf[Array[A]] does not work, the array is passed as a Java-native array, instead of being boxed whereas the isInstanceOf is erased to instanceof BoxedArray -- maybe x.instanceOf needs to be erased differently depending on whether x is expected to be boxed?
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2007-04-17 16:28:39.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+reassigned to me.
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

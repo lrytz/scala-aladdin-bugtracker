@@ -1,0 +1,181 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#646]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> medium</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Burak</td>
+	  <td align="center" bgcolor="#FFFFFF">Burak</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2006-06-29 11:19:16.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">typing of patterns, cont'd</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>object xfor {
+
+  import scala.xml.NodeSeq
+
+    val books = 
+    &lt;bks&gt;
+      &lt;title&gt;Blabla&lt;/title&gt;
+      &lt;title&gt;Blubabla&lt;/title&gt;
+      &lt;title&gt;Baaaaaaalabla&lt;/title&gt;
+    &lt;/bks&gt;;
+
+  new NodeSeq { val theSeq = books.child } match {
+    case t @ &lt;title&gt;Blabla&lt;/title&gt; =&gt; t
+  }
+
+}</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre><pre>
+[emir@lamppc31 scala.fallback.trunk]$ build/quick/bin/scalac -d /tmp /tmp/xfor.scala
+Exception in thread "main" java.lang.NullPointerException
+        at scala.tools.nsc.typechecker.Typers$Typer.typedIdent$0(Typers.scala:1275)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1671)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1731)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1761)
+...
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" ></td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2006-06-29 11:28:42.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Here's an even simpler one
+<pre>
+object xfor {
+
+  List(&lt;a/>) match {
+    case t @ &lt;a>Blabla&lt;/a> => t
+  }
+}
+</pre>
+which is of course equivalent (simplified the pattern a bit) to
+<pre>
+object xfor {
+  List(&lt;a/>) match {
+    case t @ Seq(scala.xml.Elem(_,"a",_,_,_*)) => t
+  }
+}
+</pre>
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-07-11 16:15:57.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+I guess it was fixed by some previous change. It compiles OK now. 
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2006-10-12 12:37:59.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+reopen! I guess the "fix" was due to my worsening the type by parsing it to Seq(Elem(...)) instead of Elem(...). This is unnecessary. Now that I made the parse use the better (more precise) pattern Elem (which is <: Node <: NodeSeq <: Seq), I would not expect this error message. 
+<br/>
+Note that the code below compiles fine -- should the refinement really matter for patterns? If yes, you could change the status from "bug" to "feature".
+<pre>
+  val n: NodeSeq = new NodeSeq { val theSeq = books.child } 
+  n match {
+    case t @ <title>Blabla</title> => t
+  }
+</pre>
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-10-26 16:52:05.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+I get:
+<pre>
+bug646.scala:13 error: constructor cannot be instantiated to expected type;
+ found   : scala.xml.Elem
+ required: scala.xml.NodeSeq{def theSeq: scala.xml.Node*}
+    case t @ <title>Blabla</title> => t
+               ^
+one error found
+</pre>
+Not sure whether that's correct or not. I reassigned to Burak.
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2007-03-03 03:01:16.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

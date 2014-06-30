@@ -1,0 +1,194 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#1235]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Nikolay</td>
+	  <td align="center" bgcolor="#FFFFFF">Iulian</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2007-07-20 14:19:34.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">[contrib #710] verify error with match match loop</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>object TestVerifier
+{
+    // Both f and g cause the problem, h doesn't. 
+    // They don't need to be called, just class loaded.
+    // Fwiw, the loop after the inner match is required - removing it makes the problem vanish.
+
+    def f() =
+    {
+        val x : Option[Int] = Some(0)
+        x match
+        {
+            case None =&gt;
+            case Some(_) =&gt;
+                var y = List(1)
+                y.length match
+                {
+                    case 0 =&gt; 0
+                    case 1 =&gt;
+                    case _ =&gt; 1
+                }
+
+                for(val z &lt;- y)
+                {
+                }
+        }
+    }
+
+    def g() =
+    {
+        val x : Option[Int] = Some(0)
+        x match
+        {
+            case None =&gt;
+            case Some(_) =&gt;
+                var y = List(1)
+                y.length match
+                {
+                    case 0 =&gt; 0
+                    case 1 =&gt; ()
+                    case _ =&gt; 1
+                }
+
+                for(val z &lt;- y)
+                {
+                }
+        }
+    }
+
+    def h() =
+    {
+        def p() =
+        {
+            var y = List(1)
+            y.length match
+            {
+                case 0 =&gt; 0
+                case 1 =&gt;
+                case _ =&gt; 1
+            }
+
+            for(val z &lt;- y)
+            {
+            }
+        }
+        val x : Option[Int] = Some(0)
+        x match
+        {
+            case None =&gt;
+            case Some(_) =&gt;
+                p
+        }
+    }
+
+
+    def main(args: Array[String]): Unit =
+    {
+    }
+}
+
+/*
+$ scalac TestVerifier.scala  &amp;&amp; scala TestVerifier
+java.lang.VerifyError: (class: TestVerifier$, method: f signature: ()V) Inconsistent stack height 1 != 0
+        at TestVerifier.main(TestVerifier.scala)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+        at java.lang.reflect.Method.invoke(Unknown Source)
+        at scala.tools.nsc.ObjectRunner$.run(ObjectRunner.scala:73)
+        at scala.tools.nsc.MainGenericRunner$.main(MainGenericRunner.scala:133)
+        at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
+*/
+
+
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>java.lang.VerifyError at runtime
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >successful execution</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Nikolay&nbsp; edited on &nbsp;2007-07-20 14:20:33.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Iulian&nbsp; edited on &nbsp;2007-07-20 14:41:04.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

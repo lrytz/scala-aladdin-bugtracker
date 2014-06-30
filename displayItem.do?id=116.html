@@ -1,0 +1,134 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#116]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> medium</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Matthias</td>
+	  <td align="center" bgcolor="#FFFFFF">Philippe</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2003-09-10 12:26:28.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">Classes in constructors provoke type/boxing problems</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>class C {
+  def this(x: Int) = {
+    class D extends C;
+    this();
+  }
+}</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>Crashes compiler:
+<pre>
+Exception in thread "main" java.lang.AssertionError: void -> java.lang.Object
+        at scalac.backend.jvm.GenJVM.genWidenConversion(GenJVM.java:914)
+        at scalac.backend.jvm.GenJVM.genLoad(GenJVM.java:553)
+        at scalac.backend.jvm.GenJVM.genLoad(GenJVM.java:228)
+        at scalac.backend.jvm.GenJVM.genLoadQualifier(GenJVM.java:587)
+        at scalac.backend.jvm.GenJVM.genLoad(GenJVM.java:249)
+        at scalac.backend.jvm.GenJVM.gen(GenJVM.java:165)
+        at scalac.backend.jvm.GenJVM.gen(GenJVM.java:199)
+        at scalac.backend.jvm.GenJVM.gen(GenJVM.java:143)
+        at scalac.backend.jvm.GenJVM.gen(GenJVM.java:138)
+        at scalac.backend.jvm.GenJVM.translate(GenJVM.java:110)
+        at scalac.backend.jvm.GenJVMPhase.apply(GenJVMPhase.java:45)
+        at scalac.Global.compile(Global.java:293)
+        at scalac.Global.compile(Global.java:266)
+        at scalac.Main.main(Main.java:32)
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >Compiles.</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Matthias&nbsp; edited on &nbsp;2003-09-10 14:52:26.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+I just found out that it has actually nothing to do with the
+class in the non-primary constructor. You can put pretty
+much everything in there and it will yield the exception in
+the "what happened" field. For instance, a simple variable
+definition provokes already the exception:
+<pre>
+  def this(x: Int) = {
+    var y = x + x;
+    this();
+  }
+</pre>
+</td></tr>
+<tr>
+        <td>
+        <strong>Philippe&nbsp; edited on &nbsp;2003-10-15 15:06:42.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+<p> Fixed computation of enclosing class in lambda lift. </p>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

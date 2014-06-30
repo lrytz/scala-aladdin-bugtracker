@@ -1,0 +1,191 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#982]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> high</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Burak</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">noise</td>
+          <td align="center" bgcolor="#FFFFFF">2007-03-09 15:11:08.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">shorthand tuple patterns messed up by typer?</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>object tmp {
+
+  val x: AnyRef = Some(1,2)
+
+  x match {
+    case Some(1,2) =&gt;
+  }
+}</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>pattern matcher crashes in subtype call
+<pre>
+tsf-wpa-2-155:~/Documents/svn/scala buraq$ ./build/quick/bin/scalac -d /tmp /tmp/ga.scala  -print:typer 
+[[syntax trees at end of typer]]// Scala source: ga.scala
+package <empty> {
+  final object tmp extends java.lang.Object with scala.ScalaObject {
+    def this(): object tmp = {
+      tmp.super.this();
+      ()
+    };
+    private[this] val x: java.lang.Object = scala.Some[(scala.Int, scala.Int)](scala.this.Tuple2[scala.Int, scal\
+a.Int](1, 2));
+    <stable> <accessor> def x: java.lang.Object = tmp.this.x;
+    tmp.this.x match {
+      case (scala.Any)scala.Some[scala.Any]((scala.Any,scala.Any)(scala.Any, scala.Any)(1, 2)) => ()
+    }
+  }
+}
+
+exception when transforming java.lang.Object with scala.ScalaObject {
+  def this(): object tmp = {
+    tmp.super.this();
+    ()
+  };
+  private[this] val x: java.lang.Object = new scala.Some[(scala.Int, scala.Int)](new (scala.Int, scala.Int)(1, 2\
+));
+  <stable> <accessor> def x(): java.lang.Object = tmp.this.x;
+  tmp.this.x() match {
+    case (scala.Any)scala.Some[scala.Any]((scala.Any,scala.Any)(scala.Any, scala.Any)(1, 2)) => ()
+  }
+}
+exception when transforming final class tmp extends java.lang.Object with scala.ScalaObject {
+  def this(): object tmp = {
+    tmp.super.this();
+    ()
+  };
+  private[this] val x: java.lang.Object = new scala.Some[(scala.Int, scala.Int)](new (scala.Int, scala.Int)(1, 2\
+));
+  <stable> <accessor> def x(): java.lang.Object = tmp.this.x;
+  tmp.this.x() match {
+    case (scala.Any)scala.Some[scala.Any]((scala.Any,scala.Any)(scala.Any, scala.Any)(1, 2)) => ()
+  }
+}
+exception when transforming package <empty> {
+  final class tmp extends java.lang.Object with scala.ScalaObject {
+    def this(): object tmp = {
+      tmp.super.this();
+      ()
+    };
+    private[this] val x: java.lang.Object = new scala.Some[(scala.Int, scala.Int)](new (scala.Int, scala.Int)(1,\
+ 2));
+    <stable> <accessor> def x(): java.lang.Object = tmp.this.x;
+    tmp.this.x() match {
+      case (scala.Any)scala.Some[scala.Any]((scala.Any,scala.Any)(scala.Any, scala.Any)(1, 2)) => ()
+    }
+  }
+}
+Exception in thread "main" scala.MatchError: null
+        at scala.runtime.ScalaRunTime$.boxArray(ScalaRunTime.scala:126)
+        at scala.tools.nsc.symtab.Types$class.isSubType0(Types.scala:2130)
+        at scala.tools.nsc.symtab.SymbolTable.isSubType0(SymbolTable.scala:10)
+        at scala.tools.nsc.symtab.Types$class.isSubType(Types.scala:2118)
+        at scala.tools.nsc.symtab.SymbolTable.isSubType(SymbolTable.scala:10)
+        at scala.tools.nsc.matching.PatternNodes$Header.optimize1(PatternNodes.scala:364)
+...
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >clean compile</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2007-03-09 15:13:31.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+I should add, this file crashes too, same trace
+<pre>
+object tmp {
+
+  val x: AnyRef = Some(1,2)
+
+  x match {
+    case Some(Tuple2(1,2)) =>
+  }
+}
+</pre>
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2007-03-09 15:22:19.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+hold on, maybe it was just my compile
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2007-03-09 15:31:33.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+please ignore it, it was something broken in my modified build.
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

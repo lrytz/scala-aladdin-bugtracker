@@ -1,0 +1,133 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#142]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> medium</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Philippe</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2003-09-12 16:01:17.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">problems with mixins with nested types</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>
+import System.out.println;
+
+abstract class Foo1 { class Inner; def foo: Inner; foo; }
+abstract class Foo2 { class Inner; def foo: Inner = {println(&quot;ok&quot;); null};      }
+abstract class Foo3 { type  Inner; def foo: Inner; foo; }
+abstract class Foo4 { type  Inner; def foo: Inner = {println(&quot;ok&quot;); null.asInstanceOf[Inner]};      }
+
+abstract class Bar1 { type  Inner; def foo: Inner = {println(&quot;ok&quot;); null.asInstanceOf[Inner]};      }
+abstract class Bar2 { type  Inner; def foo: Inner; foo; }
+abstract class Bar3 { class Inner; def foo: Inner = {println(&quot;ok&quot;); null};      }
+abstract class Bar4 { class Inner; def foo: Inner; foo; }
+
+object Test1 extends Foo1 with Bar1 {def main(args:Array[String]):Unit=();}
+object Test2 extends Foo2 with Bar2 {def main(args:Array[String]):Unit=();}
+object Test3 extends Foo3 with Bar3 {def main(args:Array[String]):Unit=();}
+object Test4 extends Foo4 with Bar4 {def main(args:Array[String]):Unit=();}
+object Test5 with    Foo1 with Bar1 {def main(args:Array[String]):Unit=();}
+object Test6 with    Foo2 with Bar2 {def main(args:Array[String]):Unit=();}
+object Test7 with    Foo3 with Bar3 {def main(args:Array[String]):Unit=();}
+object Test8 with    Foo4 with Bar4 {def main(args:Array[String]):Unit=();}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre><p> Some programs raise an AbstractMethodError at runtime. One reason is that expand mixin does not rebind the t\
+ype <code>Inner</code> in the inlined members and this prevents erasure to add some bridge methods. Another prob\
+lem is that erasure should sometimes add a bridge method for methods that don't appear in the body of the class.\
+ That is for example the case when a concrete method is inherited from a superclass and an abstract one from a m\
+ixin and the two methods have different erasures. </p>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" ><p> All programs should run without any error. </p>
+</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Philippe&nbsp; edited on &nbsp;2003-09-12 16:07:35.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+I assigned this bug to you Martin because I will be on holiday the next two weeks. If it's still there in two weeks, I will look with Michel how to solve it.
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Philippe&nbsp; edited on &nbsp;2003-09-12 23:16:00.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+<p> I patched <code>ExpandMixin</code> (added methods <code>handleMixinInterfaceMembers</code>) to replace (at least) some abstract types from mixins by concrete ones. This solved the problem for all tests except <code>Test2</code> and <code>Test4</code> .</p>
+
+<p> I patched <code>Erasure</code> (added methods <code>addInterfaceBridges</code>) to add (at least) some of the bridge methods described above. This solved the problem for the last two failing tests.</p>
+
+<p> Both patches need to be reviewed especially the one of <code>Erasure</code>. </p>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

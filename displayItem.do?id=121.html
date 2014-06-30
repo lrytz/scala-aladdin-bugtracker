@@ -1,0 +1,159 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#121]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> high</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Matthias</td>
+	  <td align="center" bgcolor="#FFFFFF">Philippe</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2003-09-10 15:43:53.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">Return and array access</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>class B(b: Array[Byte]) {
+  def get(x: Int): Byte = return b(x);
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>Crashes the backend:
+<pre>
+Exception in thread "main" scalac.ApplicationError:
+  unknown node: scalac.ast.Tree$ExtReturn(return scala.runtime.RunTime.barray_get($B$b(), x))
+        at scalac.Global.fail(Global.java:543)
+        at scalac.backend.jvm.GenJVM.genLoad(GenJVM.java:541)
+        at scalac.backend.jvm.GenJVM.genLoadQualifier(GenJVM.java:587)
+        at scalac.backend.jvm.GenJVM.genLoad(GenJVM.java:249)
+        at scalac.backend.jvm.GenJVM.genLoadQualifier(GenJVM.java:587)
+        at scalac.backend.jvm.GenJVM.genLoad(GenJVM.java:376)
+        at scalac.backend.jvm.GenJVM.gen(GenJVM.java:165)
+        at scalac.backend.jvm.GenJVM.gen(GenJVM.java:199)
+        at scalac.backend.jvm.GenJVM.gen(GenJVM.java:143)
+        at scalac.backend.jvm.GenJVM.gen(GenJVM.java:138)
+        at scalac.backend.jvm.GenJVM.translate(GenJVM.java:110)
+        at scalac.backend.jvm.GenJVMPhase.apply(GenJVMPhase.java:45)
+        at scalac.Global.compile(Global.java:293)
+        at scalac.Global.compile(Global.java:266)
+        at scalac.Main.main(Main.java:32)
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >Compiles without crash.</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2003-09-23 18:27:32.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Michel&nbsp; edited on &nbsp;2003-09-29 16:39:46.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+This is in fact a bug in erasure, which tries to cast the result of the "return" expression, which has no result... Here is what I get if I print the tree before and after erasure, where double square brackets enclose the expression to be returned:
+
+<pre>
+[[Trees after phase expandmixins]]
+// Scala source: bug_121.scala
+interface B() extends java.lang.Object() {
+  def $B$b(): scala.Array[scala.Byte];
+  def get(x: scala.Int): scala.Byte
+};
+class B$class(b: scala.Array[scala.Byte]) extends Object() with B() {
+  private val b$: scala.Array[scala.Byte] = b;
+  def $B$b(): scala.Array[scala.Byte] = b$;
+  def get(x: scala.Int): scala.Byte = return [[$B$b().apply(x)]]
+};
+
+[[Trees after phase erasure]]
+// Scala source: bug_121.scala
+interface B() extends java.lang.Object() {
+  def $B$b(): byte[];
+  def get(x: int): byte
+};
+class B$class(b: byte[]) extends Object() with B() {
+  private val b$: byte[] = b;
+  def $B$b(): byte[] = b$;
+  def get(x: int): byte = return [[scala.runtime.RunTime.barray_get($B$b(), x)]].asInstanceOf[scala.Double]().asByte()
+};
+</pre>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Philippe&nbsp; edited on &nbsp;2003-09-29 17:37:02.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Changed erasure to add a block around each return statement. The block contains the return statement followed by a null value.
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

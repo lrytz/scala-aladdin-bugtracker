@@ -1,0 +1,140 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#548]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Iulian</td>
+	  <td align="center" bgcolor="#FFFFFF">_</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2006-03-14 17:07:58.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">parser crash for value definition inside for comprehensions</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>abstract class Tree;
+case class SList(xs: List[Tree]) extends Tree;
+case class SIdent(s: String) extends Tree;
+
+object Main {
+  val t: Tree = SList(SIdent(&quot;define&quot;) :: SIdent(&quot;a&quot;) :: SIdent(&quot;b&quot;) :: Nil);
+  val ts = t :: t :: Nil;
+
+  for (val SList(ident :: a :: Nil) &lt;- ts; 
+       val SIdent(name) = ident) // boom!
+    ();
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre><pre>
+Exception in thread "main" scala.MatchError: SList($colon$colon((ident @ _), $colon$colon((a @ _), Nil)))
+        at scala.tools.nsc.ast.parser.TreeBuilder.makeValue$0(TreeBuilder.scala:244)
+        at scala.tools.nsc.ast.parser.TreeBuilder$$anonfun$6.apply(TreeBuilder.scala:269)
+        at scala.tools.nsc.ast.parser.TreeBuilder$$anonfun$6.apply(TreeBuilder.scala:269)
+        at scala.List.map(List.scala:665)
+        at scala.tools.nsc.ast.parser.TreeBuilder.makeFor(TreeBuilder.scala:269)
+        at scala.tools.nsc.ast.parser.TreeBuilder.makeFor(TreeBuilder.scala:281)
+        at scala.tools.nsc.ast.parser.Parsers$Parser.expr(Parsers.scala:691)
+        at scala.tools.nsc.ast.parser.Parsers$Parser.expr(Parsers.scala:631)
+        at scala.tools.nsc.ast.parser.Parsers$Parser.templateStatSeq(Parsers.scala:1747)
+        at scala.tools.nsc.ast.parser.Parsers$Parser.templateBody(Parsers.scala:1674)
+        at scala.tools.nsc.ast.parser.Parsers$Parser.classTemplate(Parsers.scala:1662)
+        at scala.tools.nsc.ast.parser.Parsers$Parser.objectDef(Parsers.scala:1618)
+        at scala.tools.nsc.ast.parser.Parsers$Parser.tmplDef(Parsers.scala:1587)
+        at scala.tools.nsc.ast.parser.Parsers$Parser$$anonfun$20.apply(Parsers.scala:1725)
+        at scala.tools.nsc.ast.parser.Parsers$Parser$$anonfun$20.apply(Parsers.scala:1725)
+        at scala.tools.nsc.ast.parser.Parsers$Parser.joinComment(Parsers.scala:186)
+        at scala.tools.nsc.ast.parser.Parsers$Parser.topStatSeq(Parsers.scala:1725)
+        at scala.tools.nsc.ast.parser.Parsers$Parser.compilationUnit(Parsers.scala:1878)
+        at scala.tools.nsc.ast.parser.Parsers$Parser.parse(Parsers.scala:67)
+        at scala.tools.nsc.ast.parser.SyntaxAnalyzer$ParserPhase.apply(SyntaxAnalyzer.scala:16)
+        at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:208)
+        at scala.tools.nsc.Global$GlobalPhase$$anonfun$1.apply(Global.scala:197)
+        at scala.tools.nsc.Global$GlobalPhase$$anonfun$1.apply(Global.scala:197)
+        at scala.Iterator$class.foreach(Iterator.scala:277)
+        at scala.collection.mutable.ListBuffer$$anon$0.foreach(ListBuffer.scala:216)
+        at scala.tools.nsc.Global$GlobalPhase.run(Global.scala:197)
+        at scala.tools.nsc.Global$Run.compileSources(Global.scala:422)
+        at scala.tools.nsc.Global$Run.compile(Global.scala:480)
+        at scala.tools.nsc.Main$.process(Main.scala:60)
+        at scala.tools.nsc.Main$.main(Main.scala:80)
+        at scala.tools.nsc.Main.main(Main.scala)
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >to work... or an error m3ssage if not supposed to.</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2006-03-15 10:44:09.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+fixed. is supposed to work, mistake was in the hyper-desugarizing makeFor code.
+
+A <code>makeBind(pat)</code> ensures that result of pat is bound to a variable, unfortunately, this happens *after* the first code point where the variable is needed and tried to be captured by <code>makeValue</code>.
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

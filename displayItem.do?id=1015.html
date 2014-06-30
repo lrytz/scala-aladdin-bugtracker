@@ -1,0 +1,159 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#1015]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Iulian</td>
+	  <td align="center" bgcolor="#FFFFFF">_</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2007-03-23 18:29:15.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">[contrib #392] value unary_- is not a member of scala.BigInt</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>object pidigits
+{
+  def main(args: Array[String]): unit =
+  {
+    val N: int = Integer.parseInt(args(0)); var i: int = 10
+
+    while (i &amp;lt;= N)
+    {
+      System.out.println(pi_digits(10) + &quot;\t:&quot; + i)
+      i = i + 10
+    }
+
+    i = i - 10
+
+    if (i &amp;lt; N)
+    {
+      System.out.println(pi_digits(N - i) + &quot;\t:&quot; + N)
+    }
+  }
+
+  def compose(a: Array[BigInt], b: Array[BigInt]): Array[BigInt] =
+  {
+    return Array(a(0) * b(0),
+                 a(0) * b(1) + a(1) * b(3),
+                 a(2) * b(0) + a(3) * b(2),
+                 a(2) * b(1) + a(3) * b(3))
+  }
+
+  def extract(a: Array[BigInt], j: int): BigInt =
+  {
+    return (a(0) * j + a(1)) / (a(2) * j + a(3))
+  }
+
+  def pi_digits(c: int): String =
+  {
+    val r: StringBuffer = new StringBuffer(); var i: int = 0
+
+    while (i &amp;lt; c)
+    {
+      var y: BigInt = extract(Z, 3)
+
+      while (y != extract(Z, 4))
+      {
+        K = K + 1; Z = compose(Z, Array(K, 4 * K + 2, 0, 2 * K + 1))
+        y = extract(Z, 3)
+      }
+
+      Z = compose(Array(10, (-y) * 10, 0, 1), Z)
+
+      r.append(y); i = i + 1; 
+    }
+
+    return r.toString()
+  }
+
+  var K: int = 0
+
+  var Z: Array[BigInt] = Array(1, 0, 0, 1)
+}</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>pidigits.scala:55: error: value unary_- is not a member of scala.BigInt
+      Z = compose(Array(10, (-y) * 10, 0, 1), Z)
+
+See http://shootout.alioth.debian.org/gp4/benchmark.php?test=pidigits&amp;lang=scala&amp;id=0#log
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >Expected it to work as in previous versions, like it says in the library source
+/** Returns a BigInt whose value is the negation of this BigInt
+   */
+  def - : BigInt   = new BigInt(this.bigInteger.negate())
+
+see http://shootout.alioth.debian.org/debian/benchmark.php?test=pidigits&amp;lang=scala&amp;id=0#log</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Iulian&nbsp; edited on &nbsp;2007-03-23 18:29:29.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

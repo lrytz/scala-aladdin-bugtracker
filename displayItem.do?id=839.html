@@ -1,0 +1,134 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#839]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Sean</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2006-11-26 16:49:44.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">Refined type lost through def with nested type.</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>// see pending/pos/bug112606A.scala
+package test;
+trait Test {
+  trait Global {
+    type Tree;
+    def get : Tree;
+  }
+  trait TreeBuilder {
+    val global : Global;
+    def set(tree : global.Tree) = {}
+  }
+  val nsc : Global;
+  trait FileImpl {
+    object treeBuilder extends TreeBuilder {
+      val global : nsc.type = nsc;
+    }
+    // OK
+    treeBuilder.set(nsc.get);
+  }
+  val file0 : FileImpl;
+  // OK
+  file0.treeBuilder.set(nsc.get);
+  def file : FileImpl;
+  // type mismatch
+  file.treeBuilder.set(nsc.get);
+}</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre><pre>
+type mismatch;
+found   : Test.this.nsc.Tree
+required: scala.Nothing	test37/src/test	Test.scala	line 21	
+</pre>
+
+Note that the first two treeBuilder.set calls compile without error (meaning the type is not erased through this\
+ or through a val of FileImpl). So obviously there is a bug somewhere.
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >For all treeBuilder.set calls to either pass (preferably) or fail (will at least be consistent). 
+</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-12-01 16:08:55.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+The example is in error, but the error was masked. You now get:
+<pre>
+bug839.scala:25 error: method set cannot be accessed in object Test.this.FileImpl#treeBuilder
+ because its instance type (Test.this.FileImpl#treeBuilder#global.Tree)scala.Unit contains a malformed type: object Test.this.FileImpl#treeBuilder#global
+  file.treeBuilder.set(nsc.get);
+                  ^
+one error found
+</pre>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

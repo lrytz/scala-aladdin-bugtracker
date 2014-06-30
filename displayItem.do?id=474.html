@@ -1,0 +1,129 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#474]</th>
+		<th><strong>project:</strong> nsc</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Burak</td>
+	  <td align="center" bgcolor="#FFFFFF">_</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2005-11-05 15:30:24.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">incompatible class change error at runtime</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>object Test {
+  def main(args:Array[String]) = {
+    val x = new scala.collection.mutable.ArrayBuffer[int]() + 1;
+    x.toList;
+    {}
+  }
+}</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre><pre>
+[emir@lamppc31 /tmp]$ ns -cp . Test
+Exception in thread "main" java.lang.IncompatibleClassChangeError
+        at scala.Iterator$class.toList(/localhome/buraq/scala/sources/scala/Iterator.scala:423)
+        at scala.collection.mutable.ResizableArray$$anon0.toList(/localhome/buraq/scala/sources/scala/collection\
+/mutable/ResizableArray.scala:59)
+        at scala.Seq$class.toList(/localhome/buraq/scala/sources/scala/Seq.scala:173)
+        at scala.collection.mutable.ArrayBuffer.toList(/localhome/buraq/scala/sources/scala/collection/mutable/A\
+rrayBuffer.scala:20)
+        at Test$.main(abuf.scala:2)
+        at Test.main(abuf.scala)
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >no error</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Iulian&nbsp; edited on &nbsp;2005-11-05 17:31:07.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+I cannot reproduce it. On my system I get a JVM crash:
+<pre>
+#
+# An unexpected error has been detected by HotSpot Virtual Machine:
+#
+#  SIGSEGV (0xb) at pc=0xb37c6ac9, pid=11829, tid=3085440704
+#
+# Java VM: Java HotSpot(TM) Client VM (1.4.2_09-b05 mixed mode)
+# Problematic frame:
+#
+[error occurred during error reporting, step 60, id 0xb]
+</pre>
+</td></tr>
+<tr>
+        <td>
+        <strong>Iulian&nbsp; edited on &nbsp;2005-11-07 15:09:01.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+I fixed the bug, now it runs fine on my machine. Burak, could you please check it on yours, given that the error was different on my system?
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

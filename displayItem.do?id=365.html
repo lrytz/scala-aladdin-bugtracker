@@ -1,0 +1,202 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#365]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> medium</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Matthias</td>
+	  <td align="center" bgcolor="#FFFFFF">Burak</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2004-09-29 09:48:22.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">Unbalanced XML literals</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>object T {
+  val x = &lt;a&gt;&lt;b&gt;&lt;/b&gt;;
+}</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>Crashes the compiler:
+<pre>
+T.scala:4: unclosed XML literal
+
+
+Exception in thread "main" java.lang.ArrayIndexOutOfBoundsException: 36
+        at scala.tools.scalac.ast.parser.Scanner$SourceIterator$class.raw(Scanner.scala:93)
+        at scala.tools.scalac.ast.parser.Scanner$class.xNext(Scanner.scala:916)
+        at scala.tools.scalac.ast.parser.MarkupParser$class.nextch(MarkupParser.scala:472)
+        at scala.tools.scalac.ast.parser.MarkupParser$class.xText(MarkupParser.scala:377)
+        at scala.tools.scalac.ast.parser.MarkupParser$class.content(MarkupParser.scala:279)
+        at scala.tools.scalac.ast.parser.MarkupParser$class.element(MarkupParser.scala:299)
+        at scala.tools.scalac.ast.parser.MarkupParser$class.xLiteral(MarkupParser.scala:408)
+        at scala.tools.scalac.ast.parser.Parser$class.simpleExpr(Parser.scala:1019)
+        at scala.tools.scalac.ast.parser.Parser$class.prefixExpr(Parser.scala:998)
+        at scala.tools.scalac.ast.parser.Parser$class.postfixExpr(Parser.scala:961)
+        at scala.tools.scalac.ast.parser.Parser$class.expr(Parser.scala:919)
+        at scala.tools.scalac.ast.parser.Parser$class.expr(Parser.scala:845)
+        at scala.tools.scalac.ast.parser.Parser$class.equalsExpr(Parser.scala:797)
+        at scala.tools.scalac.ast.parser.Parser$class.patDefOrDcl(Parser.scala:1743)
+        at scala.tools.scalac.ast.parser.Parser$class.defOrDcl(Parser.scala:1697)
+        at scala.tools.scalac.ast.parser.Parser$$anon$7.apply(Parser.scala:2085)
+        at scala.tools.scalac.ast.parser.Parser$$anon$7.apply(Parser.scala:2085)
+        at scala.tools.scalac.ast.parser.Parser$class.joinComment(Parser.scala:173)
+        at scala.tools.scalac.ast.parser.Parser$class.templateStatSeq(Parser.scala:2085)
+        at scala.tools.scalac.ast.parser.Parser$class.templateBody(Parser.scala:2006)
+        at scala.tools.scalac.ast.parser.Parser$class.classTemplate(Parser.scala:1963)
+        at scala.tools.scalac.ast.parser.Parser$class.objectDef(Parser.scala:1933)
+        at scala.tools.scalac.ast.parser.Parser$class.clsDef(Parser.scala:1724)
+        at scala.tools.scalac.ast.parser.Parser$$anon$6.apply(Parser.scala:2058)
+        at scala.tools.scalac.ast.parser.Parser$$anon$6.apply(Parser.scala:2058)
+        at scala.tools.scalac.ast.parser.Parser$class.joinComment(Parser.scala:173)
+        at scala.tools.scalac.ast.parser.Parser$class.topStatSeq(Parser.scala:2058)
+        at scala.tools.scalac.ast.parser.Parser$class.compilationUnit(Parser.scala:2195)
+        at scala.tools.scalac.ast.parser.Parser$class.parse(Parser.scala:64)
+        at scala.tools.scalac.ast.parser.ParserPhase$$anon$0.apply(ParserPhase.scala:21)
+        at scala.tools.scalac.ast.parser.ParserPhase$$anon$0.apply(ParserPhase.scala:19)
+        at scala.Iterator$class.foreach(Iterator.scala:252)
+        at scala.tools.scalac.ast.parser.ParserPhase$class.apply(ParserPhase.scala:19)
+        at scalac.Global.compile(Global.java:390)
+        at scalac.Global.compile(Global.java:360)
+        at scala.tools.scalac.Main$.main1(Main.scala:45)
+        at scala.tools.scalac.Main$.main(Main.scala:28)
+        at scala.tools.scalac.Main.main(Main.scala:28)
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >A useful error message.</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Matthias&nbsp; edited on &nbsp;2004-09-29 10:08:59.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2004-09-30 12:04:16.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+I fixed this to the following. The second error message
+is garbage, but not easy to avoid.
+<pre>
+te.scala:2: missing end tag in XML literal for <a>
+  val x = <a><b></b>;
+          ^
+te.scala:4: ';' expected but something found.
+
+^
+two errors found
+</pre>
+</td></tr>
+<tr>
+        <td>
+        <strong>Matthias&nbsp; edited on &nbsp;2004-10-12 10:20:53.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+I still get exceptions for unbalanced XML literals. Here's an example:
+<pre>
+object T {
+  val x = <a>;
+}
+</pre>
+</td></tr>
+<tr>
+        <td>
+        <strong>Matthias&nbsp; edited on &nbsp;2004-10-12 10:22:25.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Oops, my brackets got lost. Ok, here's another try:
+<pre>
+object T {
+  val x = &lt;a&gt;;
+}
+</pre>
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2004-10-12 10:35:12.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+not reproducible, are you using the latest check-out?
+
+I get:
+<pre>
+test.scala:2: missing end tag in XML literal for <a>
+  val x = &lt;a&gt;
+          ^
+test.scala:4: ';' expected but something found.
+
+^
+
+</pre>
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

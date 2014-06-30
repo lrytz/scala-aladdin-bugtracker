@@ -1,0 +1,144 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#817]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> high</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Sean</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2006-11-11 13:54:18.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">traits + object types + mixin compositions = crash in backend (latest checkin only).</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>abstract class NewScalaTestYYY { 
+  abstract class Dir;
+  object PREV extends Dir;
+  trait BeginImpl { 
+    def initDir : PREV.type = null;
+  }
+  class Begin extends BeginImpl;
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre><pre>sean-mcdirmid:~/workspace/lampion/src mcdirmid$ ../../scala/build/quick/bin/scalac -d ../bin -sourcepath . \
+lampion/scalax/NewScalaTestYYY.scala
+Exception in thread "main" java.lang.AssertionError: assertion failed: REFERENCE to NoSymbol not allowed!
+	at scala.Predef$.assert(Predef.scala:100)
+	at scala.tools.nsc.backend.icode.TypeKinds$REFERENCE.<init>(TypeKinds.scala:218)
+	at scala.tools.nsc.backend.icode.TypeKinds$class.toTypeKind(TypeKinds.scala:347)
+	at scala.tools.nsc.backend.icode.ICodes.toTypeKind(ICodes.scala:18)
+	at scala.tools.nsc.backend.icode.GenICode$ICodePhase.gen(GenICode.scala:102)
+	at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$0.apply(GenICode.scala:68)
+	at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$0.apply(GenICode.scala:67)
+	at scala.List.foreach(List.scala:692)
+	at scala.tools.nsc.backend.icode.GenICode$ICodePhase.gen(GenICode.scala:67)
+	at scala.tools.nsc.backend.icode.GenICode$ICodePhase.gen(GenICode.scala:129)
+	at scala.tools.nsc.backend.icode.GenICode$ICodePhase.gen(GenICode.scala:86)
+	at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$0.apply(GenICode.scala:68)
+	at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$0.apply(GenICode.scala:67)
+	at scala.List.foreach(List.scala:692)
+	at scala.tools.nsc.backend.icode.GenICode$ICodePhase.gen(GenICode.scala:67)
+	at scala.tools.nsc.backend.icode.GenICode$ICodePhase.gen(GenICode.scala:79)
+	at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$0.apply(GenICode.scala:68)
+	at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$0.apply(GenICode.scala:67)
+	at scala.List.foreach(List.scala:692)
+	at scala.tools.nsc.backend.icode.GenICode$ICodePhase.gen(GenICode.scala:67)
+	at scala.tools.nsc.backend.icode.GenICode$ICodePhase.gen(GenICode.scala:79)
+	at scala.tools.nsc.backend.icode.GenICode$ICodePhase.gen(GenICode.scala:63)
+	at scala.tools.nsc.backend.icode.GenICode$ICodePhase.apply(GenICode.scala:59)
+	at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:219)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$1.apply(Global.scala:208)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$1.apply(Global.scala:208)
+	at scala.Iterator$class.foreach(Iterator.scala:319)
+	at scala.collection.mutable.ListBuffer$$anon$0.foreach(ListBuffer.scala:244)
+	at scala.tools.nsc.Global$GlobalPhase.run(Global.scala:208)
+	at scala.tools.nsc.backend.icode.GenICode$ICodePhase.run(GenICode.scala:53)
+	at scala.tools.nsc.Global$Run.compileSources(Global.scala:473)
+	at scala.tools.nsc.Global$Run.compile(Global.scala:542)
+	at scala.tools.nsc.Main$.process(Main.scala:74)
+	at scala.tools.nsc.Main$.main(Main.scala:96)
+	at scala.tools.nsc.Main.main(Main.scala)
+sean-mcdirmid:~/workspace/lampion/src mcdirmid$</pre>
+
+This is a newly created bug I think, or my code would have crashed long ago. 
+
+ 
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" ></td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-11-11 19:39:52.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Bug was caused by fix to bug809. I start to despair again of this  mixin thing!
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

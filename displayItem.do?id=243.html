@@ -1,0 +1,146 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#243]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Burak</td>
+	  <td align="center" bgcolor="#FFFFFF">_</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2003-12-01 12:40:40.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">medium-length patterns crash backend</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>object bugFJ_1 {
+  def extract( cs:char* ):Unit = cs match {
+    case Seq(_*,'\\',src @ _ *,'\\','e','n','d','{','l','s','t','l','i','s','t',rest @ _ *  )
+      =&gt;
+  }
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre><pre>
+Exception in thread "main" java.lang.AssertionError: 71212
+	at ch.epfl.lamp.util.ByteArray.putU2(ByteArray.java:93)
+	at ch.epfl.lamp.fjbg.JCode.patchAllOffset(JCode.java:907)
+	at ch.epfl.lamp.fjbg.JCode.freeze(JCode.java:95)
+	at ch.epfl.lamp.fjbg.JMethod.freeze(JMethod.java:81)
+	at ch.epfl.lamp.fjbg.JFieldOrMethod.writeTo(JFieldOrMethod.java:129)
+	at ch.epfl.lamp.fjbg.JClass.writeTo(JClass.java:320)
+	at ch.epfl.lamp.fjbg.JClass.writeTo(JClass.java:272)
+	at ch.epfl.lamp.fjbg.JClass.writeTo(JClass.java:256)
+	at scalac.backend.jvm.GenJVM.leaveClass(GenJVM.java:1563)
+	at scalac.backend.jvm.GenJVM.gen(GenJVM.java:139)
+	at scalac.backend.jvm.GenJVM.translate(GenJVM.java:110)
+	at scalac.backend.jvm.GenJVMPhase.apply(GenJVMPhase.java:45)
+	at scalac.Global.compile(Global.java:300)
+	at scalac.Global.compile(Global.java:272)
+	at scala.tools.scalac.Main$.main(sources/scala/tools/scalac/Main.scala:33)
+	at scala.tools.scalac.Main.main(sources/scala/tools/scalac/Main.scala)
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >silent run</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2003-12-01 12:41:27.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Similar to the bug 242, but different error.
+</td></tr>
+<tr>
+        <td>
+        <strong>Michel&nbsp; edited on &nbsp;2003-12-02 09:37:05.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+<p>The problem here is that the pattern matcher generates code which is far too big for the JVM. The JVM has several limits, for example on the size of the code that a method can contain (65k IIRC), the size of jump labels, and so on.</p>
+
+<p>It is not clear to me whether we should fix that directly in the back-end or earlier. Therefore I re-assigned the bug to nobody.</p>
+</td></tr>
+<tr>
+        <td>
+        <strong>Michel&nbsp; edited on &nbsp;2003-12-02 13:16:02.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+<p>In fact, this was a duplicate of 242, and it is therefore fixed now. The problem of the limits of the JVM remain, though, but since the Java compilers I tried (namely javac and pico) do nothing special when these limits are reached, I guess we can ignore the problem in the short term.</p>
+
+<p>I still think the pattern matcher should be changed to avoid the creation of such large code for simple code like this, but as I said Buraq is aware of this.</p>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2003-12-02 16:50:10.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+The inefficient if..then..else chains are removed, now switches are created instead.
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

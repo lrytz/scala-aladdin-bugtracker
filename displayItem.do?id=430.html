@@ -1,0 +1,123 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#430]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Philippe</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2005-05-13 15:14:47.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">No view from <code>Unit</code>, <code>Byte</code> and <code>Short</code> to <code>Ordered</code></td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>object Test {
+  def foo[T](x: Ordered[T] ): Unit = ();
+
+  def bar(x: Unit   ): Unit = foo(x);
+  def bar(x: Boolean): Unit = foo(x);
+  def bar(x: Byte   ): Unit = foo(x);
+  def bar(x: Short  ): Unit = foo(x);
+  def bar(x: Int    ): Unit = foo(x);
+  def bar(x: Long   ): Unit = foo(x);
+  def bar(x: Float  ): Unit = foo(x);
+  def bar(x: Double ): Unit = foo(x);
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre><pre>
+tmp/test.scala:4: type mismatch;
+ found   : scala.Unit
+ required: scala.Ordered[<any type>]
+  def bar(x: Unit   ): Unit = foo(x);
+                                  ^
+tmp/test.scala:6: type mismatch;
+ found   : scala.Byte
+ required: scala.Ordered[<any type>]
+  def bar(x: Byte   ): Unit = foo(x);
+                                  ^
+tmp/test.scala:7: type mismatch;
+ found   : scala.Short
+ required: scala.Ordered[<any type>]
+  def bar(x: Short  ): Unit = foo(x);
+                                  ^
+three errors found
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >The types <code>Byte</code> and <code>Short</code> should have a view to <code>Ordered</code> and maybe also <code>Unit</code>.
+</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-03-30 15:10:10.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

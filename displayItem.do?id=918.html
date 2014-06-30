@@ -1,0 +1,115 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#918]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Nikolay</td>
+	  <td align="center" bgcolor="#FFFFFF">Iulian</td>
+	  <td align="center" bgcolor="#FFFFFF">won't fix</td>
+          <td align="center" bgcolor="#FFFFFF">2007-01-28 23:12:06.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">[contrib #306] It is possible to have method names with illegal unicode identifiers</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>This won't come out. For example, if is possible to have
+
+def method(x: int): unit = { ... }
+
+Where method starts with or contains an illegal Java identifier (as found using java.lang.Character.isJavaIdentifierStart or java.lang.Character.isJavaIdentifierPart). In particular, the top bit set latin 1 indentifiers for multiply and divide (0x00D7 and 0x00F7 in Unicode). This compiles correctly, but can not be loaded by the JVM.
+
+The source code was a UTF-8 format file.</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>Compilation fine. Could not load class into the JVM.
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >Should not able to compile these method names.</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Nikolay&nbsp; edited on &nbsp;2007-01-28 23:14:16.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+contribution #306. I assigned it to Iuli because I prefer this fixed in the JVM generator rather than the frontend. Or maybe it should the FJBG library.
+</td></tr>
+<tr>
+        <td>
+        <strong>Iulian&nbsp; edited on &nbsp;2007-02-06 12:08:31.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+I think the program should work, Unicode categories Sm and So are allowed by the scanner, as part of operator names. What we should do is encode/decode these names as we do with some operator names. We discussed this before but there was no clear decision, maybe because Sun's JVM has always been liberal w.r.t. to valid names (accepts more than advertised).
+</td></tr>
+<tr>
+        <td>
+        <strong>Iulian&nbsp; edited on &nbsp;2007-03-01 10:42:54.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+We discussed that this is and concluded that it is 'platform specific', so we won't fix.
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

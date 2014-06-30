@@ -1,0 +1,142 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#582]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> medium</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Stephane</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2006-04-28 16:25:25.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">NullPointerException in Erasure phase</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>// File: myjava/test4.java
+package myjava;
+public class test4 {
+    public int x = 2;
+    public class inner4 {
+        public int y = 3;
+    }
+}
+
+// File: myscala/test4.scala
+package myscala
+object test4 {
+  def main(args: Array[String]): Unit = {
+    val m = new myjava.test4
+    val n = new myjava.test4#inner4(m)
+    Console.println(&quot;test4: &quot; + m.x)
+    Console.println(&quot;test4: &quot; + n.y)
+  }
+}</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre><pre>Exception in thread "main" java.lang.NullPointerException
+        at scala.tools.nsc.transform.Erasure$Eraser.adaptMember(Erasure.scala:305)
+        at scala.tools.nsc.transform.Erasure$Eraser.typed1(Erasure.scala:363)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1625)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1655)
+[..]</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >Compiled code displays values "2" and "3"</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-08-20 19:01:35.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Since Iulian has now taken the lead to make Scala compatible with Java's inner classes, I reassign this to him.
+</td></tr>
+<tr>
+        <td>
+        <strong>Iulian&nbsp; edited on &nbsp;2006-08-23 15:41:08.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+This is not related to Java inner classes. Here's a simpler way to reproduce it:
+
+<pre>
+class B;
+class O {
+  type I = B;
+  val n = new O#I;
+}
+</pre>
+
+Apparently the 'SelectFromTypeTree' node has a null 'tpe' when it reaches adaptMember (which matches on this node and uses an if guard on it). I couldn't figure out why it's null (it's correct when reaching phase erasure, so it's nullified during this phase). I reassign this to Martin since I am lost in the mixin code.
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-10-26 16:44:15.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Fixed by Iulians changes to outer pointers, I guess.
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

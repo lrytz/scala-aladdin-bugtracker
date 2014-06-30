@@ -1,0 +1,167 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#1090]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Sean</td>
+	  <td align="center" bgcolor="#FFFFFF">Adriaan</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2007-05-07 13:43:45.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">stack overflow in inferencer on widen</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>object Test {
+  trait Manager {
+    type Node;
+    def elements : Iterator[Node]
+  }
+  trait Core {
+    type Node;
+    trait NodeImpl
+    trait Manager extends Test.Manager {
+      type Node = Core.this.Node
+    }
+    def f(manager : Manager) = manager.elements.foreach{
+      case node : NodeImpl =&gt; 
+    }
+  }
+}</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre><pre>java.lang.StackOverflowError
+	at scala.tools.nsc.symtab.Symbols$ClassSymbol.name(Symbols.scala:1250)
+	at scala.tools.nsc.symtab.Symbols$Symbol.rawInfo(Symbols.scala:450)
+	at scala.tools.nsc.symtab.Symbols$Symbol.info(Symbols.scala:421)
+	at scala.tools.nsc.symtab.Symbols$Symbol.closureLength$0(Symbols.scala:572)
+	at scala.tools.nsc.symtab.Symbols$Symbol.isLess(Symbols.scala:575)
+	at scala.tools.nsc.symtab.Types$Type.closurePos(Types.scala:424)
+	at scala.tools.nsc.symtab.Symbols$Symbol.isNonBottomSubClass(Symbols.scala:591)
+	at scala.tools.nsc.symtab.Types$AsSeenFromMap.toPrefix$0(Types.scala:1858)
+	at scala.tools.nsc.symtab.Types$AsSeenFromMap.apply(Types.scala:1865)
+	at scala.tools.nsc.symtab.Types$AsSeenFromMap.apply(Types.scala:1840)
+	at scala.tools.nsc.symtab.Types$TypeMap.mapOver(Types.scala:1727)
+	at scala.tools.nsc.symtab.Types$AsSeenFromMap.apply(Types.scala:1907)
+	at scala.tools.nsc.symtab.Types$Type.asSeenFrom(Types.scala:282)
+	at scala.tools.nsc.symtab.Types$TypeRef.transform(Types.scala:1126)
+	at scala.tools.nsc.symtab.Types$TypeRef.normalize(Types.scala:1205)
+	at scala.tools.nsc.typechecker.Infer$Inferencer.widen(Infer.scala:863)
+	at scala.tools.nsc.typechecker.Infer$Inferencer.widen(Infer.scala:865)
+	at scala.tools.nsc.typechecker.Infer$Inferencer.widen(Infer.scala:865)
+	at scala.tools.nsc.typechecker.Infer$Inferencer.widen(Infer.scala:865)
+	at scala.tools.nsc.typechecker.Infer$Inferencer.widen(Infer.scala:865)
+	at scala.tools.nsc.typechecker.Infer$Inferencer.widen(Infer.scala:865)
+	at scala.tools.nsc.typechecker.Infer$Inferencer.widen(Infer.scala:865)
+	at scala.tools.nsc.typechecker.Infer$Inferencer.widen(Infer.scala:865)
+	at scala.tools.nsc.typechecker.Infer$Inferencer.widen(Infer.scala:865)
+	at scala.tools.nsc.typechecker.Infer$Inferencer.widen(Infer.scala:865)
+	at scala.tools.nsc.typechecker.Infer$Inferencer.widen(Infer.scala:865)
+	at scala.tools.nsc.typechecker.Infer$Inferencer.widen(Infer.scala:865)
+	at scala.tools.nsc.typechecker.Infer$Inferencer.widen(Infer.scala:865)
+	at scala.tools.nsc.typechecker.Infer$Inferencer.widen(Infer.scala:865)
+	at scala.tools.nsc.typechecker.Infer$Inferencer.widen(Infer.scala:865)
+	at scala.tools.nsc.typechecker.Infer$Inferencer.widen(Infer.scala:865)
+	at scala.tools.nsc.typechecker.Infer$Inferencer.widen(Infer.scala:865)
+	at scala.tools.nsc.typechecker.Infer$Inferencer.widen(Infer.scala:865)
+	at scala.tools.nsc.typechecker.Infer$Inferencer.widen(Infer.scala:865)
+	at scala.tools.nsc.typechecker.Infer$Inferencer.widen(Infer.scala:865)
+	at scala.tools.nsc.typechecker.Infer$Inferencer.widen(Infer.scala:865)
+	at scala.tools.nsc.typechecker.Infer$Inferencer.widen(Infer.scala:865)
+	at scala.tools.nsc.typechecker.Infer$Inferencer.widen(Infer.scala:865)
+	at scala.tools.nsc.typechecker.Infer$Inferencer.widen(Infer.scala:865)
+	at scala.tools.nsc.typechecker.Infer$Inferencer.widen(Infer.scala:865)
+	at scala.tools.nsc.typechecker.Infer$Inferencer.widen(Infer.scala:865)
+	at scala.tools.nsc.typechecker.Infer$Inferencer.widen(Infer.scala:865)
+	at scala.tools.nsc.typechecker.Infer$Inferencer.widen(Infer.scala:865)
+	at scala.tools.nsc.typechecker.Infer$Inferencer.widen(Infer.scala:865)
+	at scala.tools.nsc.typechecker.Infer$Inferencer.widen(Infer.scala:865)
+	at scala.tools.nsc.typechecker.Infer$Inferencer.widen(Infer.scala:865)
+	at scala.tools.nsc.typechecker.Infer$Inferencer.widen(Infer.scala:865)
+	at scala.tools.nsc.typechecker.Infer$Inferencer.widen(Infer.scala:865)
+	at scala.tools.nsc.typechecker.Infer$Inferencer.widen(Infer.scala:865)
+	at scala.tools.nsc.typechecker.Infer$Inferencer.widen(Infer.scala:865)
+	at scala.tools.nsc.typechecker.Infer$Inferencer.widen(Infer.scala:865)
+	at scala.tools.nsc.typechecker.Infer$Inferencer.widen(Infer.scala:865)
+	at scala.tools.nsc.typechecker.Infer$Inferencer.widen(Infer.scala:865)
+	at scala.tools.nsc.typechecker.Infer$Inferencer.widen(Infer.scala:865)
+	at scala.tools.nsc.typechecker.Infer$Inferencer.widen(Infer.scala:865)
+	at scala.tools.nsc.typechecker.Infer$Inferencer.widen(Infer.scala:865)
+	at scala.tools.nsc.typechecker.Infer$Inferencer.widen(Infer.scala:865)
+	at scala.tools.nsc.typechecker.Infer$Inferencer.widen(Infer.scala:865)
+	at scala.tools.nsc.typechecker.Infer$Inferencer.widen(Infer.scala:865)</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" ></td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Adriaan&nbsp; edited on &nbsp;2007-05-08 17:25:30.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+fixed in r10963
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

@@ -1,0 +1,204 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#902]</th>
+		<th><strong>project:</strong> nsc</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Nikolay</td>
+	  <td align="center" bgcolor="#FFFFFF">_</td>
+	  <td align="center" bgcolor="#FFFFFF">open</td>
+          <td align="center" bgcolor="#FFFFFF">2007-01-19 09:55:20.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">[contrib #299] Windows NT4 SP6 install problem NoClassDefFoundError: scala/tools/nsc/Main</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>I'm trying to install scala-2.3.0.zip on an old Windows NT4 SP6
+machine. JRE is installed - Java(TM) 2 Runtime Environment, Standard
+Edition (build 1.4.2_13-b06)
+
+I've set SCALA_HOME, put \bin on PATH, put \lib\scala-compiler.jar on CLASSPATH but still get this error 
+
+C:\&gt;scalac -help
+Exception in thread &quot;main&quot; java.lang.NoClassDefFoundError:
+scala/tools/nsc/Main</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre><pre>C:\>rem @echo off 
+C:\>rem ########################################################################## 
+C:\>rem # Scala compiler 2.3.0 
+C:\>rem ########################################################################## 
+C:\>rem # Copyright 2002-2006 LAMP/EPFL 
+C:\>rem # 
+C:\>rem # This is free software; see the distribution for copying conditions. 
+
+C:\>rem # There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A 
+C:\>rem # PARTICULAR PURPOSE. 
+C:\>rem ########################################################################## 
+C:\>rem We adopt the following conventions: 
+C:\>rem - System/user environment variables start with a letter
+C:\>rem - Local batch variables start with an underscore ('_')
+C:\>if "Windows_NT" == "Windows_NT" ()  else (set _SCALA_HOME=D:\scala  & if "" == "" goto error1 )
+C:\>set _BIN_DIR=
+C:\>FOR %i in (D:\scala\bin\scalac.bat) do set _BIN_DIR=%~dpsi
+C:\>set _BIN_DIR=D:\scala\bin\
+C:\>set _SCALA_HOME=D:\scala\bin\..
+C:\>goto :eof
+C:\>rem We use the value of the JAVACMD environment variable if defined
+C:\>set _JAVACMD=
+C:\>if "" == "" set _JAVACMD=java
+C:\>set _EXTENSION_CLASSPATH= 
+
+C:\>if "" == "" (FOR %f in ("D:\scala\bin\..\lib\*") do call :add_cpath "%f"  & if "Windows_NT" == "Windows_NT" \
+(FOR /D %f in ("D:\scala\bin\..\lib\*") do call :add_cpath "%f" ) )
+C:\>call :add_cpath "D:\scala\bin\..\lib\sbaz.jar"  & if "Windows_NT" == "Windows_NT" (FOR /D %f in ("D:\scala\b\
+in\..\lib\*") do call :add_cpath "D:\scala\bin\..\lib\sbaz.jar" ) 
+
+C:\>if "" == "" (set _EXTENSION_CLASSPATH= )  else (set _EXTENSION_CLASSPATH=; ) 
+C:\>goto :eof
+C:\>call :add_cpath "D:\scala\bin\..\lib\scala-actors.jar"  & if "Windows_NT" == "Windows_NT" (FOR /D %f in ("D:\
+\scala\bin\..\lib\*") do call :add_cpath "D:\scala\bin\..\lib\scala-actors.jar" ) 
+
+C:\>if "" == "" (set _EXTENSION_CLASSPATH= )  else (set _EXTENSION_CLASSPATH=; ) 
+C:\>goto :eof
+C:\>call :add_cpath "D:\scala\bin\..\lib\scala-compiler.jar"  & if "Windows_NT" == "Windows_NT" (FOR /D %f in ("\
+D:\scala\bin\..\lib\*") do call :add_cpath "D:\scala\bin\..\lib\scala-compiler.jar" )
+C:\>if "" == "" (set _EXTENSION_CLASSPATH= )  else (set _EXTENSION_CLASSPATH=; ) 
+C:\>goto :eof
+C:\>call :add_cpath "D:\scala\bin\..\lib\scala-dbc.jar"  & if "Windows_NT" == "Windows_NT" (FOR /D %f in ("D:\sc\
+ala\bin\..\lib\*") do call :add_cpath "D:\scala\bin\..\lib\scala-dbc.jar" )
+C:\>if "" == "" (set _EXTENSION_CLASSPATH= )  else (set _EXTENSION_CLASSPATH=; ) 
+C:\>goto :eof
+C:\>call :add_cpath "D:\scala\bin\..\lib\scala-decoder.jar"  & if "Windows_NT" == "Windows_NT" (FOR /D %f in ("D\
+:\scala\bin\..\lib\*") do call :add_cpath "D:\scala\bin\..\lib\scala-decoder.jar" ) 
+
+C:\>if "" == "" (set _EXTENSION_CLASSPATH= )  else (set _EXTENSION_CLASSPATH=; ) 
+
+C:\>goto :eof 
+
+C:\>call :add_cpath "D:\scala\bin\..\lib\scala-library.jar"  & if "Windows_NT" == "Windows_NT" (FOR /D %f in ("D\
+:\scala\bin\..\lib\*") do call :add_cpath "D:\scala\bin\..\lib\scala-library.jar" )
+C:\>if "" == "" (set _EXTENSION_CLASSPATH= )  else (set _EXTENSION_CLASSPATH=; ) 
+C:\>goto :eof
+C:\>set _BOOT_CLASSPATH=
+C:\>if "" == "" (if exist "D:\scala\bin\..\lib\scala-library.jar" (set _BOOT_CLASSPATH=D:\scala\bin\..\lib\scala\
+-library.jar )  & if exist "D:\scala\bin\..\lib\library" (set _BOOT_CLASSPATH=D:\scala\bin\..\lib\library ) ) 
+
+C:\>set _ARGS= 
+C:\>rem Argument -help may contain quotes so we use parentheses here 
+C:\>if (-help) == () goto exec
+C:\>set _ARGS= -help
+C:\>shift
+C:\>goto loop
+C:\>rem Argument  may contain quotes so we use parentheses here
+C:\>if () == () goto exec
+C:\>set _PROPS=-Dscala.home="D:\scala\bin\.." -Denv.classpath="D:\scala\lib\scala-compiler.jar" -Dscala.tool.nam\
+e="Scala compiler" -Dscala.tool.version="2.3.0"  
+
+C:\>rem echo java -Xbootclasspath/a:"D:\scala\bin\..\lib\scala-library.jar" -Xmx256M -Xms16M -Dscala.home="D:\sc\
+ala\bin\.." -Denv.classpath="D:\scala\lib\scala-compiler.jar" -Dscala.tool.name="Scala compiler" -Dscala.tool.ve\
+rsion="2.3.0"  -cp "" scala.tools.nsc.Main   -help 
+
+C:\>java -Xbootclasspath/a:"D:\scala\bin\..\lib\scala-library.jar" -Xmx256M -Xms16M -Dscala.home="D:\scala\bin\.\
+." -Denv.classpath="D:\scala\lib\scala-compiler.jar" -Dscala.tool.name="Scala compiler" -Dscala.tool.version="2.\
+3.0"  -cp "" scala.tools.nsc.Main   -help
+C:\>goto end 
+C:\>if "Windows_NT" == "Windows_NT"</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >I expected a list of scalac options</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Nikolay&nbsp; edited on &nbsp;2007-01-19 09:58:21.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Contribution #299. Don't know whom to assign it to.
+</td></tr>
+<tr>
+        <td>
+        <strong>Stephane&nbsp; edited on &nbsp;2007-04-16 10:42:12.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Stephane&nbsp; edited on &nbsp;2007-04-16 10:42:51.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Stephane&nbsp; edited on &nbsp;2007-04-16 10:44:01.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

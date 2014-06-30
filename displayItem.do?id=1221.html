@@ -1,0 +1,116 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#1221]</th>
+		<th><strong>project:</strong> api</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Sean</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">open</td>
+          <td align="center" bgcolor="#FFFFFF">2007-07-18 08:55:45.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">overloading weirdness: Iterable.++ vs. Buffer.++</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>Check out Iterable.++[B &gt;: A](iter : Iterable[B]) : Iterable[B] and Buffer.++(iter : Iterable[A]) : Buffer[A]
+
+Code:
+
+val x : RandomAccessSeq[Char] = &quot;hello&quot;;
+val y : String = &quot;world&quot;;
+val z = new StringBuilder
+z ++ (if (true) x else y) // rejected for overloading ambiguity)
+z ++ (1 :: Nil) // compiles ok</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>Compiler will report nameclashes if both methods are overridden in the same class. Compiler will also puke on ov\
+erloading resolution in certain cases (mainly with RichStringBuilder). 
+
+In the code above, the compiler will report ambiguity because implicit coercion doesn't work very well in the pr\
+esence of overloading. In this case, it won't apply the implicit coercion to y. 
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >++ shouldn't be overloaded in Buffer (and other mutable collections) with a different signature. Actually, I'm surprised the compiler even allows this: it seems to me that it should report a nameclash in Buffer because a new ++ method is defined with a conflicting signature.
+
+One of the ++ methods has to be renamed. I don't even think we can deprecate first as this is pretty broken.</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Sean&nbsp; edited on &nbsp;2007-07-18 09:32:53.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Actually, the trick is that each ++ should have a different return type, and the Scala compiler won't report a nameclash. This is sort of a hack, because ideally we'd want both ++ methods in Buffer return Buffers.
+
+The fact that RichStringBuilder has two ++ methods makes it very fragile with respect to type inference. Added some example code to demonstrate why overloading of ++ creates problems. 
+
+I think we could deprecate if we wanted to. I now remember why Martin did this: ++ can be seen as a way of going from mutable to immutable collection and its useful. However, overloading in Scala is very fragile, i.e., type inference gives up more quickly in the presence of overloaded methods.
+
+One possible solution would be to defer adding ++ until mutable (invariant)/immutable (covariant) is fixed. That way, we avoid overloading in mutable collections. 
+
+
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

@@ -1,0 +1,106 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#980]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> missing feature</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Burak</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">won't fix</td>
+          <td align="center" bgcolor="#FFFFFF">2007-03-07 10:26:57.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">sometimes less inference would be more</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>Console.println(List(1,2,3) indexOf { x:Int =&gt; x % 2 == 0 })
+
+// what was meant was: findIndexOf</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>This compiles and executes, but with a somewhat strange result if one is deceived by the method name:
+<pre>
+tsf-wpa-2-180:~/Documents/svn/scala buraq$ ./build/quick/bin/scala -nocompdaemon /tmp/gagaga.scala 
+-1
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >Just like with equality ==, the parametric polymorphism seems to defeat the purpose of the type system in some cases. List contains the method
+<pre>
+  def indexOf[B >: A](elem: B): Int = ...
+</pre>
+so the type of the anonymous function is simply bumped up to AnyRef :-(:-( It would be nice if the user had more fine-grained control over inference that calls lower bounded methods.
+<br />
+The present behavior is very good for method ::, but I claim most uses of lower bounds on type parameters of method are only there to have covariance for some type parameter A of the enclosing class. This would be a use case for an attribute "@don't infer type argument if it is not exactly A" def indexOf.</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2007-03-08 10:44:47.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+I don't really see what we can do here. Unless there's a concrete and implementable proposal how to modify the library and the type system.
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

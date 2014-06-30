@@ -1,0 +1,451 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#1268]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Iulian</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">open</td>
+          <td align="center" bgcolor="#FFFFFF">2007-08-08 11:32:00.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">[contrib #716] type mismatch 2</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>// Using latest snapshot 2.5.1.12424.20070726-044547
+// which has Martin's fix for an earlier type mismatch error (much appreciated)
+
+
+abstract class Settings
+{
+}
+
+abstract class Module
+{ self =&gt;
+    type settingsType &lt;: Settings
+}
+
+abstract class Grist
+{ self =&gt;
+    type settingsType &lt;: Settings
+    type moduleType &lt;: Module {type settingsType = self.settingsType}
+    val module: moduleType
+    val settings: settingsType
+}
+
+abstract class Tool
+{ self =&gt;
+    type settingsType &lt;: Settings
+    type moduleType = Module { type settingsType = self.settingsType }
+    type gristType = Grist { type moduleType &lt;: self.moduleType; type settingsType &lt;: self.settingsType }
+}
+
+abstract class TestTypeMismatch
+{ self =&gt;
+    type settingsType &lt;: Settings
+    type moduleType = Module { type settingsType = self.settingsType }
+    type toolType = Tool { type settingsType = self.settingsType }
+
+    type gristType = toolType # gristType
+    // internal compiler error can be avoided by using the following instead
+    // type gristType = Grist { type settingsType = self.settingsType; type moduleType = self.moduleType }
+
+    def inputGrist(tool: toolType): List[gristType] = error(&quot;bla&quot;)
+    val settings: settingsType = error(&quot;bla&quot;)
+    val tools: List[toolType] = error(&quot;bla&quot;)
+
+    List[Tuple2[moduleType, settingsType]](tools.flatMap(inputGrist(_).map(grist =&gt; Tuple2(grist.module, grist.settings))): _*)
+}
+
+/*
+
+
+exception when traversing ((grist: TestTypeMismatch.this.gristType) =&gt; new (grist.moduleType, grist.settingsType)(grist.module, grist.settings))
+exception when traversing TestTypeMismatch.this.inputGrist(x$0).map[(grist.moduleType, grist.settingsType) forSome { val grist: Grist{type moduleType &lt;: Module{type settingsType = TestTypeMismatch.this.settingsType}; type settingsType &lt;: TestTypeMismatch.this.settingsType} }](((grist: TestTypeMismatch.this.gristType) =&gt; new (grist.moduleType, grist.settingsType)(grist.module, grist.settings)))
+exception when traversing final def apply(x$0: Tool{type settingsType = TestTypeMismatch.this.settingsType}): List[(grist.moduleType, grist.settingsType) forSome { val grist: TestTypeMismatch.this.gristType }] = TestTypeMismatch.this.inputGrist(x$0).map[(grist.moduleType, grist.settingsType) forSome { val grist: Grist{type moduleType &lt;: Module{type settingsType = TestTypeMismatch.this.settingsType}; type settingsType &lt;: TestTypeMismatch.this.settingsType} }](((grist: TestTypeMismatch.this.gristType) =&gt; new (grist.moduleType, grist.settingsType)(grist.module, grist.settings)))
+exception when traversing java.lang.Object with (Tool{type settingsType = TestTypeMismatch.this.settingsType}) =&gt; List[(grist.moduleType, grist.settingsType) forSome { val grist: Grist{type moduleType &lt;: Module{type settingsType = TestTypeMismatch.this.settingsType}; type settingsType &lt;: TestTypeMismatch.this.settingsType} }] with ScalaObject {
+  def this(): template $anonfun = {
+    $anonfun.super.this();
+    ()
+  };
+  final def apply(x$0: Tool{type settingsType = TestTypeMismatch.this.settingsType}): List[(grist.moduleType, grist.settingsType) forSome { val grist: TestTypeMismatch.this.gristType }] = TestTypeMismatch.this.inputGrist(x$0).map[(grist.moduleType, grist.settingsType) forSome { val grist: Grist{type moduleType &lt;: Module{type settingsType = TestTypeMismatch.this.settingsType}; type settingsType &lt;: TestTypeMismatch.this.settingsType} }](((grist: TestTypeMismatch.this.gristType) =&gt; new (grist.moduleType, grist.settingsType)(grist.module, grist.settings)))
+}
+exception when traversing @serializable final &lt;synthetic&gt; class $anonfun extends java.lang.Object with (Tool{type settingsType = TestTypeMismatch.this.settingsType}) =&gt; List[(grist.moduleType, grist.settingsType) forSome { val grist: Grist{type moduleType &lt;: Module{type settingsType = TestTypeMismatch.this.settingsType}; type settingsType &lt;: TestTypeMismatch.this.settingsType} }] with ScalaObject {
+  def this(): template $anonfun = {
+    $anonfun.super.this();
+    ()
+  };
+  final def apply(x$0: Tool{type settingsType = TestTypeMismatch.this.settingsType}): List[(grist.moduleType, grist.settingsType) forSome { val grist: TestTypeMismatch.this.gristType }] = TestTypeMismatch.this.inputGrist(x$0).map[(grist.moduleType, grist.settingsType) forSome { val grist: Grist{type moduleType &lt;: Module{type settingsType = TestTypeMismatch.this.settingsType}; type settingsType &lt;: TestTypeMismatch.this.settingsType} }](((grist: TestTypeMismatch.this.gristType) =&gt; new (grist.moduleType, grist.settingsType)(grist.module, grist.settings)))
+}
+exception when traversing ((x$0: Tool{type settingsType = TestTypeMismatch.this.settingsType}) =&gt; TestTypeMismatch.this.inputGrist(x$0).map[(grist.moduleType, grist.settingsType) forSome { val grist: Grist{type moduleType &lt;: Module{type settingsType = TestTypeMismatch.this.settingsType}; type settingsType &lt;: TestTypeMismatch.this.settingsType} }](((grist: TestTypeMismatch.this.gristType) =&gt; new (grist.moduleType, grist.settingsType)(grist.module, grist.settings))))
+exception when traversing TestTypeMismatch.this.tools.flatMap[(grist.moduleType, grist.settingsType) forSome { val grist: Grist{type moduleType &lt;: Module{type settingsType = TestTypeMismatch.this.settingsType}; type settingsType &lt;: TestTypeMismatch.this.settingsType} }](((x$0: Tool{type settingsType = TestTypeMismatch.this.settingsType}) =&gt; TestTypeMismatch.this.inputGrist(x$0).map[(grist.moduleType, grist.settingsType) forSome { val grist: Grist{type moduleType &lt;: Module{type settingsType = TestTypeMismatch.this.settingsType}; type settingsType &lt;: TestTypeMismatch.this.settingsType} }](((grist: TestTypeMismatch.this.gristType) =&gt; new (grist.moduleType, grist.settingsType)(grist.module, grist.settings)))))
+exception when traversing scala.List.apply[(Module{type settingsType = TestTypeMismatch.this.settingsType}, TestTypeMismatch.this.settingsType)]((TestTypeMismatch.this.tools.flatMap[(grist.moduleType, grist.settingsType) forSome { val grist: Grist{type moduleType &lt;: Module{type settingsType = TestTypeMismatch.this.settingsType}; type settingsType &lt;: TestTypeMismatch.this.settingsType} }](((x$0: Tool{type settingsType = TestTypeMismatch.this.settingsType}) =&gt; TestTypeMismatch.this.inputGrist(x$0).map[(grist.moduleType, grist.settingsType) forSome { val grist: Grist{type moduleType &lt;: Module{type settingsType = TestTypeMismatch.this.settingsType}; type settingsType &lt;: TestTypeMismatch.this.settingsType} }](((grist: TestTypeMismatch.this.gristType) =&gt; new (grist.moduleType, grist.settingsType)(grist.module, grist.settings))))): _*))
+exception when traversing java.lang.Object with ScalaObject { self =&gt; 
+  def this(): TestTypeMismatch = {
+    TestTypeMismatch.super.this();
+    ()
+  };
+  type settingsType&gt;: Nothing &lt;: Settings;
+  type moduleType = Module{type settingsType = TestTypeMismatch.this.settingsType};
+  type toolType = Tool{type settingsType = TestTypeMismatch.this.settingsType};
+  type gristType = Grist{type moduleType &lt;: Module{type settingsType = TestTypeMismatch.this.settingsType}; type settingsType &lt;: TestTypeMismatch.this.settingsType};
+  def inputGrist(tool: Tool{type settingsType = TestTypeMismatch.this.settingsType}): List[TestTypeMismatch.this.gristType] = scala.this.Predef.error(&quot;bla&quot;);
+  private[this] val settings: TestTypeMismatch.this.settingsType = scala.this.Predef.error(&quot;bla&quot;);
+  &lt;stable&gt; &lt;accessor&gt; def settings: TestTypeMismatch.this.settingsType = TestTypeMismatch.this.settings;
+  private[this] val tools: List[TestTypeMismatch.this.toolType] = scala.this.Predef.error(&quot;bla&quot;);
+  &lt;stable&gt; &lt;accessor&gt; def tools: List[TestTypeMismatch.this.toolType] = TestTypeMismatch.this.tools;
+  scala.List.apply[(Module{type settingsType = TestTypeMismatch.this.settingsType}, TestTypeMismatch.this.settingsType)]((TestTypeMismatch.this.tools.flatMap[(grist.moduleType, grist.settingsType) forSome { val grist: Grist{type moduleType &lt;: Module{type settingsType = TestTypeMismatch.this.settingsType}; type settingsType &lt;: TestTypeMismatch.this.settingsType} }](((x$0: Tool{type settingsType = TestTypeMismatch.this.settingsType}) =&gt; TestTypeMismatch.this.inputGrist(x$0).map[(grist.moduleType, grist.settingsType) forSome { val grist: Grist{type moduleType &lt;: Module{type settingsType = TestTypeMismatch.this.settingsType}; type settingsType &lt;: TestTypeMismatch.this.settingsType} }](((grist: TestTypeMismatch.this.gristType) =&gt; new (grist.moduleType, grist.settingsType)(grist.module, grist.settings))))): _*))
+}
+exception when traversing abstract class TestTypeMismatch extends java.lang.Object with ScalaObject { self =&gt; 
+  def this(): TestTypeMismatch = {
+    TestTypeMismatch.super.this();
+    ()
+  };
+  type settingsType&gt;: Nothing &lt;: Settings;
+  type moduleType = Module{type settingsType = TestTypeMismatch.this.settingsType};
+  type toolType = Tool{type settingsType = TestTypeMismatch.this.settingsType};
+  type gristType = Grist{type moduleType &lt;: Module{type settingsType = TestTypeMismatch.this.settingsType}; type settingsType &lt;: TestTypeMismatch.this.settingsType};
+  def inputGrist(tool: Tool{type settingsType = TestTypeMismatch.this.settingsType}): List[TestTypeMismatch.this.gristType] = scala.this.Predef.error(&quot;bla&quot;);
+  private[this] val settings: TestTypeMismatch.this.settingsType = scala.this.Predef.error(&quot;bla&quot;);
+  &lt;stable&gt; &lt;accessor&gt; def settings: TestTypeMismatch.this.settingsType = TestTypeMismatch.this.settings;
+  private[this] val tools: List[TestTypeMismatch.this.toolType] = scala.this.Predef.error(&quot;bla&quot;);
+  &lt;stable&gt; &lt;accessor&gt; def tools: List[TestTypeMismatch.this.toolType] = TestTypeMismatch.this.tools;
+  scala.List.apply[(Module{type settingsType = TestTypeMismatch.this.settingsType}, TestTypeMismatch.this.settingsType)]((TestTypeMismatch.this.tools.flatMap[(grist.moduleType, grist.settingsType) forSome { val grist: Grist{type moduleType &lt;: Module{type settingsType = TestTypeMismatch.this.settingsType}; type settingsType &lt;: TestTypeMismatch.this.settingsType} }](((x$0: Tool{type settingsType = TestTypeMismatch.this.settingsType}) =&gt; TestTypeMismatch.this.inputGrist(x$0).map[(grist.moduleType, grist.settingsType) forSome { val grist: Grist{type moduleType &lt;: Module{type settingsType = TestTypeMismatch.this.settingsType}; type settingsType &lt;: TestTypeMismatch.this.settingsType} }](((grist: TestTypeMismatch.this.gristType) =&gt; new (grist.moduleType, grist.settingsType)(grist.module, grist.settings))))): _*))
+}
+exception when traversing package &lt;empty&gt; {
+  abstract class Settings extends java.lang.Object with ScalaObject {
+    def this(): Settings = {
+      Settings.super.this();
+      ()
+    }
+  };
+  abstract class Module extends java.lang.Object with ScalaObject { self =&gt; 
+    def this(): Module = {
+      Module.super.this();
+      ()
+    };
+    type settingsType&gt;: Nothing &lt;: Settings
+  };
+  abstract class Grist extends java.lang.Object with ScalaObject { self =&gt; 
+    def this(): Grist = {
+      Grist.super.this();
+      ()
+    };
+    type settingsType&gt;: Nothing &lt;: Settings;
+    type moduleType&gt;: Nothing &lt;: Module{type settingsType = Grist.this.settingsType};
+    &lt;stable&gt; &lt;accessor&gt; def module: Grist.this.moduleType;
+    &lt;stable&gt; &lt;accessor&gt; def settings: Grist.this.settingsType
+  };
+  abstract class Tool extends java.lang.Object with ScalaObject { self =&gt; 
+    def this(): Tool = {
+      Tool.super.this();
+      ()
+    };
+    type settingsType&gt;: Nothing &lt;: Settings;
+    type moduleType = Module{type settingsType = Tool.this.settingsType};
+    type gristType = Grist{type moduleType &lt;: Module{type settingsType = Tool.this.settingsType}; type settingsType &lt;: Tool.this.settingsType}
+  };
+  abstract class TestTypeMismatch extends java.lang.Object with ScalaObject { self =&gt; 
+    def this(): TestTypeMismatch = {
+      TestTypeMismatch.super.this();
+      ()
+    };
+    type settingsType&gt;: Nothing &lt;: Settings;
+    type moduleType = Module{type settingsType = TestTypeMismatch.this.settingsType};
+    type toolType = Tool{type settingsType = TestTypeMismatch.this.settingsType};
+    type gristType = Grist{type moduleType &lt;: Module{type settingsType = TestTypeMismatch.this.settingsType}; type settingsType &lt;: TestTypeMismatch.this.settingsType};
+    def inputGrist(tool: Tool{type settingsType = TestTypeMismatch.this.settingsType}): List[TestTypeMismatch.this.gristType] = scala.this.Predef.error(&quot;bla&quot;);
+    private[this] val settings: TestTypeMismatch.this.settingsType = scala.this.Predef.error(&quot;bla&quot;);
+    &lt;stable&gt; &lt;accessor&gt; def settings: TestTypeMismatch.this.settingsType = TestTypeMismatch.this.settings;
+    private[this] val tools: List[TestTypeMismatch.this.toolType] = scala.this.Predef.error(&quot;bla&quot;);
+    &lt;stable&gt; &lt;accessor&gt; def tools: List[TestTypeMismatch.this.toolType] = TestTypeMismatch.this.tools;
+    scala.List.apply[(Module{type settingsType = TestTypeMismatch.this.settingsType}, TestTypeMismatch.this.settingsType)]((TestTypeMismatch.this.tools.flatMap[(grist.moduleType, grist.settingsType) forSome { val grist: Grist{type moduleType &lt;: Module{type settingsType = TestTypeMismatch.this.settingsType}; type settingsType &lt;: TestTypeMismatch.this.settingsType} }](((x$0: Tool{type settingsType = TestTypeMismatch.this.settingsType}) =&gt; TestTypeMismatch.this.inputGrist(x$0).map[(grist.moduleType, grist.settingsType) forSome { val grist: Grist{type moduleType &lt;: Module{type settingsType = TestTypeMismatch.this.settingsType}; type settingsType &lt;: TestTypeMismatch.this.settingsType} }](((grist: TestTypeMismatch.this.gristType) =&gt; new (grist.moduleType, grist.settingsType)(grist.module, grist.settings))))): _*))
+  }
+}
+Exception in thread &quot;main&quot; scala.tools.nsc.symtab.Types$TypeError: type mismatch;
+ found   : (grist.moduleType(in &lt;refinement&gt;), grist.settingsType(in &lt;refinement&gt;))
+ required: (grist.moduleType(in &lt;refinement&gt;), grist.settingsType(in &lt;refinement&gt;)) forSome { val grist: TestTypeMismatch.this.gristType }
+	at scala.tools.nsc.typechecker.Contexts$Context.error(Contexts.scala:283)
+	at scala.tools.nsc.typechecker.Infer$Inferencer.error(Infer.scala:218)
+	at scala.tools.nsc.typechecker.Infer$Inferencer.typeError(Infer.scala:228)
+	at scala.tools.nsc.typechecker.Infer$Inferencer.typeErrorTree(Infer.scala:234)
+	at scala.tools.nsc.typechecker.Typers$Typer.adapt(Typers.scala:770)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2877)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2919)
+	at scala.tools.nsc.typechecker.Typers$Typer.transformedOrTyped(Typers.scala:2968)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedDefDef(Typers.scala:1215)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:2620)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2875)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2908)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedStat$0(Typers.scala:1431)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$56.apply(Typers.scala:1461)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$56.apply(Typers.scala:1461)
+	at scala.List$.loop$0(List.scala:244)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:1461)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedTemplate(Typers.scala:1101)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedClassDef(Typers.scala:988)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:2611)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2875)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2908)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedStat$0(Typers.scala:1431)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$56.apply(Typers.scala:1461)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$56.apply(Typers.scala:1461)
+	at scala.List$.loop$0(List.scala:244)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:1461)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedBlock(Typers.scala:1282)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:2638)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2875)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2908)
+	at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.transformFunction(UnCurry.scala:306)
+	at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.mainTransform(UnCurry.scala:466)
+	at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.transform(UnCurry.scala:106)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$27.apply(Trees.scala:1309)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$27.apply(Trees.scala:1309)
+	at scala.List$.loop$0(List.scala:244)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.tools.nsc.ast.Trees$Transformer.transformTrees(Trees.scala:1309)
+	at scala.tools.nsc.transform.UnCurry$UnCurryTransformer$$anonfun$13.apply(UnCurry.scala:435)
+	at scala.tools.nsc.transform.UnCurry$UnCurryTransformer$$anonfun$13.apply(UnCurry.scala:433)
+	at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.withNeedLift$0(UnCurry.scala:364)
+	at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.mainTransform(UnCurry.scala:433)
+	at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.transform(UnCurry.scala:106)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$24.apply(Trees.scala:1222)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$24.apply(Trees.scala:1221)
+	at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1333)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:33)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:27)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1220)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:46)
+	at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.scala$tools$nsc$transform$UnCurry$UnCurryTransformer$$super$transform(UnCurry.scala:394)
+	at scala.tools.nsc.transform.UnCurry$UnCurryTransformer$$anonfun$5.apply(UnCurry.scala:394)
+	at scala.tools.nsc.transform.UnCurry$UnCurryTransformer$$anonfun$5.apply(UnCurry.scala:380)
+	at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.withNeedLift$0(UnCurry.scala:364)
+	at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.mainTransform(UnCurry.scala:379)
+	at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.transform(UnCurry.scala:106)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$33.apply(Trees.scala:1327)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$33.apply(Trees.scala:1325)
+	at scala.List$.loop$0(List.scala:244)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.tools.nsc.ast.Trees$Transformer.transformStats(Trees.scala:1325)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1237)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.scala$tools$nsc$transform$TypingTransformers$TypingTransformer$$super$transform(TypingTransformers.scala:44)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer$$anonfun$0.apply(TypingTransformers.scala:44)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer$$anonfun$0.apply(TypingTransformers.scala:44)
+	at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1333)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:33)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:27)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:44)
+	at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.scala$tools$nsc$transform$UnCurry$UnCurryTransformer$$super$transform(UnCurry.scala:394)
+	at scala.tools.nsc.transform.UnCurry$UnCurryTransformer$$anonfun$16.apply(UnCurry.scala:469)
+	at scala.tools.nsc.transform.UnCurry$UnCurryTransformer$$anonfun$16.apply(UnCurry.scala:469)
+	at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.withInConstructorFlag$0(UnCurry.scala:372)
+	at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.mainTransform(UnCurry.scala:469)
+	at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.transform(UnCurry.scala:106)
+	at scala.tools.nsc.ast.Trees$Transformer.transformTemplate(Trees.scala:1311)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$21.apply(Trees.scala:1209)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$21.apply(Trees.scala:1209)
+	at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1333)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:33)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:27)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1208)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:46)
+	at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.mainTransform(UnCurry.scala:472)
+	at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.transform(UnCurry.scala:106)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$33.apply(Trees.scala:1327)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$33.apply(Trees.scala:1325)
+	at scala.List$.loop$0(List.scala:244)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.tools.nsc.ast.Trees$Transformer.transformStats(Trees.scala:1325)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1239)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:46)
+	at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.mainTransform(UnCurry.scala:472)
+	at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.mainTransform(UnCurry.scala:466)
+	at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.transform(UnCurry.scala:106)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$27.apply(Trees.scala:1309)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$27.apply(Trees.scala:1309)
+	at scala.List$.loop$0(List.scala:244)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.tools.nsc.ast.Trees$Transformer.transformTrees(Trees.scala:1309)
+	at scala.tools.nsc.transform.UnCurry$UnCurryTransformer$$anonfun$13.apply(UnCurry.scala:435)
+	at scala.tools.nsc.transform.UnCurry$UnCurryTransformer$$anonfun$13.apply(UnCurry.scala:433)
+	at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.withNeedLift$0(UnCurry.scala:364)
+	at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.mainTransform(UnCurry.scala:433)
+	at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.transform(UnCurry.scala:106)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$27.apply(Trees.scala:1309)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$27.apply(Trees.scala:1309)
+	at scala.List$.loop$0(List.scala:244)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.tools.nsc.ast.Trees$Transformer.transformTrees(Trees.scala:1309)
+	at scala.tools.nsc.transform.UnCurry$UnCurryTransformer$$anonfun$13.apply(UnCurry.scala:435)
+	at scala.tools.nsc.transform.UnCurry$UnCurryTransformer$$anonfun$13.apply(UnCurry.scala:433)
+	at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.withNeedLift$0(UnCurry.scala:364)
+	at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.mainTransform(UnCurry.scala:433)
+	at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.transform(UnCurry.scala:106)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$33$$anonfun$34.apply(Trees.scala:1326)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$33$$anonfun$34.apply(Trees.scala:1326)
+	at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1333)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:33)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:27)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$33.apply(Trees.scala:1326)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$33.apply(Trees.scala:1325)
+	at scala.List$.loop$0(List.scala:244)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.tools.nsc.ast.Trees$Transformer.transformStats(Trees.scala:1325)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1237)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.scala$tools$nsc$transform$TypingTransformers$TypingTransformer$$super$transform(TypingTransformers.scala:44)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer$$anonfun$0.apply(TypingTransformers.scala:44)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer$$anonfun$0.apply(TypingTransformers.scala:44)
+	at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1333)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:33)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:27)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:44)
+	at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.scala$tools$nsc$transform$UnCurry$UnCurryTransformer$$super$transform(UnCurry.scala:394)
+	at scala.tools.nsc.transform.UnCurry$UnCurryTransformer$$anonfun$16.apply(UnCurry.scala:469)
+	at scala.tools.nsc.transform.UnCurry$UnCurryTransformer$$anonfun$16.apply(UnCurry.scala:469)
+	at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.withInConstructorFlag$0(UnCurry.scala:372)
+	at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.mainTransform(UnCurry.scala:469)
+	at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.transform(UnCurry.scala:106)
+	at scala.tools.nsc.ast.Trees$Transformer.transformTemplate(Trees.scala:1311)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$21.apply(Trees.scala:1209)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$21.apply(Trees.scala:1209)
+	at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1333)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:33)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:27)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1208)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:46)
+	at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.mainTransform(UnCurry.scala:472)
+	at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.transform(UnCurry.scala:106)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$33.apply(Trees.scala:1327)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$33.apply(Trees.scala:1325)
+	at scala.List$.loop$0(List.scala:244)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.tools.nsc.ast.Trees$Transformer.transformStats(Trees.scala:1325)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$20.apply(Trees.scala:1205)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$20.apply(Trees.scala:1205)
+	at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1333)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:33)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:27)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1204)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:46)
+	at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.mainTransform(UnCurry.scala:472)
+	at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.transform(UnCurry.scala:106)
+	at scala.tools.nsc.ast.Trees$Transformer.transformUnit(Trees.scala:1328)
+	at scala.tools.nsc.transform.Transform$Phase.apply(Transform.scala:30)
+	at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:258)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$2.apply(Global.scala:247)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$2.apply(Global.scala:247)
+	at scala.Iterator$class.foreach(Iterator.scala:375)
+	at scala.collection.mutable.ListBuffer$$anon$0.foreach(ListBuffer.scala:255)
+	at scala.tools.nsc.Global$GlobalPhase.run(Global.scala:247)
+	at scala.tools.nsc.Global$Run.compileSources(Global.scala:542)
+	at scala.tools.nsc.Global$Run.compile(Global.scala:623)
+	at scala.tools.nsc.Main$.process(Main.scala:86)
+	at scala.tools.nsc.Main$.main(Main.scala:107)
+	at scala.tools.nsc.Main.main(Main.scala)
+
+
+
+*/
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>compilation exception  Types$TypeError: type mismatch
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >simple error message or successful compilation (we have successful compilation with 2.5.1-final)</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Iulian&nbsp; edited on &nbsp;2007-08-08 11:32:30.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

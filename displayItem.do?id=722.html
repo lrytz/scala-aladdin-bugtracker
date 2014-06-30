@@ -1,0 +1,246 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#722]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> high</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Sean</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2006-09-01 15:39:22.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">resident compiler crash</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>// FILE: Parser.scala
+package test;
+trait Parser {
+  trait Link  {
+    def foo = {}
+  }
+}
+// FILE: ScanBased.scala
+package test;
+trait ScanBased extends Parser {
+  trait AdjacentLink extends Link {
+    override def foo = super.foo;
+  }
+  trait WhitespaceLink extends AdjacentLink {
+    override def foo = super.foo;
+  }
+}
+// FILE: IfElse.scala
+package test;
+trait IfEse extends ScanBased {
+  object condition extends WhitespaceLink;
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre><pre>
+sean-mcdirmids-computer:~/workspace/test11/src mcdirmid$ ../../scala/build/quick/bin/scalac -resident -sourcepat\
+h . -d ../bin
+
+nsc> test/Parser.scala test/IfElse.scala
+
+nsc> test/Parser.scala test/IfElse.scala
+exception when transforming java.lang.Object with IfEse.this.WhitespaceLink with scala.ScalaObject {
+  def this(): object IfEse.this.condition = {
+    condition.super.this();
+    ()
+  };
+  private <local> <paramaccessor> val $outer : IfEse.this.type = _;
+  <stable> <accessor> <paramaccessor> def $outer(): IfEse.this.type = condition.this.$outer
+}
+exception when transforming final class condition extends java.lang.Object with IfEse.this.WhitespaceLink with s\
+cala.ScalaObject {
+  def this(): object IfEse.this.condition = {
+    condition.super.this();
+    ()
+  }
+}
+exception when transforming java.lang.Object with test.ScanBased with scala.ScalaObject {
+  final class condition extends java.lang.Object with IfEse.this.WhitespaceLink with scala.ScalaObject {
+    def this(): object IfEse.this.condition = {
+      condition.super.this();
+      ()
+    }
+  };
+  final <stable> def condition(): object IfEse.this.condition;
+  def /*IfEse*/$init$(): scala.Unit = ()
+}
+exception when transforming abstract trait IfEse extends java.lang.Object with test.ScanBased with scala.ScalaOb\
+ject {
+  final class condition extends java.lang.Object with IfEse.this.WhitespaceLink with scala.ScalaObject {
+    def this(): object IfEse.this.condition = {
+      condition.super.this();
+      ()
+    }
+  };
+  final <stable> def condition(): object IfEse.this.condition
+}
+exception when transforming package test {
+  abstract trait IfEse extends java.lang.Object with test.ScanBased with scala.ScalaObject {
+    final class condition extends java.lang.Object with IfEse.this.WhitespaceLink with scala.ScalaObject {
+      def this(): object IfEse.this.condition = {
+        condition.super.this();
+        ()
+      }
+    };
+    final <stable> def condition(): object IfEse.this.condition
+  }
+}
+Exception in thread "main" java.lang.AssertionError: assertion failed: ScanBased.this.type.trait Link$classdoes \
+no longer exist!
+	at scala.Predef$.assert(Predef.scala:182)
+	at scala.tools.nsc.symtab.Types$adaptToNewRunMap$.adaptToNewRun(Types.scala:1514)
+	at scala.tools.nsc.symtab.Types$adaptToNewRunMap$.apply(Types.scala:1547)
+	at scala.tools.nsc.symtab.Types$adaptToNewRunMap$.apply(Types.scala:1503)
+	at scala.List$.loop$0(List.scala:232)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.tools.nsc.symtab.Types$adaptToNewRunMap$.apply(Types.scala:1556)
+	at scala.tools.nsc.symtab.Types$Type.complete(Types.scala:355)
+	at scala.tools.nsc.symtab.Symbols$Symbol.info(Symbols.scala:366)
+	at scala.tools.nsc.symtab.Types$TypeRef.closure(Types.scala:890)
+	at scala.tools.nsc.symtab.Types$CompoundType$$anonfun$3.apply(Types.scala:651)
+	at scala.tools.nsc.symtab.Types$CompoundType$$anonfun$3.apply(Types.scala:650)
+	at scala.List.foreach(List.scala:680)
+	at scala.tools.nsc.symtab.Types$CompoundType.computeClosure$0(Types.scala:650)
+	at scala.tools.nsc.symtab.Types$CompoundType.closure(Types.scala:709)
+	at scala.tools.nsc.symtab.Symbols$Symbol.closureLength$0(Symbols.scala:491)
+	at scala.tools.nsc.symtab.Symbols$Symbol.isLess(Symbols.scala:494)
+	at scala.tools.nsc.symtab.Types$Type.closurePos(Types.scala:316)
+	at scala.tools.nsc.symtab.Symbols$Symbol.isNonBottomSubClass(Symbols.scala:510)
+	at scala.tools.nsc.symtab.Types$AsSeenFromMap.toPrefix$0(Types.scala:1340)
+	at scala.tools.nsc.symtab.Types$AsSeenFromMap.apply(Types.scala:1347)
+	at scala.tools.nsc.symtab.Types$AsSeenFromMap.apply(Types.scala:1333)
+	at scala.List$.loop$0(List.scala:232)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.tools.nsc.symtab.Types$TypeMap.mapOver(Types.scala:1278)
+	at scala.tools.nsc.symtab.Types$AsSeenFromMap.apply(Types.scala:1378)
+	at scala.tools.nsc.symtab.Types$Type.asSeenFrom(Types.scala:199)
+	at scala.tools.nsc.symtab.Types$Type.memberType(Types.scala:226)
+	at scala.tools.nsc.typechecker.Infer$Inferencer.checkAccessible(Infer.scala:283)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedSelect$0(Typers.scala:1339)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1746)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1815)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedOperator(Typers.scala:1856)
+	at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer$$anon$0.mixinConstructorCall$0(ExplicitOute\
+r.scala:217)
+	at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer$$anon$0$$anonfun$6.apply(ExplicitOuter.scal\
+a:238)
+	at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer$$anon$0$$anonfun$6.apply(ExplicitOuter.scal\
+a:236)
+	at scala.List.map(List.scala:651)
+	at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer$$anon$0.addMixinConstructorCalls(ExplicitOu\
+ter.scala:236)
+	at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer$$anon$0.transform(ExplicitOuter.scala:293)\
+
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$25.apply(Trees.scala:1062)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$25.apply(Trees.scala:1060)
+	at scala.List$.loop$0(List.scala:232)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.tools.nsc.ast.Trees$Transformer.transformStats(Trees.sca
+</pre>
+
+(complete trace won't paste because their appears to be garbage in the signature of Trees$Transformer).
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" ></td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Sean&nbsp; edited on &nbsp;2006-09-01 15:40:26.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Sean&nbsp; edited on &nbsp;2006-09-01 19:17:22.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Found simple example of bug. To quote, "Scala bug reports should be as simple as possible, and not any simpler".
+</td></tr>
+<tr>
+        <td>
+        <strong>Sean&nbsp; edited on &nbsp;2006-09-01 19:17:42.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-09-03 16:58:28.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+The cut-down example helped a lot. It was still pretty hard to diagnose and fix, though!
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

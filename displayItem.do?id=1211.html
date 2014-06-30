@@ -1,0 +1,224 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#1211]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> medium</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Iulian</td>
+	  <td align="center" bgcolor="#FFFFFF">Iulian</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2007-07-13 12:05:33.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">private lazy val in trait + separate compilation = crash</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>// A.scala
+trait A {
+  private lazy val x = &quot;hello, world!&quot;
+}
+
+// Foo.scala
+class Foo extends Object with A {
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>Exception in thread "main" scala.tools.nsc.symtab.Types$TypeError: <none> cannot be accessed in object A$class
+        at scala.tools.nsc.typechecker.Contexts$Context.error(Contexts.scala:283)
+        at scala.tools.nsc.typechecker.Infer$Inferencer.error(Infer.scala:218)
+        at scala.tools.nsc.typechecker.Infer$Inferencer.errorTree(Infer.scala:221)
+        at scala.tools.nsc.typechecker.Infer$Inferencer.accessError$0(Infer.scala:290)
+        at scala.tools.nsc.typechecker.Infer$Inferencer.checkAccessible(Infer.scala:304)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedSelect$0(Typers.scala:2338)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:2731)
+        at scala.tools.nsc.transform.Erasure$Eraser.typed1(Erasure.scala:495)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2813)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$100.apply(Typers.scala:2158)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$100.apply(Typers.scala:2158)
+        at scala.tools.nsc.typechecker.Typers$Typer.silent(Typers.scala:551)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedApply$0(Typers.scala:2158)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:2709)
+        at scala.tools.nsc.transform.Erasure$Eraser.typed1(Erasure.scala:495)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2813)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2857)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedAssign$0(Typers.scala:1951)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:2616)
+        at scala.tools.nsc.transform.Erasure$Eraser.typed1(Erasure.scala:495)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2813)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedArg(Typers.scala:1460)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$60.apply(Typers.scala:1486)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$60.apply(Typers.scala:1486)
+        at scala.List$.map2(List.scala:276)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedArgs(Typers.scala:1486)
+        at scala.tools.nsc.typechecker.Typers$Typer.doTypedApply(Typers.scala:1539)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedApply$0(Typers.scala:2170)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:2709)
+        at scala.tools.nsc.transform.Erasure$Eraser.typed1(Erasure.scala:495)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2813)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2846)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedStat$0(Typers.scala:1426)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$56.apply(Typers.scala:1456)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$56.apply(Typers.scala:1456)
+        at scala.List$.loop$0(List.scala:243)
+        at scala.List$.mapConserve(List.scala:260)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:1456)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedBlock(Typers.scala:1286)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:2587)
+        at scala.tools.nsc.transform.Erasure$Eraser.typed1(Erasure.scala:495)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2813)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2857)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedIf$0(Typers.scala:1965)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:2619)
+        at scala.tools.nsc.transform.Erasure$Eraser.typed1(Erasure.scala:495)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2813)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedArg(Typers.scala:1460)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$60.apply(Typers.scala:1486)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$60.apply(Typers.scala:1486)
+        at scala.List$.map2(List.scala:276)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedArgs(Typers.scala:1486)
+        at scala.tools.nsc.typechecker.Typers$Typer.doTypedApply(Typers.scala:1539)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedApply$0(Typers.scala:2170)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:2709)
+        at scala.tools.nsc.transform.Erasure$Eraser.typed1(Erasure.scala:495)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2813)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2857)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedIf$0(Typers.scala:1965)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:2619)
+        at scala.tools.nsc.transform.Erasure$Eraser.typed1(Erasure.scala:495)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2813)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2846)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedStat$0(Typers.scala:1426)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$56.apply(Typers.scala:1456)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$56.apply(Typers.scala:1456)
+        at scala.List$.loop$0(List.scala:243)
+        at scala.List$.mapConserve(List.scala:260)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:1456)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedBlock(Typers.scala:1286)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:2587)
+        at scala.tools.nsc.transform.Erasure$Eraser.typed1(Erasure.scala:495)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2813)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2846)
+        at scala.tools.nsc.transform.Mixin$MixinTransformer.mkLazyDef$0(Mixin.scala:569)
+        at scala.tools.nsc.transform.Mixin$MixinTransformer$$anonfun$24$$anonfun$26.apply(Mixin.scala:615)
+        at scala.tools.nsc.transform.Mixin$MixinTransformer$$anonfun$24$$anonfun$26.apply(Mixin.scala:605)
+        at scala.tools.nsc.transform.Mixin$MixinTransformer$$anonfun$13.apply(Mixin.scala:464)
+        at scala.tools.nsc.transform.Mixin$MixinTransformer$$anonfun$13.apply(Mixin.scala:464)
+        at scala.tools.nsc.ast.Trees$class.DefDef(Trees.scala:373)
+        at scala.tools.nsc.Global.DefDef(Global.scala:35)
+        at scala.tools.nsc.ast.Trees$class.DefDef(Trees.scala:377)
+        at scala.tools.nsc.Global.DefDef(Global.scala:35)
+        at scala.tools.nsc.transform.Mixin$MixinTransformer.addDefDef$0(Mixin.scala:464)
+        at scala.tools.nsc.transform.Mixin$MixinTransformer$$anonfun$24.apply(Mixin.scala:605)
+        at scala.tools.nsc.transform.Mixin$MixinTransformer$$anonfun$24.apply(Mixin.scala:595)
+        at scala.List.foreach(List.scala:707)
+        at scala.tools.nsc.transform.Mixin$MixinTransformer.addNewDefs(Mixin.scala:595)
+        at scala.tools.nsc.transform.Mixin$MixinTransformer.scala$tools$nsc$transform$Mixin$MixinTransformer$$po\
+stTransform(Mixin.scala:679)
+        at scala.tools.nsc.transform.Mixin$MixinTransformer$$anonfun$34.apply(Mixin.scala:782)
+        at scala.tools.nsc.transform.Mixin$MixinTransformer$$anonfun$34.apply(Mixin.scala:782)
+        at scala.tools.nsc.symtab.SymbolTable.atPhase(SymbolTable.scala:85)
+        at scala.tools.nsc.transform.Mixin$MixinTransformer.transform(Mixin.scala:782)
+        at scala.tools.nsc.ast.Trees$Transformer.transformTemplate(Trees.scala:1310)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$21.apply(Trees.scala:1208)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$21.apply(Trees.scala:1208)
+        at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1332)
+        at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1207)
+        at scala.tools.nsc.transform.Mixin$MixinTransformer.transform(Mixin.scala:781)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$33.apply(Trees.scala:1326)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$33.apply(Trees.scala:1324)
+        at scala.List$.loop$0(List.scala:243)
+        at scala.List$.mapConserve(List.scala:260)
+        at scala.tools.nsc.ast.Trees$Transformer.transformStats(Trees.scala:1324)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$20.apply(Trees.scala:1204)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$20.apply(Trees.scala:1204)
+        at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1332)
+        at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1203)
+        at scala.tools.nsc.transform.Mixin$MixinTransformer.transform(Mixin.scala:781)
+        at scala.tools.nsc.ast.Trees$Transformer.transformUnit(Trees.scala:1327)
+        at scala.tools.nsc.transform.Transform$Phase.apply(Transform.scala:30)
+        at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:260)
+        at scala.tools.nsc.Global$GlobalPhase$$anonfun$2.apply(Global.scala:249)
+        at scala.tools.nsc.Global$GlobalPhase$$anonfun$2.apply(Global.scala:249)
+        at scala.Iterator$class.foreach(Iterator.scala:364)
+        at scala.collection.mutable.ListBuffer$$anon$0.foreach(ListBuffer.scala:248)
+        at scala.tools.nsc.Global$GlobalPhase.run(Global.scala:249)
+        at scala.tools.nsc.Global$Run.compileSources(Global.scala:544)
+        at scala.tools.nsc.Global$Run.compile(Global.scala:623)
+        at scala.tools.nsc.Main$.process(Main.scala:84)
+        at scala.tools.nsc.Main$.main(Main.scala:105)
+        at scala.tools.nsc.Main.main(Main.scala)
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >Silent compilation.</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Iulian&nbsp; edited on &nbsp;2007-07-13 17:33:26.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

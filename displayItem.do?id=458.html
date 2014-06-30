@@ -1,0 +1,444 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#458]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> high</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Iulian</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">not repro</td>
+          <td align="center" bgcolor="#FFFFFF">2005-10-12 16:14:22.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">ugly crash in refchecks for bridge-able methods</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>class Base {
+  def getMe() = new Base();
+}
+
+class Derived extends Base{
+  override def getMe() = null;
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre><pre>
+Exception in thread "main" java.lang.Error: mapOver inapplicable for {final class Array![A!] extends java.lang.O\
+bject! with java.lang.Cloneable! with java.io.Serializable! with scala.Seq![A!] with scala.ScalaObject!{private \
+val _length: scala.Int!; def <init>(scala.Int!): scala.Array![A!]; def length: scala.Int!; def apply(scala.Int!)\
+: A!; def update(scala.Int!,A!): scala.Unit!; def elements: scala.Iterator![A!]}; final object Array extends <no\
+type>; class All! extends scala.tools.nsc.symtab.SymbolLoaders$SourcefileLoader$class@a77106; final object All e\
+xtends scala.tools.nsc.symtab.SymbolLoaders$SourcefileLoader$class@a77106; class AllRef! extends scala.tools.nsc\
+.symtab.SymbolLoaders$SourcefileLoader$class@ed662d; final object AllRef extends scala.tools.nsc.symtab.SymbolLo\
+aders$SourcefileLoader$class@ed662d; abstract trait ScalaObject! extends java.lang.Object!{def $tag(): scala.Int\
+!}; final object ScalaObject extends <notype>; class cloneable! extends scala.tools.nsc.symtab.SymbolLoaders$Sym\
+blfileLoader$class@1cf4a2c; final object cloneable extends scala.tools.nsc.symtab.SymbolLoaders$SymblfileLoader$\
+class@1cf4a2c; class Function0! extends scala.tools.nsc.symtab.SymbolLoaders$SymblfileLoader$class@eac5a; final \
+object Function0 extends scala.tools.nsc.symtab.SymbolLoaders$SymblfileLoader$class@eac5a; class transient! exte\
+nds scala.tools.nsc.symtab.SymbolLoaders$SymblfileLoader$class@15575e0; final object transient extends scala.too\
+ls.nsc.symtab.SymbolLoaders$SymblfileLoader$class@15575e0; class MatchError! extends scala.tools.nsc.symtab.Symb\
+olLoaders$ClassfileLoader$class@1addb59; final object MatchError extends scala.tools.nsc.symtab.SymbolLoaders$Cl\
+assfileLoader$class@1addb59; class Function5! extends scala.tools.nsc.symtab.SymbolLoaders$SymblfileLoader$class\
+@81b1fb; final object Function5 extends scala.tools.nsc.symtab.SymbolLoaders$SymblfileLoader$class@81b1fb; class\
+ Symbol! extends scala.tools.nsc.symtab.SymbolLoaders$SymblfileLoader$class@cbdb20; final object Symbol extends \
+scala.tools.nsc.symtab.SymbolLoaders$SymblfileLoader$class@cbdb20; class Application! extends scala.tools.nsc.sy\
+mtab.SymbolLoaders$SymblfileLoader$class@19f3736; final object Application extends scala.tools.nsc.symtab.Symbol\
+Loaders$SymblfileLoader$class@19f3736; class serializable! extends scala.tools.nsc.symtab.SymbolLoaders$Symblfil\
+eLoader$class@1e1dadb; final object serializable extends scala.tools.nsc.symtab.SymbolLoaders$SymblfileLoader$cl\
+ass@1e1dadb; class ::! extends scala.tools.nsc.symtab.SymbolLoaders$SymblfileLoader$class@e79839; final object :\
+: extends scala.tools.nsc.symtab.SymbolLoaders$SymblfileLoader$class@e79839; class Long! extends scala.tools.nsc\
+.symtab.SymbolLoaders$ClassfileLoader$class@bac9b9; final object Long extends scala.tools.nsc.symtab.SymbolLoade\
+rs$ClassfileLoader$class@bac9b9; class Console! extends scala.tools.nsc.symtab.SymbolLoaders$SymblfileLoader$cla\
+ss@111b910; final object Console extends scala.tools.nsc.symtab.SymbolLoaders$SymblfileLoader$class@111b910; cla\
+ss Iterator$! extends scala.tools.nsc.symtab.SymbolLoaders$ClassfileLoader$class@8ceeea; final object Iterator$ \
+extends scala.tools.nsc.symtab.SymbolLoaders$ClassfileLoader$class@8ceeea; class Short! extends scala.tools.nsc.\
+symtab.SymbolLoaders$ClassfileLoader$class@995a79; final object Short extends scala.tools.nsc.symtab.SymbolLoade\
+rs$ClassfileLoader$class@995a79; class Tuple3! extends scala.tools.nsc.symtab.SymbolLoaders$SymblfileLoader$clas\
+s@2c35e; final object Tuple3 extends scala.tools.nsc.symtab.SymbolLoaders$SymblfileLoader$class@2c35e; class Lis\
+t$! extends scala.tools.nsc.symtab.SymbolLoaders$ClassfileLoader$class@1687e7c; final object List$ extends scala\
+.tools.nsc.symtab.SymbolLoaders$ClassfileLoader$class@1687e7c; class Stream! extends scala.tools.nsc.symtab.Symb\
+olLoaders$SymblfileLoader$class@14835fb; final object Stream extends scala.tools.nsc.symtab.SymbolLoaders$Symblf\
+ileLoader$class@14835fb; class SerialVersionUID! extends scala.tools.nsc.symtab.SymbolLoaders$SymblfileLoader$cl\
+ass@1cffeb4; final object SerialVersionUID extends scala.tools.nsc.symtab.SymbolLoaders$SymblfileLoader$class@1c\
+ffeb4; class volatile! extends scala.tools.nsc.symtab.SymbolLoaders$SymblfileLoader$class@5b0668; final object v\
+olatile extends scala.tools.nsc.symtab.SymbolLoaders$SymblfileLoader$class@5b0668; class Function6! extends scal\
+a.tools.nsc.symtab.SymbolLoaders$SymblfileLoader$class@1d5a0; final object Function6 extends scala.tools.nsc.sym\
+tab.SymbolLoaders$SymblfileLoader$class@1d5a0; class Tuple4! extends scala.tools.nsc.symtab.SymbolLoaders$Symblf\
+ileLoader$class@701a27; final object Tuple4 extends scala.tools.nsc.symtab.SymbolLoaders$SymblfileLoader$class@7\
+01a27; class CaseClass! extends scala.tools.nsc.symtab.SymbolLoaders$SymblfileLoader$class@1c50507; final object\
+ CaseClass extends scala.tools.nsc.symtab.SymbolLoaders$SymblfileLoader$class@1c50507; class BooleanThreadLocal!\
+ extends scala.tools.nsc.symtab.SymbolLoaders$ClassfileLoader$class@1cd107f; final object BooleanThreadLocal ext\
+ends scala.tools.nsc.symtab.SymbolLoaders$ClassfileLoader$class@1cd107f; class Attribute! extends scala.tools.ns\
+c.symtab.SymbolLoaders$SymblfileLoader$class@1f64158; final object Attribute extends scala.tools.nsc.symtab.Symb\
+olLoaders$SymblfileLoader$class@1f64158; abstract class Unit! extends scala.AnyVal!{final def value(): scala.Uni\
+t!; def <init>(): scala.Unit!; def equals(scala.Any!): scala.Boolean!; def hashCode(): scala.Int!; def toString(\
+): java.lang.String!; def ==(scala.Any!): scala.Boolean!; def !=(scala.Any!): scala.Boolean!; def +(java.lang.St\
+ring!): java.lang.String!}; final object Unit extends scala.Unit!; class Tuple9! extends scala.tools.nsc.symtab.\
+SymbolLoaders$SymblfileLoader$class@3c2378; final object Tuple9 extends scala.tools.nsc.symtab.SymbolLoaders$Sym\
+blfileLoader$class@3c2378; class Function3! extends scala.tools.nsc.symtab.SymbolLoaders$SymblfileLoader$class@3\
+cc262; final object Function3 extends scala.tools.nsc.symtab.SymbolLoaders$SymblfileLoader$class@3cc262; class P\
+redef$! extends scala.tools.nsc.symtab.SymbolLoaders$ClassfileLoader$class@fdb00d; final object Predef$ extends \
+scala.tools.nsc.symtab.SymbolLoaders$ClassfileLoader$class@fdb00d; class Option! extends scala.tools.nsc.symtab.\
+SymbolLoaders$SymblfileLoader$class@131303f; final object Option extends scala.tools.nsc.symtab.SymbolLoaders$Sy\
+mblfileLoader$class@131303f; class Tuple7! extends scala.tools.nsc.symtab.SymbolLoaders$SymblfileLoader$class@56\
+860b; final object Tuple7 extends scala.tools.nsc.symtab.SymbolLoaders$SymblfileLoader$class@56860b; class Some!\
+ extends scala.tools.nsc.symtab.SymbolLoaders$SymblfileLoader$class@7a5a19; final object Some extends scala.tool\
+s.nsc.symtab.SymbolLoaders$SymblfileLoader$class@7a5a19; class Function9! extends scala.tools.nsc.symtab.SymbolL\
+oaders$SymblfileLoader$class@b122a1; final object Function9 extends scala.tools.nsc.symtab.SymbolLoaders$Symblfi\
+leLoader$class@b122a1; class SeqProxy! extends scala.tools.nsc.symtab.SymbolLoaders$SymblfileLoader$class@1589e5\
+6; final object SeqProxy extends scala.tools.nsc.symtab.SymbolLoaders$SymblfileLoader$class@1589e56; class Cell!\
+ extends scala.tools.nsc.symtab.SymbolLoaders$SymblfileLoader$class@1033a6f; final object Cell extends scala.too\
+ls.nsc.symtab.SymbolLoaders$SymblfileLoader$class@1033a6f; class Tuple8! extends scala.tools.nsc.symtab.SymbolLo\
+aders$SymblfileLoader$class@f18e8e; final object Tuple8 extends scala.tools.nsc.symtab.SymbolLoaders$SymblfileLo\
+ader$class@f18e8e; class Iterable$! extends scala.tools.nsc.symtab.SymbolLoaders$ClassfileLoader$class@c623af; f\
+inal object Iterable$ extends scala.tools.nsc.symtab.SymbolLoaders$ClassfileLoader$class@c623af; class Enumerati\
+on$Value! extends scala.tools.nsc.symtab.SymbolLoaders$ClassfileLoader$class@50ca0c; final object Enumeration$Va\
+lue extends scala.tools.nsc.symtab.SymbolLoaders$ClassfileLoader$class@50ca0c; class Boolean! extends scala.tool\
+s.nsc.symtab.SymbolLoaders$ClassfileLoader$class@e753; final object Boolean extends scala.tools.nsc.symtab.Symbo\
+lLoaders$ClassfileLoader$class@e753; abstract trait PartialFunction![-A!<: scala.tools.nsc.symtab.classfile.UnPi\
+ckler$UnPickle$LazyTypeRef$class@15311bd,+B!<: scala.tools.nsc.symtab.classfile.UnPickler$UnPickle$LazyTypeRef$c\
+lass@b1aebf] extends java.lang.Object! with (A!) => B! with scala.ScalaObject!{def isDefinedAt(A!): scala.Boolea\
+n!}; final object PartialFunction extends <notype>; class Ordered! extends scala.tools.nsc.symtab.SymbolLoaders$\
+SymblfileLoader$class@1c65216; final object Ordered extends scala.tools.nsc.symtab.SymbolLoaders$SymblfileLoader\
+$class@1c65216; class Nil! extends scala.tools.nsc.symtab.SymbolLoaders$SymblfileLoader$class@1372656; final obj\
+ect Nil extends scala.tools.nsc.symtab.SymbolLoaders$SymblfileLoader$class@1372656; class Type! extends scala.to\
+ols.nsc.symtab.SymbolLoaders$ClassfileLoader$class@1b6101e; final object Type extends scala.tools.nsc.symtab.Sym\
+bolLoaders$ClassfileLoader$class@1b6101e; class Ref! extends scala.tools.nsc.symtab.SymbolLoaders$ClassfileLoade\
+r$class@1dc423f; final object Ref extends scala.tools.nsc.symtab.SymbolLoaders$ClassfileLoader$class@1dc423f; cl\
+ass IterableProxy! extends scala.tools.nsc.symtab.SymbolLoaders$SymblfileLoader$class@1815bfb; final object Iter\
+ableProxy extends scala.tools.nsc.symtab.SymbolLoaders$SymblfileLoader$class@1815bfb; class Tuple5! extends scal\
+a.tools.nsc.symtab.SymbolLoaders$SymblfileLoader$class@1bdc9d8; final object Tuple5 extends scala.tools.nsc.symt\
+ab.SymbolLoaders$SymblfileLoader$class@1bdc9d8; class Function7! extends scala.tools.nsc.symtab.SymbolLoaders$Sy\
+mblfileLoader$class@10ea9ba; final object Function7 extends scala.tools.nsc.symtab.SymbolLoaders$SymblfileLoader\
+$class@10ea9ba; class PartiallyOrdered! extends scala.tools.nsc.symtab.SymbolLoaders$SymblfileLoader$class@1a918\
+d5; final object PartiallyOrdered extends scala.tools.nsc.symtab.SymbolLoaders$SymblfileLoader$class@1a918d5; ab\
+stract class AnyVal! extends scala.Any!{def <init>(): scala.AnyVal!}; final object AnyVal extends scala.AnyVal!;\
+ class Nil$! extends scala.tools.nsc.symtab.SymbolLoaders$ClassfileLoader$class@9d6065; final object Nil$ extend\
+s scala.tools.nsc.symtab.SymbolLoaders$ClassfileLoader$class@9d6065; class List! extends scala.tools.nsc.symtab.\
+SymbolLoaders$SymblfileLoader$class@238a47; final object List extends scala.tools.nsc.symtab.SymbolLoaders$Symbl\
+fileLoader$class@238a47; class None! extends scala.tools.nsc.symtab.SymbolLoaders$SymblfileLoader$class@14b5f4a;\
+ final object None extends scala.tools.nsc.symtab.SymbolLoaders$SymblfileLoader$class@14b5f4a; class Console$! e\
+xtends scala.tools.nsc.symtab.SymbolLoaders$ClassfileLoader$class@15d17d7; final object Console$ extends scala.t\
+ools.nsc.symtab.SymbolLoaders$ClassfileLoader$class@15d17d7; class Byte! extends scala.tools.nsc.symtab.SymbolLo\
+aders$ClassfileLoader$class@c8376b; final object Byte extends scala.tools.nsc.symtab.SymbolLoaders$ClassfileLoad\
+er$class@c8376b; class Char! extends scala.tools.nsc.symtab.SymbolLoaders$ClassfileLoader$class@ae533a; final ob\
+ject Char extends scala.tools.nsc.symtab.SymbolLoaders$ClassfileLoader$class@ae533a; abstract trait Seq![+A! >: \
+scala.All!] extends java.lang.Object! with scala.PartialFunction![scala.Int!,A!] with scala.Iterable![A!] with s\
+cala.ScalaObject!{def length: scala.Int!; def concat[B! >: A!](scala.Seq![B!]): scala.Seq![B!]; def isDefinedAt(\
+scala.Int!): scala.Boolean!; def indexOf: scala.tools.nsc.symtab.classfile.UnPickler$UnPickle$LazyTypeRef$class@\
+da18ac; def lastIndexOf: scala.tools.nsc.symtab.classfile.UnPickler$UnPickle$LazyTypeRef$class@8a0544; def take:\
+ scala.tools.nsc.symtab.classfile.UnPickler$UnPickle$LazyTypeRef$class@15fc40c; def drop: scala.tools.nsc.symtab\
+.classfile.UnPickler$UnPickle$LazyTypeRef$class@401369; def subseq: scala.tools.nsc.symtab.classfile.UnPickler$U\
+nPickle$LazyTypeRef$class@ba5bdb; def copyToArray: scala.tools.nsc.symtab.classfile.UnPickler$UnPickle$LazyTypeR\
+ef$class@e49dcd; def toList: scala.tools.nsc.symtab.classfile.UnPickler$UnPickle$LazyTypeRef$class@1343ed0; over\
+ride def toString(): java.lang.String!; protected def stringPrefix: scala.tools.nsc.symtab.classfile.UnPickler$U\
+nPickle$LazyTypeRef$class@107f45d}; final object Seq extends scala.tools.nsc.symtab.classfile.UnPickler$UnPickle\
+$LazyTypeRef$class@13c0b53; class Enumeration$Val! extends scala.tools.nsc.symtab.SymbolLoaders$ClassfileLoader$\
+class@10b9279; final object Enumeration$Val extends scala.tools.nsc.symtab.SymbolLoaders$ClassfileLoader$class@1\
+0b9279; class Function8! extends scala.tools.nsc.symtab.SymbolLoaders$SymblfileLoader$class@bd6a5f; final object\
+ Function8 extends scala.tools.nsc.symtab.SymbolLoaders$SymblfileLoader$class@bd6a5f; abstract class Int! extend\
+s scala.AnyVal!{final val value: scala.Int!; def <init>(scala.Int!): scala.Int!; def equals(scala.Any!): scala.B\
+oolean!; def hashCode(): scala.Int!; def toString(): java.lang.String!; def ==(scala.Any!): scala.Boolean!; def \
+!=(scala.Any!): scala.Boolean!; def +: scala.Int!; def -: scala.Int!; def +(java.lang.String!): java.lang.String\
+!; def ==(scala.Double!): scala.Boolean!; def !=(scala.Double!): scala.Boolean!; def <(scala.Double!): scala.Boo\
+lean!; def >(scala.Double!): scala.Boolean!; def <=(scala.Double!): scala.Boolean!; def >=(scala.Double!): scala\
+.Boolean!; def +(scala.Double!): scala.Double!; def -(scala.Double!): scala.Double!; def *(scala.Double!): scala\
+.Double!; def /(scala.Double!): scala.Double!; def %(scala.Double!): scala.Double!; def coerce: scala.Double!; d\
+ef ==(scala.Float!): scala.Boolean!; def !=(scala.Float!): scala.Boolean!; def <(scala.Float!): scala.Boolean!; \
+def >(scala.Float!): scala.Boolean!; def <=(scala.Float!): scala.Boolean!; def >=(scala.Float!): scala.Boolean!;\
+ def +(scala.Float!): scala.Float!; def -(scala.Float!): scala.Float!; def *(scala.Float!): scala.Float!; def /(\
+scala.Float!): scala.Float!; def %(scala.Float!): scala.Float!; def coerce: scala.Float!; def ~: scala.Int!; def\
+ <<(scala.Int!): scala.Int!; def <<(scala.Long!): scala.Int!; def >>(scala.Int!): scala.Int!; def >>(scala.Long!\
+): scala.Int!; def >>>(scala.Int!): scala.Int!; def >>>(scala.Long!): scala.Int!; def ==(scala.Long!): scala.Boo\
+lean!; def !=(scala.Long!): scala.Boolean!; def <(scala.Long!): scala.Boolean!; def >(scala.Long!): scala.Boolea\
+n!; def <=(scala.Long!): scala.Boolean!; def >=(scala.Long!): scala.Boolean!; def +(scala.Long!): scala.Long!; d\
+ef -(scala.Long!): scala.Long!; def *(scala.Long!): scala.Long!; def /(scala.Long!): scala.Long!; def %(scala.Lo\
+ng!): scala.Long!; def |(scala.Long!): scala.Long!; def &(scala.Long!): scala.Long!; def ^(scala.Long!): scala.L\
+ong!; def coerce: scala.Long!; def ==(scala.Int!): scala.Boolean!; def !=(scala.Int!): scala.Boolean!; def <(sca\
+la.Int!): scala.Boolean!; def >(scala.Int!): scala.Boolean!; def <=(scala.Int!): scala.Boolean!; def >=(scala.In\
+t!): scala.Boolean!; def +(scala.Int!): scala.Int!; def -(scala.Int!): scala.Int!; def *(scala.Int!): scala.Int!\
+; def /(scala.Int!): scala.Int!; def %(scala.Int!): scala.Int!; def |(scala.Int!): scala.Int!; def &(scala.Int!)\
+: scala.Int!; def ^(scala.Int!): scala.Int!}; final object Int extends scala.Int!; abstract trait Function1![-T0\
+!<: scala.tools.nsc.symtab.classfile.UnPickler$UnPickle$LazyTypeRef$class@192a848,+R!<: scala.tools.nsc.symtab.c\
+lassfile.UnPickler$UnPickle$LazyTypeRef$class@16614e7] extends java.lang.Object! with scala.ScalaObject!{def app\
+ly(T0!): R!}; final object Function1 extends <notype>; abstract trait Iterator![+A!<: scala.tools.nsc.symtab.cla\
+ssfile.UnPickler$UnPickle$LazyTypeRef$class@e66f56] extends java.lang.Object! with scala.ScalaObject!{def hasNex\
+t: scala.tools.nsc.symtab.classfile.UnPickler$UnPickle$LazyTypeRef$class@979e8b; def next: scala.tools.nsc.symta\
+b.classfile.UnPickler$UnPickle$LazyTypeRef$class@29ce8c; def take: scala.tools.nsc.symtab.classfile.UnPickler$Un\
+Pickle$LazyTypeRef$class@b754b2; def drop: scala.tools.nsc.symtab.classfile.UnPickler$UnPickle$LazyTypeRef$class\
+@197bb7; def map: scala.tools.nsc.symtab.classfile.UnPickler$UnPickle$LazyTypeRef$class@1094d48; def append: sca\
+la.tools.nsc.symtab.classfile.UnPickler$UnPickle$LazyTypeRef$class@1b0bdc8; def flatMap: scala.tools.nsc.symtab.\
+classfile.UnPickler$UnPickle$LazyTypeRef$class@7bc899; def filter: scala.tools.nsc.symtab.classfile.UnPickler$Un\
+Pickle$LazyTypeRef$class@aeea66; def zip: scala.tools.nsc.symtab.classfile.UnPickler$UnPickle$LazyTypeRef$class@\
+19eda2c; def foreach: scala.tools.nsc.symtab.classfile.UnPickler$UnPickle$LazyTypeRef$class@59a34; def forall: s\
+cala.tools.nsc.symtab.classfile.UnPickler$UnPickle$LazyTypeRef$class@1cef4f7; def exists: scala.tools.nsc.symtab\
+.classfile.UnPickler$UnPickle$LazyTypeRef$class@349471; def contains: scala.tools.nsc.symtab.classfile.UnPickler\
+$UnPickle$LazyTypeRef$class@1fdadcd; def find: scala.tools.nsc.symtab.classfile.UnPickler$UnPickle$LazyTypeRef$c\
+lass@19d75ee; def foldLeft: scala.tools.nsc.symtab.classfile.UnPickler$UnPickle$LazyTypeRef$class@a98932; def fo\
+ldRight: scala.tools.nsc.symtab.classfile.UnPickler$UnPickle$LazyTypeRef$class@6e4365; def /:: scala.tools.nsc.s\
+ymtab.classfile.UnPickler$UnPickle$LazyTypeRef$class@10ab09f; def :\: scala.tools.nsc.symtab.classfile.UnPickler\
+$UnPickle$LazyTypeRef$class@d1c778; def buffered: scala.tools.nsc.symtab.classfile.UnPickler$UnPickle$LazyTypeRe\
+f$class@7eb366; def duplicate: scala.tools.nsc.symtab.classfile.UnPickler$UnPickle$LazyTypeRef$class@33f0de; def\
+ copyToArray: scala.tools.nsc.symtab.classfile.UnPickler$UnPickle$LazyTypeRef$class@ab444; def toList: scala.too\
+ls.nsc.symtab.classfile.UnPickler$UnPickle$LazyTypeRef$class@c0f1ec}; final object Iterator extends scala.tools.\
+nsc.symtab.classfile.UnPickler$UnPickle$LazyTypeRef$class@14acfcd; class _trait_! extends scala.tools.nsc.symtab\
+.SymbolLoaders$SymblfileLoader$class@90d8ea; final object _trait_ extends scala.tools.nsc.symtab.SymbolLoaders$S\
+ymblfileLoader$class@90d8ea; class Proxy! extends scala.tools.nsc.symtab.SymbolLoaders$SymblfileLoader$class@191\
+13f8; final object Proxy extends scala.tools.nsc.symtab.SymbolLoaders$SymblfileLoader$class@19113f8; class Enume\
+ration! extends scala.tools.nsc.symtab.SymbolLoaders$SymblfileLoader$class@1b62aab; final object Enumeration ext\
+ends scala.tools.nsc.symtab.SymbolLoaders$SymblfileLoader$class@1b62aab; class BufferedIterator! extends scala.t\
+ools.nsc.symtab.SymbolLoaders$SymblfileLoader$class@ab54eb; final object BufferedIterator extends scala.tools.ns\
+c.symtab.SymbolLoaders$SymblfileLoader$class@ab54eb; class Tuple6! extends scala.tools.nsc.symtab.SymbolLoaders$\
+SymblfileLoader$class@542529; final object Tuple6 extends scala.tools.nsc.symtab.SymbolLoaders$SymblfileLoader$c\
+lass@542529; class Function4! extends scala.tools.nsc.symtab.SymbolLoaders$SymblfileLoader$class@53ab04; final o\
+bject Function4 extends scala.tools.nsc.symtab.SymbolLoaders$SymblfileLoader$class@53ab04; class Predef! extends\
+ <notype>; final object Predef extends scala.Predef!; class Tuple1! extends scala.tools.nsc.symtab.SymbolLoaders\
+$SymblfileLoader$class@100bac2; final object Tuple1 extends scala.tools.nsc.symtab.SymbolLoaders$SymblfileLoader\
+$class@100bac2; class Float! extends scala.tools.nsc.symtab.SymbolLoaders$ClassfileLoader$class@e51b2c; final ob\
+ject Float extends scala.tools.nsc.symtab.SymbolLoaders$ClassfileLoader$class@e51b2c; class Double! extends scal\
+a.tools.nsc.symtab.SymbolLoaders$ClassfileLoader$class@15aed57; final object Double extends scala.tools.nsc.symt\
+ab.SymbolLoaders$ClassfileLoader$class@15aed57; class Tuple2! extends scala.tools.nsc.symtab.SymbolLoaders$Symbl\
+fileLoader$class@941db6; final object Tuple2 extends scala.tools.nsc.symtab.SymbolLoaders$SymblfileLoader$class@\
+941db6; class None$! extends scala.tools.nsc.symtab.SymbolLoaders$ClassfileLoader$class@2acc57; final object Non\
+e$ extends scala.tools.nsc.symtab.SymbolLoaders$ClassfileLoader$class@2acc57; abstract trait Iterable![+A!<: sca\
+la.tools.nsc.symtab.classfile.UnPickler$UnPickle$LazyTypeRef$class@1cd66ea] extends java.lang.Object! with scala\
+.ScalaObject!{def elements: scala.Iterator![A!]; def concat[B! >: A!](scala.Iterable![B!]): scala.Iterable![B!];\
+ def foreach: scala.tools.nsc.symtab.classfile.UnPickler$UnPickle$LazyTypeRef$class@1fbfd6; def forall: scala.to\
+ols.nsc.symtab.classfile.UnPickler$UnPickle$LazyTypeRef$class@6b9c84; def exists: scala.tools.nsc.symtab.classfi\
+le.UnPickler$UnPickle$LazyTypeRef$class@f0b7f8; def find: scala.tools.nsc.symtab.classfile.UnPickler$UnPickle$La\
+zyTypeRef$class@1be16f5; def foldLeft: scala.tools.nsc.symtab.classfile.UnPickler$UnPickle$LazyTypeRef$class@d56\
+b37; def foldRight: scala.tools.nsc.symtab.classfile.UnPickler$UnPickle$LazyTypeRef$class@171f189; def /:: scala\
+.tools.nsc.symtab.classfile.UnPickler$UnPickle$LazyTypeRef$class@1a897a9; def :\: scala.tools.nsc.symtab.classfi\
+le.UnPickler$UnPickle$LazyTypeRef$class@17cec96; def sameElements: scala.tools.nsc.symtab.classfile.UnPickler$Un\
+Pickle$LazyTypeRef$class@90832e}; final object Iterable extends scala.tools.nsc.symtab.classfile.UnPickler$UnPic\
+kle$LazyTypeRef$class@1947496; class Seq$! extends scala.tools.nsc.symtab.SymbolLoaders$ClassfileLoader$class@17\
+24a9d; final object Seq$ extends scala.tools.nsc.symtab.SymbolLoaders$ClassfileLoader$class@1724a9d; class Strea\
+m$! extends scala.tools.nsc.symtab.SymbolLoaders$ClassfileLoader$class@80cac9; final object Stream$ extends scal\
+a.tools.nsc.symtab.SymbolLoaders$ClassfileLoader$class@80cac9; class Function2! extends scala.tools.nsc.symtab.S\
+ymbolLoaders$SymblfileLoader$class@18166e5; final object Function2 extends scala.tools.nsc.symtab.SymbolLoaders$\
+SymblfileLoader$class@18166e5; final package runtime extends scala.runtime!; final package testing extends scala\
+.testing!; final package text extends scala.text!; final package mobile extends scala.mobile!; final package ref\
+lect extends scala.reflect!; final package tools extends scala.tools!; final package CVS extends scala.CVS!; fin\
+al package io extends scala.io!; final package util extends scala.util!; final package concurrent extends scala.\
+concurrent!; final package collection extends scala.collection!; final package xml extends scala.xml!; class Any\
+! extends {final def ==(scala.Any!): scala.Boolean!; final def !=(scala.Any!): scala.Boolean!; def equals(scala.\
+Any!): scala.Boolean!; def hashCode(): scala.Int!; def toString(): java.lang.String!; final def isInstanceOf[T0]\
+: scala.Boolean!; final def asInstanceOf[T0]: T0; final def isInstanceOf$erased[T0]: scala.Boolean!; final def a\
+sInstanceOf$erased[T0]: T0}; type AnyRef! = java.lang.Object!; class AllRef! extends java.lang.Object!; class Al\
+l! extends scala.Any!; class <repeated>![+T0] extends scala.Seq![T0]; class <byname>![+T0] extends scala.Any!; a\
+bstract trait ScalaObject$class! extends java.lang.Object! with scala.ScalaObject!{def $tag(): scala.Int!; def $\
+init$(): scala.Unit!}}
+        at scala.tools.nsc.symtab.Types$TypeMap$class.mapOver(Types.scala:1166)
+        at scala.tools.nsc.symtab.Types$AsSeenFromMap$class.apply(Types.scala:1231)
+        at scala.tools.nsc.symtab.Types$AsSeenFromMap$class.apply(Types.scala:1197)
+        at scala.tools.nsc.symtab.Types$TypeMap$class.mapOver(Types.scala:1154)
+        at scala.tools.nsc.symtab.Types$AsSeenFromMap$class.apply(Types.scala:1231)
+        at scala.tools.nsc.symtab.Types$Type$class.asSeenFrom(Types.scala:174)
+        at scala.tools.nsc.symtab.Types$Type$class.memberInfo(Types.scala:179)
+        at scala.tools.nsc.symtab.Types$TypeRef$class.baseType(Types.scala:776)
+        at scala.tools.nsc.symtab.SymbolTable$class.isSubType(SymbolTable.scala:1517)
+        at scala.tools.nsc.symtab.Types$Type$class.$less$colon$less(Types.scala:214)
+        at scala.tools.nsc.symtab.SymbolTable$class.isSubType(SymbolTable.scala:1514)
+        at scala.tools.nsc.symtab.Types$Type$class.$less$colon$less(Types.scala:214)
+        at scala.tools.nsc.symtab.Types$TypeBounds$class.containsType(Types.scala:538)
+        at scala.tools.nsc.typechecker.Infer$$anon$11.apply(Infer.scala:77)
+        at scala.tools.nsc.typechecker.Infer$$anon$11.apply(Infer.scala:77)
+        at scala.List$.map2(List.scala:214)
+        at scala.tools.nsc.typechecker.Analyzer$class.scala$tools$nsc$typechecker$Infer$isWithinBounds(Analyzer.\
+scala:77)
+        at scala.tools.nsc.typechecker.Analyzer$class.scala$tools$nsc$typechecker$Infer$access$scala$tools$nsc$t\
+ypechecker$Infer$isWithinBounds(Analyzer.scala:8)
+        at scala.tools.nsc.typechecker.Infer$Inferencer$class.checkBounds(Infer.scala:400)
+        at scala.tools.nsc.typechecker.RefChecks$RefCheckTransformer$$anon$19$$anon$20.apply(RefChecks.scala:489\
+)
+        at scala.tools.nsc.typechecker.RefChecks$RefCheckTransformer$$anon$19$$anon$20.apply(RefChecks.scala:489\
+)
+        at scala.runtime.ScalaRunTime$$anon$0.run(ScalaRunTime.scala:34)
+        at scala.runtime.RunTime.tryCatch(RunTime.java:79)
+        at scala.runtime.ScalaRunTime$$anon$0.<init>(ScalaRunTime.scala:32)
+        at scala.runtime.ScalaRunTime$.Try(ScalaRunTime.scala:30)
+        at scala.tools.nsc.typechecker.RefChecks$RefCheckTransformer$$anon$19.scala$tools$nsc$typechecker$RefChe\
+cks$RefCheckTransformer$$anon$19$checkBounds$0(RefChecks.scala:488)
+        at scala.tools.nsc.typechecker.RefChecks$RefCheckTransformer$$anon$19.scala$tools$nsc$typechecker$RefChe\
+cks$RefCheckTransformer$$anon$19$access$scala$tools$nsc$typechecker$RefChecks$RefCheckTransformer$$anon$19$check\
+Bounds$0(RefChecks.scala:477)
+        at scala.tools.nsc.typechecker.RefChecks$RefCheckTransformer$$anon$19$$anon$0.traverse(RefChecks.scala:5\
+22)
+        at scala.tools.nsc.typechecker.RefChecks$RefCheckTransformer$$anon$19$$anon$0.traverse(RefChecks.scala:5\
+21)
+        at scala.tools.nsc.typechecker.RefChecks$RefCheckTransformer$$anon$19.apply(RefChecks.scala:525)
+        at scala.tools.nsc.typechecker.RefChecks$RefCheckTransformer$$anon$19.apply(RefChecks.scala:477)
+        at scala.runtime.ScalaRunTime$$anon$0.run(ScalaRunTime.scala:34)
+        at scala.runtime.RunTime.tryCatch(RunTime.java:79)
+        at scala.runtime.ScalaRunTime$$anon$0.<init>(ScalaRunTime.scala:32)
+        at scala.runtime.ScalaRunTime$.Try(ScalaRunTime.scala:30)
+        at scala.tools.nsc.typechecker.RefChecks$RefCheckTransformer$class.transform(RefChecks.scala:477)
+        at scala.tools.nsc.ast.Trees$Transformer$$anon$15.apply(Trees.scala:913)
+        at scala.tools.nsc.ast.Trees$Transformer$$anon$15.apply(Trees.scala:913)
+        at scala.List$.mapConserve(List.scala:222)
+        at scala.List$.mapConserve(List.scala:224)
+        at scala.List$.mapConserve(List.scala:224)
+        at scala.List$.mapConserve(List.scala:224)
+        at scala.tools.nsc.ast.Trees$Transformer$class.transformTrees(Trees.scala:913)
+        at scala.tools.nsc.ast.Trees$Transformer$class.transform(Trees.scala:853)
+        at scala.tools.nsc.typechecker.RefChecks$RefCheckTransformer$class.scala$tools$nsc$typechecker$RefChecks\
+$RefCheckTransformer$access$super$scala$tools$nsc$ast$Trees$Transformer$transform(RefChecks.scala:84)
+        at scala.tools.nsc.typechecker.RefChecks$RefCheckTransformer$$anon$19.apply(RefChecks.scala:579)
+        at scala.tools.nsc.typechecker.RefChecks$RefCheckTransformer$$anon$19.apply(RefChecks.scala:477)
+        at scala.runtime.ScalaRunTime$$anon$0.run(ScalaRunTime.scala:34)
+        at scala.runtime.RunTime.tryCatch(RunTime.java:79)
+        at scala.runtime.ScalaRunTime$$anon$0.<init>(ScalaRunTime.scala:32)
+        at scala.runtime.ScalaRunTime$.Try(ScalaRunTime.scala:30)
+        at scala.tools.nsc.typechecker.RefChecks$RefCheckTransformer$class.transform(RefChecks.scala:477)
+        at scala.tools.nsc.ast.Trees$Transformer$class.transformTemplate(Trees.scala:915)
+        at scala.tools.nsc.ast.Trees$Transformer$$anon$27.apply(Trees.scala:821)
+        at scala.tools.nsc.ast.Trees$Transformer$$anon$27.apply(Trees.scala:821)
+        at scala.tools.nsc.ast.Trees$Transformer$class.atOwner(Trees.scala:935)
+        at scala.tools.nsc.ast.Trees$Transformer$class.transform(Trees.scala:820)
+        at scala.tools.nsc.typechecker.RefChecks$RefCheckTransformer$class.scala$tools$nsc$typechecker$RefChecks\
+$RefCheckTransformer$access$super$scala$tools$nsc$ast$Trees$Transformer$transform(RefChecks.scala:84)
+        at scala.tools.nsc.typechecker.RefChecks$RefCheckTransformer$$anon$19.apply(RefChecks.scala:579)
+        at scala.tools.nsc.typechecker.RefChecks$RefCheckTransformer$$anon$19.apply(RefChecks.scala:477)
+        at scala.runtime.ScalaRunTime$$anon$0.run(ScalaRunTime.scala:34)
+        at scala.runtime.RunTime.tryCatch(RunTime.java:79)
+        at scala.runtime.ScalaRunTime$$anon$0.<init>(ScalaRunTime.scala:32)
+        at scala.runtime.ScalaRunTime$.Try(ScalaRunTime.scala:30)
+        at scala.tools.nsc.typechecker.RefChecks$RefCheckTransformer$class.transform(RefChecks.scala:477)
+        at scala.tools.nsc.typechecker.RefChecks$RefCheckTransformer$class.transformStat(RefChecks.scala:474)
+        at scala.tools.nsc.typechecker.RefChecks$RefCheckTransformer$$anon$15.apply(RefChecks.scala:430)
+        at scala.tools.nsc.typechecker.RefChecks$RefCheckTransformer$$anon$15.apply(RefChecks.scala:430)
+        at scala.List$class.flatMap(List.scala:767)
+        at scala.tools.nsc.typechecker.RefChecks$RefCheckTransformer$class.transformStats(RefChecks.scala:430)
+        at scala.tools.nsc.ast.Trees$Transformer$$anon$26.apply(Trees.scala:817)
+        at scala.tools.nsc.ast.Trees$Transformer$$anon$26.apply(Trees.scala:817)
+        at scala.tools.nsc.ast.Trees$Transformer$class.atOwner(Trees.scala:935)
+        at scala.tools.nsc.ast.Trees$Transformer$class.transform(Trees.scala:816)
+        at scala.tools.nsc.typechecker.RefChecks$RefCheckTransformer$class.scala$tools$nsc$typechecker$RefChecks\
+$RefCheckTransformer$access$super$scala$tools$nsc$ast$Trees$Transformer$transform(RefChecks.scala:84)
+        at scala.tools.nsc.typechecker.RefChecks$RefCheckTransformer$$anon$19.apply(RefChecks.scala:579)
+        at scala.tools.nsc.typechecker.RefChecks$RefCheckTransformer$$anon$19.apply(RefChecks.scala:477)
+        at scala.runtime.ScalaRunTime$$anon$0.run(ScalaRunTime.scala:34)
+        at scala.runtime.RunTime.tryCatch(RunTime.java:79)
+        at scala.runtime.ScalaRunTime$$anon$0.<init>(ScalaRunTime.scala:32)
+        at scala.runtime.ScalaRunTime$.Try(ScalaRunTime.scala:30)
+        at scala.tools.nsc.typechecker.RefChecks$RefCheckTransformer$class.transform(RefChecks.scala:477)
+        at scala.tools.nsc.ast.Trees$Transformer$class.transformUnit(Trees.scala:930)
+        at scala.tools.nsc.transform.Transform$Phase$class.apply(Transform.scala:22)
+        at scala.tools.nsc.Global$GlobalPhase$class.applyPhase(Global.scala:167)
+        at scala.tools.nsc.Global$Run$$anon$18.apply(Global.scala:374)
+        at scala.tools.nsc.Global$Run$$anon$18.apply(Global.scala:374)
+        at scala.tools.nsc.symtab.SymbolTable$class.atPhase(SymbolTable.scala:38)
+        at scala.tools.nsc.Global$Run$class.compileLate(Global.scala:374)
+        at scala.tools.nsc.symtab.SymbolLoaders$SourcefileLoader$class.doComplete(SymbolLoaders.scala:172)
+        at scala.tools.nsc.symtab.SymbolLoaders$SymbolLoader$class.scala$tools$nsc$symtab$SymbolLoaders$SymbolLo\
+ader$access$scala$tools$nsc$symtab$SymbolLoaders$SymbolLoader$doComplete(SymbolLoaders.scala:27)
+        at scala.tools.nsc.symtab.SymbolLoaders$SymbolLoader$$anon$7.apply(SymbolLoaders.scala:41)
+        at scala.tools.nsc.symtab.SymbolLoaders$SymbolLoader$$anon$7.apply(SymbolLoaders.scala:38)
+        at scala.runtime.ScalaRunTime$$anon$0.run(ScalaRunTime.scala:34)
+        at scala.runtime.RunTime.tryCatch(RunTime.java:79)
+        at scala.runtime.ScalaRunTime$$anon$0.<init>(ScalaRunTime.scala:32)
+        at scala.runtime.ScalaRunTime$.Try(ScalaRunTime.scala:30)
+        at scala.tools.nsc.symtab.SymbolLoaders$SymbolLoader$class.complete(SymbolLoaders.scala:38)
+        at scala.tools.nsc.symtab.Symbols$Symbol$$anon$18.apply(Symbols.scala:279)
+        at scala.tools.nsc.symtab.Symbols$Symbol$$anon$18.apply(Symbols.scala:277)
+        at scala.runtime.ScalaRunTime$$anon$0.run(ScalaRunTime.scala:34)
+        at scala.runtime.RunTime.tryCatch(RunTime.java:79)
+        at scala.runtime.ScalaRunTime$$anon$0.<init>(ScalaRunTime.scala:32)
+        at scala.runtime.ScalaRunTime$.Try(ScalaRunTime.scala:30)
+        at scala.tools.nsc.symtab.Symbols$Symbol$class.info(Symbols.scala:277)
+        at scala.tools.nsc.backend.ScalaPrimitives$class.addPrimitives(ScalaPrimitives.scala:423)
+        at scala.tools.nsc.backend.ScalaPrimitives$class.init(ScalaPrimitives.scala:233)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase$class.run(GenICode.scala:49)
+        at scala.tools.nsc.Global$Run$class.compileSources(Global.scala:330)
+        at scala.tools.nsc.Global$Run$$anon$20.apply(Global.scala:388)
+        at scala.tools.nsc.Global$Run$$anon$20.apply(Global.scala:388)
+        at scala.runtime.ScalaRunTime$$anon$0.run(ScalaRunTime.scala:34)
+        at scala.runtime.RunTime.tryCatch(RunTime.java:79)
+        at scala.runtime.ScalaRunTime$$anon$0.<init>(ScalaRunTime.scala:32)
+        at scala.runtime.ScalaRunTime$.Try(ScalaRunTime.scala:30)
+        at scala.tools.nsc.Global$Run$class.compile(Global.scala:387)
+        at scala.tools.nsc.Main$$anon$6.apply(Main.scala:87)
+        at scala.tools.nsc.Main$$anon$6.apply(Main.scala:78)
+        at scala.runtime.ScalaRunTime$$anon$0.run(ScalaRunTime.scala:34)
+        at scala.runtime.RunTime.tryCatch(RunTime.java:79)
+        at scala.runtime.ScalaRunTime$$anon$0.<init>(ScalaRunTime.scala:32)
+        at scala.runtime.ScalaRunTime$.Try(ScalaRunTime.scala:30)
+        at scala.tools.nsc.Main$.process(Main.scala:78)
+        at scala.tools.nsc.Main$.main(Main.scala:99)
+        at scala.tools.nsc.Main.main(Main.scala:98)
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >No error</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Iulian&nbsp; edited on &nbsp;2005-10-17 17:05:29.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+It was because two dummy classes, All and AllRef, were in the classpath. This confused the type checker.
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

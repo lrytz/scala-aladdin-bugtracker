@@ -1,0 +1,217 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#794]</th>
+		<th><strong>project:</strong> bugtracking</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Nikolay</td>
+	  <td align="center" bgcolor="#FFFFFF">_</td>
+	  <td align="center" bgcolor="#FFFFFF">_</td>
+          <td align="center" bgcolor="#FFFFFF">2006-11-03 10:33:29.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">submission reported failure</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>Comment 1.
+I've been attempting to submit a compiler bug report, and each time I received an error reply (refer to &quot;what happened&quot;).
+
+Going through the menu again, I now see that the bug actually made into your database a few times as #237 #238 #239
+
+My browser is Firefox 2, with Javascript disabled.
+
+
+
+Comment 2.
+It was easy to get off track when attempting to submit the bug.
+
+A user can click &quot;Reporting a Bug&quot;, then &quot;Login to Aladdin&quot; (expecting to sign up for an account).
+
+http://scala-webapps.epfl.ch/bugtracking/jsp/page/Login.jsp
+doesn't provide a way to sign up, but does have a link &quot;add bug&quot;.
+
+Clicking &quot;add bug&quot; then reports &quot;not logged in&quot;.
+
+Note that the link the user should be using, &quot;Report a Bug&quot;, is no longer visible.
+
+
+
+Comment 3 (very minor).
+From the main web site, I can successfully click on &quot;Reporting a Bug&quot;
+  http://scala.epfl.ch/bugs/index.html
+
+However, if I click on the bold &quot;Reporting a Bug&quot; 
+  http://scala-webapps.epfl.ch/bugtracking/bugs/index.html
+while I'm in the bug tracking system,
+I receive HTTP Status 404 - /bugtracking/bugs/index.html
+
+The HTML has  ../bugs/index.html 
+Perhaps you need an absolute path.
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>http://scala-webapps.epfl.ch/bugtracking/contribs/createEdit.do
+
+HTTP Status 500 -
+
+type Exception report
+
+message
+
+de5cr1p7-haX0Rion The server encountered an internal error () that prevented it from fulfilling this request.
+
+exception
+
+org.apache.jasper.JasperException
+	org.apache.jasper.servlet.JspServletWrapper.service(JspServletWrapper.java:370)
+	org.apache.jasper.servlet.JspServlet.serviceJspFile(JspServlet.java:314)
+	org.apache.jasper.servlet.JspServlet.service(JspServlet.java:264)
+	javax.servlet.http.HttpServlet.service(HttpServlet.java:802)
+	org.apache.jasper.runtime.JspRuntimeLibrary.include(JspRuntimeLibrary.java:966)
+	org.apache.jsp.jsp.page.DisplayTheContrib_jsp._jspx_meth_template_put_1(org.apache.jsp.jsp.page.DisplayTheContr\
+ib_jsp:295)
+	org.apache.jsp.jsp.page.DisplayTheContrib_jsp._jspx_meth_template_insert_1(org.apache.jsp.jsp.page.DisplayTheCo\
+ntrib_jsp:256)
+	org.apache.jsp.jsp.page.DisplayTheContrib_jsp._jspx_meth_bugtracking_IfNotLoggedIn_0(org.apache.jsp.jsp.page.Di\
+splayTheContrib_jsp:223)
+	org.apache.jsp.jsp.page.DisplayTheContrib_jsp._jspService(org.apache.jsp.jsp.page.DisplayTheContrib_jsp:80)
+	org.apache.jasper.runtime.HttpJspBase.service(HttpJspBase.java:97)
+	javax.servlet.http.HttpServlet.service(HttpServlet.java:802)
+	org.apache.jasper.servlet.JspServletWrapper.service(JspServletWrapper.java:322)
+	org.apache.jasper.servlet.JspServlet.serviceJspFile(JspServlet.java:314)
+	org.apache.jasper.servlet.JspServlet.service(JspServlet.java:264)
+	javax.servlet.http.HttpServlet.service(HttpServlet.java:802)
+	org.apache.struts.action.ActionServlet.processActionForward(ActionServlet.java:1759)
+	org.apache.struts.action.ActionServlet.process(ActionServlet.java:1596)
+	org.apache.struts.action.ActionServlet.doPost(ActionServlet.java:510)
+	javax.servlet.http.HttpServlet.service(HttpServlet.java:709)
+	javax.servlet.http.HttpServlet.service(HttpServlet.java:802)
+	org.apache.struts.action.ActionServlet.processActionForward(ActionServlet.java:1759)
+	org.apache.struts.action.ActionServlet.process(ActionServlet.java:1596)
+	org.apache.struts.action.ActionServlet.doPost(ActionServlet.java:510)
+	javax.servlet.http.HttpServlet.service(HttpServlet.java:709)
+	javax.servlet.http.HttpServlet.service(HttpServlet.java:802)
+
+root cause
+
+java.lang.NullPointerException
+	org.apache.jsp.jsp.block.contribs.DisplayTheContribBlock_jsp._jspService(org.apache.jsp.jsp.block.contribs.Disp\
+layTheContribBlock_jsp:131)
+	org.apache.jasper.runtime.HttpJspBase.service(HttpJspBase.java:97)
+	javax.servlet.http.HttpServlet.service(HttpServlet.java:802)
+	org.apache.jasper.servlet.JspServletWrapper.service(JspServletWrapper.java:322)
+	org.apache.jasper.servlet.JspServlet.serviceJspFile(JspServlet.java:314)
+	org.apache.jasper.servlet.JspServlet.service(JspServlet.java:264)
+	javax.servlet.http.HttpServlet.service(HttpServlet.java:802)
+	org.apache.jasper.runtime.JspRuntimeLibrary.include(JspRuntimeLibrary.java:966)
+	org.apache.jsp.jsp.page.DisplayTheContrib_jsp._jspx_meth_template_put_1(org.apache.jsp.jsp.page.DisplayTheContr\
+ib_jsp:295)
+	org.apache.jsp.jsp.page.DisplayTheContrib_jsp._jspx_meth_template_insert_1(org.apache.jsp.jsp.page.DisplayTheCo\
+ntrib_jsp:256)
+	org.apache.jsp.jsp.page.DisplayTheContrib_jsp._jspx_meth_bugtracking_IfNotLoggedIn_0(org.apache.jsp.jsp.page.Di\
+splayTheContrib_jsp:223)
+	org.apache.jsp.jsp.page.DisplayTheContrib_jsp._jspService(org.apache.jsp.jsp.page.DisplayTheContrib_jsp:80)
+	org.apache.jasper.runtime.HttpJspBase.service(HttpJspBase.java:97)
+	javax.servlet.http.HttpServlet.service(HttpServlet.java:802)
+	org.apache.jasper.servlet.JspServletWrapper.service(JspServletWrapper.java:322)
+	org.apache.jasper.servlet.JspServlet.serviceJspFile(JspServlet.java:314)
+	org.apache.jasper.servlet.JspServlet.service(JspServlet.java:264)
+	javax.servlet.http.HttpServlet.service(HttpServlet.java:802)
+	org.apache.struts.action.ActionServlet.processActionForward(ActionServlet.java:1759)
+	org.apache.struts.action.ActionServlet.process(ActionServlet.java:1596)
+	org.apache.struts.action.ActionServlet.doPost(ActionServlet.java:510)
+	javax.servlet.http.HttpServlet.service(HttpServlet.java:709)
+	javax.servlet.http.HttpServlet.service(HttpServlet.java:802)
+	org.apache.struts.action.ActionServlet.processActionForward(ActionServlet.java:1759)
+	org.apache.struts.action.ActionServlet.process(ActionServlet.java:1596)
+	org.apache.struts.action.ActionServlet.doPost(ActionServlet.java:510)
+	javax.servlet.http.HttpServlet.service(HttpServlet.java:709)
+	javax.servlet.http.HttpServlet.service(HttpServlet.java:802)
+
+note The full stack trace of the root cause is available in the Apache Tomcat/5.5.12 logs.
+Apache Tomcat/5.5.12
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >A web page showing the id for the submitted bug.
+For example, the "View Contributions" page
+http://scala-webapps.epfl.ch/bugtracking/contribs/displayList.do
+</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2006-11-03 15:04:00.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+test
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2006-11-03 15:13:57.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+test2
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

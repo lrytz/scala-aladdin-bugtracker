@@ -1,0 +1,1590 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#592]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Sean</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2006-05-09 19:42:46.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">requires compilation crash</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>See src/lampion/parser/Matcher.scala in the plugin/lampion SVN project. This code was just modified to use &quot;requires&quot;, it seems the compiler crashes when compiling this file.
+
+Here is a smaller example from Bogdan Dumitriu's email (seems to be the same bug):
+
+trait Graph {
+  type Edge;
+  type Node &lt;: NodeIntf;
+
+  trait NodeIntf {
+    def connectWith(node: Node): Edge;
+  }
+
+  def nodes: List[Node];
+  def edges: List[Edge];
+  def addNode: Node;
+}
+
+abstract class DirectedGraph extends Graph {
+  type Edge &lt;: EdgeImpl;
+
+  class EdgeImpl(origin: Node, dest: Node) {
+    def from = origin;
+    def to = dest;
+  }
+
+  class NodeImpl requires Node extends NodeIntf {
+    def connectWith(node: Node): Edge = {
+      val edge = newEdge(this, node);
+      edges = edge :: edges;
+      edge;
+    }
+  }
+
+  protected def newNode: Node;
+  protected def newEdge(from: Node, to: Node): Edge;
+  var nodes: List[Node] = Nil;
+  var edges: List[Edge] = Nil;
+
+  def addNode: Node = {
+    val node = newNode;
+    nodes = node :: nodes;
+    node;
+  }
+}
+
+class ConcreteDirectedGraph extends DirectedGraph {
+  type Edge = EdgeImpl;
+  type Node = NodeImpl;
+
+  protected def newNode: Node = {
+    new NodeImpl;
+  }
+
+  protected def newEdge(f: Node, t: Node): Edge = {
+    new EdgeImpl(f, t);
+  }
+}
+
+object ExplicitThis {
+  def main(args: Array[String]): Unit = {
+    val g: Graph = new ConcreteDirectedGraph;
+    val n1 = g.addNode;
+    val n2 = g.addNode;
+    val n3 = g.addNode;
+    n1.connectWith(n2);
+    n2.connectWith(n3);
+    n1.connectWith(n3);
+  }
+}</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre><pre>
+Output from running scalac on the command line:
+
+exception when transforming new Matcher.this.Engine.this(null, Matcher.this)
+exception when transforming val engine: Matcher.this.Engine = new Matcher.this.Engine.this(null)
+exception when transforming {
+  scala.this.Predef.assert(Matchable.this.isNormal());
+  val engine: Matcher.this.Engine = new Matcher.this.Engine.this(null);
+  Matchable.this.doUnmatch(engine);
+  engine.flush()
+}
+exception when transforming if (Matchable.this.matching().!=(null))
+  {
+    scala.this.Predef.assert(Matchable.this.isNormal());
+    val engine: Matcher.this.Engine = new Matcher.this.Engine.this(null);
+    Matchable.this.doUnmatch(engine);
+    engine.flush()
+  }
+exception when transforming {
+  if (Matchable.this.matching().!=(null))
+    {
+      scala.this.Predef.assert(Matchable.this.isNormal());
+      val engine: Matcher.this.Engine = new Matcher.this.Engine.this(null);
+      Matchable.this.doUnmatch(engine);
+      engine.flush()
+    };
+  Matchable.this.super$replaceWith(node)
+}
+exception when transforming override def replaceWith(node: Matcher.this.Node): scala.Unit = {
+  if (Matchable.this.matching().!=(null))
+    {
+      scala.this.Predef.assert(Matchable.this.isNormal());
+      val engine: Matcher.this.Engine = new Matcher.this.Engine.this(null);
+      Matchable.this.doUnmatch(engine);
+      engine.flush()
+    };
+  Matchable.this.super$replaceWith(node)
+}
+exception when transforming Matcher.this.BaseNode with Matcher.this.MatcherToken with scala.ScalaObject {
+  <superaccessor> def lampion$parsing$Matcher$Matchable$$super$skipBody(x$1: lampion.collections.DirX.Dir): Matc\
+her.this.Node;
+  <superaccessor> def lampion$parsing$Matcher$Matchable$$super$replaceWith(x$1: Matcher.this.Node): scala.Unit;\
+
+  def matching(): Matcher.this.Matchable;
+  def tryMatch(engine: Matcher.this.Engine): scala.Boolean;
+  private[Matcher] def tryMatch00(engine: Matcher.this.Engine): scala.Boolean = Matchable.this.tryMatch(engine);\
+
+  def doUnmatch(engine: Matcher.this.Engine): scala.Unit;
+  private[Matcher] def doUnmatch00(engine: Matcher.this.Engine): scala.Unit = Matchable.this.doUnmatch(engine);\
+
+  override def skipBody(dir: lampion.collections.DirX.Dir): Matcher.this.Node = {
+    val matching: Matcher.this.Matchable = this.matching();
+    if (matching.==(null))
+      Matchable.this.lampion$parsing$Matcher$Matchable$$super$skipBody(dir)
+    else
+      if (Matchable.this.sibling0(dir).==(matching))
+        matching.scan(dir)
+      else
+        null
+  };
+  override def replaceWith(node: Matcher.this.Node): scala.Unit = {
+    if (Matchable.this.matching().!=(null))
+      {
+        scala.this.Predef.assert(Matchable.this.isNormal());
+        val engine: Matcher.this.Engine = new Matcher.this.Engine.this(null);
+        Matchable.this.doUnmatch(engine);
+        engine.flush()
+      };
+    Matchable.this.lampion$parsing$Matcher$Matchable$$super$replaceWith(node)
+  };
+  override def pri(dir: lampion.collections.DirX.Dir, node: Matcher.this.Node): scala.Int = {
+    val match1: Matcher.this.Matchable = Matchable.this.matching();
+    if (match1.==(null))
+      Matchable.this.pri0(dir, node)
+    else
+      if (node.==(match1))
+        {
+          scala.this.Predef.assert(Matchable.this.sibling0(dir).==(node));
+          0
+        }
+      else
+        if (Matchable.this.sibling0(dir).==(match1))
+          1.+()
+        else
+          Matchable.this.pri0(dir, node)
+  };
+  private <local> <paramaccessor> val lampion$parsing$Matcher$Matchable$$$outer : Matcher.this.type = _;
+  <stable> <accessor> <paramaccessor> def lampion$parsing$Matcher$Matchable$$$outer(): Matcher.this.type = Match\
+able.this.lampion$parsing$Matcher$Matchable$$$outer ;
+  def /*Matchable*/$init$(): scala.Unit = ()
+}
+exception when transforming abstract trait Matchablerequires Matcher.this.Matchable0 extends Matcher.this.BaseNo\
+de with Matcher.this.MatcherToken with scala.ScalaObject {
+  <superaccessor> def lampion$parsing$Matcher$Matchable$$super$skipBody(x$1: lampion.collections.DirX.Dir): Matc\
+her.this.Node;
+  <superaccessor> def lampion$parsing$Matcher$Matchable$$super$replaceWith(x$1: Matcher.this.Node): scala.Unit;\
+
+  def matching(): Matcher.this.Matchable;
+  def tryMatch(engine: Matcher.this.Engine): scala.Boolean;
+  private[Matcher] def tryMatch00(engine: Matcher.this.Engine): scala.Boolean = Matchable.this.tryMatch(engine);\
+
+  def doUnmatch(engine: Matcher.this.Engine): scala.Unit;
+  private[Matcher] def doUnmatch00(engine: Matcher.this.Engine): scala.Unit = Matchable.this.doUnmatch(engine);\
+
+  override def skipBody(dir: lampion.collections.DirX.Dir): Matcher.this.Node = {
+    val matching: Matcher.this.Matchable = this.matching();
+    if (matching.==(null))
+      Matchable.this.lampion$parsing$Matcher$Matchable$$super$skipBody(dir)
+    else
+      if (Matchable.this.sibling0(dir).==(matching))
+        matching.scan(dir)
+      else
+        null
+  };
+  override def replaceWith(node: Matcher.this.Node): scala.Unit = {
+    if (Matchable.this.matching().!=(null))
+      {
+        scala.this.Predef.assert(Matchable.this.isNormal());
+        val engine: Matcher.this.Engine = new Matcher.this.Engine.this(null);
+        Matchable.this.doUnmatch(engine);
+        engine.flush()
+      };
+    Matchable.this.lampion$parsing$Matcher$Matchable$$super$replaceWith(node)
+  };
+  override def pri(dir: lampion.collections.DirX.Dir, node: Matcher.this.Node): scala.Int = {
+    val match1: Matcher.this.Matchable = Matchable.this.matching();
+    if (match1.==(null))
+      Matchable.this.pri0(dir, node)
+    else
+      if (node.==(match1))
+        {
+          scala.this.Predef.assert(Matchable.this.sibling0(dir).==(node));
+          0
+        }
+      else
+        if (Matchable.this.sibling0(dir).==(match1))
+          1.+()
+        else
+          Matchable.this.pri0(dir, node)
+  }
+}
+exception when transforming lampion.collections.LinkedList with lampion.parsing.PrecedenceParser with scala.Scal\
+aObject {
+  <superaccessor> def lampion$parsing$Matcher$$super$doAdd(x$1: Matcher.this.Segment): scala.Unit;
+  <superaccessor> def lampion$parsing$Matcher$$super$doRemove(x$1: Matcher.this.Segment): scala.Unit;
+  type Node >: scala.All <: Matcher.this.MatcherToken;
+  type Matchable0 >: scala.All <: Matcher.this.Node with Matcher.this.Matchable;
+  abstract trait MatcherTokenrequires Matcher.this.Node extends Matcher.this.BaseNode with Matcher.this.Preceden\
+ceToken with scala.ScalaObject {
+    <superaccessor> def lampion$parsing$Matcher$MatcherToken$$super$pri(x$1: lampion.collections.DirX.Dir, x$2: \
+Matcher.this.Node): scala.Int;
+    <superaccessor> def lampion$parsing$Matcher$MatcherToken$$super$replaceWith(x$1: Matcher.this.Node): scala.U\
+nit;
+    def isMatchable(): scala.Boolean = MatcherToken.this.isInstanceOf[Matcher.this.Matchable]();
+    def asMatchable(): Matcher.this.Matchable = MatcherToken.this.asInstanceOf[Matcher.this.Matchable]();
+    private[Matcher] def setMT(close: Matcher.this.Matchable): scala.Unit = MatcherToken.this.setPT(lampion.coll\
+ections.DirX.NEXT, {
+      {
+        [scala.serializable]final <synthetic> class $anonfun extends java.lang.Object with (Matcher.this.BaseNod\
+e) => Matcher.this.Node with scala.ScalaObject {
+          def this(): $anonfun = {
+            $anonfun.super.this();
+            ()
+          };
+          final def apply(eta$1: Matcher.this.BaseNode): Matcher.this.Node = Matcher.this.baseNode2Node(eta$1)
+        };
+        (new $anonfun.this()) : (Matcher.this.BaseNode) => Matcher.this.Node
+      }.apply(close)
+    });
+    private[Matcher] def pri0MT(dir: lampion.collections.DirX.Dir, node: Matcher.this.Node): scala.Int = Matcher\
+Token.this.pri0(dir, node);
+    def skipBody(dir: lampion.collections.DirX.Dir): Matcher.this.Node = MatcherToken.this.scan(dir);
+    override def pri(dir: lampion.collections.DirX.Dir, node: Matcher.this.Node): scala.Int = {
+      scala.this.Predef.assert(MatcherToken.this.isMatchable().!());
+      if (node.isMatchable())
+        node.asMatchable().pri(dir.reverse(), this).-()
+      else
+        MatcherToken.this.pri0(dir, node)
+    };
+    def pri0(dir: lampion.collections.DirX.Dir, node: Matcher.this.Node): scala.Int = MatcherToken.this.lampion$\
+parsing$Matcher$MatcherToken$$super$pri(dir, node);
+    def hasBody(): scala.Boolean = MatcherToken.this.isMatchable().&&(MatcherToken.this.asMatchable().matching()\
+.!=(null)).&&(MatcherToken.this.asMatchable().matching().==(MatcherToken.this.sibling(lampion.collections.DirX.N\
+EXT)));
+    def unmatchAsBody(engine: Matcher.this.Engine): scala.Unit = MatcherToken.this.visit({
+      [scala.serializable]final <synthetic> class $anonfun extends java.lang.Object with (Matcher.this.Node) => \
+scala.Boolean with scala.ScalaObject {
+        def this(): $anonfun = {
+          $anonfun.super.this();
+          ()
+        };
+        final def apply(node: Matcher.this.Node): scala.Boolean = {
+          engine.check(node);
+          node.hasBody().!()
+        }
+      };
+      (new $anonfun.this()) : (Matcher.this.Node) => scala.Boolean
+    });
+    override def replaceWith(node: Matcher.this.Node): scala.Unit = {
+      MatcherToken.this.lampion$parsing$Matcher$MatcherToken$$super$replaceWith(node);
+      if (node.isMatchable().&&(node.isNormal()))
+        new Matcher.this.Engine.this({
+          {
+            [scala.serializable]final <synthetic> class $anonfun extends java.lang.Object with (Matcher.this.Nod\
+e) => Matcher.this.Segment with scala.ScalaObject {
+              def this(): $anonfun = {
+                $anonfun.super.this();
+                ()
+              };
+              final def apply(eta$1: Matcher.this.Node): Matcher.this.Segment = Matcher.this.nodeToSegment(eta$1\
+)
+            };
+            (new $anonfun.this()) : (Matcher.this.Node) => Matcher.this.Segment
+          }.apply(node)
+        }).flush()
+    }
+  };
+  abstract trait Matchablerequires Matcher.this.Matchable0 extends Matcher.this.BaseNode with Matcher.this.Match\
+erToken with scala.ScalaObject {
+    <superaccessor> def lampion$parsing$Matcher$Matchable$$super$skipBody(x$1: lampion.collections.DirX.Dir): Ma\
+tcher.this.Node;
+    <superaccessor> def lampion$parsing$Matcher$Matchable$$super$replaceWith(x$1: Matcher.this.Node): scala.Unit\
+;
+    def matching(): Matcher.this.Matchable;
+    def tryMatch(engine: Matcher.this.Engine): scala.Boolean;
+    private[Matcher] def tryMatch00(engine: Matcher.this.Engine): scala.Boolean = Matchable.this.tryMatch(engine\
+);
+    def doUnmatch(engine: Matcher.this.Engine): scala.Unit;
+    private[Matcher] def doUnmatch00(engine: Matcher.this.Engine): scala.Unit = Matchable.this.doUnmatch(engine)\
+;
+    override def skipBody(dir: lampion.collections.DirX.Dir): Matcher.this.Node = {
+      val matching: Matcher.this.Matchable = this.matching();
+      if (matching.==(null))
+        Matchable.this.lampion$parsing$Matcher$Matchable$$super$skipBody(dir)
+      else
+        if (Matchable.this.sibling0(dir).==(matching))
+          matching.scan(dir)
+        else
+          null
+    };
+    override def replaceWith(node: Matcher.this.Node): scala.Unit = {
+      if (Matchable.this.matching().!=(null))
+        {
+          scala.this.Predef.assert(Matchable.this.isNormal());
+          val engine: Matcher.this.Engine = new Matcher.this.Engine.this(null);
+          Matchable.this.doUnmatch(engine);
+          engine.flush()
+        };
+      Matchable.this.lampion$parsing$Matcher$Matchable$$super$replaceWith(node)
+    };
+    override def pri(dir: lampion.collections.DirX.Dir, node: Matcher.this.Node): scala.Int = {
+      val match1: Matcher.this.Matchable = Matchable.this.matching();
+      if (match1.==(null))
+        Matchable.this.pri0(dir, node)
+      else
+        if (node.==(match1))
+          {
+            scala.this.Predef.assert(Matchable.this.sibling0(dir).==(node));
+            0
+          }
+        else
+          if (Matchable.this.sibling0(dir).==(match1))
+            1.+()
+          else
+            Matchable.this.pri0(dir, node)
+    }
+  };
+  protected class Engine extends java.lang.Object with scala.ScalaObject {
+    private <local> <paramaccessor> val segment: Matcher.this.Segment = _;
+    def this(segment: Matcher.this.Segment): Matcher.this.Engine = {
+      Engine.super.this();
+      ()
+    };
+    private <local> val dirty : scala.collection.mutable.HashSet[Matcher.this.Node] = new scala.collection.mutab\
+le.HashSet[Matcher.this.Node].this();
+    <stable> <accessor> def dirty(): scala.collection.mutable.HashSet[Matcher.this.Node] = Engine.this.dirty ;
+    if (Engine.this.segment.!=(null))
+      {
+        Engine.this.segment.apply({
+          [scala.serializable]final <synthetic> class $anonfun extends java.lang.Object with (Matcher.this.Node)\
+ => scala.Unit with scala.ScalaObject {
+            def this(): $anonfun = {
+              $anonfun.super.this();
+              ()
+            };
+            final def apply(node: Matcher.this.Node): scala.Unit = Engine.this.check(node)
+          };
+          (new $anonfun.this()) : (Matcher.this.Node) => scala.Unit
+        });
+        ()
+      };
+    def check(node: Matcher.this.Node): scala.Unit = if (node.isMatchable().&&(node.asMatchable().matching().==(\
+null)).&&(node.isNormal()))
+      Engine.this.dirty().+=(node);
+    def flush(): scala.Unit = while$0(){
+      if (Engine.this.dirty().isEmpty().!())
+        {
+          {
+            val brace: Matcher.this.Node = Engine.this.dirty().elements().next();
+            Engine.this.dirty().-=(brace);
+            brace.asMatchable().tryMatch00(this)
+          };
+          while$0()
+        }
+      else
+        ()
+    }
+  };
+  override def doAdd(segment: Matcher.this.Segment): scala.Unit = {
+    Matcher.this.lampion$parsing$Matcher$$super$doAdd(segment);
+    new Matcher.this.Engine.this(segment).flush()
+  };
+  override def doRemove(segment: Matcher.this.Segment): scala.Unit = {
+    val engine: Matcher.this.Engine = new Matcher.this.Engine.this(null);
+    segment.apply({
+      [scala.serializable]final <synthetic> class $anonfun extends java.lang.Object with (Matcher.this.Node) => \
+scala.Unit with scala.ScalaObject {
+        def this(): $anonfun = {
+          $anonfun.super.this();
+          ()
+        };
+        final def apply(node: Matcher.this.Node): scala.Unit = {
+          scala.this.Predef.assert(node.willBeDeleted());
+          if (node.isMatchable().&&(node.asMatchable().matching().!=(null)).&&(node.asMatchable().matching().wil\
+lBeDeleted().!()))
+            {
+              val matching: Matcher.this.Matchable = node.asMatchable().matching();
+              node.asMatchable().matching().doUnmatch00(engine);
+              engine.check({
+                {
+                  [scala.serializable]final <synthetic> class $anonfun extends java.lang.Object with (Matcher.th\
+is.BaseNode) => Matcher.this.Node with scala.ScalaObject {
+                    def this(): $anonfun = {
+                      $anonfun.super.this();
+                      ()
+                    };
+                    final def apply(eta$1: Matcher.this.BaseNode): Matcher.this.Node = Matcher.this.baseNode2Nod\
+e(eta$1)
+                  };
+                  (new $anonfun.this()) : (Matcher.this.BaseNode) => Matcher.this.Node
+                }.apply(matching)
+              })
+            }
+        }
+      };
+      (new $anonfun.this()) : (Matcher.this.Node) => scala.Unit
+    });
+    Matcher.this.lampion$parsing$Matcher$$super$doRemove(segment);
+    engine.flush()
+  };
+  def doMatch0(open: Matcher.this.Matchable, close: Matcher.this.Matchable, matcher: Matcher.this.Engine): Match\
+er.this.Node = {
+    scala.this.Predef.assert(open.pri0MT(lampion.collections.DirX.NEXT, {
+      {
+        [scala.serializable]final <synthetic> class $anonfun extends java.lang.Object with (Matcher.this.BaseNod\
+e) => Matcher.this.Node with scala.ScalaObject {
+          def this(): $anonfun = {
+            $anonfun.super.this();
+            ()
+          };
+          final def apply(eta$1: Matcher.this.BaseNode): Matcher.this.Node = Matcher.this.baseNode2Node(eta$1)
+        };
+        (new $anonfun.this()) : (Matcher.this.BaseNode) => Matcher.this.Node
+      }.apply(close)
+    }).==(0));
+    new Matcher.this.Segment.this(open.scan(lampion.collections.DirX.NEXT), close.scan(lampion.collections.DirX.\
+PREV)).apply({
+      [scala.serializable]final <synthetic> class $anonfun extends java.lang.Object with (Matcher.this.Node) => \
+scala.Unit with scala.ScalaObject {
+        def this(): $anonfun = {
+          $anonfun.super.this();
+          ()
+        };
+        final def apply(node: Matcher.this.Node): scala.Unit = if (node.isMatchable().&&(node.asMatchable().matc\
+hing().!=(null)))
+          {
+            val matching: Matcher.this.Matchable = node.asMatchable().matching();
+            node.asMatchable().doUnmatch(matcher);
+            matcher.check({
+              {
+                [scala.serializable]final <synthetic> class $anonfun extends java.lang.Object with (Matcher.this\
+.BaseNode) => Matcher.this.Node with scala.ScalaObject {
+                  def this(): $anonfun = {
+                    $anonfun.super.this();
+                    ()
+                  };
+                  final def apply(eta$1: Matcher.this.BaseNode): Matcher.this.Node = Matcher.this.baseNode2Node(\
+eta$1)
+                };
+                (new $anonfun.this()) : (Matcher.this.BaseNode) => Matcher.this.Node
+              }.apply(matching)
+            })
+          }
+      };
+      (new $anonfun.this()) : (Matcher.this.Node) => scala.Unit
+    });
+    val body: Matcher.this.Node = Matcher.this.scoop({
+      {
+        [scala.serializable]final <synthetic> class $anonfun extends java.lang.Object with (Matcher.this.BaseNod\
+e) => Matcher.this.Node with scala.ScalaObject {
+          def this(): $anonfun = {
+            $anonfun.super.this();
+            ()
+          };
+          final def apply(eta$1: Matcher.this.BaseNode): Matcher.this.Node = Matcher.this.baseNode2Node(eta$1)
+        };
+        (new $anonfun.this()) : (Matcher.this.BaseNode) => Matcher.this.Node
+      }.apply(open)
+    }, {
+      {
+        [scala.serializable]final <synthetic> class $anonfun extends java.lang.Object with (Matcher.this.BaseNod\
+e) => Matcher.this.Node with scala.ScalaObject {
+          def this(): $anonfun = {
+            $anonfun.super.this();
+            ()
+          };
+          final def apply(eta$1: Matcher.this.BaseNode): Matcher.this.Node = Matcher.this.baseNode2Node(eta$1)
+        };
+        (new $anonfun.this()) : (Matcher.this.BaseNode) => Matcher.this.Node
+      }.apply(close)
+    });
+    scala.this.Predef.assert(open.sibling0(lampion.collections.DirX.NEXT).==(null));
+    scala.this.Predef.assert(close.sibling0(lampion.collections.DirX.PREV).==(null));
+    open.setMT(close);
+    body
+  };
+  def doUnmatch0(node: Matcher.this.Matchable, matcher: Matcher.this.Engine, f: (Matcher.this.Node) => scala.Uni\
+t): scala.Unit = {
+    scala.this.Predef.assert(node.isNormal());
+    scala.this.Predef.assert(node.matching().isNormal());
+    val body: Matcher.this.Node = node.child(lampion.collections.DirX.NEXT, null);
+    f.apply(body);
+    if (body.!=(null))
+      {
+        body.unmatchAsBody(matcher);
+        node.splitUp(lampion.collections.DirX.NEXT, body)
+      }
+  };
+  def /*Matcher*/$init$(): scala.Unit = ()
+}
+exception when transforming abstract trait Matcher extends lampion.collections.LinkedList with lampion.parsing.P\
+recedenceParser with scala.ScalaObject {
+  <superaccessor> def lampion$parsing$Matcher$$super$doAdd(x$1: Matcher.this.Segment): scala.Unit;
+  <superaccessor> def lampion$parsing$Matcher$$super$doRemove(x$1: Matcher.this.Segment): scala.Unit;
+  type Node >: scala.All <: Matcher.this.MatcherToken;
+  type Matchable0 >: scala.All <: Matcher.this.Node with Matcher.this.Matchable;
+  abstract trait MatcherTokenrequires Matcher.this.Node extends Matcher.this.BaseNode with Matcher.this.Preceden\
+ceToken with scala.ScalaObject {
+    <superaccessor> def lampion$parsing$Matcher$MatcherToken$$super$pri(x$1: lampion.collections.DirX.Dir, x$2: \
+Matcher.this.Node): scala.Int;
+    <superaccessor> def lampion$parsing$Matcher$MatcherToken$$super$replaceWith(x$1: Matcher.this.Node): scala.U\
+nit;
+    def isMatchable(): scala.Boolean = MatcherToken.this.isInstanceOf[Matcher.this.Matchable]();
+    def asMatchable(): Matcher.this.Matchable = MatcherToken.this.asInstanceOf[Matcher.this.Matchable]();
+    private[Matcher] def setMT(close: Matcher.this.Matchable): scala.Unit = MatcherToken.this.setPT(lampion.coll\
+ections.DirX.NEXT, {
+      {
+        [scala.serializable]final <synthetic> class $anonfun extends java.lang.Object with (Matcher.this.BaseNod\
+e) => Matcher.this.Node with scala.ScalaObject {
+          def this(): $anonfun = {
+            $anonfun.super.this();
+            ()
+          };
+          final def apply(eta$1: Matcher.this.BaseNode): Matcher.this.Node = Matcher.this.baseNode2Node(eta$1)
+        };
+        (new $anonfun.this()) : (Matcher.this.BaseNode) => Matcher.this.Node
+      }.apply(close)
+    });
+    private[Matcher] def pri0MT(dir: lampion.collections.DirX.Dir, node: Matcher.this.Node): scala.Int = Matcher\
+Token.this.pri0(dir, node);
+    def skipBody(dir: lampion.collections.DirX.Dir): Matcher.this.Node = MatcherToken.this.scan(dir);
+    override def pri(dir: lampion.collections.DirX.Dir, node: Matcher.this.Node): scala.Int = {
+      scala.this.Predef.assert(MatcherToken.this.isMatchable().!());
+      if (node.isMatchable())
+        node.asMatchable().pri(dir.reverse(), this).-()
+      else
+        MatcherToken.this.pri0(dir, node)
+    };
+    def pri0(dir: lampion.collections.DirX.Dir, node: Matcher.this.Node): scala.Int = MatcherToken.this.lampion$\
+parsing$Matcher$MatcherToken$$super$pri(dir, node);
+    def hasBody(): scala.Boolean = MatcherToken.this.isMatchable().&&(MatcherToken.this.asMatchable().matching()\
+.!=(null)).&&(MatcherToken.this.asMatchable().matching().==(MatcherToken.this.sibling(lampion.collections.DirX.N\
+EXT)));
+    def unmatchAsBody(engine: Matcher.this.Engine): scala.Unit = MatcherToken.this.visit({
+      [scala.serializable]final <synthetic> class $anonfun extends java.lang.Object with (Matcher.this.Node) => \
+scala.Boolean with scala.ScalaObject {
+        def this(): $anonfun = {
+          $anonfun.super.this();
+          ()
+        };
+        final def apply(node: Matcher.this.Node): scala.Boolean = {
+          engine.check(node);
+          node.hasBody().!()
+        }
+      };
+      (new $anonfun.this()) : (Matcher.this.Node) => scala.Boolean
+    });
+    override def replaceWith(node: Matcher.this.Node): scala.Unit = {
+      MatcherToken.this.lampion$parsing$Matcher$MatcherToken$$super$replaceWith(node);
+      if (node.isMatchable().&&(node.isNormal()))
+        new Matcher.this.Engine.this({
+          {
+            [scala.serializable]final <synthetic> class $anonfun extends java.lang.Object with (Matcher.this.Nod\
+e) => Matcher.this.Segment with scala.ScalaObject {
+              def this(): $anonfun = {
+                $anonfun.super.this();
+                ()
+              };
+              final def apply(eta$1: Matcher.this.Node): Matcher.this.Segment = Matcher.this.nodeToSegment(eta$1\
+)
+            };
+            (new $anonfun.this()) : (Matcher.this.Node) => Matcher.this.Segment
+          }.apply(node)
+        }).flush()
+    }
+  };
+  abstract trait Matchablerequires Matcher.this.Matchable0 extends Matcher.this.BaseNode with Matcher.this.Match\
+erToken with scala.ScalaObject {
+    <superaccessor> def lampion$parsing$Matcher$Matchable$$super$skipBody(x$1: lampion.collections.DirX.Dir): Ma\
+tcher.this.Node;
+    <superaccessor> def lampion$parsing$Matcher$Matchable$$super$replaceWith(x$1: Matcher.this.Node): scala.Unit\
+;
+    def matching(): Matcher.this.Matchable;
+    def tryMatch(engine: Matcher.this.Engine): scala.Boolean;
+    private[Matcher] def tryMatch00(engine: Matcher.this.Engine): scala.Boolean = Matchable.this.tryMatch(engine\
+);
+    def doUnmatch(engine: Matcher.this.Engine): scala.Unit;
+    private[Matcher] def doUnmatch00(engine: Matcher.this.Engine): scala.Unit = Matchable.this.doUnmatch(engine)\
+;
+    override def skipBody(dir: lampion.collections.DirX.Dir): Matcher.this.Node = {
+      val matching: Matcher.this.Matchable = this.matching();
+      if (matching.==(null))
+        Matchable.this.lampion$parsing$Matcher$Matchable$$super$skipBody(dir)
+      else
+        if (Matchable.this.sibling0(dir).==(matching))
+          matching.scan(dir)
+        else
+          null
+    };
+    override def replaceWith(node: Matcher.this.Node): scala.Unit = {
+      if (Matchable.this.matching().!=(null))
+        {
+          scala.this.Predef.assert(Matchable.this.isNormal());
+          val engine: Matcher.this.Engine = new Matcher.this.Engine.this(null);
+          Matchable.this.doUnmatch(engine);
+          engine.flush()
+        };
+      Matchable.this.lampion$parsing$Matcher$Matchable$$super$replaceWith(node)
+    };
+    override def pri(dir: lampion.collections.DirX.Dir, node: Matcher.this.Node): scala.Int = {
+      val match1: Matcher.this.Matchable = Matchable.this.matching();
+      if (match1.==(null))
+        Matchable.this.pri0(dir, node)
+      else
+        if (node.==(match1))
+          {
+            scala.this.Predef.assert(Matchable.this.sibling0(dir).==(node));
+            0
+          }
+        else
+          if (Matchable.this.sibling0(dir).==(match1))
+            1.+()
+          else
+            Matchable.this.pri0(dir, node)
+    }
+  };
+  protected class Engine extends java.lang.Object with scala.ScalaObject {
+    private <local> <paramaccessor> val segment: Matcher.this.Segment = _;
+    def this(segment: Matcher.this.Segment): Matcher.this.Engine = {
+      Engine.super.this();
+      ()
+    };
+    private <local> val dirty : scala.collection.mutable.HashSet[Matcher.this.Node] = new scala.collection.mutab\
+le.HashSet[Matcher.this.Node].this();
+    <stable> <accessor> def dirty(): scala.collection.mutable.HashSet[Matcher.this.Node] = Engine.this.dirty ;
+    if (Engine.this.segment.!=(null))
+      {
+        Engine.this.segment.apply({
+          [scala.serializable]final <synthetic> class $anonfun extends java.lang.Object with (Matcher.this.Node)\
+ => scala.Unit with scala.ScalaObject {
+            def this(): $anonfun = {
+              $anonfun.super.this();
+              ()
+            };
+            final def apply(node: Matcher.this.Node): scala.Unit = Engine.this.check(node)
+          };
+          (new $anonfun.this()) : (Matcher.this.Node) => scala.Unit
+        });
+        ()
+      };
+    def check(node: Matcher.this.Node): scala.Unit = if (node.isMatchable().&&(node.asMatchable().matching().==(\
+null)).&&(node.isNormal()))
+      Engine.this.dirty().+=(node);
+    def flush(): scala.Unit = while$0(){
+      if (Engine.this.dirty().isEmpty().!())
+        {
+          {
+            val brace: Matcher.this.Node = Engine.this.dirty().elements().next();
+            Engine.this.dirty().-=(brace);
+            brace.asMatchable().tryMatch00(this)
+          };
+          while$0()
+        }
+      else
+        ()
+    }
+  };
+  override def doAdd(segment: Matcher.this.Segment): scala.Unit = {
+    Matcher.this.lampion$parsing$Matcher$$super$doAdd(segment);
+    new Matcher.this.Engine.this(segment).flush()
+  };
+  override def doRemove(segment: Matcher.this.Segment): scala.Unit = {
+    val engine: Matcher.this.Engine = new Matcher.this.Engine.this(null);
+    segment.apply({
+      [scala.serializable]final <synthetic> class $anonfun extends java.lang.Object with (Matcher.this.Node) => \
+scala.Unit with scala.ScalaObject {
+        def this(): $anonfun = {
+          $anonfun.super.this();
+          ()
+        };
+        final def apply(node: Matcher.this.Node): scala.Unit = {
+          scala.this.Predef.assert(node.willBeDeleted());
+          if (node.isMatchable().&&(node.asMatchable().matching().!=(null)).&&(node.asMatchable().matching().wil\
+lBeDeleted().!()))
+            {
+              val matching: Matcher.this.Matchable = node.asMatchable().matching();
+              node.asMatchable().matching().doUnmatch00(engine);
+              engine.check({
+                {
+                  [scala.serializable]final <synthetic> class $anonfun extends java.lang.Object with (Matcher.th\
+is.BaseNode) => Matcher.this.Node with scala.ScalaObject {
+                    def this(): $anonfun = {
+                      $anonfun.super.this();
+                      ()
+                    };
+                    final def apply(eta$1: Matcher.this.BaseNode): Matcher.this.Node = Matcher.this.baseNode2Nod\
+e(eta$1)
+                  };
+                  (new $anonfun.this()) : (Matcher.this.BaseNode) => Matcher.this.Node
+                }.apply(matching)
+              })
+            }
+        }
+      };
+      (new $anonfun.this()) : (Matcher.this.Node) => scala.Unit
+    });
+    Matcher.this.lampion$parsing$Matcher$$super$doRemove(segment);
+    engine.flush()
+  };
+  def doMatch0(open: Matcher.this.Matchable, close: Matcher.this.Matchable, matcher: Matcher.this.Engine): Match\
+er.this.Node = {
+    scala.this.Predef.assert(open.pri0MT(lampion.collections.DirX.NEXT, {
+      {
+        [scala.serializable]final <synthetic> class $anonfun extends java.lang.Object with (Matcher.this.BaseNod\
+e) => Matcher.this.Node with scala.ScalaObject {
+          def this(): $anonfun = {
+            $anonfun.super.this();
+            ()
+          };
+          final def apply(eta$1: Matcher.this.BaseNode): Matcher.this.Node = Matcher.this.baseNode2Node(eta$1)
+        };
+        (new $anonfun.this()) : (Matcher.this.BaseNode) => Matcher.this.Node
+      }.apply(close)
+    }).==(0));
+    new Matcher.this.Segment.this(open.scan(lampion.collections.DirX.NEXT), close.scan(lampion.collections.DirX.\
+PREV)).apply({
+      [scala.serializable]final <synthetic> class $anonfun extends java.lang.Object with (Matcher.this.Node) => \
+scala.Unit with scala.ScalaObject {
+        def this(): $anonfun = {
+          $anonfun.super.this();
+          ()
+        };
+        final def apply(node: Matcher.this.Node): scala.Unit = if (node.isMatchable().&&(node.asMatchable().matc\
+hing().!=(null)))
+          {
+            val matching: Matcher.this.Matchable = node.asMatchable().matching();
+            node.asMatchable().doUnmatch(matcher);
+            matcher.check({
+              {
+                [scala.serializable]final <synthetic> class $anonfun extends java.lang.Object with (Matcher.this\
+.BaseNode) => Matcher.this.Node with scala.ScalaObject {
+                  def this(): $anonfun = {
+                    $anonfun.super.this();
+                    ()
+                  };
+                  final def apply(eta$1: Matcher.this.BaseNode): Matcher.this.Node = Matcher.this.baseNode2Node(\
+eta$1)
+                };
+                (new $anonfun.this()) : (Matcher.this.BaseNode) => Matcher.this.Node
+              }.apply(matching)
+            })
+          }
+      };
+      (new $anonfun.this()) : (Matcher.this.Node) => scala.Unit
+    });
+    val body: Matcher.this.Node = Matcher.this.scoop({
+      {
+        [scala.serializable]final <synthetic> class $anonfun extends java.lang.Object with (Matcher.this.BaseNod\
+e) => Matcher.this.Node with scala.ScalaObject {
+          def this(): $anonfun = {
+            $anonfun.super.this();
+            ()
+          };
+          final def apply(eta$1: Matcher.this.BaseNode): Matcher.this.Node = Matcher.this.baseNode2Node(eta$1)
+        };
+        (new $anonfun.this()) : (Matcher.this.BaseNode) => Matcher.this.Node
+      }.apply(open)
+    }, {
+      {
+        [scala.serializable]final <synthetic> class $anonfun extends java.lang.Object with (Matcher.this.BaseNod\
+e) => Matcher.this.Node with scala.ScalaObject {
+          def this(): $anonfun = {
+            $anonfun.super.this();
+            ()
+          };
+          final def apply(eta$1: Matcher.this.BaseNode): Matcher.this.Node = Matcher.this.baseNode2Node(eta$1)
+        };
+        (new $anonfun.this()) : (Matcher.this.BaseNode) => Matcher.this.Node
+      }.apply(close)
+    });
+    scala.this.Predef.assert(open.sibling0(lampion.collections.DirX.NEXT).==(null));
+    scala.this.Predef.assert(close.sibling0(lampion.collections.DirX.PREV).==(null));
+    open.setMT(close);
+    body
+  };
+  def doUnmatch0(node: Matcher.this.Matchable, matcher: Matcher.this.Engine, f: (Matcher.this.Node) => scala.Uni\
+t): scala.Unit = {
+    scala.this.Predef.assert(node.isNormal());
+    scala.this.Predef.assert(node.matching().isNormal());
+    val body: Matcher.this.Node = node.child(lampion.collections.DirX.NEXT, null);
+    f.apply(body);
+    if (body.!=(null))
+      {
+        body.unmatchAsBody(matcher);
+        node.splitUp(lampion.collections.DirX.NEXT, body)
+      }
+  }
+}
+exception when transforming package parsing {
+  abstract trait Matcher extends lampion.collections.LinkedList with lampion.parsing.PrecedenceParser with scala\
+.ScalaObject {
+    <superaccessor> def lampion$parsing$Matcher$$super$doAdd(x$1: Matcher.this.Segment): scala.Unit;
+    <superaccessor> def lampion$parsing$Matcher$$super$doRemove(x$1: Matcher.this.Segment): scala.Unit;
+    type Node >: scala.All <: Matcher.this.MatcherToken;
+    type Matchable0 >: scala.All <: Matcher.this.Node with Matcher.this.Matchable;
+    abstract trait MatcherTokenrequires Matcher.this.Node extends Matcher.this.BaseNode with Matcher.this.Preced\
+enceToken with scala.ScalaObject {
+      <superaccessor> def lampion$parsing$Matcher$MatcherToken$$super$pri(x$1: lampion.collections.DirX.Dir, x$2\
+: Matcher.this.Node): scala.Int;
+      <superaccessor> def lampion$parsing$Matcher$MatcherToken$$super$replaceWith(x$1: Matcher.this.Node): scala\
+.Unit;
+      def isMatchable(): scala.Boolean = MatcherToken.this.isInstanceOf[Matcher.this.Matchable]();
+      def asMatchable(): Matcher.this.Matchable = MatcherToken.this.asInstanceOf[Matcher.this.Matchable]();
+      private[Matcher] def setMT(close: Matcher.this.Matchable): scala.Unit = MatcherToken.this.setPT(lampion.co\
+llections.DirX.NEXT, {
+        {
+          [scala.serializable]final <synthetic> class $anonfun extends java.lang.Object with (Matcher.this.BaseN\
+ode) => Matcher.this.Node with scala.ScalaObject {
+            def this(): $anonfun = {
+              $anonfun.super.this();
+              ()
+            };
+            final def apply(eta$1: Matcher.this.BaseNode): Matcher.this.Node = Matcher.this.baseNode2Node(eta$1)\
+
+          };
+          (new $anonfun.this()) : (Matcher.this.BaseNode) => Matcher.this.Node
+        }.apply(close)
+      });
+      private[Matcher] def pri0MT(dir: lampion.collections.DirX.Dir, node: Matcher.this.Node): scala.Int = Match\
+erToken.this.pri0(dir, node);
+      def skipBody(dir: lampion.collections.DirX.Dir): Matcher.this.Node = MatcherToken.this.scan(dir);
+      override def pri(dir: lampion.collections.DirX.Dir, node: Matcher.this.Node): scala.Int = {
+        scala.this.Predef.assert(MatcherToken.this.isMatchable().!());
+        if (node.isMatchable())
+          node.asMatchable().pri(dir.reverse(), this).-()
+        else
+          MatcherToken.this.pri0(dir, node)
+      };
+      def pri0(dir: lampion.collections.DirX.Dir, node: Matcher.this.Node): scala.Int = MatcherToken.this.lampio\
+n$parsing$Matcher$MatcherToken$$super$pri(dir, node);
+      def hasBody(): scala.Boolean = MatcherToken.this.isMatchable().&&(MatcherToken.this.asMatchable().matching\
+().!=(null)).&&(MatcherToken.this.asMatchable().matching().==(MatcherToken.this.sibling(lampion.collections.DirX\
+.NEXT)));
+      def unmatchAsBody(engine: Matcher.this.Engine): scala.Unit = MatcherToken.this.visit({
+        [scala.serializable]final <synthetic> class $anonfun extends java.lang.Object with (Matcher.this.Node) =\
+> scala.Boolean with scala.ScalaObject {
+          def this(): $anonfun = {
+            $anonfun.super.this();
+            ()
+          };
+          final def apply(node: Matcher.this.Node): scala.Boolean = {
+            engine.check(node);
+            node.hasBody().!()
+          }
+        };
+        (new $anonfun.this()) : (Matcher.this.Node) => scala.Boolean
+      });
+      override def replaceWith(node: Matcher.this.Node): scala.Unit = {
+        MatcherToken.this.lampion$parsing$Matcher$MatcherToken$$super$replaceWith(node);
+        if (node.isMatchable().&&(node.isNormal()))
+          new Matcher.this.Engine.this({
+            {
+              [scala.serializable]final <synthetic> class $anonfun extends java.lang.Object with (Matcher.this.N\
+ode) => Matcher.this.Segment with scala.ScalaObject {
+                def this(): $anonfun = {
+                  $anonfun.super.this();
+                  ()
+                };
+                final def apply(eta$1: Matcher.this.Node): Matcher.this.Segment = Matcher.this.nodeToSegment(eta\
+$1)
+              };
+              (new $anonfun.this()) : (Matcher.this.Node) => Matcher.this.Segment
+            }.apply(node)
+          }).flush()
+      }
+    };
+    abstract trait Matchablerequires Matcher.this.Matchable0 extends Matcher.this.BaseNode with Matcher.this.Mat\
+cherToken with scala.ScalaObject {
+      <superaccessor> def lampion$parsing$Matcher$Matchable$$super$skipBody(x$1: lampion.collections.DirX.Dir): \
+Matcher.this.Node;
+      <superaccessor> def lampion$parsing$Matcher$Matchable$$super$replaceWith(x$1: Matcher.this.Node): scala.Un\
+it;
+      def matching(): Matcher.this.Matchable;
+      def tryMatch(engine: Matcher.this.Engine): scala.Boolean;
+      private[Matcher] def tryMatch00(engine: Matcher.this.Engine): scala.Boolean = Matchable.this.tryMatch(engi\
+ne);
+      def doUnmatch(engine: Matcher.this.Engine): scala.Unit;
+      private[Matcher] def doUnmatch00(engine: Matcher.this.Engine): scala.Unit = Matchable.this.doUnmatch(engin\
+e);
+      override def skipBody(dir: lampion.collections.DirX.Dir): Matcher.this.Node = {
+        val matching: Matcher.this.Matchable = this.matching();
+        if (matching.==(null))
+          Matchable.this.lampion$parsing$Matcher$Matchable$$super$skipBody(dir)
+        else
+          if (Matchable.this.sibling0(dir).==(matching))
+            matching.scan(dir)
+          else
+            null
+      };
+      override def replaceWith(node: Matcher.this.Node): scala.Unit = {
+        if (Matchable.this.matching().!=(null))
+          {
+            scala.this.Predef.assert(Matchable.this.isNormal());
+            val engine: Matcher.this.Engine = new Matcher.this.Engine.this(null);
+            Matchable.this.doUnmatch(engine);
+            engine.flush()
+          };
+        Matchable.this.lampion$parsing$Matcher$Matchable$$super$replaceWith(node)
+      };
+      override def pri(dir: lampion.collections.DirX.Dir, node: Matcher.this.Node): scala.Int = {
+        val match1: Matcher.this.Matchable = Matchable.this.matching();
+        if (match1.==(null))
+          Matchable.this.pri0(dir, node)
+        else
+          if (node.==(match1))
+            {
+              scala.this.Predef.assert(Matchable.this.sibling0(dir).==(node));
+              0
+            }
+          else
+            if (Matchable.this.sibling0(dir).==(match1))
+              1.+()
+            else
+              Matchable.this.pri0(dir, node)
+      }
+    };
+    protected class Engine extends java.lang.Object with scala.ScalaObject {
+      private <local> <paramaccessor> val segment: Matcher.this.Segment = _;
+      def this(segment: Matcher.this.Segment): Matcher.this.Engine = {
+        Engine.super.this();
+        ()
+      };
+      private <local> val dirty : scala.collection.mutable.HashSet[Matcher.this.Node] = new scala.collection.mut\
+able.HashSet[Matcher.this.Node].this();
+      <stable> <accessor> def dirty(): scala.collection.mutable.HashSet[Matcher.this.Node] = Engine.this.dirty ;\
+
+      if (Engine.this.segment.!=(null))
+        {
+          Engine.this.segment.apply({
+            [scala.serializable]final <synthetic> class $anonfun extends java.lang.Object with (Matcher.this.Nod\
+e) => scala.Unit with scala.ScalaObject {
+              def this(): $anonfun = {
+                $anonfun.super.this();
+                ()
+              };
+              final def apply(node: Matcher.this.Node): scala.Unit = Engine.this.check(node)
+            };
+            (new $anonfun.this()) : (Matcher.this.Node) => scala.Unit
+          });
+          ()
+        };
+      def check(node: Matcher.this.Node): scala.Unit = if (node.isMatchable().&&(node.asMatchable().matching().=\
+=(null)).&&(node.isNormal()))
+        Engine.this.dirty().+=(node);
+      def flush(): scala.Unit = while$0(){
+        if (Engine.this.dirty().isEmpty().!())
+          {
+            {
+              val brace: Matcher.this.Node = Engine.this.dirty().elements().next();
+              Engine.this.dirty().-=(brace);
+              brace.asMatchable().tryMatch00(this)
+            };
+            while$0()
+          }
+        else
+          ()
+      }
+    };
+    override def doAdd(segment: Matcher.this.Segment): scala.Unit = {
+      Matcher.this.lampion$parsing$Matcher$$super$doAdd(segment);
+      new Matcher.this.Engine.this(segment).flush()
+    };
+    override def doRemove(segment: Matcher.this.Segment): scala.Unit = {
+      val engine: Matcher.this.Engine = new Matcher.this.Engine.this(null);
+      segment.apply({
+        [scala.serializable]final <synthetic> class $anonfun extends java.lang.Object with (Matcher.this.Node) =\
+> scala.Unit with scala.ScalaObject {
+          def this(): $anonfun = {
+            $anonfun.super.this();
+            ()
+          };
+          final def apply(node: Matcher.this.Node): scala.Unit = {
+            scala.this.Predef.assert(node.willBeDeleted());
+            if (node.isMatchable().&&(node.asMatchable().matching().!=(null)).&&(node.asMatchable().matching().w\
+illBeDeleted().!()))
+              {
+                val matching: Matcher.this.Matchable = node.asMatchable().matching();
+                node.asMatchable().matching().doUnmatch00(engine);
+                engine.check({
+                  {
+                    [scala.serializable]final <synthetic> class $anonfun extends java.lang.Object with (Matcher.\
+this.BaseNode) => Matcher.this.Node with scala.ScalaObject {
+                      def this(): $anonfun = {
+                        $anonfun.super.this();
+                        ()
+                      };
+                      final def apply(eta$1: Matcher.this.BaseNode): Matcher.this.Node = Matcher.this.baseNode2N\
+ode(eta$1)
+                    };
+                    (new $anonfun.this()) : (Matcher.this.BaseNode) => Matcher.this.Node
+                  }.apply(matching)
+                })
+              }
+          }
+        };
+        (new $anonfun.this()) : (Matcher.this.Node) => scala.Unit
+      });
+      Matcher.this.lampion$parsing$Matcher$$super$doRemove(segment);
+      engine.flush()
+    };
+    def doMatch0(open: Matcher.this.Matchable, close: Matcher.this.Matchable, matcher: Matcher.this.Engine): Mat\
+cher.this.Node = {
+      scala.this.Predef.assert(open.pri0MT(lampion.collections.DirX.NEXT, {
+        {
+          [scala.serializable]final <synthetic> class $anonfun extends java.lang.Object with (Matcher.this.BaseN\
+ode) => Matcher.this.Node with scala.ScalaObject {
+            def this(): $anonfun = {
+              $anonfun.super.this();
+              ()
+            };
+            final def apply(eta$1: Matcher.this.BaseNode): Matcher.this.Node = Matcher.this.baseNode2Node(eta$1)\
+
+          };
+          (new $anonfun.this()) : (Matcher.this.BaseNode) => Matcher.this.Node
+        }.apply(close)
+      }).==(0));
+      new Matcher.this.Segment.this(open.scan(lampion.collections.DirX.NEXT), close.scan(lampion.collections.Dir\
+X.PREV)).apply({
+        [scala.serializable]final <synthetic> class $anonfun extends java.lang.Object with (Matcher.this.Node) =\
+> scala.Unit with scala.ScalaObject {
+          def this(): $anonfun = {
+            $anonfun.super.this();
+            ()
+          };
+          final def apply(node: Matcher.this.Node): scala.Unit = if (node.isMatchable().&&(node.asMatchable().ma\
+tching().!=(null)))
+            {
+              val matching: Matcher.this.Matchable = node.asMatchable().matching();
+              node.asMatchable().doUnmatch(matcher);
+              matcher.check({
+                {
+                  [scala.serializable]final <synthetic> class $anonfun extends java.lang.Object with (Matcher.th\
+is.BaseNode) => Matcher.this.Node with scala.ScalaObject {
+                    def this(): $anonfun = {
+                      $anonfun.super.this();
+                      ()
+                    };
+                    final def apply(eta$1: Matcher.this.BaseNode): Matcher.this.Node = Matcher.this.baseNode2Nod\
+e(eta$1)
+                  };
+                  (new $anonfun.this()) : (Matcher.this.BaseNode) => Matcher.this.Node
+                }.apply(matching)
+              })
+            }
+        };
+        (new $anonfun.this()) : (Matcher.this.Node) => scala.Unit
+      });
+      val body: Matcher.this.Node = Matcher.this.scoop({
+        {
+          [scala.serializable]final <synthetic> class $anonfun extends java.lang.Object with (Matcher.this.BaseN\
+ode) => Matcher.this.Node with scala.ScalaObject {
+            def this(): $anonfun = {
+              $anonfun.super.this();
+              ()
+            };
+            final def apply(eta$1: Matcher.this.BaseNode): Matcher.this.Node = Matcher.this.baseNode2Node(eta$1)\
+
+          };
+          (new $anonfun.this()) : (Matcher.this.BaseNode) => Matcher.this.Node
+        }.apply(open)
+      }, {
+        {
+          [scala.serializable]final <synthetic> class $anonfun extends java.lang.Object with (Matcher.this.BaseN\
+ode) => Matcher.this.Node with scala.ScalaObject {
+            def this(): $anonfun = {
+              $anonfun.super.this();
+              ()
+            };
+            final def apply(eta$1: Matcher.this.BaseNode): Matcher.this.Node = Matcher.this.baseNode2Node(eta$1)\
+
+          };
+          (new $anonfun.this()) : (Matcher.this.BaseNode) => Matcher.this.Node
+        }.apply(close)
+      });
+      scala.this.Predef.assert(open.sibling0(lampion.collections.DirX.NEXT).==(null));
+      scala.this.Predef.assert(close.sibling0(lampion.collections.DirX.PREV).==(null));
+      open.setMT(close);
+      body
+    };
+    def doUnmatch0(node: Matcher.this.Matchable, matcher: Matcher.this.Engine, f: (Matcher.this.Node) => scala.U\
+nit): scala.Unit = {
+      scala.this.Predef.assert(node.isNormal());
+      scala.this.Predef.assert(node.matching().isNormal());
+      val body: Matcher.this.Node = node.child(lampion.collections.DirX.NEXT, null);
+      f.apply(body);
+      if (body.!=(null))
+        {
+          body.unmatchAsBody(matcher);
+          node.splitUp(lampion.collections.DirX.NEXT, body)
+        }
+    }
+  }
+}
+exception when transforming package lampion {
+  package parsing {
+    abstract trait Matcher extends lampion.collections.LinkedList with lampion.parsing.PrecedenceParser with sca\
+la.ScalaObject {
+      <superaccessor> def lampion$parsing$Matcher$$super$doAdd(x$1: Matcher.this.Segment): scala.Unit;
+      <superaccessor> def lampion$parsing$Matcher$$super$doRemove(x$1: Matcher.this.Segment): scala.Unit;
+      type Node >: scala.All <: Matcher.this.MatcherToken;
+      type Matchable0 >: scala.All <: Matcher.this.Node with Matcher.this.Matchable;
+      abstract trait MatcherTokenrequires Matcher.this.Node extends Matcher.this.BaseNode with Matcher.this.Prec\
+edenceToken with scala.ScalaObject {
+        <superaccessor> def lampion$parsing$Matcher$MatcherToken$$super$pri(x$1: lampion.collections.DirX.Dir, x\
+$2: Matcher.this.Node): scala.Int;
+        <superaccessor> def lampion$parsing$Matcher$MatcherToken$$super$replaceWith(x$1: Matcher.this.Node): sca\
+la.Unit;
+        def isMatchable(): scala.Boolean = MatcherToken.this.isInstanceOf[Matcher.this.Matchable]();
+        def asMatchable(): Matcher.this.Matchable = MatcherToken.this.asInstanceOf[Matcher.this.Matchable]();
+        private[Matcher] def setMT(close: Matcher.this.Matchable): scala.Unit = MatcherToken.this.setPT(lampion.\
+collections.DirX.NEXT, {
+          {
+            [scala.serializable]final <synthetic> class $anonfun extends java.lang.Object with (Matcher.this.Bas\
+eNode) => Matcher.this.Node with scala.ScalaObject {
+              def this(): $anonfun = {
+                $anonfun.super.this();
+                ()
+              };
+              final def apply(eta$1: Matcher.this.BaseNode): Matcher.this.Node = Matcher.this.baseNode2Node(eta$\
+1)
+            };
+            (new $anonfun.this()) : (Matcher.this.BaseNode) => Matcher.this.Node
+          }.apply(close)
+        });
+        private[Matcher] def pri0MT(dir: lampion.collections.DirX.Dir, node: Matcher.this.Node): scala.Int = Mat\
+cherToken.this.pri0(dir, node);
+        def skipBody(dir: lampion.collections.DirX.Dir): Matcher.this.Node = MatcherToken.this.scan(dir);
+        override def pri(dir: lampion.collections.DirX.Dir, node: Matcher.this.Node): scala.Int = {
+          scala.this.Predef.assert(MatcherToken.this.isMatchable().!());
+          if (node.isMatchable())
+            node.asMatchable().pri(dir.reverse(), this).-()
+          else
+            MatcherToken.this.pri0(dir, node)
+        };
+        def pri0(dir: lampion.collections.DirX.Dir, node: Matcher.this.Node): scala.Int = MatcherToken.this.lamp\
+ion$parsing$Matcher$MatcherToken$$super$pri(dir, node);
+        def hasBody(): scala.Boolean = MatcherToken.this.isMatchable().&&(MatcherToken.this.asMatchable().matchi\
+ng().!=(null)).&&(MatcherToken.this.asMatchable().matching().==(MatcherToken.this.sibling(lampion.collections.Di\
+rX.NEXT)));
+        def unmatchAsBody(engine: Matcher.this.Engine): scala.Unit = MatcherToken.this.visit({
+          [scala.serializable]final <synthetic> class $anonfun extends java.lang.Object with (Matcher.this.Node)\
+ => scala.Boolean with scala.ScalaObject {
+            def this(): $anonfun = {
+              $anonfun.super.this();
+              ()
+            };
+            final def apply(node: Matcher.this.Node): scala.Boolean = {
+              engine.check(node);
+              node.hasBody().!()
+            }
+          };
+          (new $anonfun.this()) : (Matcher.this.Node) => scala.Boolean
+        });
+        override def replaceWith(node: Matcher.this.Node): scala.Unit = {
+          MatcherToken.this.lampion$parsing$Matcher$MatcherToken$$super$replaceWith(node);
+          if (node.isMatchable().&&(node.isNormal()))
+            new Matcher.this.Engine.this({
+              {
+                [scala.serializable]final <synthetic> class $anonfun extends java.lang.Object with (Matcher.this\
+.Node) => Matcher.this.Segment with scala.ScalaObject {
+                  def this(): $anonfun = {
+                    $anonfun.super.this();
+                    ()
+                  };
+                  final def apply(eta$1: Matcher.this.Node): Matcher.this.Segment = Matcher.this.nodeToSegment(e\
+ta$1)
+                };
+                (new $anonfun.this()) : (Matcher.this.Node) => Matcher.this.Segment
+              }.apply(node)
+            }).flush()
+        }
+      };
+      abstract trait Matchablerequires Matcher.this.Matchable0 extends Matcher.this.BaseNode with Matcher.this.M\
+atcherToken with scala.ScalaObject {
+        <superaccessor> def lampion$parsing$Matcher$Matchable$$super$skipBody(x$1: lampion.collections.DirX.Dir)\
+: Matcher.this.Node;
+        <superaccessor> def lampion$parsing$Matcher$Matchable$$super$replaceWith(x$1: Matcher.this.Node): scala.\
+Unit;
+        def matching(): Matcher.this.Matchable;
+        def tryMatch(engine: Matcher.this.Engine): scala.Boolean;
+        private[Matcher] def tryMatch00(engine: Matcher.this.Engine): scala.Boolean = Matchable.this.tryMatch(en\
+gine);
+        def doUnmatch(engine: Matcher.this.Engine): scala.Unit;
+        private[Matcher] def doUnmatch00(engine: Matcher.this.Engine): scala.Unit = Matchable.this.doUnmatch(eng\
+ine);
+        override def skipBody(dir: lampion.collections.DirX.Dir): Matcher.this.Node = {
+          val matching: Matcher.this.Matchable = this.matching();
+          if (matching.==(null))
+            Matchable.this.lampion$parsing$Matcher$Matchable$$super$skipBody(dir)
+          else
+            if (Matchable.this.sibling0(dir).==(matching))
+              matching.scan(dir)
+            else
+              null
+        };
+        override def replaceWith(node: Matcher.this.Node): scala.Unit = {
+          if (Matchable.this.matching().!=(null))
+            {
+              scala.this.Predef.assert(Matchable.this.isNormal());
+              val engine: Matcher.this.Engine = new Matcher.this.Engine.this(null);
+              Matchable.this.doUnmatch(engine);
+              engine.flush()
+            };
+          Matchable.this.lampion$parsing$Matcher$Matchable$$super$replaceWith(node)
+        };
+        override def pri(dir: lampion.collections.DirX.Dir, node: Matcher.this.Node): scala.Int = {
+          val match1: Matcher.this.Matchable = Matchable.this.matching();
+          if (match1.==(null))
+            Matchable.this.pri0(dir, node)
+          else
+            if (node.==(match1))
+              {
+                scala.this.Predef.assert(Matchable.this.sibling0(dir).==(node));
+                0
+              }
+            else
+              if (Matchable.this.sibling0(dir).==(match1))
+                1.+()
+              else
+                Matchable.this.pri0(dir, node)
+        }
+      };
+      protected class Engine extends java.lang.Object with scala.ScalaObject {
+        private <local> <paramaccessor> val segment: Matcher.this.Segment = _;
+        def this(segment: Matcher.this.Segment): Matcher.this.Engine = {
+          Engine.super.this();
+          ()
+        };
+        private <local> val dirty : scala.collection.mutable.HashSet[Matcher.this.Node] = new scala.collection.m\
+utable.HashSet[Matcher.this.Node].this();
+        <stable> <accessor> def dirty(): scala.collection.mutable.HashSet[Matcher.this.Node] = Engine.this.dirty\
+ ;
+        if (Engine.this.segment.!=(null))
+          {
+            Engine.this.segment.apply({
+              [scala.serializable]final <synthetic> class $anonfun extends java.lang.Object with (Matcher.this.N\
+ode) => scala.Unit with scala.ScalaObject {
+                def this(): $anonfun = {
+                  $anonfun.super.this();
+                  ()
+                };
+                final def apply(node: Matcher.this.Node): scala.Unit = Engine.this.check(node)
+              };
+              (new $anonfun.this()) : (Matcher.this.Node) => scala.Unit
+            });
+            ()
+          };
+        def check(node: Matcher.this.Node): scala.Unit = if (node.isMatchable().&&(node.asMatchable().matching()\
+.==(null)).&&(node.isNormal()))
+          Engine.this.dirty().+=(node);
+        def flush(): scala.Unit = while$0(){
+          if (Engine.this.dirty().isEmpty().!())
+            {
+              {
+                val brace: Matcher.this.Node = Engine.this.dirty().elements().next();
+                Engine.this.dirty().-=(brace);
+                brace.asMatchable().tryMatch00(this)
+              };
+              while$0()
+            }
+          else
+            ()
+        }
+      };
+      override def doAdd(segment: Matcher.this.Segment): scala.Unit = {
+        Matcher.this.lampion$parsing$Matcher$$super$doAdd(segment);
+        new Matcher.this.Engine.this(segment).flush()
+      };
+      override def doRemove(segment: Matcher.this.Segment): scala.Unit = {
+        val engine: Matcher.this.Engine = new Matcher.this.Engine.this(null);
+        segment.apply({
+          [scala.serializable]final <synthetic> class $anonfun extends java.lang.Object with (Matcher.this.Node)\
+ => scala.Unit with scala.ScalaObject {
+            def this(): $anonfun = {
+              $anonfun.super.this();
+              ()
+            };
+            final def apply(node: Matcher.this.Node): scala.Unit = {
+              scala.this.Predef.assert(node.willBeDeleted());
+              if (node.isMatchable().&&(node.asMatchable().matching().!=(null)).&&(node.asMatchable().matching()\
+.willBeDeleted().!()))
+                {
+                  val matching: Matcher.this.Matchable = node.asMatchable().matching();
+                  node.asMatchable().matching().doUnmatch00(engine);
+                  engine.check({
+                    {
+                      [scala.serializable]final <synthetic> class $anonfun extends java.lang.Object with (Matche\
+r.this.BaseNode) => Matcher.this.Node with scala.ScalaObject {
+                        def this(): $anonfun = {
+                          $anonfun.super.this();
+                          ()
+                        };
+                        final def apply(eta$1: Matcher.this.BaseNode): Matcher.this.Node = Matcher.this.baseNode\
+2Node(eta$1)
+                      };
+                      (new $anonfun.this()) : (Matcher.this.BaseNode) => Matcher.this.Node
+                    }.apply(matching)
+                  })
+                }
+            }
+          };
+          (new $anonfun.this()) : (Matcher.this.Node) => scala.Unit
+        });
+        Matcher.this.lampion$parsing$Matcher$$super$doRemove(segment);
+        engine.flush()
+      };
+      def doMatch0(open: Matcher.this.Matchable, close: Matcher.this.Matchable, matcher: Matcher.this.Engine): M\
+atcher.this.Node = {
+        scala.this.Predef.assert(open.pri0MT(lampion.collections.DirX.NEXT, {
+          {
+            [scala.serializable]final <synthetic> class $anonfun extends java.lang.Object with (Matcher.this.Bas\
+eNode) => Matcher.this.Node with scala.ScalaObject {
+              def this(): $anonfun = {
+                $anonfun.super.this();
+                ()
+              };
+              final def apply(eta$1: Matcher.this.BaseNode): Matcher.this.Node = Matcher.this.baseNode2Node(eta$\
+1)
+            };
+            (new $anonfun.this()) : (Matcher.this.BaseNode) => Matcher.this.Node
+          }.apply(close)
+        }).==(0));
+        new Matcher.this.Segment.this(open.scan(lampion.collections.DirX.NEXT), close.scan(lampion.collections.D\
+irX.PREV)).apply({
+          [scala.serializable]final <synthetic> class $anonfun extends java.lang.Object with (Matcher.this.Node)\
+ => scala.Unit with scala.ScalaObject {
+            def this(): $anonfun = {
+              $anonfun.super.this();
+              ()
+            };
+            final def apply(node: Matcher.this.Node): scala.Unit = if (node.isMatchable().&&(node.asMatchable().\
+matching().!=(null)))
+              {
+                val matching: Matcher.this.Matchable = node.asMatchable().matching();
+                node.asMatchable().doUnmatch(matcher);
+                matcher.check({
+                  {
+                    [scala.serializable]final <synthetic> class $anonfun extends java.lang.Object with (Matcher.\
+this.BaseNode) => Matcher.this.Node with scala.ScalaObject {
+                      def this(): $anonfun = {
+                        $anonfun.super.this();
+                        ()
+                      };
+                      final def apply(eta$1: Matcher.this.BaseNode): Matcher.this.Node = Matcher.this.baseNode2N\
+ode(eta$1)
+                    };
+                    (new $anonfun.this()) : (Matcher.this.BaseNode) => Matcher.this.Node
+                  }.apply(matching)
+                })
+              }
+          };
+          (new $anonfun.this()) : (Matcher.this.Node) => scala.Unit
+        });
+        val body: Matcher.this.Node = Matcher.this.scoop({
+          {
+            [scala.serializable]final <synthetic> class $anonfun extends java.lang.Object with (Matcher.this.Bas\
+eNode) => Matcher.this.Node with scala.ScalaObject {
+              def this(): $anonfun = {
+                $anonfun.super.this();
+                ()
+              };
+              final def apply(eta$1: Matcher.this.BaseNode): Matcher.this.Node = Matcher.this.baseNode2Node(eta$\
+1)
+            };
+            (new $anonfun.this()) : (Matcher.this.BaseNode) => Matcher.this.Node
+          }.apply(open)
+        }, {
+          {
+            [scala.serializable]final <synthetic> class $anonfun extends java.lang.Object with (Matcher.this.Bas\
+eNode) => Matcher.this.Node with scala.ScalaObject {
+              def this(): $anonfun = {
+                $anonfun.super.this();
+                ()
+              };
+              final def apply(eta$1: Matcher.this.BaseNode): Matcher.this.Node = Matcher.this.baseNode2Node(eta$\
+1)
+            };
+            (new $anonfun.this()) : (Matcher.this.BaseNode) => Matcher.this.Node
+          }.apply(close)
+        });
+        scala.this.Predef.assert(open.sibling0(lampion.collections.DirX.NEXT).==(null));
+        scala.this.Predef.assert(close.sibling0(lampion.collections.DirX.PREV).==(null));
+        open.setMT(close);
+        body
+      };
+      def doUnmatch0(node: Matcher.this.Matchable, matcher: Matcher.this.Engine, f: (Matcher.this.Node) => scala\
+.Unit): scala.Unit = {
+        scala.this.Predef.assert(node.isNormal());
+        scala.this.Predef.assert(node.matching().isNormal());
+        val body: Matcher.this.Node = node.child(lampion.collections.DirX.NEXT, null);
+        f.apply(body);
+        if (body.!=(null))
+          {
+            body.unmatchAsBody(matcher);
+            node.splitUp(lampion.collections.DirX.NEXT, body)
+          }
+      }
+    }
+  }
+}
+Exception in thread "main" java.lang.Error: assertion failed: Matchable.this.type
+	at scala.Predef$.assert(Predef.scala:175)
+	at scala.tools.nsc.transform.ExplicitOuter.scala$tools$nsc$transform$ExplicitOuter$$outerMember(ExplicitOuter.s\
+cala:80)
+	at scala.tools.nsc.transform.ExplicitOuter$OuterPathTransformer.outerSelect(ExplicitOuter.scala:114)
+	at scala.tools.nsc.transform.ExplicitOuter$OuterPathTransformer.outerValue(ExplicitOuter.scala:100)
+	at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer$$anon$0.transform(ExplicitOuter.scala:289)\
+
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$19.apply(Trees.scala:1022)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$19.apply(Trees.scala:1022)
+	at scala.List$.loop$0(List.scala:232)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.tools.nsc.ast.Trees$Transformer.transformTrees(Trees.scala:1022)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:998)
+	at scala.tools.nsc.transform.ExplicitOuter$OuterPathTransformer.transform(ExplicitOuter.scala:132)
+	at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer$$anon$0.transform(ExplicitOuter.scala:311)\
+
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$15.apply(Trees.scala:938)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$15.apply(Trees.scala:938)
+	at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1044)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:937)
+	at scala.tools.nsc.transform.ExplicitOuter$OuterPathTransformer.transform(ExplicitOuter.scala:132)
+	at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer$$anon$0.transform(ExplicitOuter.scala:311)\
+
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$25.apply(Trees.scala:1038)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$25.apply(Trees.scala:1036)
+	at scala.List$.loop$0(List.scala:232)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.tools.nsc.ast.Trees$Transformer.transformStats(Trees.scala:1036)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:964)
+	at scala.tools.nsc.transform.ExplicitOuter$OuterPathTransformer.transform(ExplicitOuter.scala:132)
+	at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer$$anon$0.transform(ExplicitOuter.scala:311)\
+
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:982)
+	at scala.tools.nsc.transform.ExplicitOuter$OuterPathTransformer.transform(ExplicitOuter.scala:132)
+	at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer$$anon$0.transform(ExplicitOuter.scala:311)\
+
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$25.apply(Trees.scala:1038)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$25.apply(Trees.scala:1036)
+	at scala.List$.loop$0(List.scala:232)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.tools.nsc.ast.Trees$Transformer.transformStats(Trees.scala:1036)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:964)
+	at scala.tools.nsc.transform.ExplicitOuter$OuterPathTransformer.transform(ExplicitOuter.scala:132)
+	at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer$$anon$0.transform(ExplicitOuter.scala:311)\
+
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$16.apply(Trees.scala:943)
+	at scala.tools.nsc.ast.Trees$Transfor
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" ></td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Sean&nbsp; edited on &nbsp;2006-05-09 19:43:15.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Sean&nbsp; edited on &nbsp;2006-05-09 19:45:38.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Sean&nbsp; edited on &nbsp;2006-05-10 16:34:09.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Removed all but one requires statement from the project, now only the BraceMatcher.CloseBraceBase class requires the CloseBrace type, and the crash still occurs. 
+</td></tr>
+<tr>
+        <td>
+        <strong>Sean&nbsp; edited on &nbsp;2006-05-15 18:10:49.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Added Bogdan Dumitriu's example which is much smaller than mine. 
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-05-16 13:26:49.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

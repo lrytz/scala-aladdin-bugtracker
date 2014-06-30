@@ -1,0 +1,203 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#725]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Sean</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2006-09-04 20:16:56.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">bad type ref crash</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>trait Symbols2 {
+  type PositionType;
+  abstract class Symbol(initOwner : Symbol, initPos : PositionType) {
+    def pos : PositionType;
+  }
+}
+trait Analyzer {
+  val global : Symbols2;
+  trait Context {
+    def owner : global.Symbol;
+  }
+}
+trait YYY {
+  val global : Symbols2;
+  object analyzer extends Analyzer {
+    val global : YYY2.this.global.type = YYY.this.global;
+  }
+  def context : analyzer.Context;
+  def RootClass : global.Symbol;
+  def cowner = if (context.owner == null) RootClass else context.owner;
+}</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre><pre>
+sean-mcdirmids-computer:~/workspace/test13/src mcdirmid$ ../../scala/build/quick/bin/scalac -d ../bin test/XXX.s\
+cala
+test/XXX.scala:19 error: YYY2 is not an enclosing class
+    val global : YYY2.this.global.type = YYY.this.global;
+                 ^
+Exception in thread "main" java.lang.AssertionError: assertion failed
+	at scala.Predef$.assert(Predef.scala:177)
+	at scala.tools.nsc.symtab.Types$TypeRef.<init>(Types.scala:818)
+	at scala.tools.nsc.symtab.Types$$anon$5.<init>(Types.scala:1124)
+	at scala.tools.nsc.symtab.Types$class.rawTypeRef(Types.scala:1124)
+	at scala.tools.nsc.symtab.SymbolTable.rawTypeRef(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$class.typeRef(Types.scala:1118)
+	at scala.tools.nsc.symtab.SymbolTable.typeRef(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$TypeMap.mapOver(Types.scala:1257)
+	at scala.tools.nsc.symtab.Types$AsSeenFromMap.apply(Types.scala:1380)
+	at scala.tools.nsc.symtab.Types$AsSeenFromMap.apply(Types.scala:1335)
+	at scala.List$.loop$0(List.scala:232)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.List$.loop$0(List.scala:236)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.tools.nsc.symtab.Types$TypeMap.mapOver(Types.scala:1280)
+	at scala.tools.nsc.symtab.Types$AsSeenFromMap.apply(Types.scala:1380)
+	at scala.tools.nsc.symtab.Types$Type.asSeenFrom(Types.scala:199)
+	at scala.tools.nsc.symtab.Types$Type.memberType(Types.scala:226)
+	at scala.tools.nsc.symtab.Types$Type.findMember(Types.scala:434)
+	at scala.tools.nsc.symtab.Types$Type.nonPrivateMembers(Types.scala:169)
+	at scala.tools.nsc.symtab.Types$class.lub0$0(Types.scala:2029)
+	at scala.tools.nsc.symtab.Types$$anonfun$68.apply(Types.scala:2045)
+	at scala.tools.nsc.symtab.Types$$anonfun$68.apply(Types.scala:2045)
+	at scala.tools.nsc.symtab.Types$class.limitRecursion(Types.scala:1860)
+	at scala.tools.nsc.symtab.Types$class.lub(Types.scala:2045)
+	at scala.tools.nsc.symtab.SymbolTable.lub(SymbolTable.scala:10)
+	at scala.tools.nsc.typechecker.Typers$Typer.ptOrLub$0(Typers.scala:1196)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1587)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1815)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1842)
+	at scala.tools.nsc.typechecker.Typers$Typer.computeType(Typers.scala:1875)
+	at scala.tools.nsc.typechecker.Namers$Namer.methodSig(Namers.scala:417)
+	at scala.tools.nsc.typechecker.Namers$Namer.scala$tools$nsc$typechecker$Namers$Namer$$typeSig(Namers.scala:486)\
+
+	at scala.tools.nsc.typechecker.Namers$Namer$$anon$0.complete(Namers.scala:307)
+	at scala.tools.nsc.symtab.Symbols$Symbol.info(Symbols.scala:366)
+	at scala.tools.nsc.symtab.Symbols$Symbol.initialize(Symbols.scala:443)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1469)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1815)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1842)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$48.apply(Typers.scala:1024)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$48.apply(Typers.scala:1013)
+	at scala.List$.loop$0(List.scala:232)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.List$.loop$0(List.scala:236)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.List$.loop$0(List.scala:236)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.List$.loop$0(List.scala:236)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:1013)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedTemplate(Typers.scala:717)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedClassDef(Typers.scala:645)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1478)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1815)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1842)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$48.apply(Typers.scala:1024)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$48.apply(Typers.scala:1013)
+	at scala.List$.loop$0(List.scala:232)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.List$.loop$0(List.scala:236)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.List$.loop$0(List.scala:236)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.List$.loop$0(List.scala:236)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:1013)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1474)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1815)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1842)
+	at scala.tools.nsc.typechecker.Analyzer$typerFactory$$anon$1.apply(Analyzer.scala:38)
+	at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:218)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$1.apply(Global.scala:207)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$1.apply(Global.scala:207)
+	at scala.Iterator$class.foreach(Iterator.scala:316)
+	at scala.collection.mutable.ListBuffer$$anon$0.foreach(ListBuffer.scala:216)
+	at scala.tools.nsc.Global$GlobalPhase.run(Global.scala:207)
+	at scala.tools.nsc.Global$Run.compileSources(Global.scala:469)
+	at scala.tools.nsc.Global$Run.compile(Global.scala:533)
+	at scala.tools.nsc.Main$.process(Main.scala:76)
+	at scala.tools.nsc.Main$.main(Main.scala:98)
+	at scala.tools.nsc.Main.main(Main.scala)
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >No crash.
+</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-09-20 17:37:50.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

@@ -1,0 +1,392 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#831]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> medium</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Sean</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2006-11-17 21:48:28.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">resident compiler malformed type error (build 9270).</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>// two files
+// test/NewScalaParserXXX.scala
+package test;
+
+trait ScalaNodeScannerXXX {
+  type Node &lt;: NodeImpl;
+  trait NodeImpl { def self : Node; }
+  type Unfixed &lt;: Node with UnfixedImpl;
+  trait UnfixedImpl extends NodeImpl { def self : Unfixed; }
+}
+
+trait NewScalaScannerXXX extends ScalaNodeScannerXXX { 
+  type Unfixed &lt;: Node with UnfixedImpl;
+  trait UnfixedImpl extends super.UnfixedImpl with NodeImpl;
+  type Statement &lt;: Unfixed with StatementImpl;
+  trait StatementImpl extends UnfixedImpl { def self : Statement; }
+  type NewLine &lt;: Statement with NewLineImpl;
+  trait NewLineImpl extends StatementImpl { 
+    def self : NewLine; 
+    def isActive : Boolean = true;
+  }
+  object ArrowMode extends Enumeration { val Def, Case, Expr = Value }
+}
+
+trait ScalaPrecedenceXXX extends NewScalaScannerXXX { 
+  type NewLine &lt;: Statement with NewLineImpl;
+  trait NewLineImpl extends super.NewLineImpl with StatementImpl {  
+    def self : NewLine; 
+    override def isActive = super[NewLineImpl].isActive;
+  }
+}
+trait NewScalaParserXXX extends NewScalaScannerXXX with ScalaPrecedenceXXX {
+  type NewLine &lt;: Statement with NewLineImpl;
+  trait MyNewLine extends super[NewScalaScannerXXX].NewLineImpl;
+  trait NewLineImpl extends MyNewLine with 
+    super[ScalaPrecedenceXXX].NewLineImpl with
+    StatementImpl { 
+    def self : NewLine; 
+    override def isActive = super[MyNewLine].isActive;
+  }
+}
+
+//test/NewScalaTestXXX.scala
+package test;
+
+abstract class NewScalaTestXXX extends NewScalaParserXXX;
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>I think this bug can manifest itself as a crash with some more code, more on that below. I was only able to mine\
+ this incorrect type checking error message from the larger code base:
+
+<pre>sean-mcdirmid:~/workspace/test35/src mcdirmid$ rm -rf ../bin/* && ../../scala/build/quick/bin/scalac -resid\
+ent -d ../bin/ -sourcepath .
+
+nsc> test/NewScalaTestXXX.scala
+
+nsc> test/NewScalaTestXXX.scala
+test/NewScalaTestXXX.scala:3 error: malformed type: ScalaPrecedenceXXX.this.type#NewLineImpl$class
+abstract class NewScalaTestXXX extends NewScalaParserXXX;
+                               ^
+
+nsc></pre>
+
+Now, with a lot more code, the following occurred:
+
+<pre>sean-mcdirmid:~/workspace/lampion/src mcdirmid$ ../../scala/build/quick/bin/scalac -resident -d ../bin/ -so\
+urcepath .
+
+nsc> lampion/scalax/NewScalaParser.scala lampion/scalax/NewScalaTest.scala
+lampion/scalax/ScalaFlowScanner.scala
+lampion/scalax/NewScalaParser.scala lampion/scalax/NewScalaTest.scala
+
+nsc>
+nsc> exception when traversing java.lang.Object with lampion.scalax.NewScalaTest$Parens$Close with lampion.scala\
+x.NewScalaTest$File$Node0 with scala.ScalaObject {
+... A WHOLE LOT OF AST LOV'IN ...
+Exception in thread "main" java.lang.AssertionError: assertion failed: BracesImpl.this.type.trait BraceImpl$clas\
+s does no longer exist, phase = erasure
+	at scala.Predef$.assert(Predef.scala:103)
+	at scala.tools.nsc.symtab.Types$adaptToNewRunMap$.adaptToNewRun(Types.scala:1649)
+	at scala.tools.nsc.symtab.Types$adaptToNewRunMap$.apply(Types.scala:1682)
+	at scala.tools.nsc.symtab.Types$adaptToNewRunMap$.apply(Types.scala:1637)
+	at scala.List$.loop$0(List.scala:244)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.tools.nsc.symtab.Types$adaptToNewRunMap$.apply(Types.scala:1693)
+	at scala.tools.nsc.symtab.Symbols$Symbol.adaptToNewRun$0(Symbols.scala:483)
+	at scala.tools.nsc.symtab.Symbols$Symbol.adaptInfos(Symbols.scala:487)
+	at scala.tools.nsc.symtab.Symbols$Symbol.adaptInfos(Symbols.scala:479)
+	at scala.tools.nsc.symtab.Symbols$Symbol.adaptInfos(Symbols.scala:479)
+	at scala.tools.nsc.symtab.Symbols$Symbol.rawInfo(Symbols.scala:446)
+	at scala.tools.nsc.symtab.Symbols$Symbol.info(Symbols.scala:403)
+	at scala.tools.nsc.transform.Mixin.mixinImplClassMembers$0(Mixin.scala:191)
+	at scala.tools.nsc.transform.Mixin$$anonfun$8.apply(Mixin.scala:249)
+	at scala.tools.nsc.transform.Mixin$$anonfun$8.apply(Mixin.scala:245)
+	at scala.List.foreach(List.scala:701)
+	at scala.tools.nsc.transform.Mixin.addMixedinMembers(Mixin.scala:245)
+	at scala.tools.nsc.transform.Mixin$MixinTransformer.preTransform(Mixin.scala:345)
+	at scala.tools.nsc.transform.Mixin$MixinTransformer.transform(Mixin.scala:664)
+	at scala.tools.nsc.ast.Trees$Transformer.transformTemplate(Trees.scala:1169)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$17.apply(Trees.scala:1069)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$17.apply(Trees.scala:1068)
+	at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1189)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1067)
+	at scala.tools.nsc.transform.Mixin$MixinTransformer.transform(Mixin.scala:664)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$30.apply(Trees.scala:1183)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$30.apply(Trees.scala:1181)
+	at scala.List$.loop$0(List.scala:244)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.tools.nsc.ast.Trees$Transformer.transformStats(Trees.scala:1181)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$16.apply(Trees.scala:1064)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$16.apply(Trees.scala:1064)
+	at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1189)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1063)
+	at scala.tools.nsc.transform.Mixin$MixinTransformer.transform(Mixin.scala:664)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$30.apply(Trees.scala:1183)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$30.apply(Trees.scala:1181)
+	at scala.List$.loop$0(List.scala:244)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.tools.nsc.ast.Trees$Transformer.transformStats(Trees.scala:1181)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$16.apply(Trees.scala:1064)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$16.apply(Trees.scala:1064)
+	at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1189)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1063)
+	at scala.tools.nsc.transform.Mixin$MixinTransformer.transform(Mixin.scala:664)
+	at scala.tools.nsc.ast.Trees$Transformer.transformUnit(Trees.scala:1184)
+	at scala.tools.nsc.transform.Transform$Phase.apply(Transform.scala:30)
+	at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:220)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$1.apply(Global.scala:209)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$1.apply(Global.scala:209)
+	at scala.Iterator$class.foreach(Iterator.scala:341)
+	at scala.collection.mutable.ListBuffer$$anon$0.foreach(ListBuffer.scala:244)
+	at scala.tools.nsc.Global$GlobalPhase.run(Global.scala:209)
+	at scala.tools.nsc.Global$Run.compileSources(Global.scala:474)
+	at scala.tools.nsc.Global$Run.compile(Global.scala:543)
+	at scala.tools.nsc.Main$$anonfun$0.apply(Main.scala:37)
+	at scala.tools.nsc.Main$$anonfun$0.apply(Main.scala:34)
+	at scala.tools.nsc.EvalLoop$class.loop(EvalLoop.scala:17)
+	at scala.tools.nsc.Main$.loop(Main.scala:17)
+	at scala.tools.nsc.EvalLoop$class.loop(EvalLoop.scala:18)
+	at scala.tools.nsc.Main$.loop(Main.scala:17)
+	at scala.tools.nsc.EvalLoop$class.loop(EvalLoop.scala:18)
+	at scala.tools.nsc.Main$.loop(Main.scala:17)
+	at scala.tools.nsc.Main$.resident(Main.scala:34)
+	at scala.tools.nsc.Main$.process(Main.scala:69)
+	at scala.tools.nsc.Main$.main(Main.scala:96)
+	at scala.tools.nsc.Main.main(Main.scala)
+sean-mcdirmid:~/workspace/lampion/src mcdirmid$</pre>
+
+Even if this "does no longer exist" crash is not related to the malformed type bug, I need the malformed type bu\
+g fixed before I can narrow down and find this crash.
+
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >No malformed type errors, then maybe that fixes other things, or at least its gets this issue out of the way so I can find the next bug. 
+</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-11-21 20:42:12.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

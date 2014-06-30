@@ -1,0 +1,166 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#277]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Burak</td>
+	  <td align="center" bgcolor="#FFFFFF">Burak</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2004-01-20 15:07:25.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">parse/type of sequence patterns</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>object fo {
+ 3 match { case (_,_) =&gt; 43 }
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre><pre>
+Exception in thread "main" java.lang.AssertionError: 
+unit        : fii.scala
+clasz       : fo
+member      : fo.<init>
+owner       : fo.<init>
+tree        : temp$0.asInstanceOf[Int]().length
+tree.pos    : 2:2
+tree.symbol : scala.Seq.length
+tree.type   : ()Int
+	at scalac.checkers.TreeChecker.selection(TreeChecker.java:413)
+	at scalac.checkers.TreeChecker.function(TreeChecker.java:367)
+	at scalac.checkers.TreeChecker.expression(TreeChecker.java:292)
+	at scalac.checkers.TreeChecker.selection(TreeChecker.java:414)
+	at scalac.checkers.TreeChecker.function(TreeChecker.java:367)
+	at scalac.checkers.TreeChecker.expression(TreeChecker.java:292)
+	at scalac.checkers.TreeChecker.vapply(TreeChecker.java:351)
+	at scalac.checkers.TreeChecker.expression(TreeChecker.java:284)
+	at scalac.checkers.TreeChecker.expression(TreeChecker.java:254)
+	at scalac.checkers.TreeChecker.expression(TreeChecker.java:254)
+	at scalac.checkers.TreeChecker.expression(TreeChecker.java:243)
+	at scalac.checkers.TreeChecker.statement(TreeChecker.java:207)
+	at scalac.checkers.TreeChecker.expression(TreeChecker.java:241)
+	at scalac.checkers.TreeChecker.member(TreeChecker.java:176)
+	at scalac.checkers.TreeChecker.member(TreeChecker.java:143)
+	at scalac.checkers.TreeChecker.template(TreeChecker.java:111)
+	at scalac.checkers.TreeChecker.template(TreeChecker.java:91)
+	at scalac.checkers.TreeChecker.check(TreeChecker.java:81)
+	at scalac.transformer.MakeBoxingExplicitPhase.apply(MakeBoxingExplicitPh
+ase.java:46)
+	at scalac.Global.compile(Global.java:306)
+	at scalac.Global.compile(Global.java:278)
+	at scala.tools.scalac.Main$.main(sources/scala/tools/scalac/Main.scala:3
+3)
+	at scala.tools.scalac.Main.main(sources/scala/tools/scalac/Main.scala)
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >either type error (because Seq[Any] does not fit to Int), or parse error.
+</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2004-01-20 15:09:24.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2004-01-20 15:54:40.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2004-01-20 16:21:15.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+compiler detects the parse error now, through pattern check.
+<p>
+I keep this bug open until we get a straight context-free syntax for patterns (even though using CF syntax to express the various conditions might lead to a lot of duplication) 
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2005-06-10 18:40:19.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+probably I meant 2 change this into a specification last time, but I change it to fixed: Next time we'll update the spec, we'll start from the parser anyhow...
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2005-06-10 18:40:38.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+erm, should have been "into a specification bug"
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

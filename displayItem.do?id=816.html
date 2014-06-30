@@ -1,0 +1,359 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#816]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> high</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Sean</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2006-11-11 13:53:08.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">Mixin override very broken in latest.</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>// MUST be in two files.
+// file HasDirXXX.scala
+package lampion.scalax;
+object HasDirXXX {
+  abstract class Dir;
+  object PREV extends Dir;
+  object NEXT extends Dir;
+}
+// file BraceMatcherXXX.scala
+package lampion.scalax;
+trait BraceMatcherXXX { 
+  type Dir = HasDirXXX.Dir;
+  trait NodeImpl { 
+    def scanWithSkip(dir : Dir) : NodeImpl = null; 
+  }
+  trait Matchable extends NodeImpl {
+    override def scanWithSkip(dir : Dir) : NodeImpl = super.scanWithSkip(dir);
+  }
+  class MatchableX extends Matchable with NodeImpl;
+}</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre><pre>sean-mcdirmid:~/workspace/lampion/src mcdirmid$ ../../scala/build/quick/bin/scalac -d ../bin -sourcepath . \
+lampion/scalax/NewScalaTestXXX.scala
+exception when traversing BraceMatcherXXX$MatchableX.super.scanWithSkip(x$1.$asInstanceOf[lampion.scalax.HasDirX\
+XX$Dir]())
+exception when traversing java.lang.Object with lampion.scalax.BraceMatcherXXX$Matchable with lampion.scalax.Bra\
+ceMatcherXXX$NodeImpl with scala.ScalaObject {
+  protected <synthetic> <paramaccessor> val $outer: lampion.scalax.BraceMatcherXXX = _;
+  <synthetic> <stable> def lampion$scalax$BraceMatcherXXX$MatchableX$$$outer(): lampion.scalax.BraceMatcherXXX =\
+ BraceMatcherXXX$MatchableX.this.$outer;
+  <synthetic> <stable> def lampion$scalax$BraceMatcherXXX$Matchable$$$outer(): lampion.scalax.BraceMatcherXXX = \
+BraceMatcherXXX$MatchableX.this.lampion$scalax$BraceMatcherXXX$MatchableX$$$outer();
+  <synthetic> <stable> def lampion$scalax$BraceMatcherXXX$NodeImpl$$$outer(): lampion.scalax.BraceMatcherXXX = B\
+raceMatcherXXX$MatchableX.this.lampion$scalax$BraceMatcherXXX$MatchableX$$$outer();
+  def this($outer: lampion.scalax.BraceMatcherXXX): lampion.scalax.BraceMatcherXXX$MatchableX = {
+    if ($outer.eq(null))
+      throw new java.lang.NullPointerException()
+    else
+      BraceMatcherXXX$MatchableX.this.$outer = $outer;
+    BraceMatcherXXX$MatchableX.super.this();
+    BraceMatcherXXX$MatchableX.this.$asInstanceOf[lampion.scalax.BraceMatcherXXX$NodeImpl]()./*BraceMatcherXXX$N\
+odeImpl$class*/$init$();
+    BraceMatcherXXX$MatchableX.this.$asInstanceOf[lampion.scalax.BraceMatcherXXX$Matchable]()./*BraceMatcherXXX$\
+Matchable$class*/$init$();
+    ()
+  }
+}
+exception when traversing class BraceMatcherXXX$MatchableX extends java.lang.Object with lampion.scalax.BraceMat\
+cherXXX$Matchable with lampion.scalax.BraceMatcherXXX$NodeImpl with scala.ScalaObject {
+  protected <synthetic> <paramaccessor> val $outer: lampion.scalax.BraceMatcherXXX = _;
+  <synthetic> <stable> def lampion$scalax$BraceMatcherXXX$MatchableX$$$outer(): lampion.scalax.BraceMatcherXXX =\
+ BraceMatcherXXX$MatchableX.this.$outer;
+  <synthetic> <stable> def lampion$scalax$BraceMatcherXXX$Matchable$$$outer(): lampion.scalax.BraceMatcherXXX = \
+BraceMatcherXXX$MatchableX.this.lampion$scalax$BraceMatcherXXX$MatchableX$$$outer();
+  <synthetic> <stable> def lampion$scalax$BraceMatcherXXX$NodeImpl$$$outer(): lampion.scalax.BraceMatcherXXX = B\
+raceMatcherXXX$MatchableX.this.lampion$scalax$BraceMatcherXXX$MatchableX$$$outer();
+  def this($outer: lampion.scalax.BraceMatcherXXX): lampion.scalax.BraceMatcherXXX$MatchableX = {
+    if ($outer.eq(null))
+      throw new java.lang.NullPointerException()
+    else
+      BraceMatcherXXX$MatchableX.this.$outer = $outer;
+    BraceMatcherXXX$MatchableX.super.this();
+    BraceMatcherXXX$MatchableX.this.$asInstanceOf[lampion.scalax.BraceMatcherXXX$NodeImpl]()./*BraceMatcherXXX$N\
+odeImpl$class*/$init$();
+    BraceMatcherXXX$MatchableX.this.$asInstanceOf[lampion.scalax.BraceMatcherXXX$Matchable]()./*BraceMatcherXXX$\
+Matchable$class*/$init$();
+    ()
+  }
+}
+exception when traversing package scalax {
+  abstract trait BraceMatcherXXX extends java.lang.Object with scala.ScalaObject;
+  abstract trait BraceMatcherXXX$class extends java.lang.Object with scala.ScalaObject with lampion.scalax.Brace\
+MatcherXXX {
+    def /*BraceMatcherXXX$class*/$init$(): scala.Unit = {
+      ()
+    }
+  };
+  abstract trait BraceMatcherXXX$NodeImpl extends java.lang.Object with scala.ScalaObject {
+    def scanWithSkip(x$1: lampion.scalax.HasDirXXX$Dir): lampion.scalax.BraceMatcherXXX$NodeImpl;
+    <synthetic> <stable> def lampion$scalax$BraceMatcherXXX$NodeImpl$$$outer(): lampion.scalax.BraceMatcherXXX
+  };
+  abstract trait BraceMatcherXXX$Matchable extends java.lang.Object with lampion.scalax.BraceMatcherXXX$NodeImpl\
+ with scala.ScalaObject {
+    <superaccessor> def lampion$scalax$BraceMatcherXXX$Matchable$$super$scanWithSkip(x$1: lampion.scalax.HasDirX\
+XX$Dir): lampion.scalax.BraceMatcherXXX$NodeImpl;
+    override def scanWithSkip(x$1: lampion.scalax.HasDirXXX$Dir): lampion.scalax.BraceMatcherXXX$NodeImpl;
+    <synthetic> <stable> def lampion$scalax$BraceMatcherXXX$Matchable$$$outer(): lampion.scalax.BraceMatcherXXX\
+
+  };
+  class BraceMatcherXXX$MatchableX extends java.lang.Object with lampion.scalax.BraceMatcherXXX$Matchable with l\
+ampion.scalax.BraceMatcherXXX$NodeImpl with scala.ScalaObject {
+    protected <synthetic> <paramaccessor> val $outer: lampion.scalax.BraceMatcherXXX = _;
+    <synthetic> <stable> def lampion$scalax$BraceMatcherXXX$MatchableX$$$outer(): lampion.scalax.BraceMatcherXXX\
+ = BraceMatcherXXX$MatchableX.this.$outer;
+    <synthetic> <stable> def lampion$scalax$BraceMatcherXXX$Matchable$$$outer(): lampion.scalax.BraceMatcherXXX \
+= BraceMatcherXXX$MatchableX.this.lampion$scalax$BraceMatcherXXX$MatchableX$$$outer();
+    <synthetic> <stable> def lampion$scalax$BraceMatcherXXX$NodeImpl$$$outer(): lampion.scalax.BraceMatcherXXX =\
+ BraceMatcherXXX$MatchableX.this.lampion$scalax$BraceMatcherXXX$MatchableX$$$outer();
+    def this($outer: lampion.scalax.BraceMatcherXXX): lampion.scalax.BraceMatcherXXX$MatchableX = {
+      if ($outer.eq(null))
+        throw new java.lang.NullPointerException()
+      else
+        BraceMatcherXXX$MatchableX.this.$outer = $outer;
+      BraceMatcherXXX$MatchableX.super.this();
+      BraceMatcherXXX$MatchableX.this.$asInstanceOf[lampion.scalax.BraceMatcherXXX$NodeImpl]()./*BraceMatcherXXX\
+$NodeImpl$class*/$init$();
+      BraceMatcherXXX$MatchableX.this.$asInstanceOf[lampion.scalax.BraceMatcherXXX$Matchable]()./*BraceMatcherXX\
+X$Matchable$class*/$init$();
+      ()
+    }
+  };
+  abstract trait BraceMatcherXXX$NodeImpl$class extends java.lang.Object with object scala.ScalaObject$class wit\
+h lampion.scalax.BraceMatcherXXX$NodeImpl {
+    def scanWithSkip(dir: lampion.scalax.HasDirXXX$Dir): lampion.scalax.BraceMatcherXXX$NodeImpl = null;
+    def /*BraceMatcherXXX$NodeImpl$class*/$init$(): scala.Unit = {
+      ()
+    }
+  };
+  abstract trait BraceMatcherXXX$Matchable$class extends java.lang.Object with object lampion.scalax.BraceMatche\
+rXXX$NodeImpl$class with object scala.ScalaObject$class with lampion.scalax.BraceMatcherXXX$Matchable {
+    override def scanWithSkip(dir: lampion.scalax.HasDirXXX$Dir): lampion.scalax.BraceMatcherXXX$NodeImpl = Brac\
+eMatcherXXX$Matchable$class.this.lampion$scalax$BraceMatcherXXX$Matchable$$super$scanWithSkip(dir);
+    def /*BraceMatcherXXX$Matchable$class*/$init$(): scala.Unit = {
+      ()
+    }
+  }
+}
+exception when traversing package lampion {
+  package scalax {
+    abstract trait BraceMatcherXXX extends java.lang.Object with scala.ScalaObject;
+    abstract trait BraceMatcherXXX$class extends java.lang.Object with scala.ScalaObject with lampion.scalax.Bra\
+ceMatcherXXX {
+      def /*BraceMatcherXXX$class*/$init$(): scala.Unit = {
+        ()
+      }
+    };
+    abstract trait BraceMatcherXXX$NodeImpl extends java.lang.Object with scala.ScalaObject {
+      def scanWithSkip(x$1: lampion.scalax.HasDirXXX$Dir): lampion.scalax.BraceMatcherXXX$NodeImpl;
+      <synthetic> <stable> def lampion$scalax$BraceMatcherXXX$NodeImpl$$$outer(): lampion.scalax.BraceMatcherXXX\
+
+    };
+    abstract trait BraceMatcherXXX$Matchable extends java.lang.Object with lampion.scalax.BraceMatcherXXX$NodeIm\
+pl with scala.ScalaObject {
+      <superaccessor> def lampion$scalax$BraceMatcherXXX$Matchable$$super$scanWithSkip(x$1: lampion.scalax.HasDi\
+rXXX$Dir): lampion.scalax.BraceMatcherXXX$NodeImpl;
+      override def scanWithSkip(x$1: lampion.scalax.HasDirXXX$Dir): lampion.scalax.BraceMatcherXXX$NodeImpl;
+      <synthetic> <stable> def lampion$scalax$BraceMatcherXXX$Matchable$$$outer(): lampion.scalax.BraceMatcherXX\
+X
+    };
+    class BraceMatcherXXX$MatchableX extends java.lang.Object with lampion.scalax.BraceMatcherXXX$Matchable with\
+ lampion.scalax.BraceMatcherXXX$NodeImpl with scala.ScalaObject {
+      protected <synthetic> <paramaccessor> val $outer: lampion.scalax.BraceMatcherXXX = _;
+      <synthetic> <stable> def lampion$scalax$BraceMatcherXXX$MatchableX$$$outer(): lampion.scalax.BraceMatcherX\
+XX = BraceMatcherXXX$MatchableX.this.$outer;
+      <synthetic> <stable> def lampion$scalax$BraceMatcherXXX$Matchable$$$outer(): lampion.scalax.BraceMatcherXX\
+X = BraceMatcherXXX$MatchableX.this.lampion$scalax$BraceMatcherXXX$MatchableX$$$outer();
+      <synthetic> <stable> def lampion$scalax$BraceMatcherXXX$NodeImpl$$$outer(): lampion.scalax.BraceMatcherXXX\
+ = BraceMatcherXXX$MatchableX.this.lampion$scalax$BraceMatcherXXX$MatchableX$$$outer();
+      def this($outer: lampion.scalax.BraceMatcherXXX): lampion.scalax.BraceMatcherXXX$MatchableX = {
+        if ($outer.eq(null))
+          throw new java.lang.NullPointerException()
+        else
+          BraceMatcherXXX$MatchableX.this.$outer = $outer;
+        BraceMatcherXXX$MatchableX.super.this();
+        BraceMatcherXXX$MatchableX.this.$asInstanceOf[lampion.scalax.BraceMatcherXXX$NodeImpl]()./*BraceMatcherX\
+XX$NodeImpl$class*/$init$();
+        BraceMatcherXXX$MatchableX.this.$asInstanceOf[lampion.scalax.BraceMatcherXXX$Matchable]()./*BraceMatcher\
+XXX$Matchable$class*/$init$();
+        ()
+      }
+    };
+    abstract trait BraceMatcherXXX$NodeImpl$class extends java.lang.Object with object scala.ScalaObject$class w\
+ith lampion.scalax.BraceMatcherXXX$NodeImpl {
+      def scanWithSkip(dir: lampion.scalax.HasDirXXX$Dir): lampion.scalax.BraceMatcherXXX$NodeImpl = null;
+      def /*BraceMatcherXXX$NodeImpl$class*/$init$(): scala.Unit = {
+        ()
+      }
+    };
+    abstract trait BraceMatcherXXX$Matchable$class extends java.lang.Object with object lampion.scalax.BraceMatc\
+herXXX$NodeImpl$class with object scala.ScalaObject$class with lampion.scalax.BraceMatcherXXX$Matchable {
+      override def scanWithSkip(dir: lampion.scalax.HasDirXXX$Dir): lampion.scalax.BraceMatcherXXX$NodeImpl = Br\
+aceMatcherXXX$Matchable$class.this.lampion$scalax$BraceMatcherXXX$Matchable$$super$scanWithSkip(dir);
+      def /*BraceMatcherXXX$Matchable$class*/$init$(): scala.Unit = {
+        ()
+      }
+    }
+  }
+}
+Exception in thread "main" java.lang.AssertionError: assertion failed: method scanWithSkip:(lampion.scalax.HasDi\
+rXXX$Dir)lampion.scalax.BraceMatcherXXX$NodeImpl trait BraceMatcherXXX$NodeImpl object BraceMatcherXXX$NodeImpl$\
+class method scanWithSkip (lampion.scalax.BraceMatcherXXX$NodeImpl,lampion.scalax.HasDirXXX$Dir)lampion.scalax.B\
+raceMatcherXXX$NodeImpl <and> (lampion.scalax.HasDirXXX$Dir)lampion.scalax.BraceMatcherXXX$NodeImpl cleanup
+	at scala.Predef$.assert(Predef.scala:100)
+	at scala.tools.nsc.transform.Mixin$MixinTransformer.staticCall$0(Mixin.scala:586)
+	at scala.tools.nsc.transform.Mixin$MixinTransformer.scala$tools$nsc$transform$Mixin$MixinTransformer$$postTrans\
+form(Mixin.scala:611)
+	at scala.tools.nsc.transform.Mixin$MixinTransformer$$anonfun$30.apply(Mixin.scala:662)
+	at scala.tools.nsc.transform.Mixin$MixinTransformer$$anonfun$30.apply(Mixin.scala:662)
+	at scala.tools.nsc.symtab.SymbolTable.atPhase(SymbolTable.scala:71)
+	at scala.tools.nsc.transform.Mixin$MixinTransformer.transform(Mixin.scala:662)
+	at scala.tools.nsc.transform.Mixin$MixinTransformer$$anonfun$19.apply(Mixin.scala:480)
+	at scala.tools.nsc.transform.Mixin$MixinTransformer$$anonfun$19.apply(Mixin.scala:480)
+	at scala.tools.nsc.symtab.SymbolTable.atPhase(SymbolTable.scala:71)
+	at scala.tools.nsc.transform.Mixin$MixinTransformer.completeSuperAccessor$0(Mixin.scala:480)
+	at scala.tools.nsc.transform.Mixin$MixinTransformer$$anonfun$26.apply(Mixin.scala:531)
+	at scala.tools.nsc.transform.Mixin$MixinTransformer$$anonfun$26.apply(Mixin.scala:531)
+	at scala.List.map(List.scala:663)
+	at scala.tools.nsc.transform.Mixin$MixinTransformer.addNewDefs(Mixin.scala:531)
+	at scala.tools.nsc.transform.Mixin$MixinTransformer.scala$tools$nsc$transform$Mixin$MixinTransformer$$postTrans\
+form(Mixin.scala:565)
+	at scala.tools.nsc.transform.Mixin$MixinTransformer$$anonfun$30.apply(Mixin.scala:662)
+	at scala.tools.nsc.transform.Mixin$MixinTransformer$$anonfun$30.apply(Mixin.scala:662)
+	at scala.tools.nsc.symtab.SymbolTable.atPhase(SymbolTable.scala:71)
+	at scala.tools.nsc.transform.Mixin$MixinTransformer.transform(Mixin.scala:662)
+	at scala.tools.nsc.ast.Trees$Transformer.transformTemplate(Trees.scala:1169)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$17.apply(Trees.scala:1069)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$17.apply(Trees.scala:1068)
+	at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1189)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1067)
+	at scala.tools.nsc.transform.Mixin$MixinTransformer.transform(Mixin.scala:661)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$30.apply(Trees.scala:1183)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$30.apply(Trees.scala:1181)
+	at scala.List$.loop$0(List.scala:243)
+	at scala.List$.mapConserve(List.scala:260)
+	at scala.List$.loop$0(List.scala:247)
+	at scala.List$.mapConserve(List.scala:260)
+	at scala.List$.loop$0(List.scala:247)
+	at scala.List$.mapConserve(List.scala:260)
+	at scala.List$.loop$0(List.scala:247)
+	at scala.List$.mapConserve(List.scala:260)
+	at scala.List$.loop$0(List.scala:247)
+	at scala.List$.mapConserve(List.scala:260)
+	at scala.tools.nsc.ast.Trees$Transformer.transformStats(Trees.scala:1181)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$16.apply(Trees.scala:1064)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$16.apply(Trees.scala:1064)
+	at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1189)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1063)
+	at scala.tools.nsc.transform.Mixin$MixinTransformer.transform(Mixin.scala:661)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$30.apply(Trees.scala:1183)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$30.apply(Trees.scala:1181)
+	at scala.List$.loop$0(List.scala:243)
+	at scala.List$.mapConserve(List.scala:260)
+	at scala.tools.nsc.ast.Trees$Transformer.transformStats(Trees.scala:1181)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$16.apply(Trees.scala:1064)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$16.apply(Trees.scala:1064)
+	at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1189)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1063)
+	at scala.tools.nsc.transform.Mixin$MixinTransformer.transform(Mixin.scala:661)
+	at scala.tools.nsc.ast.Trees$Transformer.transformUnit(Trees.scala:1184)
+	at scala.tools.nsc.transform.Transform$Phase.apply(Transform.scala:30)
+	at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:219)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$1.apply(Global.scala:208)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$1.apply(Global.scala:208)
+	at scala.Iterator$class.foreach(Iterator.scala:319)
+	at scala.collection.mutable.ListBuffer$$anon$0.foreach(ListBuffer.scala:244)
+	at scala.tools.nsc.Global$GlobalPhase.run(Global.scala:208)
+	at scala.tools.nsc.Global$Run.compileSources(Global.scala:473)
+	at scala.tools.nsc.Global$Run.compile(Global.scala:542)
+	at scala.tools.nsc.Main$.process(Main.scala:74)
+	at scala.tools.nsc.Main$.main(Main.scala:96)
+	at scala.tools.nsc.Main.main(Main.scala)
+sean-mcdirmid:~/workspace/lampion/src mcdirmid$</pre>
+
+Note that the argument scanWithSkip has to refer to Dir which must be defined in a separate file (otherwise ther\
+e is no crash). The crash is also avoided if the super call is not made. Weird
+
+
+
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >For the compiler to stop crashing so much so I can get some work done. 
+</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-11-11 21:32:36.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

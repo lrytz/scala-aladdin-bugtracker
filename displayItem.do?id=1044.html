@@ -1,0 +1,145 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#1044]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> high</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">Lex</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2007-04-12 15:21:23.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">interpreter crash</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>scala&gt; generalSize(Math.Pi)
+Exception in thread &quot;main&quot; java.io.FileNotFoundException: C:\DOCUME~1\odersky\LOCALS~1\Temp\scalaint58631\line35$object$$import$$import$$import$$import$$import$$import$$import$$import$$import$$import$$import$$import$$import$$import$$import$$import$$import$$import$$import$$import$$import$$import$$import$$import$$import$$import$$import$$import$$import$$import$.class (The filename, directory name, or volume label syntax is incorrect)
+	at java.io.FileOutputStream.open(Native Method)
+	at java.io.FileOutputStream.&lt;init&gt;(Unknown Source)
+	at java.io.FileOutputStream.&lt;init&gt;(Unknown Source)
+	at ch.epfl.lamp.fjbg.JClass.writeTo(JClass.java:256)
+	at ch.epfl.lamp.fjbg.JClass.writeTo(JClass.java:243)
+	at scala.tools.nsc.backend.jvm.GenJVM$BytecodeGenerator.emitClass(GenJVM.scala:126)
+	at scala.tools.nsc.backend.jvm.GenJVM$BytecodeGenerator.genClass(GenJVM.scala:199)
+	at scala.tools.nsc.backend.jvm.GenJVM$JvmPhase$$anonfun$0.apply(GenJVM.scala:44)
+	at scala.tools.nsc.backend.jvm.GenJVM$JvmPhase$$anonfun$0.apply(GenJVM.scala:44)
+	at scala.Iterator$class.foreach(Iterator.scala:380)
+	at scala.collection.Map$$anon$2.foreach(Map.scala:119)
+	at scala.tools.nsc.backend.jvm.GenJVM$JvmPhase.run(GenJVM.scala:44)
+	at scala.tools.nsc.Global$Run.compileSources(Global.scala:491)
+	at scala.tools.nsc.Interpreter$Request.compile(Interpreter.scala:556)
+	at scala.tools.nsc.Interpreter.interpret(Interpreter.scala:346)
+	at scala.tools.nsc.InterpreterLoop.interpretStartingWith(InterpreterLoop.scala:230)
+	at scala.tools.nsc.InterpreterLoop.command(InterpreterLoop.scala:217)
+	at scala.tools.nsc.InterpreterLoop.repl(InterpreterLoop.scala:130)
+	at scala.tools.nsc.InterpreterLoop.main(InterpreterLoop.scala:265)
+	at scala.tools.nsc.MainGenericRunner$.main(MainGenericRunner.scala:92)
+	at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>After some interaction the interpreter crashes with the above stacktrace (on Windows). I believe the filenames a\
+re getting too long. 
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >We should keep import names short. Probably some running number instead of a linear string.</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2007-04-12 15:32:29.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Lex&nbsp; edited on &nbsp;2007-04-12 17:12:17.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+The names are long because there are deeply nested objects involved.  I will try to shorten the names and thus delay the problem, but I do not know a great way to avoid the problem without finding a way to do imports that does not require nested objects.
+
+Here are two ways to decrease the nesting depth.  First, do not create new nesting levels when it is obviously not necessary (e.g. an import of x followed by an import of y).  Second, try to reject imports that are obviously not useful (e.g., an import of x followed immediately by another import of x).
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Stephane&nbsp; edited on &nbsp;2007-04-17 15:06:53.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Lex&nbsp; edited on &nbsp;2007-04-18 05:13:05.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+<p>In various ways the nesting of imports is now decreased and the class names thus greatly shortened.  Hopefully this is enough to address the practical difficulties with this particular issue.</p>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

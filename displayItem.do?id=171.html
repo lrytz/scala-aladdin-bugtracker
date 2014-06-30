@@ -1,0 +1,400 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#171]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> missing feature</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Erik</td>
+	  <td align="center" bgcolor="#FFFFFF">Matthias</td>
+	  <td align="center" bgcolor="#FFFFFF">won't fix</td>
+          <td align="center" bgcolor="#FFFFFF">2003-10-01 15:15:00.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">Errormessages are not sorted on linenumbers</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>import scala.concurrent.Process;
+import scala.concurrent.Process._;
+import scala.concurrent.NameServer;
+import java.net.Socket;
+
+class Request {};
+case class Header(buf:List[char]) extends Request {};
+case class HeaderDone(buf:List[char],after:Binary) extends Request {};
+case class Post(buf:List[char],len:int,info:Tuple5[Any,Any,Any,Any,Any]) extends Request {};
+
+
+class HttpDriver {
+    type handler = Process =&gt; unit;
+
+    def start(port:int, fun:handler, max:int) =
+	spawn({server(port, fun, max);()});
+
+    def server(port:int, fun:handler, max:int) =
+     new TcpServer(port, 
+		   (socket:Process) =&gt; input_handler(socket, fun),
+		   max,
+		   0);
+
+    private def input_handler(socket:Process, fun:handler) = {
+	val s = self;
+	val server = spawn_link({fun(s);});
+	relay(socket, server, Header(Nil));
+    }
+
+    private def relay(Socket:Process, 
+                      Server:Process, 
+                      state:Request):unit = {
+      receive {
+	case Tuple3('tcp, Socket, bin:Binary) =&gt; {
+	    parse_request(state, socket, server, bin);
+	}
+//	case Tuple3('tcp_closed, Socket) =&gt; {
+//	    server ! Pair(self, 'closed);
+//	}
+	case Pair(Server, 'close) =&gt; {
+	    Socket ! Pair(self,close);
+        }
+	case Pair(Server, Pair(headers:String, data:Binary)) =&gt; {
+	    val headers1 = headers + &quot;Content-Length &quot; +
+		data.length + &quot;\r\n\r\n&quot;;
+    	    Socket.getOutputStream().write(headers1);
+            Socket.getOutputStream().write(data);
+	    relay(Socket, server, state);
+        }
+	case Tuple3('EXIT, Server, _) =&gt; {
+	    Socket!Pair(self,close);
+	}
+    }
+  }
+
+
+  def parse_request(request:Request,socket:Process, 
+                      server:Process,data:Binary) = {
+       request.match {
+         case Header(buff) =&gt; {
+           scan_header(data, buff).match {
+	     case Header(buff1) =&gt;
+	       relay(socket, server, Header(buff1));
+	     case HeaderDone(header, after) =&gt;
+	       got_header(socket, server, header, after)
+           }
+         }
+         case Post(buff, len, x) =&gt; {
+           collect_chunk(len, data, buff).match {
+             case Tuple3('yes, postdata, after) =&gt; {
+		 val args2 = parse_uri_args(postdata);
+		 val Tuple5(op,vsn,uri,args1,env) = x;
+		 val req = Tuple5(op,vsn,uri,args1+args2,env);
+		 server ! Pair(self, req);
+	         parse_request(Header(Nil), socket, server, after);
+	     }
+             case Tuple3('no,buff1, len1) =&gt; {
+               val state = Post(buff1, len1, x);
+	       relay(socket, server, state);
+             }
+           } 
+         }
+      }  
+  }
+
+  def got_header(socket:Process, server:Process, 
+	header:List[char], after:Binary) = {
+      val result = parse_header(header);
+      result.match {
+	case Tuple6(op, contentLen, vsn, uri, args, env) =&gt; {
+	    if (ContentLen == 0) {
+	       server ! Pair(self, Tuple5(op,vsn,uri,args,env));
+	       parse_request(Header(Nil), socket, server, after);
+            } else {
+	    val state = Post(Nil, contentLen, Tuple5(op,vsn,uri,args,env));
+	    parse_request(state, socket, server, after);
+            }
+        }
+      }
+  }
+
+  def collect_chunk(n:int,newl:List[A],buf:List[A]) = {
+    if (n == 0) Tuple3('yes, reverse(buf), newl);
+	else newl.match {
+		case h::t =&gt; {collect_chunk(n-1,t,h::buff);}
+		case Nil =&gt; Tuple3('no, buff, n)
+        }
+  }
+
+  def scan_header(In:Binary,Out:List[char]):Request = {
+    if (In.length == 0) Header(Out) else {
+      val t = In.drop(1); 	 
+      Out.match {
+        case List('\n','\r','\n','\r',l@(_*)) =&gt; HeaderDone(l.reverse,t);
+        case _ =&gt; scan_header(t,In(0)::Out);
+      }
+    }
+  }
+				
+//----------------------------------------------------------------------
+
+
+  class classifier with java.net.FileNameMap {
+    def classify(filename:String) =
+      getContentTypeFor(filename);
+  }
+
+  def header(ctype:String) = {
+    ctype.match { 
+    case &quot;text&quot; =&gt;  
+      &quot;HTTP/1.0 200 Ok\r\n&quot; + powered_by + content_type(&quot;text/html&quot;);
+    case &quot;html&quot; =&gt; 
+      &quot;HTTP/1.0 200 Ok\r\n&quot; + powered_by + content_type(&quot;text/html&quot;);
+    case &quot;jpg&quot; =&gt; 
+      &quot;HTTP/1.0 200 Ok\r\n&quot; + powered_by + content_type(&quot;image/jpeg&quot;);
+    case &quot;gif&quot;  =&gt; 
+      &quot;HTTP/1.0 200 Ok\r\n&quot; + powered_by + content_type(&quot;image/gif&quot;);
+//    case &quot;redirect,To}) -&gt;
+//    [&quot;HTTP/1.0 302 Come and get it!\r\n&quot;,
+//     powered_by(), &quot;Location: &quot; ++ To ++ &quot;\r\n&quot;].
+    }
+  }
+
+
+  def powered_by = &quot;X-Powered-By: Scala \r\n&quot;;
+
+  def content_type(x:String) = &quot;Content-Type: &quot; + x + &quot;\r\n&quot;;
+
+    //----------------------------------------------------------------------
+
+    def parse_header(str:List[char]) = {
+	val hd::tail = split(str);
+	val prequest = parse_request(hd);
+	val pargs = tail.map(x =&gt; isolate_arg(x));
+	make_return_value(prequest, pargs);
+    }
+    
+    def split(s:List[char]):List[List[char]] = {
+	s.match {
+	    case List(x@(_*),'\r','\n',y@(_*)) =&gt; x::split(y);
+            case Nil =&gt; Nil;
+	}
+    }
+
+    def make_return_value(rval:Tuple3[List[char],List[char],Pair[List[char],List[char]]],env:List[Tuple2[List[char],List[char]]]) = {
+	val Tuple3(op,vsn,Pair(uri,args)) = rval;
+	Tuple6(op, content_length(env), vsn, uri, args, env);
+    }
+
+    def content_length(valuePairs:List[Pair[List[char],List[char]]]):int = {
+	valuePairs.match {
+	    case Pair(str,value)::t =&gt; 
+		str.match {
+		    case List('c','o','n','t','e','n','t','-','l','e','n','g','t','h') =&gt; value.toInteger;
+		    
+		    case _ =&gt; content_length(t);
+		}
+	    case Nil =&gt; 0;
+	}
+    }
+
+    def urlencoded2str(str:List[char]):List[char] = {
+	str.match {
+	   case List('%',hi,lo,t@(_*)) =&gt; 
+	     decode_hex(hi, lo)::urlencoded2str(t);
+	   case List('+',t@(_*)) =&gt; ' '::urlencoded2str(t);
+	   case h::t =&gt; h::urlencoded2str(t);
+	   case Nil =&gt; Nil;
+	}
+    }
+
+
+    def isolate_arg(str:List[char]) = isolate_arg(str, Nil);
+
+    def isolate_arg(str:List[char], L:List[char]) = {
+	str.match {
+	    case List(':',' ',t@(_*)) =&gt; Pair(to_lower(l.reverse),t);
+	    case h::t =&gt; isolate_arg(t, h::l)
+	}
+    }
+	    
+
+    // decode_hex %%
+
+    def decode_hex(hex1:char, hex2:char) = 
+	hex2dec(hex1)*16 + hex2dec(hex2);
+    
+    def hex2dec(x:char):char = {
+	if (x &gt;= '0' &amp; x &lt;= '9') (x.asInstanceOf[int] - '0'.asInstanceOf[int]).asInstanceOf[char];
+	else 
+ 	  x.match{
+	    case 'A' =&gt; 10;
+	    case 'B' =&gt; 11;
+	    case 'C' =&gt; 12;
+	    case 'D' =&gt; 13;
+	    case 'E' =&gt; 14;
+	    case 'F' =&gt; 15;
+	    case 'a' =&gt; 10;
+	    case 'b' =&gt; 11;
+	    case 'c' =&gt; 12;
+	    case 'd' =&gt; 13;
+	    case 'e' =&gt; 14;
+	    case 'f' =&gt; 15;
+	}
+    }
+
+    def parse_request(str:List[char]) = {
+	val Pair('ok, args) = split(Str);
+        args.match {   
+	  case &quot;POST&quot;::uri::vsn =&gt; Post(parse_vsn(vsn) ,parse_uri(uri));
+	  case &quot;GET&quot;::uri::vsn =&gt; Get(parse_vsn(vsn), parse_uri(uri));
+        }
+    }
+
+   def parse_vsn(x:List[char]) = {
+     x.match{
+      case List('H','T','T','P','/',v,'.',m) =&gt; Pair(v-'0',m-'0');
+      case _ =&gt; Pair(0,0);
+   }
+ }
+
+// A typical URI looks
+// like
+// URI = &quot;/a/b/c?password=aaa&amp;invisible=A+hidden+value&quot;
+   def tokens(string:List[char],Chars:List[char]):List[List[char]] = 
+	tokens(string,Chars,Nil);
+
+   def tokens(string:List[char],
+               Chars:List[char],
+               acc:List[char]):List[List[char]] = {
+      prefix(Chars,string).match {
+        case Some(tail) =&gt; acc.reverse :: tokens(tail,Chars,Nil);
+	case None =&gt; tokens(string.tail,Chars,string.head::acc);
+      }
+   }
+
+   def prefix(p:List[char],l:List[char]):Option[List[char]] = {
+	if (p == Nil) Some(l);
+	else 
+          if(p.head == l.head) 
+            prefix(p.tail,l.tail)
+          else
+            None
+   }	
+
+	   
+       
+
+   def parse_uri(uri:List[char]) = {
+     tokens(uri, '?'::Nil).match {
+	case root::Nil =&gt; Pair(root, Nil);
+	case root::args::Nil =&gt;
+	    Pair(root, parse_uri_args(args))
+     }
+   }
+
+  def parse_uri_args(args:List[char]) = {
+     val args1 = tokens(args, List('&amp;',';'));
+     args1.map((keyval:List[char]) =&gt;
+	         tokens(keyval, '='::Nil).match {
+		   case List(key,value) =&gt;
+		     Pair(urlencoded2str(key), urlencoded2str(value));
+		   case List(key) =&gt;
+		     Pair(urlencoded2str(key), Nil);
+                 }
+               )
+  }
+}</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>For large files with many errrors some Error messages seems to be reported directly by the phase that finds them\
+.
+
+Please don't look at the troublesome code to closely... it is a direct translation from Erlang in progress...
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >All messages should be collected and then sorted on line number and reported in line number order...</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2003-10-06 12:27:46.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Matthias&nbsp; edited on &nbsp;2003-10-07 02:20:54.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Do we really want this? In Java compilers it is not common to sort error messages by line numbers. Personally, I also tend to favor a logical order of error messages, since sometimes you get an avalanche of error messages caused by a single error -- in this case, it's easier to find the reason if error messages are sorted chronologically.<p>
+Shall we make sorting error messages optional? Maybe by introducing a new command-line option?
+</td></tr>
+<tr>
+        <td>
+        <strong>Matthias&nbsp; edited on &nbsp;2004-04-26 12:44:52.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

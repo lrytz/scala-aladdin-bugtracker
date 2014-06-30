@@ -1,0 +1,144 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#1206]</th>
+		<th><strong>project:</strong> distribution</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> feature</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Nikolay</td>
+	  <td align="center" bgcolor="#FFFFFF">Stephane</td>
+	  <td align="center" bgcolor="#FFFFFF">open</td>
+          <td align="center" bgcolor="#FFFFFF">2007-07-12 11:55:24.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">[contrib #682] cygwin support for Scala scripts in PATH</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>Start with a script test.scala
+
+#! scala -savecompiled
+!#
+Console.println(&quot;Hello&quot;)
+
+
+The script works from cygwin when the script's location is given explicitly in Windows format:-
+$ ./test.scala
+Hello
+
+It doesn't work from cygwin when the script's location is in cygwin format:-
+
+$ `pwd`/test.scala
+no such file: /cygdrive/ ... /test.scala
+
+This becomes a problem when the script is in the PATH:-
+
+$ mv ./test.scala  /usr/local/bin/test2.scala
+$ which test2.scala
+/usr/local/bin/test2.scala
+$ test2.scala
+no such file: /usr/local/bin/test2.scala
+
+$ mv /usr/local/bin/test2.scala C:/WINDOWS/test3.scala
+$ which test3.scala
+/cygdrive/c/WINDOWS/test3.scala
+$ test3.scala
+no such file: /cygdrive/c/WINDOWS/test3.scala
+
+
+
+We can use the following workaround but perhaps the workaround could instead be in the distributed bin/scala script or the Scala code it calls.
+
+
+#! /bin/sh
+
+case &quot;$(uname)&quot; in
+CYGWIN*)
+    script=&quot;$(cygpath -w &quot;$0&quot;)&quot;
+    ;;
+*)
+    script=&quot;$0&quot;
+    ;;
+esac
+
+exec &quot;${SCALA_HOME}/bin/scala&quot; -savecompiled &quot;$script&quot; &quot;$@&quot;
+
+!#
+Console.println(&quot;Hello&quot;)
+
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>no such file: /cygdrive/ ...
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >Hello</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Nikolay&nbsp; edited on &nbsp;2007-07-12 12:06:31.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

@@ -1,0 +1,116 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#1028]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Sean</td>
+	  <td align="center" bgcolor="#FFFFFF">Iulian</td>
+	  <td align="center" bgcolor="#FFFFFF">won't fix</td>
+          <td align="center" bgcolor="#FFFFFF">2007-03-28 11:16:21.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">Inner class names not up to spec?</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>package test;
+object Go {
+  def main(args : Array[String]) : Unit = 
+    (new Hello).getClass.getSimpleName;
+  class Hello;
+}</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>On run:
+<pre>Exception in thread "main" java.lang.InternalError: Malformed class name
+	at java.lang.Class.getSimpleName(Class.java:1129)
+	at test.Go$.main(Go.scala:4)
+	at test.Go.main(Go.scala)</pre>
+
+The code in Class.java:
+<pre>if (length < 1 || simpleName.charAt(0) != '$')
+  throw new InternalError("Malformed class name");</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" ></td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Iulian&nbsp; edited on &nbsp;2007-04-02 10:29:50.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+They are up to spec (the JVM spec), but break Java language compatibility :-/ This is a bit twisted, but the idea is that the reflection API assumes a certain name mangling (namely, that an inner class name is formed by the binary name of it's enclosing class, a '$', and the simple name of that class). Sun's JDK uses this to decide the implemented inner name, while IBM uses the proper field in the InnerClass attribute (and runs without error).
+</br>
+In most cases, Sun's scheme works, but we do have cases when there are more than one '$', or none. In this case, it is the top-level object Go, which is encoded as Go$, which is listed as the outer class of Hello. Then, the full name (Go$Hello) - the outer class name (Go$) results in Hello, but according to the name scheme, it should have been $Hello.
+</td></tr>
+<tr>
+        <td>
+        <strong>Iulian&nbsp; edited on &nbsp;2007-05-01 09:57:04.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

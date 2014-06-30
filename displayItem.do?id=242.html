@@ -1,0 +1,124 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#242]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Burak</td>
+	  <td align="center" bgcolor="#FFFFFF">Michel</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2003-12-01 12:38:55.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">long patterns crash backend</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>object bugFJ_2 {
+
+  def extract( cs:char* ):Unit = cs match {
+    case Seq(_*,'\\',src @ _ *,'\\','e','n','d','{','l','s','t','l',rest @ _ *  )
+      =&gt; 
+  }
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>/home/buraq/src/scala/exciss> scalac exciss.scala
+Exception in thread "main" java.lang.ArrayIndexOutOfBoundsException: -21657
+	at ch.epfl.lamp.fjbg.JCode.computeMaxStackSize(JCode.java:814)
+...
+	at ch.epfl.lamp.fjbg.JCode.getMaxStackSize(JCode.java:86)
+	at ch.epfl.lamp.fjbg.JCodeAttribute.writeContentsTo(JCodeAttribute.java:77)
+	at ch.epfl.lamp.fjbg.JAttribute.writeTo(JAttribute.java:61)
+	at ch.epfl.lamp.fjbg.JAttribute.writeTo(JAttribute.java:25)
+	at ch.epfl.lamp.fjbg.JFieldOrMethod.writeTo(JFieldOrMethod.java:133)
+	at ch.epfl.lamp.fjbg.JClass.writeTo(JClass.java:320)
+	at ch.epfl.lamp.fjbg.JClass.writeTo(JClass.java:272)
+	at ch.epfl.lamp.fjbg.JClass.writeTo(JClass.java:256)
+	at scalac.backend.jvm.GenJVM.leaveClass(GenJVM.java:1563)
+...
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >no error</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Michel&nbsp; edited on &nbsp;2003-12-02 09:27:29.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+<p>This particular instance of the bug was fixed by adding support for wide jumps in the back-end. All methods are first compiled with short jumps, and if it happens that at least one jump needs a long offset, the compilation of the whole method is restarted with wide jumps all over the place.
+
+<p>The general problem, as discussed with Buraq, is that the pattern matcher generates <b>huge</b> code, which one day or another is bound to break the (small) limits of the JVM. We should find a solution for that, but I don't know yet whether we want to do it in the back-end or earlier.</p>
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2003-12-02 16:51:09.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+same as for bug 243, I changed the inefficient translation in the TransMatch phase.
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

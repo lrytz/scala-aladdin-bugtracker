@@ -1,0 +1,252 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#635]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Burak</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">noise</td>
+          <td align="center" bgcolor="#FFFFFF">2006-06-20 15:11:29.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">fsc broken</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>find src/library/scala -name \*.scala | xargs build/quick/bin/fsc -d /tmp
+find src/library/scala -name \*.scala | xargs build/quick/bin/fsc -d /tmp
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre><pre>
+[emir@lamppc31 scala.trunk]$ find src/library/scala -name \*.scala | xargs build/quick/bin/fsc -d /tmp
+/localhome/buraq/svn/scala.trunk/src/library/scala/collection/mutable/Table.scala:25 error: error overriding met\
+hod elements in trait Iterable of type => scala.Iterator[A];
+ method elements has incompatible type
+        override def elements = ht.elements map {x=>x.key}
+                 ^
+/localhome/buraq/svn/scala.trunk/src/library/scala/collection/mutable/Table.scala:20 error: object creation impo\
+ssible, since method isDefinedAt in trait PartialFunction of type (A)scala.Boolean is not defined
+      new Table[A,B] {
+      ^
+/localhome/buraq/svn/scala.trunk/src/library/scala/collection/mutable/Table.scala:37 error: error overriding met\
+hod elements in trait Iterable of type => scala.Iterator[A];
+ method elements has incompatible type
+        def elements = tl.elements
+        ^
+/localhome/buraq/svn/scala.trunk/src/library/scala/collection/mutable/Table.scala:32 error: object creation impo\
+ssible, since method isDefinedAt in trait PartialFunction of type (A)scala.Boolean is not defined
+      new Table[A,B] {
+      ^
+/localhome/buraq/svn/scala.trunk/src/library/scala/collection/mutable/Table.scala:74 error: error overriding met\
+hod toList in trait Seq of type => scala.List[scala.collection.mutable.Table.==>_class[A,B]];
+ method toList has incompatible type
+  override def toList = super[Map].toList
+           ^
+5 errors found
+[emir@lamppc31 scala.trunk]$ find src/library/scala -name \*.scala | xargs build/quick/bin/fsc -d /tmp
+scala.tools.nsc.symtab.Types$TypeError: source file /localhome/buraq/svn/scala.trunk/src/library/scala/Predef.sc\
+ala does not define object Predef
+        at scala.tools.nsc.symtab.SymbolLoaders$SymbolLoader.complete(SymbolLoaders.scala:62)
+        at scala.tools.nsc.symtab.Symbols$Symbol.info(Symbols.scala:346)
+        at scala.tools.nsc.symtab.Symbols$Symbol.tpe(Symbols.scala:322)
+        at scala.tools.nsc.symtab.Types$Type.memberType(Types.scala:203)
+        at scala.tools.nsc.ast.TreeGen.mkAttributedSelect(TreeGen.scala:109)
+        at scala.tools.nsc.ast.TreeGen.mkAttributedRef(TreeGen.scala:56)
+        at scala.tools.nsc.ast.TreeGen.mkAttributedRef(TreeGen.scala:61)
+        at scala.tools.nsc.ast.TreeGen.mkAttributedStableRef(TreeGen.scala:91)
+        at scala.tools.nsc.typechecker.Contexts$class.addImport$0(Contexts.scala:32)
+        at scala.tools.nsc.typechecker.Contexts$class.rootContext(Contexts.scala:45)
+        at scala.tools.nsc.Global$analyzer$.rootContext(Global.scala:232)
+        at scala.tools.nsc.typechecker.Contexts$class.rootContext(Contexts.scala:25)
+        at scala.tools.nsc.Global$analyzer$.rootContext(Global.scala:232)
+        at scala.tools.nsc.typechecker.Analyzer$namerFactory$$anon$0.apply(Analyzer.scala:28)
+        at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:216)
+        at scala.tools.nsc.Global$GlobalPhase$$anonfun$1.apply(Global.scala:205)
+        at scala.tools.nsc.Global$GlobalPhase$$anonfun$1.apply(Global.scala:205)
+        at scala.Iterator$class.foreach(Iterator.scala:304)
+        at scala.collection.mutable.ListBuffer$$anon$0.foreach(ListBuffer.scala:216)
+        at scala.tools.nsc.Global$GlobalPhase.run(Global.scala:205)
+        at scala.tools.nsc.Global$Run.compileSources(Global.scala:467)
+        at scala.tools.nsc.Global$Run.compile(Global.scala:527)
+        at scala.tools.nsc.CompileServer$.session(CompileServer.scala:126)
+        at scala.tools.util.SocketServer.run(SocketServer.scala:45)
+        at scala.tools.nsc.CompileServer$.main(CompileServer.scala:163)
+        at scala.tools.nsc.CompileServer.main(CompileServer.scala)
+error: fatal error (server aborted): source file /localhome/buraq/svn/scala.trunk/src/library/scala/Predef.scala\
+ does not define object Predef
+one error found
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >I thought I would see the same error messages twice. Instead I get just a weird message about Predef. BTW: trying with --nopredef does not make things better.
+<br/>
+Back to using the ant script.</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2006-06-20 15:15:08.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+I can't really commit the buggy source file for reproducing this, so I will include it here
+<pre>
+/*                     __                                               *\
+**     ________ ___   / /  ___     Scala API                            **
+**    / __/ __// _ | / /  / _ |    (c) 2003-2006, LAMP/EPFL             **
+**  __\ \/ /__/ __ |/ /__/ __ |                                         **
+** /____/\___/_/ |_/____/_/ | |                                         **
+**                          |/                                          **
+\*                                                                      */
+
+// $Id$
+package scala.collection.mutable
+
+object Table {
+  val HASHTHRESH = 8
+  def make[A,B](xs: `==>_class`[A,B]*): Table[A,B] = {
+    if(xs.length > HASHTHRESH) {
+      val ht = new TableHash[A,B]
+      val it = xs.elements
+      while(it.hasNext) 
+        ht add it.next
+      new Table[A,B] {
+        val hht = ht
+        def length = ht.length
+        def get(key:A) = ht.doFindEntry(key)
+        def size = ht.size
+        override def elements = ht.elements map {x=>x.key}
+      }
+    } else {
+      val tl =  new TableLinked[A,B]
+      val it = xs.elements
+      while(it.hasNext) 
+        tl add it.next
+      new Table[A,B] {
+        val ttl = tl
+        def length = ttl.length
+        def get(key:A): Option[B] = tl doFindEntry key
+        def size = ttl.length
+        def elements = tl.elements
+      }
+    }
+  }
+  class HalfEntry[A](key : A) {
+    def ==>[B](value: B) = new `==>_class`(key, value)
+  }
+  case class `==>_class`[A,B](key:A, value:B)
+
+  implicit def halfentry[A](x: A) = new HalfEntry(x)
+
+  class TableHash[A,B] extends AnyRef with HashTable[A] {
+    type Entry = Table.`==>_class`[A,B]
+    def entryKey(e:Entry) = e.key
+    def add(e:Entry) = addEntry(e)
+    def length = size
+    def doFindEntry(key:A):Option[B] = findEntry(key) match { case Some(x) => Some(x.value) case _ => None }
+    //def keys = entries map {x => x.key}
+    def elements: Iterator[Entry] = entries
+  }
+  class TableLinked[A,B] {
+    type Entry = Table.`==>_class`[A,B]
+    var xs: LinkedList[Entry] = null
+    def add(e:Entry) = xs = new LinkedList(e, xs);
+    def length = xs.length
+    def doFindEntry(key:A):Option[B] = {
+      val it = xs
+      while(it!=null)
+      if(it.elem.key == key) return Some(it.elem.value)
+      return None
+    }
+    //def keys = xs.elements map {x => x.key}
+    def elements: Iterator[Entry] = xs.elements
+  }
+}
+
+trait Table[A, B] extends AnyRef with collection.Map[A,B] with Seq[Table.`==>_class`[A,B]]{
+  override def toList = super[Map].toList
+}
+</pre>
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-06-26 16:26:31.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+I am not exactly sure what happens, but for now the answer is: You should not use fsc to re-compile Predef. The system does not like this at all because it assumes that Predef is always available. Since Table had errors, Predef got invalidated with it, and the subsequent compiler run failed. I don't think this is a serious issue, as users normally would not compile Predef.
+
+
+
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2006-07-12 19:30:47.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+I am using fsc more selectively now and it works fine for me, so I say this is a non-bug (noise) now.
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

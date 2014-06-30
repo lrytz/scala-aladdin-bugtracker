@@ -1,0 +1,147 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#377]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Philippe</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2004-11-16 10:51:40.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">Symbol of inferred compound type has no owner</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>class Foo;
+case class Foo1() extends Foo;
+case class Foo2() extends Foo;
+
+object Test {
+  def test: Boolean = test;
+  def foo = if (test) Foo1() else Foo2();
+  foo.equals(new Foo);
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre><pre>
+Exception in thread "main" scalac.ApplicationError
+	at scalac.symtab.NoSymbol.owner(Symbol.java:2302)
+	at scalac.transformer.ExplicitOuterClassesPhase.getTypeTransformerFor(ExplicitOuterClassesPhase.java:160)
+	at scalac.transformer.ExplicitOuterClassesPhase.transformInfo(ExplicitOuterClassesPhase.java:81)
+	at scalac.symtab.Symbol.transformInfo(Symbol.java:1272)
+	at scalac.symtab.Symbol.rawInfoAt(Symbol.java:1209)
+	at scalac.symtab.Symbol.rawInfo(Symbol.java:1183)
+	at scalac.symtab.Symbol.info(Symbol.java:1157)
+	at scalac.symtab.Symbol.isInterface(Symbol.java:708)
+	at scalac.transformer.AddInterfaces.transform(AddInterfaces.java:139)
+	at scalac.ast.GenTransformer.transform(Transformer.java:557)
+	at scalac.transformer.AddInterfaces.transform(AddInterfaces.java:147)
+	at scalac.ast.GenTransformer.transform(Transformer.java:600)
+	at scalac.transformer.AddInterfaces.transform(AddInterfaces.java:117)
+	at scalac.ast.GenTransformer.transform(Transformer.java:498)
+	at scalac.transformer.AddInterfaces.transform(AddInterfaces.java:147)
+	at scalac.ast.GenTransformer.transform(Transformer.java:595)
+	at scalac.transformer.AddInterfaces.transform(AddInterfaces.java:117)
+	at scalac.ast.GenTransformer.transform(Transformer.java:498)
+	at scalac.transformer.AddInterfaces.transform(AddInterfaces.java:147)
+	at scalac.transformer.AddInterfaces.member(AddInterfaces.java:208)
+	at scalac.transformer.AddInterfaces.template(AddInterfaces.java:174)
+	at scalac.transformer.AddInterfaces.transform(AddInterfaces.java:119)
+	at scalac.ast.GenTransformer.apply(Transformer.java:409)
+	at scalac.transformer.AddInterfacesPhase.apply(AddInterfacesPhase.java:30)
+	at scalac.Global.compile(Global.java:393)
+	at scalac.Global.compile(Global.java:363)
+	at scala.tools.scalac.Main$.main1(Main.scala:45)
+	at scala.tools.scalac.Main$.main(Main.scala:28)
+	at scala.tools.scalac.Main.main(Main.scala:28)
+[paltherr@lamppc4 test]$ 
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >No error. The problem is caused by the inferred type of method <code>foo</code>. The analyzer infers that <code>foo</code> has type <code>Foo with CaseClass</code> which is a compound type. The phase <code>explicitouter</code> crashes because the symbol of this compound type is owned by <code>Symbol.NONE</code>. It should be owned by class <code>Test</code>.
+
+This bug was submitted by Arco Oost. His original code was this one:
+<pre>
+import scala.collection.mutable.HashMap;
+
+class Test {
+  def test() = {
+    val myVal = (new HashMap[String, String]()).get("1");
+    myVal.get.equals("two");
+  }
+}
+</pre>
+</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-03-30 18:42:32.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Fixed in version 2
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

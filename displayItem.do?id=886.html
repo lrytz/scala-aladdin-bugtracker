@@ -1,0 +1,421 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#886]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Sean</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2007-01-12 14:36:39.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">view bound/explicit-outer crash</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>package test;
+class TreeSet[A &lt;% Ordered[A]](val underlying : java.util.TreeSet) {
+  private def compare0(k0 : A, k1 : A) = k0.compare(k1);
+  def this() = this(new java.util.TreeSet(new java.util.Comparator {
+    def compare(x0 : Any, x1 : Any) = compare0(x0.asInstanceOf[A], x1.asInstanceOf[A]);
+  }));
+}</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre><pre>exception when transforming TreeSet.this.test$TreeSet$$compare0
+exception when transforming TreeSet.this.test$TreeSet$$compare0(x0.asInstanceOf[A](), x1.asInstanceOf[A]())
+exception when transforming def compare(x0: scala.Any, x1: scala.Any): scala.Int = TreeSet.this.test$TreeSet$$co\
+mpare0(x0.asInstanceOf[A](), x1.asInstanceOf[A]())
+exception when transforming java.lang.Object with java.util.Comparator {
+  def this(): template $anon = {
+    $anon.super.this();
+    ()
+  };
+  def compare(x0: scala.Any, x1: scala.Any): scala.Int = TreeSet.this.test$TreeSet$$compare0(x0.asInstanceOf[A](\
+), x1.asInstanceOf[A]())
+}
+exception when transforming final <synthetic> class $anon extends java.lang.Object with java.util.Comparator {
+  def this(): template $anon = {
+    $anon.super.this();
+    ()
+  };
+  def compare(x0: scala.Any, x1: scala.Any): scala.Int = TreeSet.this.test$TreeSet$$compare0(x0.asInstanceOf[A](\
+), x1.asInstanceOf[A]())
+}
+exception when transforming {
+  final <synthetic> class $anon extends java.lang.Object with java.util.Comparator {
+    def this(): template $anon = {
+      $anon.super.this();
+      ()
+    };
+    def compare(x0: scala.Any, x1: scala.Any): scala.Int = TreeSet.this.test$TreeSet$$compare0(x0.asInstanceOf[A\
+](), x1.asInstanceOf[A]())
+  };
+  new template $anon()
+}
+exception when transforming new java.util.TreeSet({
+  final <synthetic> class $anon extends java.lang.Object with java.util.Comparator {
+    def this(): template $anon = {
+      $anon.super.this();
+      ()
+    };
+    def compare(x0: scala.Any, x1: scala.Any): scala.Int = TreeSet.this.test$TreeSet$$compare0(x0.asInstanceOf[A\
+](), x1.asInstanceOf[A]())
+  };
+  new template $anon()
+})
+exception when transforming TreeSet.this.this(new java.util.TreeSet({
+  final <synthetic> class $anon extends java.lang.Object with java.util.Comparator {
+    def this(): template $anon = {
+      $anon.super.this();
+      ()
+    };
+    def compare(x0: scala.Any, x1: scala.Any): scala.Int = TreeSet.this.test$TreeSet$$compare0(x0.asInstanceOf[A\
+](), x1.asInstanceOf[A]())
+  };
+  new template $anon()
+}), view$1)
+exception when transforming {
+  TreeSet.this.this(new java.util.TreeSet({
+    final <synthetic> class $anon extends java.lang.Object with java.util.Comparator {
+      def this(): template $anon = {
+        $anon.super.this();
+        ()
+      };
+      def compare(x0: scala.Any, x1: scala.Any): scala.Int = TreeSet.this.test$TreeSet$$compare0(x0.asInstanceOf\
+[A](), x1.asInstanceOf[A]())
+    };
+    new template $anon()
+  }), view$1);
+  ()
+}
+exception when transforming def this(implicit view$1: (A) => scala.Ordered[A]): test.TreeSet[A] = {
+  TreeSet.this.this(new java.util.TreeSet({
+    final <synthetic> class $anon extends java.lang.Object with java.util.Comparator {
+      def this(): template $anon = {
+        $anon.super.this();
+        ()
+      };
+      def compare(x0: scala.Any, x1: scala.Any): scala.Int = TreeSet.this.test$TreeSet$$compare0(x0.asInstanceOf\
+[A](), x1.asInstanceOf[A]())
+    };
+    new template $anon()
+  }), view$1);
+  ()
+}
+exception when transforming java.lang.Object with scala.ScalaObject {
+  private <local> <paramaccessor> val underlying: java.util.TreeSet = _;
+  <stable> <accessor> <paramaccessor> def underlying(): java.util.TreeSet = TreeSet.this.underlying;
+  implicit private <local> <paramaccessor> val view$0: (A) => scala.Ordered[A] = _;
+  def this(underlying: java.util.TreeSet, view$0: (A) => scala.Ordered[A]): test.TreeSet[A] = {
+    TreeSet.super.this();
+    ()
+  };
+  def test$TreeSet$$compare0(k0: A, k1: A): scala.Int = TreeSet.this.view$0.apply(k0).compare(k1);
+  def this(implicit view$1: (A) => scala.Ordered[A]): test.TreeSet[A] = {
+    TreeSet.this.this(new java.util.TreeSet({
+      final <synthetic> class $anon extends java.lang.Object with java.util.Comparator {
+        def this(): template $anon = {
+          $anon.super.this();
+          ()
+        };
+        def compare(x0: scala.Any, x1: scala.Any): scala.Int = TreeSet.this.test$TreeSet$$compare0(x0.asInstance\
+Of[A](), x1.asInstanceOf[A]())
+      };
+      new template $anon()
+    }), view$1);
+    ()
+  }
+}
+exception when transforming class TreeSet[A >: scala.Nothing <: scala.Any] extends java.lang.Object with scala.S\
+calaObject {
+  private <local> <paramaccessor> val underlying: java.util.TreeSet = _;
+  <stable> <accessor> <paramaccessor> def underlying(): java.util.TreeSet = TreeSet.this.underlying;
+  implicit private <local> <paramaccessor> val view$0: (A) => scala.Ordered[A] = _;
+  def this(underlying: java.util.TreeSet, view$0: (A) => scala.Ordered[A]): test.TreeSet[A] = {
+    TreeSet.super.this();
+    ()
+  };
+  def test$TreeSet$$compare0(k0: A, k1: A): scala.Int = TreeSet.this.view$0.apply(k0).compare(k1);
+  def this(implicit view$1: (A) => scala.Ordered[A]): test.TreeSet[A] = {
+    TreeSet.this.this(new java.util.TreeSet({
+      final <synthetic> class $anon extends java.lang.Object with java.util.Comparator {
+        def this(): template $anon = {
+          $anon.super.this();
+          ()
+        };
+        def compare(x0: scala.Any, x1: scala.Any): scala.Int = TreeSet.this.test$TreeSet$$compare0(x0.asInstance\
+Of[A](), x1.asInstanceOf[A]())
+      };
+      new template $anon()
+    }), view$1);
+    ()
+  }
+}
+exception when transforming package test {
+  class TreeSet[A >: scala.Nothing <: scala.Any] extends java.lang.Object with scala.ScalaObject {
+    private <local> <paramaccessor> val underlying: java.util.TreeSet = _;
+    <stable> <accessor> <paramaccessor> def underlying(): java.util.TreeSet = TreeSet.this.underlying;
+    implicit private <local> <paramaccessor> val view$0: (A) => scala.Ordered[A] = _;
+    def this(underlying: java.util.TreeSet, view$0: (A) => scala.Ordered[A]): test.TreeSet[A] = {
+      TreeSet.super.this();
+      ()
+    };
+    def test$TreeSet$$compare0(k0: A, k1: A): scala.Int = TreeSet.this.view$0.apply(k0).compare(k1);
+    def this(implicit view$1: (A) => scala.Ordered[A]): test.TreeSet[A] = {
+      TreeSet.this.this(new java.util.TreeSet({
+        final <synthetic> class $anon extends java.lang.Object with java.util.Comparator {
+          def this(): template $anon = {
+            $anon.super.this();
+            ()
+          };
+          def compare(x0: scala.Any, x1: scala.Any): scala.Int = TreeSet.this.test$TreeSet$$compare0(x0.asInstan\
+ceOf[A](), x1.asInstanceOf[A]())
+        };
+        new template $anon()
+      }), view$1);
+      ()
+    }
+  }
+}
+Exception in thread "main" scala.tools.nsc.symtab.Types$TypeError: value <none> is not a member of java.lang.Obj\
+ect with java.util.Comparator{ ... }
+	at scala.tools.nsc.typechecker.Contexts$Context.error(Contexts.scala:252)
+	at scala.tools.nsc.typechecker.Infer$Inferencer.error(Infer.scala:247)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedSelect$0(Typers.scala:1616)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:2086)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2172)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:2015)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2172)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2205)
+	at scala.tools.nsc.transform.ExplicitOuter$OuterPathTransformer.outerSelect(ExplicitOuter.scala:239)
+	at scala.tools.nsc.transform.ExplicitOuter$OuterPathTransformer.outerValue(ExplicitOuter.scala:233)
+	at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer.transform(ExplicitOuter.scala:444)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1150)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:46)
+	at scala.tools.nsc.transform.ExplicitOuter$OuterPathTransformer.transform(ExplicitOuter.scala:271)
+	at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer.transform(ExplicitOuter.scala:453)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1144)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:46)
+	at scala.tools.nsc.transform.ExplicitOuter$OuterPathTransformer.transform(ExplicitOuter.scala:271)
+	at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer.transform(ExplicitOuter.scala:517)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$20.apply(Trees.scala:1085)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$20.apply(Trees.scala:1084)
+	at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1192)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:33)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:27)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1083)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:46)
+	at scala.tools.nsc.transform.ExplicitOuter$OuterPathTransformer.transform(ExplicitOuter.scala:271)
+	at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer.transform(ExplicitOuter.scala:439)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$30.apply(Trees.scala:1186)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$30.apply(Trees.scala:1184)
+	at scala.List$.loop$0(List.scala:243)
+	at scala.List$.mapConserve(List.scala:260)
+	at scala.tools.nsc.ast.Trees$Transformer.transformStats(Trees.scala:1184)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1104)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.scala$tools$nsc$transform$TypingTransformers$\
+TypingTransformer$$super$transform(TypingTransformers.scala:44)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer$$anonfun$0.apply(TypingTransformers.scala:44)\
+
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer$$anonfun$0.apply(TypingTransformers.scala:44)\
+
+	at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1192)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:33)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:27)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:44)
+	at scala.tools.nsc.transform.ExplicitOuter$OuterPathTransformer.transform(ExplicitOuter.scala:271)
+	at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer.transform(ExplicitOuter.scala:416)
+	at scala.tools.nsc.ast.Trees$Transformer.transformTemplate(Trees.scala:1172)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$17.apply(Trees.scala:1072)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$17.apply(Trees.scala:1071)
+	at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1192)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:33)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:27)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1070)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:46)
+	at scala.tools.nsc.transform.ExplicitOuter$OuterPathTransformer.transform(ExplicitOuter.scala:271)
+	at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer.transform(ExplicitOuter.scala:517)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$30.apply(Trees.scala:1186)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$30.apply(Trees.scala:1184)
+	at scala.List$.loop$0(List.scala:243)
+	at scala.List$.mapConserve(List.scala:260)
+	at scala.tools.nsc.ast.Trees$Transformer.transformStats(Trees.scala:1184)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1106)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:46)
+	at scala.tools.nsc.transform.ExplicitOuter$OuterPathTransformer.transform(ExplicitOuter.scala:271)
+	at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer.transform(ExplicitOuter.scala:517)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$24.apply(Trees.scala:1170)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$24.apply(Trees.scala:1170)
+	at scala.List$.loop$0(List.scala:243)
+	at scala.List$.mapConserve(List.scala:260)
+	at scala.tools.nsc.ast.Trees$Transformer.transformTrees(Trees.scala:1170)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1144)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:46)
+	at scala.tools.nsc.transform.ExplicitOuter$OuterPathTransformer.transform(ExplicitOuter.scala:271)
+	at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer.transform(ExplicitOuter.scala:517)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$24.apply(Trees.scala:1170)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$24.apply(Trees.scala:1170)
+	at scala.List$.loop$0(List.scala:243)
+	at scala.List$.mapConserve(List.scala:260)
+	at scala.tools.nsc.ast.Trees$Transformer.transformTrees(Trees.scala:1170)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1144)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:46)
+	at scala.tools.nsc.transform.ExplicitOuter$OuterPathTransformer.transform(ExplicitOuter.scala:271)
+	at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer.transform(ExplicitOuter.scala:517)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$30.apply(Trees.scala:1186)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$30.apply(Trees.scala:1184)
+	at scala.List$.loop$0(List.scala:243)
+	at scala.List$.mapConserve(List.scala:260)
+	at scala.tools.nsc.ast.Trees$Transformer.transformStats(Trees.scala:1184)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1106)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:46)
+	at scala.tools.nsc.transform.ExplicitOuter$OuterPathTransformer.transform(ExplicitOuter.scala:271)
+	at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer.transform(ExplicitOuter.scala:517)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$20.apply(Trees.scala:1085)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$20.apply(Trees.scala:1084)
+	at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1192)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:33)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:27)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1083)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:46)
+	at scala.tools.nsc.transform.ExplicitOuter$OuterPathTransformer.transform(ExplicitOuter.scala:271)
+	at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer.transform(ExplicitOuter.scala:434)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$30.apply(Trees.scala:1186)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$30.apply(Trees.scala:1184)
+	at scala.List$.loop$0(List.scala:243)
+	at scala.List$.mapConserve(List.scala:260)
+	at scala.tools.nsc.ast.Trees$Transformer.transformStats(Trees.scala:1184)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1104)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.scala$tools$nsc$transform$TypingTransformers$\
+TypingTransformer$$super$transform(TypingTransformers.scala:44)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer$$anonfun$0.apply(TypingTransformers.scala:44)\
+
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer$$anonfun$0.apply(TypingTransformers.scala:44)\
+
+	at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1192)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:33)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:27)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:44)
+	at scala.tools.nsc.transform.ExplicitOuter$OuterPathTransformer.transform(ExplicitOuter.scala:271)
+	at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer.transform(ExplicitOuter.scala:416)
+	at scala.tools.nsc.ast.Trees$Transformer.transformTemplate(Trees.scala:1172)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$17.apply(Trees.scala:1072)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$17.apply(Trees.scala:1071)
+	at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1192)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:33)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:27)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1070)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:46)
+	at scala.tools.nsc.transform.ExplicitOuter$OuterPathTransformer.transform(ExplicitOuter.scala:271)
+	at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer.transform(ExplicitOuter.scala:517)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$30.apply(Trees.scala:1186)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$30.apply(Trees.scala:1184)
+	at scala.List$.loop$0(List.scala:243)
+	at scala.List$.mapConserve(List.scala:260)
+	at scala.tools.nsc.ast.Trees$Transformer.transformStats(Trees.scala:1184)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$16.apply(Trees.scala:1067)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$16.apply(Trees.scala:1067)
+	at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1192)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:33)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:27)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1066)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:46)
+	at scala.tools.nsc.transform.ExplicitOuter$OuterPathTransformer.transform(ExplicitOuter.scala:271)
+	at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer.transform(ExplicitOuter.scala:517)
+	at scala.tools.nsc.ast.Trees$Transformer.transformUnit(Trees.scala:1187)
+	at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer.scala$tools$nsc$transform$ExplicitOuter$Exp\
+licitOuterTransformer$$super$transformUnit(ExplicitOuter.scala:528)
+	at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer$$anonfun$11.apply(ExplicitOuter.scala:528)\
+
+	at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer$$anonfun$11.apply(ExplicitOuter.scala:528)\
+
+	at scala.tools.nsc.symtab.SymbolTable.atPhase(SymbolTable.scala:77)
+	at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer.transformUnit(ExplicitOuter.scala:528)
+	at scala.tools.nsc.transform.Transform$Phase.apply(Transform.scala:30)
+	at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:220)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$1.apply(Global.scala:209)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$1.apply(Global.scala:209)
+	at scala.Iterator$class.foreach(Iterator.scala:377)
+	at scala.collection.mutable.ListBuffer$$anon$0.foreach(ListBuffer.scala:244)
+	at scala.tools.nsc.Global$GlobalPhase.run(Global.scala:209)
+	at scala.tools.nsc.Global$Run.compileSources(Global.scala:474)
+	at scala.tools.nsc.Global$Run.compile(Global.scala:545)
+	at scala.tools.nsc.Main$.process(Main.scala:58)
+	at scala.tools.nsc.Main$.main(Main.scala:80)
+	at scala.tools.nsc.Main.main(Main.scala)</pre>
+
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >Fixed as a side effect of fixing 908.</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2007-01-23 20:03:41.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

@@ -1,0 +1,166 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#580]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> medium</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Stephane</td>
+	  <td align="center" bgcolor="#FFFFFF">Iulian</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2006-04-27 18:35:47.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">error: class file "..." is broken</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>// Bar.java
+public class Bar {
+    int bar_x;
+    public class Foo {
+      int foo_x;
+    }
+    Foo foo = new Foo();
+}
+
+// test.scala
+object test {
+  class MyBar extends Bar {
+    val x = bar_x
+    //val y = new Foo
+    val z = foo
+  }
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre><pre>error: error while loading Bar, class file '/tmp/classes/Bar.class' is broken
+(class Bar$Foo not found.)
+test.scala:5 error: not found: value foo
+    val z = foo
+            ^
+test.scala:2 error: value this is not a member of Bar
+  class MyBar extends Bar {
+                      ^
+three errors found</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >scalac accepts both value declarations y and z in test.scala</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Stephane&nbsp; edited on &nbsp;2006-04-27 18:36:06.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-08-20 19:02:19.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Since Iulian has now taken the lead to make Scala compatible with Java's inner classes, I reassign this to him.
+</td></tr>
+<tr>
+        <td>
+        <strong>Iulian&nbsp; edited on &nbsp;2006-08-22 17:26:58.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+This is not only related to inner classes. Apparently the compiler can't find classes in the empty package. This simpler example shows it:
+<pre>
+// Bar.java
+public class Bar {
+}
+
+class X {
+    public Bar b;
+};
+
+// Foo.scala
+object test {
+  val t = new X();
+}
+</pre>
+output:
+
+error: error while loading X, class file 'classes/X.class' is broken
+(class Bar not found.)
+Foo.scala:4 error: value this is not a member of X
+  val t = new X();
+
+Note that adding a 'package' declaration in each file will work around this problem. I don't remember exactly the context, but this problem has been discussed before (or maybe it was the scala 1 compiler...).
+
+I'll keep looking into the other problem which is commented out in the original code sample (calling constructors of Java-inner classes).
+</td></tr>
+<tr>
+        <td>
+        <strong>Iulian&nbsp; edited on &nbsp;2006-11-02 17:42:30.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Fixed the classfile parser to find classes in the empty package.
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

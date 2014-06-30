@@ -1,0 +1,133 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#390]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> high</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Michel</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2004-12-17 09:49:04.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">LambdaLift doesn't consider values appearing in types when lifting</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>class Outer { class Inner; }
+
+object Main {
+  def f: Unit = {
+    val o = new Outer;
+    { x: o.Inner =&gt; () } (null)
+  }
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre><p>(note: this bug is related to #362)</p>
+
+<p>
+LambdaLift didn't pass the <code>o</code> variable to the anonymous class created for the closure, despite the f\
+act that it appears in the type parameter passed to <code>Function1</code>. Here is what (parts of) the code loo\
+ks like after LambdaLift:
+</p>
+<pre>
+  final def f(): scala.Unit = {
+    final val o :Outer = new Outer();
+    {
+      (new Main.this.$anon$0()) : (o.Inner) => scala.Unit
+    }.apply(null)
+  };
+  final class $anon$0() extends java.lang.Object() with scala.Function1[<b>o.Inner</b>, scala.Unit]() {
+    final def apply(final x: o.Inner): scala.Unit = ();
+  }
+</pre>
+Here we see that <code>o</code> is used in several types in the <code>$anon$0</code> class, but is not in scope \
+at this point.
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" ><p>
+LambdaLift should add <code>o</code> to the value parameters given to the <code>$anon$0</code> class, in order for it to be visible there, and the various types to be valid. Notice that this would trigger bug #362, but these are two different issues, I think.
+</p>
+<p>
+I've set the priority of this bug to medium, as it currently makes it impossible for me to compile scalap with run time types enabled.
+</p></td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Michel&nbsp; edited on &nbsp;2005-01-25 13:42:57.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Set the priority to high, as this is one of the last problems which prevent scalatest from working with run time types (the other two are: arrays and static methods in the interpreter).
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-03-30 18:35:11.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Fixed in version 2, because lifting appears after erasure
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

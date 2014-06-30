@@ -1,0 +1,161 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#993]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Nikolay</td>
+	  <td align="center" bgcolor="#FFFFFF">Iulian</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2007-03-12 09:32:46.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">[contrib #370] compiler crash on bad code</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>object X {
+    true | (throw new RuntimeException)
+}</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>Compiler crashes:
+
+<pre>
+Exception in thread "main" java.lang.Error: Uncomparbale type kinds: BOOL with
+        at scala.tools.nsc.Global.abort(Global.scala:147)
+        at scala.tools.nsc.backend.icode.TypeKinds$BOOL$.maxType(TypeKinds.sca
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.maxType$0(GenICod
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$27.apply
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$27.apply
+        at scala.List.foldLeft(List.scala:913)
+        at scala.List.reduceLeft(List.scala:941)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.getMaxType(GenICo
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.genArithmeticOp$0
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.scala$tools$nsc$bPhase$$genLoad(GenICode.scala:707)\
+
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.scala$tools$nsc$bPhase$$genStat(GenICode.scala:182)\
+
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$1.apply(
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$1.apply(
+        at scala.List.foreach(List.scala:702)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.genStat(GenICode.
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.scala$tools$nsc$bPhase$$genLoad(GenICode.scala:878)\
+
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.gen(GenICode.scal
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$0.apply(
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$0.apply(
+        at scala.List.foreach(List.scala:702)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.gen(GenICode.scal
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.gen(GenICode.scal
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.gen(GenICode.scal
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$0.apply(
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$0.apply(
+        at scala.List.foreach(List.scala:702)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.gen(GenICode.scal
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.gen(GenICode.scal
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.gen(GenICode.scal
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.apply(GenICode.sc
+        at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:231)
+        at scala.tools.nsc.Global$GlobalPhase$$anonfun$2.apply(Global.scala:22
+        at scala.tools.nsc.Global$GlobalPhase$$anonfun$2.apply(Global.scala:22
+        at scala.Iterator$class.foreach(Iterator.scala:380)
+        at scala.collection.mutable.ListBuffer$$anon$0.foreach(ListBuffer.scal
+        at scala.tools.nsc.Global$GlobalPhase.run(Global.scala:220)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.run(GenICode.scal
+        at scala.tools.nsc.Global$Run.compileSources(Global.scala:488)
+        at scala.tools.nsc.Global$Run.compile(Global.scala:559)
+        at scala.tools.nsc.Main$.process(Main.scala:57)
+        at scala.tools.nsc.Main$.main(Main.scala:79)
+        at scala.tools.nsc.Main.main(Main.scala)
+
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >Some compile error</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Nikolay&nbsp; edited on &nbsp;2007-03-12 09:33:37.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+contribution #370
+</td></tr>
+<tr>
+        <td>
+        <strong>Iulian&nbsp; edited on &nbsp;2007-03-12 11:46:14.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Fixed the crash. I guess the original poster wanted to use the shortcutting or, that is 'true || (throw..)'. The current example evaluates both branches eagarly, and always throws.
+</td></tr>
+<tr>
+        <td>
+        <strong>Iulian&nbsp; edited on &nbsp;2007-03-13 10:04:01.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

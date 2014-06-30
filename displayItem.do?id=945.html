@@ -1,0 +1,173 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#945]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Nikolay</td>
+	  <td align="center" bgcolor="#FFFFFF">Burak</td>
+	  <td align="center" bgcolor="#FFFFFF">open</td>
+          <td align="center" bgcolor="#FFFFFF">2007-02-11 17:46:43.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">[contrib #318] Bad unapply return type crashes compiler</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>// Crashes compiler 2.3.3
+object IllegalMatch {
+
+    case class C(x: AnyRef)
+
+    def unapply(x: AnyRef): C = // should be Option[C]
+    {
+        error(&quot;not implemented&quot;)
+    }
+
+    null match {
+        case IllegalMatch(C(_)) =&gt; ()
+    }
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>Exception in thread "main" java.lang.IllegalArgumentException: class C in not in {boolean, option, some}
+	at scala.tools.nsc.symtab.Definitions$definitions$.unapplyTypeListFromReturnType(Definitions.scala:206)
+	at scala.tools.nsc.symtab.Definitions$definitions$.unapplyTypeList(Definitions.scala:184)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedApply(Typers.scala:1497)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:2081)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2232)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedPattern(Typers.scala:2293)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedCase(Typers.scala:1178)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$42.apply(Typers.scala:1201)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$42.apply(Typers.scala:1200)
+	at scala.List$.loop$0(List.scala:243)
+	at scala.List$.mapConserve(List.scala:260)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedCases(Typers.scala:1200)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1976)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2232)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2265)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedStat$0(Typers.scala:1296)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$51.apply(Typers.scala:1317)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$51.apply(Typers.scala:1317)
+	at scala.List$.loop$0(List.scala:243)
+	at scala.List$.mapConserve(List.scala:260)
+	at scala.List$.loop$0(List.scala:247)
+	at scala.List$.mapConserve(List.scala:260)
+	at scala.List$.loop$0(List.scala:247)
+	at scala.List$.mapConserve(List.scala:260)
+	at scala.List$.loop$0(List.scala:247)
+	at scala.List$.mapConserve(List.scala:260)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:1317)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedTemplate(Typers.scala:920)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedModuleDef(Typers.scala:841)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1842)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2232)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2265)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedStat$0(Typers.scala:1296)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$51.apply(Typers.scala:1317)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$51.apply(Typers.scala:1317)
+	at scala.List$.loop$0(List.scala:243)
+	at scala.List$.mapConserve(List.scala:260)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:1317)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1835)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2232)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2265)
+	at scala.tools.nsc.typechecker.Analyzer$typerFactory$$anon$1.apply(Analyzer.scala:38)
+	at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:230)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$2.apply(Global.scala:219)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$2.apply(Global.scala:219)
+	at scala.Iterator$class.foreach(Iterator.scala:377)
+	at scala.collection.mutable.ListBuffer$$anon$0.foreach(ListBuffer.scala:244)
+	at scala.tools.nsc.Global$GlobalPhase.run(Global.scala:219)
+	at scala.tools.nsc.Global$Run.compileSources(Global.scala:484)
+	at scala.tools.nsc.Global$Run.compile(Global.scala:555)
+	at scala.tools.nsc.Main$.process(Main.scala:59)
+	at scala.tools.nsc.Main$.main(Main.scala:81)
+	at scala.tools.nsc.Main.main(Main.scala)
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >Compiler error report with line number, e.g. unapply return type C in not in {boolean, option}
+
+A minor note:-
+The compile is successful if the return type of unapply is Some[C], but crashes if the return type is Nothing. Should the language spec section 8.1.7 say "conforms to" Option instead of "is", and so also support Nothing, or should the spec mention support for Some, or should the compile fail when the return type is Some (but requiring Option likely throws away performance)?</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Nikolay&nbsp; edited on &nbsp;2007-02-11 17:47:22.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+contribution #318
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2007-02-28 00:03:54.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Reassigned to Burak. Burak, I think the stuff like `unapplyTypeList' in definitions has to go in the typer. One cannot just throw an IllegalArgumentException, because how do you know that user input is correct? On the other hand, because the unapply stuff is rather complicated and the typer is already too big to be comfortable, maybe move all this stuff into a helper module like variances, eta expand, or infer.
+
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

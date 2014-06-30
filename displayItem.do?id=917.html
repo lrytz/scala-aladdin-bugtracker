@@ -1,0 +1,269 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#917]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Nikolay</td>
+	  <td align="center" bgcolor="#FFFFFF">Burak</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2007-01-28 23:06:41.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">[contrib #313] compiler crash (pattern matching)</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>object Box {                              
+  def unapply(x: String): Option[String] = {
+  	if (x == &quot;something&quot;) Some(&quot;yes&quot;) else None
+  }
+}
+
+object BoxTest extends Application {
+  val obj: String = &quot;anything&quot; 
+  obj match { 
+  	case Box(n) =&gt; Console.println(n) 
+  }
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>Compiler crashed with the following trace:
+<pre>
+>scalac testi3.scala
+exception when typing Box.unapply(<unapply-selector>) <unapply> ("anything")
+exception when typing private <local> val obj: java.lang.String = Box.unapply(<u
+napply-selector>) <unapply> ("anything")
+exception when typing final class BoxTest extends java.lang.Object with scala.Ap
+plication with scala.ScalaObject {
+  def this(): object BoxTest = {
+    BoxTest.super.this();
+    BoxTest.this./*Application$class*/$init$();
+    ()
+  };
+  private <local> val obj: java.lang.String = Box.unapply(<unapply-selector>) <u
+napply> ("anything");
+  <stable> <accessor> def obj(): java.lang.String = BoxTest.this.obj;
+  {
+    <synthetic> var temp0: java.lang.String = BoxTest.this.obj();
+    {
+      <synthetic> var temp2: scala.Option = Box.unapply(temp0);
+      temp2.isEmpty().!().&&({
+        exit(scala.Console.println(temp2.get()));
+        true
+      })
+    };
+    throw new scala.MatchError(temp0);
+    exit(result){
+      result
+    }
+  }
+}
+exception when typing package <empty> {
+  final class Box extends java.lang.Object with scala.ScalaObject {
+    def this(): object Box = {
+      Box.super.this();
+      ()
+    };
+    def unapply(x: java.lang.String): scala.Option = if (x.==("something"))
+      new scala.Some("yes")
+    else
+      scala.None
+  };
+  final class BoxTest extends java.lang.Object with scala.Application with scala
+.ScalaObject {
+    def this(): object BoxTest = {
+      BoxTest.super.this();
+      BoxTest.this./*Application$class*/$init$();
+      ()
+    };
+    private <local> val obj: java.lang.String = Box.unapply(<unapply-selector>)
+<unapply> ("anything");
+    <stable> <accessor> def obj(): java.lang.String = BoxTest.this.obj;
+    {
+      <synthetic> var temp0: java.lang.String = BoxTest.this.obj();
+      {
+        <synthetic> var temp2: scala.Option = Box.unapply(temp0);
+        temp2.isEmpty().!().&&({
+          exit(scala.Console.println(temp2.get()));
+          true
+        })
+      };
+      throw new scala.MatchError(temp0);
+      exit(result){
+        result
+      }
+    }
+  }
+}
+Exception in thread "main" java.lang.Error: unexpected tree: Box.unapply(<unappl
+y-selector>) <unapply> ("anything")
+        at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:2212)
+        at scala.tools.nsc.transform.Erasure$Eraser.typed1(Erasure.scala:473)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2232)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2276)
+        at scala.tools.nsc.typechecker.Typers$Typer.transformedOrTyped(Typers.sc
+ala:2315)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedValDef(Typers.scala:942
+)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1845)
+        at scala.tools.nsc.transform.Erasure$Eraser.typed1(Erasure.scala:473)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2232)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2265)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedStat$0(Typers.scala:129
+6)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$51.apply(Typers.sca
+la:1317)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$51.apply(Typers.sca
+la:1317)
+        at scala.List$.loop$0(List.scala:243)
+        at scala.List$.mapConserve(List.scala:260)
+        at scala.List$.loop$0(List.scala:247)
+        at scala.List$.mapConserve(List.scala:260)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:1317
+)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedTemplate(Typers.scala:9
+20)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedClassDef(Typers.scala:8
+25)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1839)
+        at scala.tools.nsc.transform.Erasure$Eraser.typed1(Erasure.scala:473)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2232)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2265)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedStat$0(Typers.scala:129
+6)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$51.apply(Typers.sca
+la:1317)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$51.apply(Typers.sca
+la:1317)
+        at scala.List$.loop$0(List.scala:243)
+        at scala.List$.mapConserve(List.scala:260)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:1317
+)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1835)
+        at scala.tools.nsc.transform.Erasure$Eraser.typed1(Erasure.scala:473)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2232)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2265)
+        at scala.tools.nsc.transform.Erasure$ErasureTransformer$$anonfun$26.appl
+y(Erasure.scala:826)
+        at scala.tools.nsc.transform.Erasure$ErasureTransformer$$anonfun$26.appl
+y(Erasure.scala:823)
+        at scala.tools.nsc.symtab.SymbolTable.atPhase(SymbolTable.scala:77)
+        at scala.tools.nsc.transform.Erasure$ErasureTransformer.transform(Erasur
+e.scala:823)
+        at scala.tools.nsc.ast.Trees$Transformer.transformUnit(Trees.scala:1212)
+
+        at scala.tools.nsc.transform.Transform$Phase.apply(Transform.scala:30)
+        at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:230)
+        at scala.tools.nsc.Global$GlobalPhase$$anonfun$2.apply(Global.scala:219)
+
+        at scala.tools.nsc.Global$GlobalPhase$$anonfun$2.apply(Global.scala:219)
+
+        at scala.Iterator$class.foreach(Iterator.scala:377)
+        at scala.collection.mutable.ListBuffer$$anon$0.foreach(ListBuffer.scala:
+244)
+        at scala.tools.nsc.Global$GlobalPhase.run(Global.scala:219)
+        at scala.tools.nsc.Global$Run.compileSources(Global.scala:484)
+        at scala.tools.nsc.Global$Run.compile(Global.scala:555)
+        at scala.tools.nsc.Main$.process(Main.scala:59)
+        at scala.tools.nsc.Main$.main(Main.scala:81)
+        at scala.tools.nsc.Main.main(Main.scala)
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >No crash.</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Nikolay&nbsp; edited on &nbsp;2007-01-28 23:07:10.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+contribution #313
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2007-03-03 03:01:50.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2007-03-03 03:03:38.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+seems to be fixed, magically.
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2007-07-06 11:43:58.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+this thing gives a match error, as it should.
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

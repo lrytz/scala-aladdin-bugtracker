@@ -1,0 +1,162 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#1094]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Burak</td>
+	  <td align="center" bgcolor="#FFFFFF">Burak</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2007-05-09 15:54:58.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">[contrib #461] Sequence pattern crash</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>def foo(ps : String*) = &quot;Foo&quot;
+case class X(p : String, ps : String*)
+def bar = {
+    X(&quot;a&quot;, &quot;b&quot;) match {
+        case X(p, ps @ _*) =&gt;
+            foo(ps : _*)
+    }
+}
+print(bar)
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre><pre>
+java.lang.Error: symbol value ps does not exist in $scala5cr1p7-haX0R.Main.bar$0
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.scala$tools$nsc$backend$icode$GenICode$ICodePhase$$\
+genLoad(GenICode.scala:869)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.genLoadArguments(GenICode.scala:1044)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.scala$tools$nsc$backend$icode$GenICode$ICodePhase$$\
+genLoad(GenICode.scala:789)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.scala$tools$nsc$backend$icode$GenICode$ICodePhase$$\
+genLoad(GenICode.scala:394)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.scala$tools$nsc$backend$icode$GenICode$ICodePhase$$\
+genLoad(GenICode.scala:886)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.scala$tools$nsc$backend$icode$GenICode$ICodePhase$$\
+genLoad(GenICode.scala:886)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.scala$tools$nsc$backend$icode$GenICode$ICodePhase$$\
+genLoad(GenICode.scala:442)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.scala$tools$nsc$backend$icode$GenICode$ICodePhase$$\
+genLoad(GenICode.scala:886)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.scala$tools$nsc$backend$icode$GenICode$ICodePhase$$\
+genLoad(GenICode.scala:442)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.scala$tools$nsc$backend$icode$GenICode$ICodePhase$$\
+genLoad(GenICode.scala:886)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.gen(GenICode.scala:110)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$0.apply(GenICode.scala:69)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$0.apply(GenICode.scala:69)
+        at scala.List.foreach(List.scala:699)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.gen(GenICode.scala:69)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.gen(GenICode.scala:132)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.gen(GenICode.scala:87)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$0.apply(GenICode.scala:69)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$0.apply(GenICode.scala:69)
+        at scala.List.foreach(List.scala:699)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.gen(GenICode.scala:69)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.gen(GenICode.scala:79)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.gen(GenICode.scala:65)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.apply(GenICode.scala:61)
+        at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:241)
+        at scala.tools.nsc.Global$GlobalPhase$$anonfun$2.apply(Global.scala:230)
+        at scala.tools.nsc.Global$GlobalPhase$$anonfun$2.apply(Global.scala:230)
+        at scala.Iterator$class.foreach(Iterator.scala:369)
+        at scala.collection.mutable.ListBuffer$$anon$0.foreach(ListBuffer.scala:245)
+        at scala.tools.nsc.Global$GlobalPhase.run(Global.scala:230)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.run(GenICode.scala:54)
+        at scala.tools.nsc.Global$Run.compileSources(Global.scala:498)
+        at scala.tools.nsc.Global$Run.compile(Global.scala:572)
+        at scala.tools.nsc.CompileServer$.session(CompileServer.scala:132)
+        at scala.tools.util.SocketServer$$anonfun$0.apply(SocketServer.scala:69)
+        at scala.tools.util.SocketServer$$anonfun$0.apply(SocketServer.scala:69)
+        at scala.util.Fluid.withValue(Fluid.scala:68)
+        at scala.Console$.withOut(Console.scala:84)
+        at scala.Console$.withOut(Console.scala:102)
+        at scala.tools.util.SocketServer.run(SocketServer.scala:68)
+        at scala.tools.nsc.CompileServer$.main(CompileServer.scala:173)
+        at scala.tools.nsc.CompileServer.main(CompileServer.scala)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+        at java.lang.reflect.Method.invoke(Method.java:585)
+        at scala.tools.nsc.ObjectRunner$.run(ObjectRunner.scala:75)
+        at scala.tools.nsc.MainGenericRunner$.main(MainGenericRunner.scala:106)
+        at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >Compiles and prints "Foo".</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2007-05-09 15:55:39.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

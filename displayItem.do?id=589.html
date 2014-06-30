@@ -1,0 +1,238 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#589]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Sean</td>
+	  <td align="center" bgcolor="#FFFFFF">_</td>
+	  <td align="center" bgcolor="#FFFFFF">_</td>
+          <td align="center" bgcolor="#FFFFFF">2006-05-08 17:17:23.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">[contrib #145] NPE in type adapter</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>From lampion.parsers.Matcher.scala in plugin/lampion SVN project:
+
+trait Matcher extends PrecedenceParser {
+ ...
+ trait MatcherToken extends PrecedenceToken {...}
+ trait Matchable extends MatcherToken {
+  ...
+  override def replaceWith(node : Node) : Unit = {
+   if (matching != null) {
+     val engine = new Engine(new Segment(self, self));
+   }
+   super.replaceWith(node);
+  }
+  ...
+  class Engine(segment : Segment) {...}
+}  
+
+
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>From command line (in lampion/src, scalac -sourcepath . lampion/parsing/Matcher.scala) and IDE:
+
+java.lang.NullPointerException
+	at scala.tools.nsc.transform.Erasure$Eraser.adaptMember(Erasure.scala:305)
+	at scala.tools.nsc.transform.Erasure$Eraser.typed1(Erasure.scala:363)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1627)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedArg$0(Typers.scala:1024)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$47.apply(Typers.scala:1028)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$47.apply(Typers.scala:1028)
+	at scala.List$.loop$0(List.scala:232)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedArgs$0(Typers.scala:1028)
+	at scala.tools.nsc.typechecker.Typers$Typer.tryTypedArgs$0(Typers.scala:1101)
+	at scala.tools.nsc.typechecker.Typers$Typer.tryTypedApply$0(Typers.scala:1124)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1512)
+	at scala.tools.nsc.transform.Erasure$Eraser.typed1(Erasure.scala:363)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1627)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1657)
+	at scala.tools.nsc.typechecker.Typers$Typer.transformedOrTyped(Typers.scala:1691)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedValDef(Typers.scala:704)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1304)
+	at scala.tools.nsc.transform.Erasure$Eraser.typed1(Erasure.scala:363)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1627)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1653)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$45.apply(Typers.scala:973)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$45.apply(Typers.scala:963)
+	at scala.List$.loop$0(List.scala:232)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:963)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedBlock(Typers.scala:866)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1350)
+	at scala.tools.nsc.transform.Erasure$Eraser.typed1(Erasure.scala:363)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1627)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1657)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1414)
+	at scala.tools.nsc.transform.Erasure$Eraser.typed1(Erasure.scala:363)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1627)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1653)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$45.apply(Typers.scala:973)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$45.apply(Typers.scala:963)
+	at scala.List$.loop$0(List.scala:232)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:963)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedBlock(Typers.scala:866)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1350)
+	at scala.tools.nsc.transform.Erasure$Eraser.typed1(Erasure.scala:363)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1627)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1657)
+	at scala.tools.nsc.typechecker.Typers$Typer.transformedOrTyped(Typers.scala:1691)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedDefDef(Typers.scala:813)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1307)
+	at scala.tools.nsc.transform.Erasure$Eraser.typed1(Erasure.scala:363)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1627)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1653)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$45.apply(Typers.scala:973)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$45.apply(Typers.scala:963)
+	at scala.List$.loop$0(List.scala:232)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.List$.loop$0(List.scala:236)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:963)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedTemplate(Typers.scala:687)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedClassDef(Typers.scala:625)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1298)
+	at scala.tools.nsc.transform.Erasure$Eraser.typed1(Erasure.scala:363)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1627)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1653)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$45.apply(Typers.scala:973)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$45.apply(Typers.scala:963)
+	at scala.List$.loop$0(List.scala:232)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.List$.loop$0(List.scala:236)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.List$.loop$0(List.scala:236)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:963)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedTemplate(Typers.scala:687)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedClassDef(Typers.scala:625)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1298)
+	at scala.tools.nsc.transform.Erasure$Eraser.typed1(Erasure.scala:363)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1627)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1653)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$45.apply(Typers.scala:973)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$45.apply(Typers.scala:963)
+	at scala.List$.loop$0(List.scala:232)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:963)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1294)
+	at scala.tools.nsc.transform.Erasure$Eraser.typed1(Erasure.scala:363)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1627)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1653)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$45.apply(Typers.scala:973)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$45.apply(Typers.scala:963)
+	at scala.List$.loop$0(List.scala:232)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:963)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1294)
+	at scala.tools.nsc.transform.Erasure$Eraser.typed1(Erasure.scala:363)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1627)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1653)
+	at scala.tools.nsc.transform.Erasure$ErasureTransformer$$anonfun$23.apply(Erasure.scala:616)
+	at scala.tools.nsc.transform.Erasure$ErasureTransformer$$anonfun$23.apply(Erasure.scala:613)
+	at scala.tools.nsc.symtab.SymbolTable.atPhase(SymbolTable.scala:41)
+	at scala.tools.nsc.transform.Erasure$ErasureTransformer.transform(Erasure.scala:613)
+	at scala.tools.nsc.ast.Trees$Transformer.transformUnit(Trees.scala:1039)
+	at scala.tools.nsc.transform.Transform$Phase.apply(Transform.scala:22)
+	at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:210)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$1.apply(Global.scala:199)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$1.apply(Global.scala:199)
+	at scala.Iterator$class.foreach(Iterator.scala:304)
+	at scala.collection.mutable.ListBuffer$$anon$0.foreach(ListBuffer.scala:216)
+	at scala.tools.nsc.Global$GlobalPhase.run(Global.scala:199)
+	at scala.tools.nsc.Global$Run.compileSources(Global.scala:436)
+	at scala.tools.nsc.Global$Run.compile(Global.scala:494)
+	at ch.epfl.lamp.sdt.build.ScalaCompilerManager$ScalaCompiler.compile(ScalaCompilerManager.java:186)
+	at ch.epfl.lamp.sdt.build.ScalaProjectBuilder.build(ScalaProjectBuilder.java:76)
+	at org.eclipse.core.internal.events.BuildManager$2.run(BuildManager.java:603)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:37)
+	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:167)
+	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:201)
+	at org.eclipse.core.internal.events.BuildManager$1.run(BuildManager.java:230)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:37)
+	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:233)
+	at org.eclipse.core.internal.events.BuildManager.basicBuildLoop(BuildManager.java:252)
+	at org.eclipse.core.internal.events.BuildManager.build(BuildManager.java:285)
+	at org.eclipse.core.internal.events.AutoBuildJob.doBuild(AutoBuildJob.java:145)
+	at org.eclipse.core.internal.events.AutoBuildJob.run(AutoBuildJob.java:208)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:58)
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" ></td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Sean&nbsp; edited on &nbsp;2006-05-08 17:17:56.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Forgot to log in to alaadin (again).
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

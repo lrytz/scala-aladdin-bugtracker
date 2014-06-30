@@ -1,0 +1,161 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#157]</th>
+		<th><strong>project:</strong> specification</th>
+		<th><strong>priority:</strong> medium</th>
+		<th><strong>category:</strong> missing feature</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Burak</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">won't fix</td>
+          <td align="center" bgcolor="#FFFFFF">2003-09-30 10:52:33.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">assignments -= and +=</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>//in java it is possible to write
+
+int i=0; 
+i += 5;
+i++;
+
+// why not in Scala ? 
+// +=, -=, ++, -- could apply to variables
+
+// e.g. python started supporting this after v2, 
+// due to ever-repeating feature requests </pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" ></td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2003-09-30 10:53:02.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Matthias&nbsp; edited on &nbsp;2003-09-30 23:41:16.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+I don't see how you could smoothly add support for +=, -=, etc. to Scala. In Scala, these are methods of a value/object and not a variable.
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2003-10-01 11:16:43.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+One way would be to consider it just as syntactic sugar
+<pre>
+i += E
+</pre>
+is trnasformed to
+<pre>
+i = i + E
+</pre>
+by the parser, if i has no + method or types clash, tant pis.
+</td></tr>
+<tr>
+        <td>
+        <strong>Matthias&nbsp; edited on &nbsp;2003-10-03 12:03:49.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Syntactic sugar is no option since += is a legal operator that can freely be used by the programmer. Do you want to restrict the operator syntax? For what operators do you support the syntactic sugar? For +, -, *, /? Why not also for |, &, ||, &&, %, ^, !, ?, etc? Also, no one says that + is a binary operator. This is up to the programmer to define. The benefit you get with your proposal is little and the restrictions you have to make are big. So I don't think it makes sense to support the Java/C-style assignment operators for primitive types.
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2003-10-03 14:26:07.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+but isn't the lhs of an assignment a reference cell ?
+<p>
+if it is, then we can predefine += and -= for ints, strings or wherever + is defined.
+<p>
+increment and decrement is a more frequent operation (in imperative, Java-like style) than  |, & and what not, which would justify a special treatment.
+<p>
+Why not make a general convention that transforms operator x op= y to x = x op y for binary operators, at least for primitive types. I don't think it is good programming style do define operators that include the = symbol which do not have this meaning. it is like using + for multiplication.
+<p>
+I would argue that every C,C++,Java programmer has the same intuition of op= operators (and probably Ruby and Python programmers as well). in C++, the copy constructor &= is also a form of assignment..
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2003-10-09 12:31:06.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Without overwhelming pressure from the Scala community at large I think this is too much complication for too little gain. Maybe in v2. Let's wait and see what Scala users say.
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

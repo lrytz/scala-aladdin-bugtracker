@@ -1,0 +1,147 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#91]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> medium</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Vincent</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2003-08-27 18:21:02.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">"null" vs "_"</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>class Bug {
+  def main(args: Array[String]) = {
+    var msg: String = _; // no bug if &quot;null&quot; instead of &quot;_&quot;
+    val f:  PartialFunction[Any, unit] = { case 42 =&gt; msg = &quot;coucou&quot; };
+  }
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>Exception in thread "main" java.lang.AssertionError: void -> java.lang.Object
+        at scalac.backend.jvm.GenJVM.genWidenConversion(GenJVM.java:929)
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >No compiler crash.</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Michel&nbsp; edited on &nbsp;2003-08-28 09:47:58.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+I know how to fix that problem in LambdaLift (because it's really a LambdaLift problem in my opinion) but it would be better fixed by transforming "_" into real values as soon as possible. This would make a fix of LambdaLift unnecessary and simplfy both back-ends which would not need to deal with them anymore.
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2003-08-28 17:14:26.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+I changed the frontend so that now the right hand side of a 
+
+var x: T = _
+
+is always replaced by a default value. In the case where
+T is a type variable bounded by Any, that default value is
+a special constant definitions.ZERO of name <zero> and of type
+scala.All, which is mapped to null in phase Erasure.
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2003-08-28 17:15:21.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+HTML got me there. The name of definitions.ZERO is
+
+<PRE>
+<zero>
+</PRE>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2003-08-28 17:16:15.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Still no luck. The name of definitions.ZERO is "less-than zero greater-than". How does one express that in HTML?
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2006-02-24 19:09:32.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+[Martin said] how to write &lt in HTML to enter in bugtracking system.
+
+here's how: To use the &lt; sign, you would have to escape it like this:  &amp;lt;
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

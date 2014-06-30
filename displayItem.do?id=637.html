@@ -1,0 +1,203 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#637]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Lex</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2006-06-22 11:52:13.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">assertion failed in inferView</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre></pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre><pre>Exception in thread "main" java.lang.Error: assertion failed
+        at scala.Predef$.assert(Predef.scala:171)
+        at scala.tools.nsc.typechecker.Typers$Typer.scala$tools$nsc$typechecker$Typers$Typer$$inferView(Typers.s\
+cala:61)
+        at scala.tools.nsc.typechecker.Typers$Typer.inferView(Typers.scala:76)
+        at scala.tools.nsc.typechecker.Typers$Typer.adaptToMember(Typers.scala:507)
+        at scala.tools.nsc.typechecker.Typers$Typer.tryTypedApply$0(Typers.scala:1169)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1576)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1693)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1719)
+        at scala.tools.nsc.typechecker.Typers$Typer.computeType(Typers.scala:1750)
+        at scala.tools.nsc.typechecker.Namers$Namer.methodSig(Namers.scala:409)
+        at scala.tools.nsc.typechecker.Namers$Namer.liftedTry0$0(Namers.scala:477)
+        at scala.tools.nsc.typechecker.Namers$Namer.scala$tools$nsc$typechecker$Namers$Namer$$typeSig(Namers.sca\
+la:463)
+        at scala.tools.nsc.typechecker.Namers$Namer$$anon$0.complete(Namers.scala:312)
+        at scala.tools.nsc.symtab.Symbols$Symbol.info(Symbols.scala:346)
+        at scala.tools.nsc.symtab.Symbols$Symbol.initialize(Symbols.scala:423)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1331)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1693)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1719)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$46.apply(Typers.scala:995)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$46.apply(Typers.scala:985)
+        at scala.List$.loop$0(List.scala:232)
+        at scala.List$.mapConserve(List.scala:249)
+        at scala.List$.loop$0(List.scala:236)
+        at scala.List$.mapConserve(List.scala:249)
+        at scala.List$.loop$0(List.scala:236)
+        at scala.List$.mapConserve(List.scala:249)
+        at scala.List$.loop$0(List.scala:236)
+        at scala.List$.mapConserve(List.scala:249)
+        at scala.List$.loop$0(List.scala:236)
+        at scala.List$.mapConserve(List.scala:249)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:985)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedTemplate(Typers.scala:709)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedClassDef(Typers.scala:640)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1340)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1693)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1719)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$46.apply(Typers.scala:995)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$46.apply(Typers.scala:985)
+        at scala.List$.loop$0(List.scala:232)
+        at scala.List$.mapConserve(List.scala:249)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:985)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedTemplate(Typers.scala:709)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedClassDef(Typers.scala:640)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1340)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1693)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1719)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$46.apply(Typers.scala:995)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$46.apply(Typers.scala:985)
+        at scala.List$.loop$0(List.scala:232)
+        at scala.List$.mapConserve(List.scala:249)
+        at scala.List$.loop$0(List.scala:236)
+        at scala.List$.mapConserve(List.scala:249)
+        at scala.List$.loop$0(List.scala:236)
+        at scala.List$.mapConserve(List.scala:249)
+        at scala.List$.loop$0(List.scala:236)
+        at scala.List$.mapConserve(List.scala:249)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:985)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1336)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1693)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1719)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$46.apply(Typers.scala:995)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$46.apply(Typers.scala:985)
+        at scala.List$.loop$0(List.scala:232)
+        at scala.List$.mapConserve(List.scala:249)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:985)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1336)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1693)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1719)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$46.apply(Typers.scala:995)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$46.apply(Typers.scala:985)
+        at scala.List$.loop$0(List.scala:232)
+        at scala.List$.mapConserve(List.scala:249)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:985)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1336)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1693)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1719)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$46.apply(Typers.scala:995)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$46.apply(Typers.scala:985)
+        at scala.List$.loop$0(List.scala:232)
+        at scala.List$.mapConserve(List.scala:249)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:985)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1336)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1693)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1719)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$46.apply(Typers.scala:995)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$46.apply(Typers.scala:985)
+        at scala.List$.loop$0(List.scala:232)
+        at scala.List$.mapConserve(List.scala:249)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:985)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1336)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1693)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1719)
+        at scala.tools.nsc.typechecker.Analyzer$typerFactory$$anon$1.apply(Analyzer.scala:38)
+        at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:216)
+        at scala.tools.nsc.Global$GlobalPhase$$anonfun$1.apply(Global.scala:205)
+        at scala.tools.nsc.Global$GlobalPhase$$anonfun$1.apply(Global.scala:205)
+        at scala.Iterator$class.foreach(Iterator.scala:304)
+        at scala.collection.mutable.ListBuffer$$anon$0.foreach(ListBuffer.scala:216)
+        at scala.tools.nsc.Global$GlobalPhase.run(Global.scala:205)
+        at scala.tools.nsc.Global$Run.compileSources(Global.scala:467)
+        at scala.tools.nsc.Global$Run.compile(Global.scala:527)
+        at scala.tools.nsc.Main$.process(Main.scala:76)
+        at scala.tools.nsc.Main$.main(Main.scala:98)
+        at scala.tools.nsc.Main.main(Main.scala)
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" ><p>I am in the middle of rewriting scala-analysis to use more of the compiler data structures, and currently there are gobs of type errors in my code.  The above assertion failure keeps appearing and then going away as I fix up the code.  It only appears when there are type errors in the code.</p>
+
+<p>I do not have a small example right now, but am posting it so that it does not get forgotten.  I do have a snapshot of a src directory that generates this error when using scala-devel/2.1.6, so as time permits I will try and whittle that down to something more specific.</p></td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-06-26 16:28:16.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+I saw this bug also in some other code, and applied a fix. So I assume it is fixed now.
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

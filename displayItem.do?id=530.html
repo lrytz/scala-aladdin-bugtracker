@@ -1,0 +1,1522 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#530]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Sean</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2006-02-15 14:38:05.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">lambda lift problem</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>// scala.tools.nsc.scaladoc.DocGenerator.scala:
+package scala.tools.nsc;
+
+import scala.tools.nsc.util.{Position};
+import scala.tools.nsc.reporters.{Reporter, ConsoleReporter};
+import scala.tools.nsc.doc.DocGenerator;
+
+abstract class DocGenerator {
+  val outdir : String;
+  val compiler0: Global;
+  val units : Iterator[compiler0.CompilationUnit];
+  def index = { 
+    val index0 = &lt;HTML&gt;&lt;/HTML&gt;;
+  }
+}
+
+// scala.tools.nsc.Main.scala
+package scala.tools.nsc;
+
+import scala.tools.nsc.util.{Position};
+import scala.tools.nsc.reporters.{Reporter, ConsoleReporter};
+import scala.tools.nsc.doc.DocGenerator;
+
+/** The main class for NSC, a compiler for the programming
+ *  language Scala.
+ */
+object Main extends Object with EvalLoop {
+
+  val PRODUCT: String =
+    System.getProperty(&quot;scala.product&quot;, &quot;scalac&quot;);
+  val VERSION: String =
+    System.getProperty(&quot;scala.version&quot;, &quot;unknown version&quot;);
+  val COPYRIGHT: String =
+    System.getProperty(&quot;scala.copyright&quot;, &quot;(c) 2002-06 LAMP/EPFL&quot;);
+  val versionMsg = PRODUCT + &quot; &quot; + VERSION + &quot; -- &quot; + COPYRIGHT;
+  val prompt = &quot;\nnsc&gt; &quot;;
+
+  private var reporter: ConsoleReporter = _;
+
+  def error(msg: String): unit =
+    reporter.error(new Position(PRODUCT),
+                   msg + &quot;\n  &quot; + PRODUCT + &quot; -help  gives more information&quot;);
+
+  def errors() = reporter.errors;
+
+  def resident(compiler: Global): unit = {
+    loop(line =&gt; {
+      val args = List.fromString(line, ' ');
+      val command = new CompilerCommand(args, error, true);
+      (new compiler.Run) compile command.files
+    })
+  }
+
+  def process(args: Array[String]): unit = {
+    reporter = new ConsoleReporter();
+    val command = new CompilerCommand(List.fromArray(args), error, false);
+    reporter.prompt = command.settings.prompt.value;
+    if (command.settings.version.value)
+      reporter.info(null, versionMsg, true)
+    else if (command.settings.help.value)
+      reporter.info(null, command.usageMsg, true)
+    else {
+      try {
+        object compiler extends Global(command.settings, reporter);
+        if (command.settings.resident.value)
+          resident(compiler);
+        else if (command.files.isEmpty)
+            reporter.info(null, command.usageMsg, true)
+        else {
+          val run = new compiler.Run;
+          run compile command.files;
+          
+          if (command.settings.doc.value) {
+	    object generator extends DocGenerator {
+              val compiler0 : compiler.type = compiler;
+              val outdir = command.settings.outdir.value;
+              val units = run.units;
+            };
+            
+          }
+        }
+      } catch {
+        case ex @ FatalError(msg) =&gt;
+          if (command.settings.debug.value)
+            ex.printStackTrace();
+        reporter.error(null, &quot;fatal error: &quot; + msg);
+      }
+      reporter.printSummary()
+    }
+  }
+  
+  def main(args: Array[String]): unit = {
+    process(args);
+    System.exit(if (reporter.errors &gt; 0) 1 else 0);
+  }
+
+}
+
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>Stack trace:
+
+<pre>java.lang.Error
+at scala.tools.nsc.symtab.Symbols$NoSymbol$.owner(Symbols.scala:1049)
+at scala.tools.nsc.transform.LambdaLift$LambdaLifter.outer(LambdaLift.scala:73)
+at scala.tools.nsc.transform.LambdaLift$LambdaLifter.scala$tools$nsc$transform$LambdaLift$LambdaLifter$$enclMeth\
+OrClass(LambdaLift.scala:80)
+at scala.tools.nsc.transform.LambdaLift$LambdaLifter.searchIn0(LambdaLift.scala:201)
+at scala.tools.nsc.transform.LambdaLift$LambdaLifter.proxy(LambdaLift.scala:212)
+at scala.tools.nsc.transform.LambdaLift$LambdaLifter.proxyRef(LambdaLift.scala:230)
+at scala.tools.nsc.transform.LambdaLift$LambdaLifter.freeArg0(LambdaLift.scala:236)
+at scala.tools.nsc.transform.LambdaLift$LambdaLifter$$anonfun11.apply(LambdaLift.scala:238)
+at scala.tools.nsc.transform.LambdaLift$LambdaLifter$$anonfun11.apply(LambdaLift.scala:238)
+at scala.List.map(List.scala:661)
+at scala.tools.nsc.transform.LambdaLift$LambdaLifter.addFreeArgs(LambdaLift.scala:238)
+at scala.tools.nsc.transform.LambdaLift$LambdaLifter.postTransform(LambdaLift.scala:298)
+at scala.tools.nsc.transform.LambdaLift$LambdaLifter.transform(LambdaLift.scala:326)
+at scala.tools.nsc.ast.Trees$Transformer$$anonfun15.apply(Trees.scala:959)
+at scala.tools.nsc.ast.Trees$Transformer$$anonfun15.apply(Trees.scala:959)
+at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1065)
+at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:958)
+at scala.tools.nsc.transform.ExplicitOuter$OuterPathTransformer.transform(ExplicitOuter.scala:132)
+at scala.tools.nsc.transform.LambdaLift$LambdaLifter.transform(LambdaLift.scala:326)
+at scala.tools.nsc.ast.Trees$Transformer$$anonfun25.apply(Trees.scala:1059)
+at scala.tools.nsc.ast.Trees$Transformer$$anonfun25.apply(Trees.scala:1057)
+at scala.List$.loop0(List.scala:241)
+at scala.List$.mapConserve(List.scala:258)
+at scala.List$.loop0(List.scala:245)
+at scala.List$.mapConserve(List.scala:258)
+at scala.tools.nsc.ast.Trees$Transformer.transformStats(Trees.scala:1057)
+at scala.tools.nsc.transform.LambdaLift$LambdaLifter.transformStats(LambdaLift.scala:340)
+at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:983)
+at scala.tools.nsc.transform.ExplicitOuter$OuterPathTransformer.transform(ExplicitOuter.scala:132)
+at scala.tools.nsc.transform.LambdaLift$LambdaLifter.transform(LambdaLift.scala:326)
+at scala.tools.nsc.ast.Trees$Transformer.transformTemplate(Trees.scala:1045)
+at scala.tools.nsc.ast.Trees$Transformer$$anonfun13.apply(Trees.scala:951)
+at scala.tools.nsc.ast.Trees$Transformer$$anonfun13.apply(Trees.scala:951)
+at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1065)
+at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:950)
+at scala.tools.nsc.transform.ExplicitOuter$OuterPathTransformer.transform(ExplicitOuter.scala:132)
+at scala.tools.nsc.transform.LambdaLift$LambdaLifter.transform(LambdaLift.scala:326)
+at scala.tools.nsc.ast.Trees$Transformer$$anonfun25.apply(Trees.scala:1059)
+at scala.tools.nsc.ast.Trees$Transformer$$anonfun25.apply(Trees.scala:1057)
+at scala.List$.loop0(List.scala:241)
+at scala.List$.mapConserve(List.scala:258)
+at scala.tools.nsc.ast.Trees$Transformer.transformStats(Trees.scala:1057)
+at scala.tools.nsc.transform.LambdaLift$LambdaLifter.transformStats(LambdaLift.scala:340)
+at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:985)
+at scala.tools.nsc.transform.ExplicitOuter$OuterPathTransformer.transform(ExplicitOuter.scala:132)
+at scala.tools.nsc.transform.LambdaLift$LambdaLifter.transform(LambdaLift.scala:326)
+at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1003)
+at scala.tools.nsc.transform.ExplicitOuter$OuterPathTransformer.transform(ExplicitOuter.scala:132)
+at scala.tools.nsc.transform.LambdaLift$LambdaLifter.transform(LambdaLift.scala:326)
+at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:985)
+at scala.tools.nsc.transform.ExplicitOuter$OuterPathTransformer.transform(ExplicitOuter.scala:132)
+at scala.tools.nsc.transform.LambdaLift$LambdaLifter.transform(LambdaLift.scala:326)
+at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1003)
+at scala.tools.nsc.transform.ExplicitOuter$OuterPathTransformer.transform(ExplicitOuter.scala:132)
+at scala.tools.nsc.transform.LambdaLift$LambdaLifter.transform(LambdaLift.scala:326)
+at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1003)
+at scala.tools.nsc.transform.ExplicitOuter$OuterPathTransformer.transform(ExplicitOuter.scala:132)
+at scala.tools.nsc.transform.LambdaLift$LambdaLifter.transform(LambdaLift.scala:326)
+at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:985)
+at scala.tools.nsc.transform.ExplicitOuter$OuterPathTransformer.transform(ExplicitOuter.scala:132)
+at scala.tools.nsc.transform.LambdaLift$LambdaLifter.transform(LambdaLift.scala:326)
+at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1009)
+at scala.tools.nsc.transform.ExplicitOuter$OuterPathTransformer.transform(ExplicitOuter.scala:132)
+at scala.tools.nsc.transform.LambdaLift$LambdaLifter.transform(LambdaLift.scala:326)
+at scala.tools.nsc.ast.Trees$Transformer$$anonfun25.apply(Trees.scala:1059)
+at scala.tools.nsc.ast.Trees$Transformer$$anonfun25.apply(Trees.scala:1057)
+at scala.List$.loop0(List.scala:241)
+at scala.List$.mapConserve(List.scala:258)
+at scala.tools.nsc.ast.Trees$Transformer.transformStats(Trees.scala:1057)
+at scala.tools.nsc.transform.LambdaLift$LambdaLifter.transformStats(LambdaLift.scala:340)
+at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:985)
+at scala.tools.nsc.transform.ExplicitOuter$OuterPathTransformer.transform(ExplicitOuter.scala:132)
+at scala.tools.nsc.transform.LambdaLift$LambdaLifter.transform(LambdaLift.scala:326)
+at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1003)
+at scala.tools.nsc.transform.ExplicitOuter$OuterPathTransformer.transform(ExplicitOuter.scala:132)
+at scala.tools.nsc.transform.LambdaLift$LambdaLifter.transform(LambdaLift.scala:326)
+at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1003)
+at scala.tools.nsc.transform.ExplicitOuter$OuterPathTransformer.transform(ExplicitOuter.scala:132)
+at scala.tools.nsc.transform.LambdaLift$LambdaLifter.transform(LambdaLift.scala:326)
+at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:985)
+at scala.tools.nsc.transform.ExplicitOuter$OuterPathTransformer.transform(ExplicitOuter.scala:132)
+at scala.tools.nsc.transform.LambdaLift$LambdaLifter.transform(LambdaLift.scala:326)
+at scala.tools.nsc.ast.Trees$Transformer$$anonfun16.apply(Trees.scala:964)
+at scala.tools.nsc.ast.Trees$Transformer$$anonfun16.apply(Trees.scala:963)
+at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1065)
+at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:962)
+at scala.tools.nsc.transform.ExplicitOuter$OuterPathTransformer.transform(ExplicitOuter.scala:132)
+at scala.tools.nsc.transform.LambdaLift$LambdaLifter.transform(LambdaLift.scala:326)
+at scala.tools.nsc.ast.Trees$Transformer$$anonfun25.apply(Trees.scala:1059)
+at scala.tools.nsc.ast.Trees$Transformer$$anonfun25.apply(Trees.scala:1057)
+at scala.List$.loop0(List.scala:241)
+at scala.List$.mapConserve(List.scala:258)
+at scala.List$.loop0(List.scala:245)
+at scala.List$.mapConserve(List.scala:258)
+at scala.tools.nsc.ast.Trees$Transformer.transformStats(Trees.scala:1057)
+at scala.tools.nsc.transform.LambdaLift$LambdaLifter.transformStats(LambdaLift.scala:340)
+at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:983)
+at scala.tools.nsc.transform.ExplicitOuter$OuterPathTransformer.transform(ExplicitOuter.scala:132)
+at scala.tools.nsc.transform.LambdaLift$LambdaLifter.transform(LambdaLift.scala:326)
+at scala.tools.nsc.ast.Trees$Transformer.transformTemplate(Trees.scala:1045)
+at scala.tools.nsc.ast.Trees$Transformer$$anonfun13.apply(Trees.scala:951)
+at scala.tools.nsc.ast.Trees$Transformer$$anonfun13.apply(Trees.scala:951)
+at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1065)
+at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:950)
+at scala.tools.nsc.transform.ExplicitOuter$OuterPathTransformer.transform(ExplicitOuter.scala:132)
+at scala.tools.nsc.transform.LambdaLift$LambdaLifter.transform(LambdaLift.scala:326)
+at scala.tools.nsc.ast.Trees$Transformer$$anonfun25.apply(Trees.scala:1059)
+at scala.tools.nsc.ast.Trees$Transformer$$anonfun25.apply(Trees.scala:1057)
+at scala.List$.loop0(List.scala:241)
+at scala.List$.mapConserve(List.scala:258)
+at scala.tools.nsc.ast.Trees$Transformer.transformStats(Trees.scala:1057)
+at scala.tools.nsc.transform.LambdaLift$LambdaLifter.transformStats(LambdaLift.scala:340)
+at scala.tools.nsc.ast.Trees$Transformer$$anonfun12.apply(Trees.scala:947)
+at scala.tools.nsc.ast.Trees$Transformer$$anonfun12.apply(Trees.scala:947)
+at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1065)
+at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:946)
+at scala.tools.nsc.transform.ExplicitOuter$OuterPathTransformer.transform(ExplicitOuter.scala:132)
+at scala.tools.nsc.transform.LambdaLift$LambdaLifter.transform(LambdaLift.scala:326)
+at scala.tools.nsc.ast.Trees$Transformer$$anonfun25.apply(Trees.scala:1059)
+at scala.tools.nsc.ast.Trees$Transformer$$anonfun25.apply(Trees.scala:1057)
+at scala.List$.loop0(List.scala:241)
+at scala.List$.mapConserve(List.scala:258)
+at scala.tools.nsc.ast.Trees$Transformer.transformStats(Trees.scala:1057)
+at scala.tools.nsc.transform.LambdaLift$LambdaLifter.transformStats(LambdaLift.scala:340)
+at scala.tools.nsc.ast.Trees$Transformer$$anonfun12.apply(Trees.scala:947)
+at scala.tools.nsc.ast.Trees$Transformer$$anonfun12.apply(Trees.scala:947)
+at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1065)
+at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:946)
+at scala.tools.nsc.transform.ExplicitOuter$OuterPathTransformer.transform(ExplicitOuter.scala:132)
+at scala.tools.nsc.transform.LambdaLift$LambdaLifter.transform(LambdaLift.scala:326)
+at scala.tools.nsc.ast.Trees$Transformer$$anonfun25.apply(Trees.scala:1059)
+at scala.tools.nsc.ast.Trees$Transformer$$anonfun25.apply(Trees.scala:1057)
+at scala.List$.loop0(List.scala:241)
+at scala.List$.mapConserve(List.scala:258)
+at scala.tools.nsc.ast.Trees$Transformer.transformStats(Trees.scala:1057)
+at scala.tools.nsc.transform.LambdaLift$LambdaLifter.transformStats(LambdaLift.scala:340)
+at scala.tools.nsc.ast.Trees$Transformer$$anonfun12.apply(Trees.scala:947)
+at scala.tools.nsc.ast.Trees$Transformer$$anonfun12.apply(Trees.scala:947)
+at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1065)
+at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:946)
+at scala.tools.nsc.transform.ExplicitOuter$OuterPathTransformer.transform(ExplicitOuter.scala:132)
+at scala.tools.nsc.transform.LambdaLift$LambdaLifter.transform(LambdaLift.scala:326)
+at scala.tools.nsc.ast.Trees$Transformer.transformUnit(Trees.scala:1060)
+at scala.tools.nsc.transform.LambdaLift$LambdaLifter.scala$tools$nsc$transform$LambdaLift$LambdaLifter$$super$tr\
+ansformUnit(LambdaLift.scala:345)
+at scala.tools.nsc.transform.LambdaLift$LambdaLifter$$anonfun16.apply(LambdaLift.scala:345)
+at scala.tools.nsc.transform.LambdaLift$LambdaLifter$$anonfun16.apply(LambdaLift.scala:345)
+at scala.tools.nsc.symtab.SymbolTable.atPhase(SymbolTable.scala:38)
+at scala.tools.nsc.transform.LambdaLift$LambdaLifter.transformUnit(LambdaLift.scala:345)
+at scala.tools.nsc.transform.Transform$Phase.apply(Transform.scala:22)
+at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:208)
+at scala.tools.nsc.Global$GlobalPhase$$anonfun1.apply(Global.scala:197)
+at scala.tools.nsc.Global$GlobalPhase$$anonfun1.apply(Global.scala:197)
+at scala.Iterator$class.foreach(Iterator.scala:262)
+at scala.collection.mutable.ListBuffer$$anon0.foreach(ListBuffer.scala:218)
+at scala.tools.nsc.Global$GlobalPhase.run(Global.scala:197)
+at scala.tools.nsc.Global$Run.compileSources(Global.scala:416)
+at scala.tools.nsc.Global$Run.compile(Global.scala:473)
+at ch.epfl.lamp.sdt.build.ScalaCompilerManager$ScalaCompiler.compile(ScalaCompilerManager.java:178)
+at ch.epfl.lamp.sdt.build.ScalaProjectBuilder.build(ScalaProjectBuilder.java:76)
+at org.eclipse.core.internal.events.BuildManager$2.run(BuildManager.java:593)
+at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:37)
+at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:168)
+at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:202)
+at org.eclipse.core.internal.events.BuildManager$1.run(BuildManager.java:231)
+at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:37)
+at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:234)
+at org.eclipse.core.internal.events.BuildManager.build(BuildManager.java:303)
+at org.eclipse.core.internal.resources.Project.build(Project.java:87)
+at org.eclipse.ui.actions.BuildAction.invokeOperation(BuildAction.java:190)
+at org.eclipse.ui.actions.WorkspaceAction.execute(WorkspaceAction.java:133)
+at org.eclipse.ui.actions.WorkspaceAction$2.runInWorkspace(WorkspaceAction.java:424)
+at org.eclipse.core.internal.resources.InternalWorkspaceJob.run(InternalWorkspaceJob.java:38)
+at org.eclipse.core.internal.jobs.Worker.run(Worker.java:58)</pre>
+
+From console:
+<pre>
+COMPILE: L/scala/src/compiler/scala/tools/nsc/doc/DocGenerator.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/Main.scala
+exception when transforming private <local> val compiler0 : scala.tools.nsc.Main#compiler2 = compiler1()
+exception when transforming scala.tools.nsc.doc.DocGenerator with scala.ScalaObject$class {
+  def <init>(): scala.tools.nsc.Main#generator1 = {
+    {
+      generator1.super.<init>();
+      ()
+    };
+    ()
+  };
+  private <local> val compiler0 : scala.tools.nsc.Main#compiler2 = compiler1();
+  <stable> <accessor> def compiler0(): scala.tools.nsc.Main#compiler2 = generator1.this.compiler0 ;
+  private <local> val outdir : java.lang.String = command0.settings().outdir().value();
+  <stable> <accessor> def outdir(): java.lang.String = generator1.this.outdir ;
+  private <local> val units : scala.Iterator = run0.units();
+  <stable> <accessor> def units(): scala.Iterator = generator1.this.units ;
+  <stable> <bridge> def compiler0(): scala.tools.nsc.Global = generator1.this.compiler0()
+}
+exception when transforming final class generator1 extends scala.tools.nsc.doc.DocGenerator with scala.ScalaObje\
+ct$class {
+  def <init>(): scala.tools.nsc.Main#generator1 = {
+    {
+      generator1.super.<init>();
+      ()
+    };
+    ()
+  };
+  private <local> val compiler0 : scala.tools.nsc.Main#compiler2 = compiler1();
+  <stable> <accessor> def compiler0(): scala.tools.nsc.Main#compiler2 = generator1.this.compiler0 ;
+  private <local> val outdir : java.lang.String = command0.settings().outdir().value();
+  <stable> <accessor> def outdir(): java.lang.String = generator1.this.outdir ;
+  private <local> val units : scala.Iterator = run0.units();
+  <stable> <accessor> def units(): scala.Iterator = generator1.this.units ;
+  <stable> <bridge> def compiler0(): scala.tools.nsc.Global = generator1.this.compiler0()
+}
+exception when transforming {
+  final class generator1 extends scala.tools.nsc.doc.DocGenerator with scala.ScalaObject$class {
+    def <init>(): scala.tools.nsc.Main#generator1 = {
+      {
+        generator1.super.<init>();
+        ()
+      };
+      ()
+    };
+    private <local> val compiler0 : scala.tools.nsc.Main#compiler2 = compiler1();
+    <stable> <accessor> def compiler0(): scala.tools.nsc.Main#compiler2 = generator1.this.compiler0 ;
+    private <local> val outdir : java.lang.String = command0.settings().outdir().value();
+    <stable> <accessor> def outdir(): java.lang.String = generator1.this.outdir ;
+    private <local> val units : scala.Iterator = run0.units();
+    <stable> <accessor> def units(): scala.Iterator = generator1.this.units ;
+    <stable> <bridge> def compiler0(): scala.tools.nsc.Global = generator1.this.compiler0()
+  };
+  var generator$module0: generator1 = null;
+  final private <local> <stable> def generator0(): scala.tools.nsc.Main#generator1 = {
+    if (generator$module0.eq(null))
+      generator$module0 = new generator1.<init>();
+    generator$module0
+  };
+  ()
+}
+exception when transforming if (command0.settings().doc().value())
+  {
+    final class generator1 extends scala.tools.nsc.doc.DocGenerator with scala.ScalaObject$class {
+      def <init>(): scala.tools.nsc.Main#generator1 = {
+        {
+          generator1.super.<init>();
+          ()
+        };
+        ()
+      };
+      private <local> val compiler0 : scala.tools.nsc.Main#compiler2 = compiler1();
+      <stable> <accessor> def compiler0(): scala.tools.nsc.Main#compiler2 = generator1.this.compiler0 ;
+      private <local> val outdir : java.lang.String = command0.settings().outdir().value();
+      <stable> <accessor> def outdir(): java.lang.String = generator1.this.outdir ;
+      private <local> val units : scala.Iterator = run0.units();
+      <stable> <accessor> def units(): scala.Iterator = generator1.this.units ;
+      <stable> <bridge> def compiler0(): scala.tools.nsc.Global = generator1.this.compiler0()
+    };
+    var generator$module0: generator1 = null;
+    final private <local> <stable> def generator0(): scala.tools.nsc.Main#generator1 = {
+      if (generator$module0.eq(null))
+        generator$module0 = new generator1.<init>();
+      generator$module0
+    };
+    ()
+  }
+exception when transforming {
+  val run0: scala.tools.nsc.Main#compiler2#Run = new scala.tools.nsc.Main#compiler2#Run.<init>(compiler1()).$asI\
+nstanceOf[scala.tools.nsc.Main#compiler2#Run]();
+  run0.compile(command0.files());
+  if (command0.settings().doc().value())
+    {
+      final class generator1 extends scala.tools.nsc.doc.DocGenerator with scala.ScalaObject$class {
+        def <init>(): scala.tools.nsc.Main#generator1 = {
+          {
+            generator1.super.<init>();
+            ()
+          };
+          ()
+        };
+        private <local> val compiler0 : scala.tools.nsc.Main#compiler2 = compiler1();
+        <stable> <accessor> def compiler0(): scala.tools.nsc.Main#compiler2 = generator1.this.compiler0 ;
+        private <local> val outdir : java.lang.String = command0.settings().outdir().value();
+        <stable> <accessor> def outdir(): java.lang.String = generator1.this.outdir ;
+        private <local> val units : scala.Iterator = run0.units();
+        <stable> <accessor> def units(): scala.Iterator = generator1.this.units ;
+        <stable> <bridge> def compiler0(): scala.tools.nsc.Global = generator1.this.compiler0()
+      };
+      var generator$module0: generator1 = null;
+      final private <local> <stable> def generator0(): scala.tools.nsc.Main#generator1 = {
+        if (generator$module0.eq(null))
+          generator$module0 = new generator1.<init>();
+        generator$module0
+      };
+      ()
+    }
+}
+exception when transforming if (command0.files().isEmpty())
+  Main.this.scala$tools$nsc$Main$$reporter().info(null, command0.usageMsg(), true)
+else
+  {
+    val run0: scala.tools.nsc.Main#compiler2#Run = new scala.tools.nsc.Main#compiler2#Run.<init>(compiler1()).$a\
+sInstanceOf[scala.tools.nsc.Main#compiler2#Run]();
+    run0.compile(command0.files());
+    if (command0.settings().doc().value())
+      {
+        final class generator1 extends scala.tools.nsc.doc.DocGenerator with scala.ScalaObject$class {
+          def <init>(): scala.tools.nsc.Main#generator1 = {
+            {
+              generator1.super.<init>();
+              ()
+            };
+            ()
+          };
+          private <local> val compiler0 : scala.tools.nsc.Main#compiler2 = compiler1();
+          <stable> <accessor> def compiler0(): scala.tools.nsc.Main#compiler2 = generator1.this.compiler0 ;
+          private <local> val outdir : java.lang.String = command0.settings().outdir().value();
+          <stable> <accessor> def outdir(): java.lang.String = generator1.this.outdir ;
+          private <local> val units : scala.Iterator = run0.units();
+          <stable> <accessor> def units(): scala.Iterator = generator1.this.units ;
+          <stable> <bridge> def compiler0(): scala.tools.nsc.Global = generator1.this.compiler0()
+        };
+        var generator$module0: generator1 = null;
+        final private <local> <stable> def generator0(): scala.tools.nsc.Main#generator1 = {
+          if (generator$module0.eq(null))
+            generator$module0 = new generator1.<init>();
+          generator$module0
+        };
+        ()
+      }
+  }
+exception when transforming if (command0.settings().resident().value())
+  Main.this.resident(compiler1())
+else
+  if (command0.files().isEmpty())
+    Main.this.scala$tools$nsc$Main$$reporter().info(null, command0.usageMsg(), true)
+  else
+    {
+      val run0: scala.tools.nsc.Main#compiler2#Run = new scala.tools.nsc.Main#compiler2#Run.<init>(compiler1()).\
+$asInstanceOf[scala.tools.nsc.Main#compiler2#Run]();
+      run0.compile(command0.files());
+      if (command0.settings().doc().value())
+        {
+          final class generator1 extends scala.tools.nsc.doc.DocGenerator with scala.ScalaObject$class {
+            def <init>(): scala.tools.nsc.Main#generator1 = {
+              {
+                generator1.super.<init>();
+                ()
+              };
+              ()
+            };
+            private <local> val compiler0 : scala.tools.nsc.Main#compiler2 = compiler1();
+            <stable> <accessor> def compiler0(): scala.tools.nsc.Main#compiler2 = generator1.this.compiler0 ;
+            private <local> val outdir : java.lang.String = command0.settings().outdir().value();
+            <stable> <accessor> def outdir(): java.lang.String = generator1.this.outdir ;
+            private <local> val units : scala.Iterator = run0.units();
+            <stable> <accessor> def units(): scala.Iterator = generator1.this.units ;
+            <stable> <bridge> def compiler0(): scala.tools.nsc.Global = generator1.this.compiler0()
+          };
+          var generator$module0: generator1 = null;
+          final private <local> <stable> def generator0(): scala.tools.nsc.Main#generator1 = {
+            if (generator$module0.eq(null))
+              generator$module0 = new generator1.<init>();
+            generator$module0
+          };
+          ()
+        }
+    }
+exception when transforming {
+  final class compiler2 extends scala.tools.nsc.Global with scala.ScalaObject$class {
+    def <init>(): scala.tools.nsc.Main#compiler2 = {
+      {
+        compiler2.super.<init>(command0.settings(), Main.this.scala$tools$nsc$Main$$reporter());
+        ()
+      };
+      ()
+    }
+  };
+  var compiler$module0: scala.tools.nsc.Main#compiler2 = null;
+  final <stable> def compiler1(): scala.tools.nsc.Main#compiler2 = {
+    if (compiler$module0.eq(null))
+      compiler$module0 = new scala.tools.nsc.Main#compiler2.<init>();
+    compiler$module0
+  };
+  if (command0.settings().resident().value())
+    Main.this.resident(compiler1())
+  else
+    if (command0.files().isEmpty())
+      Main.this.scala$tools$nsc$Main$$reporter().info(null, command0.usageMsg(), true)
+    else
+      {
+        val run0: scala.tools.nsc.Main#compiler2#Run = new scala.tools.nsc.Main#compiler2#Run.<init>(compiler1()\
+).$asInstanceOf[scala.tools.nsc.Main#compiler2#Run]();
+        run0.compile(command0.files());
+        if (command0.settings().doc().value())
+          {
+            final class generator1 extends scala.tools.nsc.doc.DocGenerator with scala.ScalaObject$class {
+              def <init>(): scala.tools.nsc.Main#generator1 = {
+                {
+                  generator1.super.<init>();
+                  ()
+                };
+                ()
+              };
+              private <local> val compiler0 : scala.tools.nsc.Main#compiler2 = compiler1();
+              <stable> <accessor> def compiler0(): scala.tools.nsc.Main#compiler2 = generator1.this.compiler0 ;\
+
+              private <local> val outdir : java.lang.String = command0.settings().outdir().value();
+              <stable> <accessor> def outdir(): java.lang.String = generator1.this.outdir ;
+              private <local> val units : scala.Iterator = run0.units();
+              <stable> <accessor> def units(): scala.Iterator = generator1.this.units ;
+              <stable> <bridge> def compiler0(): scala.tools.nsc.Global = generator1.this.compiler0()
+            };
+            var generator$module0: generator1 = null;
+            final private <local> <stable> def generator0(): scala.tools.nsc.Main#generator1 = {
+              if (generator$module0.eq(null))
+                generator$module0 = new generator1.<init>();
+              generator$module0
+            };
+            ()
+          }
+      }
+}
+exception when transforming try {
+  final class compiler2 extends scala.tools.nsc.Global with scala.ScalaObject$class {
+    def <init>(): scala.tools.nsc.Main#compiler2 = {
+      {
+        compiler2.super.<init>(command0.settings(), Main.this.scala$tools$nsc$Main$$reporter());
+        ()
+      };
+      ()
+    }
+  };
+  var compiler$module0: scala.tools.nsc.Main#compiler2 = null;
+  final <stable> def compiler1(): scala.tools.nsc.Main#compiler2 = {
+    if (compiler$module0.eq(null))
+      compiler$module0 = new scala.tools.nsc.Main#compiler2.<init>();
+    compiler$module0
+  };
+  if (command0.settings().resident().value())
+    Main.this.resident(compiler1())
+  else
+    if (command0.files().isEmpty())
+      Main.this.scala$tools$nsc$Main$$reporter().info(null, command0.usageMsg(), true)
+    else
+      {
+        val run0: scala.tools.nsc.Main#compiler2#Run = new scala.tools.nsc.Main#compiler2#Run.<init>(compiler1()\
+).$asInstanceOf[scala.tools.nsc.Main#compiler2#Run]();
+        run0.compile(command0.files());
+        if (command0.settings().doc().value())
+          {
+            final class generator1 extends scala.tools.nsc.doc.DocGenerator with scala.ScalaObject$class {
+              def <init>(): scala.tools.nsc.Main#generator1 = {
+                {
+                  generator1.super.<init>();
+                  ()
+                };
+                ()
+              };
+              private <local> val compiler0 : scala.tools.nsc.Main#compiler2 = compiler1();
+              <stable> <accessor> def compiler0(): scala.tools.nsc.Main#compiler2 = generator1.this.compiler0 ;\
+
+              private <local> val outdir : java.lang.String = command0.settings().outdir().value();
+              <stable> <accessor> def outdir(): java.lang.String = generator1.this.outdir ;
+              private <local> val units : scala.Iterator = run0.units();
+              <stable> <accessor> def units(): scala.Iterator = generator1.this.units ;
+              <stable> <bridge> def compiler0(): scala.tools.nsc.Global = generator1.this.compiler0()
+            };
+            var generator$module0: generator1 = null;
+            final private <local> <stable> def generator0(): scala.tools.nsc.Main#generator1 = {
+              if (generator$module0.eq(null))
+                generator$module0 = new generator1.<init>();
+              generator$module0
+            };
+            ()
+          }
+      }
+} catch {
+  case (ex$0 @ _) => {
+    var temp0: java.lang.Throwable = ex$0;
+    if (temp0.$isInstanceOf[scala.tools.nsc.FatalError]())
+      {
+        var temp1: scala.tools.nsc.FatalError = temp0.$asInstanceOf[scala.tools.nsc.FatalError]();
+        {
+          val ex: scala.tools.nsc.FatalError = temp1;
+          val msg: java.lang.String = temp1.msg();
+          {
+            <synthetic> val r$0: scala.runtime.BoxedUnit = {
+              if (command0.settings().debug().value())
+                ex.printStackTrace();
+              {
+                Main.this.scala$tools$nsc$Main$$reporter().error(null, "fatal error: ".+(msg));
+                scala.runtime.BoxedUnit.UNIT
+              }
+            };
+            exit(r$0);
+            true
+          }
+        }
+      }
+    else
+      false.||({
+      {
+        <synthetic> val r$1: scala.runtime.BoxedUnit = throw ex$0;
+        exit(r$1);
+        true
+      }
+    });
+    throw new scala.MatchError.<init>("Main.scala", 52);
+    exit(result){
+      ()
+    }
+  }
+}
+exception when transforming {
+  try {
+    final class compiler2 extends scala.tools.nsc.Global with scala.ScalaObject$class {
+      def <init>(): scala.tools.nsc.Main#compiler2 = {
+        {
+          compiler2.super.<init>(command0.settings(), Main.this.scala$tools$nsc$Main$$reporter());
+          ()
+        };
+        ()
+      }
+    };
+    var compiler$module0: scala.tools.nsc.Main#compiler2 = null;
+    final <stable> def compiler1(): scala.tools.nsc.Main#compiler2 = {
+      if (compiler$module0.eq(null))
+        compiler$module0 = new scala.tools.nsc.Main#compiler2.<init>();
+      compiler$module0
+    };
+    if (command0.settings().resident().value())
+      Main.this.resident(compiler1())
+    else
+      if (command0.files().isEmpty())
+        Main.this.scala$tools$nsc$Main$$reporter().info(null, command0.usageMsg(), true)
+      else
+        {
+          val run0: scala.tools.nsc.Main#compiler2#Run = new scala.tools.nsc.Main#compiler2#Run.<init>(compiler1\
+()).$asInstanceOf[scala.tools.nsc.Main#compiler2#Run]();
+          run0.compile(command0.files());
+          if (command0.settings().doc().value())
+            {
+              final class generator1 extends scala.tools.nsc.doc.DocGenerator with scala.ScalaObject$class {
+                def <init>(): scala.tools.nsc.Main#generator1 = {
+                  {
+                    generator1.super.<init>();
+                    ()
+                  };
+                  ()
+                };
+                private <local> val compiler0 : scala.tools.nsc.Main#compiler2 = compiler1();
+                <stable> <accessor> def compiler0(): scala.tools.nsc.Main#compiler2 = generator1.this.compiler0 \
+;
+                private <local> val outdir : java.lang.String = command0.settings().outdir().value();
+                <stable> <accessor> def outdir(): java.lang.String = generator1.this.outdir ;
+                private <local> val units : scala.Iterator = run0.units();
+                <stable> <accessor> def units(): scala.Iterator = generator1.this.units ;
+                <stable> <bridge> def compiler0(): scala.tools.nsc.Global = generator1.this.compiler0()
+              };
+              var generator$module0: generator1 = null;
+              final private <local> <stable> def generator0(): scala.tools.nsc.Main#generator1 = {
+                if (generator$module0.eq(null))
+                  generator$module0 = new generator1.<init>();
+                generator$module0
+              };
+              ()
+            }
+        }
+  } catch {
+    case (ex$0 @ _) => {
+      var temp0: java.lang.Throwable = ex$0;
+      if (temp0.$isInstanceOf[scala.tools.nsc.FatalError]())
+        {
+          var temp1: scala.tools.nsc.FatalError = temp0.$asInstanceOf[scala.tools.nsc.FatalError]();
+          {
+            val ex: scala.tools.nsc.FatalError = temp1;
+            val msg: java.lang.String = temp1.msg();
+            {
+              <synthetic> val r$0: scala.runtime.BoxedUnit = {
+                if (command0.settings().debug().value())
+                  ex.printStackTrace();
+                {
+                  Main.this.scala$tools$nsc$Main$$reporter().error(null, "fatal error: ".+(msg));
+                  scala.runtime.BoxedUnit.UNIT
+                }
+              };
+              exit(r$0);
+              true
+            }
+          }
+        }
+      else
+        false.||({
+        {
+          <synthetic> val r$1: scala.runtime.BoxedUnit = throw ex$0;
+          exit(r$1);
+          true
+        }
+      });
+      throw new scala.MatchError.<init>("Main.scala", 52);
+      exit(result){
+        ()
+      }
+    }
+  };
+  Main.this.scala$tools$nsc$Main$$reporter().printSummary()
+}
+exception when transforming if (command0.settings().help().value())
+  Main.this.scala$tools$nsc$Main$$reporter().info(null, command0.usageMsg(), true)
+else
+  {
+    try {
+      final class compiler2 extends scala.tools.nsc.Global with scala.ScalaObject$class {
+        def <init>(): scala.tools.nsc.Main#compiler2 = {
+          {
+            compiler2.super.<init>(command0.settings(), Main.this.scala$tools$nsc$Main$$reporter());
+            ()
+          };
+          ()
+        }
+      };
+      var compiler$module0: scala.tools.nsc.Main#compiler2 = null;
+      final <stable> def compiler1(): scala.tools.nsc.Main#compiler2 = {
+        if (compiler$module0.eq(null))
+          compiler$module0 = new scala.tools.nsc.Main#compiler2.<init>();
+        compiler$module0
+      };
+      if (command0.settings().resident().value())
+        Main.this.resident(compiler1())
+      else
+        if (command0.files().isEmpty())
+          Main.this.scala$tools$nsc$Main$$reporter().info(null, command0.usageMsg(), true)
+        else
+          {
+            val run0: scala.tools.nsc.Main#compiler2#Run = new scala.tools.nsc.Main#compiler2#Run.<init>(compile\
+r1()).$asInstanceOf[scala.tools.nsc.Main#compiler2#Run]();
+            run0.compile(command0.files());
+            if (command0.settings().doc().value())
+              {
+                final class generator1 extends scala.tools.nsc.doc.DocGenerator with scala.ScalaObject$class {
+                  def <init>(): scala.tools.nsc.Main#generator1 = {
+                    {
+                      generator1.super.<init>();
+                      ()
+                    };
+                    ()
+                  };
+                  private <local> val compiler0 : scala.tools.nsc.Main#compiler2 = compiler1();
+                  <stable> <accessor> def compiler0(): scala.tools.nsc.Main#compiler2 = generator1.this.compiler\
+0 ;
+                  private <local> val outdir : java.lang.String = command0.settings().outdir().value();
+                  <stable> <accessor> def outdir(): java.lang.String = generator1.this.outdir ;
+                  private <local> val units : scala.Iterator = run0.units();
+                  <stable> <accessor> def units(): scala.Iterator = generator1.this.units ;
+                  <stable> <bridge> def compiler0(): scala.tools.nsc.Global = generator1.this.compiler0()
+                };
+                var generator$module0: generator1 = null;
+                final private <local> <stable> def generator0(): scala.tools.nsc.Main#generator1 = {
+                  if (generator$module0.eq(null))
+                    generator$module0 = new generator1.<init>();
+                  generator$module0
+                };
+                ()
+              }
+          }
+    } catch {
+      case (ex$0 @ _) => {
+        var temp0: java.lang.Throwable = ex$0;
+        if (temp0.$isInstanceOf[scala.tools.nsc.FatalError]())
+          {
+            var temp1: scala.tools.nsc.FatalError = temp0.$asInstanceOf[scala.tools.nsc.FatalError]();
+            {
+              val ex: scala.tools.nsc.FatalError = temp1;
+              val msg: java.lang.String = temp1.msg();
+              {
+                <synthetic> val r$0: scala.runtime.BoxedUnit = {
+                  if (command0.settings().debug().value())
+                    ex.printStackTrace();
+                  {
+                    Main.this.scala$tools$nsc$Main$$reporter().error(null, "fatal error: ".+(msg));
+                    scala.runtime.BoxedUnit.UNIT
+                  }
+                };
+                exit(r$0);
+                true
+              }
+            }
+          }
+        else
+          false.||({
+          {
+            <synthetic> val r$1: scala.runtime.BoxedUnit = throw ex$0;
+            exit(r$1);
+            true
+          }
+        });
+        throw new scala.MatchError.<init>("Main.scala", 52);
+        exit(result){
+          ()
+        }
+      }
+    };
+    Main.this.scala$tools$nsc$Main$$reporter().printSummary()
+  }
+exception when transforming if (command0.settings().version().value())
+  Main.this.scala$tools$nsc$Main$$reporter().info(null, Main.this.versionMsg(), true)
+else
+  if (command0.settings().help().value())
+    Main.this.scala$tools$nsc$Main$$reporter().info(null, command0.usageMsg(), true)
+  else
+    {
+      try {
+        final class compiler2 extends scala.tools.nsc.Global with scala.ScalaObject$class {
+          def <init>(): scala.tools.nsc.Main#compiler2 = {
+            {
+              compiler2.super.<init>(command0.settings(), Main.this.scala$tools$nsc$Main$$reporter());
+              ()
+            };
+            ()
+          }
+        };
+        var compiler$module0: scala.tools.nsc.Main#compiler2 = null;
+        final <stable> def compiler1(): scala.tools.nsc.Main#compiler2 = {
+          if (compiler$module0.eq(null))
+            compiler$module0 = new scala.tools.nsc.Main#compiler2.<init>();
+          compiler$module0
+        };
+        if (command0.settings().resident().value())
+          Main.this.resident(compiler1())
+        else
+          if (command0.files().isEmpty())
+            Main.this.scala$tools$nsc$Main$$reporter().info(null, command0.usageMsg(), true)
+          else
+            {
+              val run0: scala.tools.nsc.Main#compiler2#Run = new scala.tools.nsc.Main#compiler2#Run.<init>(compi\
+ler1()).$asInstanceOf[scala.tools.nsc.Main#compiler2#Run]();
+              run0.compile(command0.files());
+              if (command0.settings().doc().value())
+                {
+                  final class generator1 extends scala.tools.nsc.doc.DocGenerator with scala.ScalaObject$class {\
+
+                    def <init>(): scala.tools.nsc.Main#generator1 = {
+                      {
+                        generator1.super.<init>();
+                        ()
+                      };
+                      ()
+                    };
+                    private <local> val compiler0 : scala.tools.nsc.Main#compiler2 = compiler1();
+                    <stable> <accessor> def compiler0(): scala.tools.nsc.Main#compiler2 = generator1.this.compil\
+er0 ;
+                    private <local> val outdir : java.lang.String = command0.settings().outdir().value();
+                    <stable> <accessor> def outdir(): java.lang.String = generator1.this.outdir ;
+                    private <local> val units : scala.Iterator = run0.units();
+                    <stable> <accessor> def units(): scala.Iterator = generator1.this.units ;
+                    <stable> <bridge> def compiler0(): scala.tools.nsc.Global = generator1.this.compiler0()
+                  };
+                  var generator$module0: generator1 = null;
+                  final private <local> <stable> def generator0(): scala.tools.nsc.Main#generator1 = {
+                    if (generator$module0.eq(null))
+                      generator$module0 = new generator1.<init>();
+                    generator$module0
+                  };
+                  ()
+                }
+            }
+      } catch {
+        case (ex$0 @ _) => {
+          var temp0: java.lang.Throwable = ex$0;
+          if (temp0.$isInstanceOf[scala.tools.nsc.FatalError]())
+            {
+              var temp1: scala.tools.nsc.FatalError = temp0.$asInstanceOf[scala.tools.nsc.FatalError]();
+              {
+                val ex: scala.tools.nsc.FatalError = temp1;
+                val msg: java.lang.String = temp1.msg();
+                {
+                  <synthetic> val r$0: scala.runtime.BoxedUnit = {
+                    if (command0.settings().debug().value())
+                      ex.printStackTrace();
+                    {
+                      Main.this.scala$tools$nsc$Main$$reporter().error(null, "fatal error: ".+(msg));
+                      scala.runtime.BoxedUnit.UNIT
+                    }
+                  };
+                  exit(r$0);
+                  true
+                }
+              }
+            }
+          else
+            false.||({
+            {
+              <synthetic> val r$1: scala.runtime.BoxedUnit = throw ex$0;
+              exit(r$1);
+              true
+            }
+          });
+          throw new scala.MatchError.<init>("Main.scala", 52);
+          exit(result){
+            ()
+          }
+        }
+      };
+      Main.this.scala$tools$nsc$Main$$reporter().printSummary()
+    }
+exception when transforming {
+  Main.this.scala$tools$nsc$Main$$reporter_=(new scala.tools.nsc.reporters.ConsoleReporter.<init>());
+  val command0: scala.tools.nsc.CompilerCommand = new scala.tools.nsc.CompilerCommand.<init>(List.fromArray(new \
+scala.runtime.BoxedObjectArray.<init>(args.$asInstanceOf[scala.Array[java.lang.Object]]())), {
+    {
+      [scala.serializable]final <synthetic> class $anonfun2 extends java.lang.Object with scala.Function1 with s\
+cala.ScalaObject$class {
+        def <init>(): scala.tools.nsc.Main#$anonfun2 = {
+          {
+            $anonfun2.super.<init>();
+            ()
+          };
+          ()
+        };
+        final def apply(eta$1: java.lang.String): scala.Unit = Main.this.error(eta$1);
+        final <bridge> def apply(x$1: java.lang.Object): java.lang.Object = {
+          $anonfun2.this.apply(x$1.$asInstanceOf[java.lang.String]());
+          scala.runtime.BoxedUnit.UNIT
+        }
+      };
+      (new scala.tools.nsc.Main#$anonfun2.<init>()) : scala.Function1
+    }
+  }, false);
+  Main.this.scala$tools$nsc$Main$$reporter().prompt_=(command0.settings().prompt().value());
+  if (command0.settings().version().value())
+    Main.this.scala$tools$nsc$Main$$reporter().info(null, Main.this.versionMsg(), true)
+  else
+    if (command0.settings().help().value())
+      Main.this.scala$tools$nsc$Main$$reporter().info(null, command0.usageMsg(), true)
+    else
+      {
+        try {
+          final class compiler2 extends scala.tools.nsc.Global with scala.ScalaObject$class {
+            def <init>(): scala.tools.nsc.Main#compiler2 = {
+              {
+                compiler2.super.<init>(command0.settings(), Main.this.scala$tools$nsc$Main$$reporter());
+                ()
+              };
+              ()
+            }
+          };
+          var compiler$module0: scala.tools.nsc.Main#compiler2 = null;
+          final <stable> def compiler1(): scala.tools.nsc.Main#compiler2 = {
+            if (compiler$module0.eq(null))
+              compiler$module0 = new scala.tools.nsc.Main#compiler2.<init>();
+            compiler$module0
+          };
+          if (command0.settings().resident().value())
+            Main.this.resident(compiler1())
+          else
+            if (command0.files().isEmpty())
+              Main.this.scala$tools$nsc$Main$$reporter().info(null, command0.usageMsg(), true)
+            else
+              {
+                val run0: scala.tools.nsc.Main#compiler2#Run = new scala.tools.nsc.Main#compiler2#Run.<init>(com\
+piler1()).$asInstanceOf[scala.tools.nsc.Main#compiler2#Run]();
+                run0.compile(command0.files());
+                if (command0.settings().doc().value())
+                  {
+                    final class generator1 extends scala.tools.nsc.doc.DocGenerator with scala.ScalaObject$class\
+ {
+                      def <init>(): scala.tools.nsc.Main#generator1 = {
+                        {
+                          generator1.super.<init>();
+                          ()
+                        };
+                        ()
+                      };
+                      private <local> val compiler0 : scala.tools.nsc.Main#compiler2 = compiler1();
+                      <stable> <accessor> def compiler0(): scala.tools.nsc.Main#compiler2 = generator1.this.comp\
+iler0 ;
+                      private <local> val outdir : java.lang.String = command0.settings().outdir().value();
+                      <stable> <accessor> def outdir(): java.lang.String = generator1.this.outdir ;
+                      private <local> val units : scala.Iterator = run0.units();
+                      <stable> <accessor> def units(): scala.Iterator = generator1.this.units ;
+                      <stable> <bridge> def compiler0(): scala.tools.nsc.Global = generator1.this.compiler0()
+                    };
+                    var generator$module0: generator1 = null;
+                    final private <local> <stable> def generator0(): scala.tools.nsc.Main#generator1 = {
+                      if (generator$module0.eq(null))
+                        generator$module0 = new generator1.<init>();
+                      generator$module0
+                    };
+                    ()
+                  }
+              }
+        } catch {
+          case (ex$0 @ _) => {
+            var temp0: java.lang.Throwable = ex$0;
+            if (temp0.$isInstanceOf[scala.tools.nsc.FatalError]())
+              {
+                var temp1: scala.tools.nsc.FatalError = temp0.$asInstanceOf[scala.tools.nsc.FatalError]();
+                {
+                  val ex: scala.tools.nsc.FatalError = temp1;
+                  val msg: java.lang.String = temp1.msg();
+                  {
+                    <synthetic> val r$0: scala.runtime.BoxedUnit = {
+                      if (command0.settings().debug().value())
+                        ex.printStackTrace();
+                      {
+                        Main.this.scala$tools$nsc$Main$$reporter().error(null, "fatal error: ".+(msg));
+                        scala.runtime.BoxedUnit.UNIT
+                      }
+                    };
+                    exit(r$0);
+                    true
+                  }
+                }
+              }
+            else
+              false.||({
+              {
+                <synthetic> val r$1: scala.runtime.BoxedUnit = throw ex$0;
+                exit(r$1);
+                true
+              }
+            });
+            throw new scala.MatchError.<init>("Main.scala", 52);
+            exit(result){
+              ()
+            }
+          }
+        };
+        Main.this.scala$tools$nsc$Main$$reporter().printSummary()
+      }
+}
+exception when transforming def process(args: scala.Array[java.lang.String]): scala.Unit = {
+  Main.this.scala$tools$nsc$Main$$reporter_=(new scala.tools.nsc.reporters.ConsoleReporter.<init>());
+  val command0: scala.tools.nsc.CompilerCommand = new scala.tools.nsc.CompilerCommand.<init>(List.fromArray(new \
+scala.runtime.BoxedObjectArray.<init>(args.$asInstanceOf[scala.Array[java.lang.Object]]())), {
+    {
+      [scala.serializable]final <synthetic> class $anonfun2 extends java.lang.Object with scala.Function1 with s\
+cala.ScalaObject$class {
+        def <init>(): scala.tools.nsc.Main#$anonfun2 = {
+          {
+            $anonfun2.super.<init>();
+            ()
+          };
+          ()
+        };
+        final def apply(eta$1: java.lang.String): scala.Unit = Main.this.error(eta$1);
+        final <bridge> def apply(x$1: java.lang.Object): java.lang.Object = {
+          $anonfun2.this.apply(x$1.$asInstanceOf[java.lang.String]());
+          scala.runtime.BoxedUnit.UNIT
+        }
+      };
+      (new scala.tools.nsc.Main#$anonfun2.<init>()) : scala.Function1
+    }
+  }, false);
+  Main.this.scala$tools$nsc$Main$$reporter().prompt_=(command0.settings().prompt().value());
+  if (command0.settings().version().value())
+    Main.this.scala$tools$nsc$Main$$reporter().info(null, Main.this.versionMsg(), true)
+  else
+    if (command0.settings().help().value())
+      Main.this.scala$tools$nsc$Main$$reporter().info(null, command0.usageMsg(), true)
+    else
+      {
+        try {
+          final class compiler2 extends scala.tools.nsc.Global with scala.ScalaObject$class {
+            def <init>(): scala.tools.nsc.Main#compiler2 = {
+              {
+                compiler2.super.<init>(command0.settings(), Main.this.scala$tools$nsc$Main$$reporter());
+                ()
+              };
+              ()
+            }
+          };
+          var compiler$module0: scala.tools.nsc.Main#compiler2 = null;
+          final <stable> def compiler1(): scala.tools.nsc.Main#compiler2 = {
+            if (compiler$module0.eq(null))
+              compiler$module0 = new scala.tools.nsc.Main#compiler2.<init>();
+            compiler$module0
+          };
+          if (command0.settings().resident().value())
+            Main.this.resident(compiler1())
+          else
+            if (command0.files().isEmpty())
+              Main.this.scala$tools$nsc$Main$$reporter().info(null, command0.usageMsg(), true)
+            else
+              {
+                val run0: scala.tools.nsc.Main#compiler2#Run = new scala.tools.nsc.Main#compiler2#Run.<init>(com\
+piler1()).$asInstanceOf[scala.tools.nsc.Main#compiler2#Run]();
+                run0.compile(command0.files());
+                if (command0.settings().doc().value())
+                  {
+                    final class generator1 extends scala.tools.nsc.doc.DocGenerator with scala.ScalaObject$class\
+ {
+                      def <init>(): scala.tools.nsc.Main#generator1 = {
+                        {
+                          generator1.super.<init>();
+                          ()
+                        };
+                        ()
+                      };
+                      private <local> val compiler0 : scala.tools.nsc.Main#compiler2 = compiler1();
+                      <stable> <accessor> def compiler0(): scala.tools.nsc.Main#compiler2 = generator1.this.comp\
+iler0 ;
+                      private <local> val outdir : java.lang.String = command0.settings().outdir().value();
+                      <stable> <accessor> def outdir(): java.lang.String = generator1.this.outdir ;
+                      private <local> val units : scala.Iterator = run0.units();
+                      <stable> <accessor> def units(): scala.Iterator = generator1.this.units ;
+                      <stable> <bridge> def compiler0(): scala.tools.nsc.Global = generator1.this.compiler0()
+                    };
+                    var generator$module0: generator1 = null;
+                    final private <local> <stable> def generator0(): scala.tools.nsc.Main#generator1 = {
+                      if (generator$module0.eq(null))
+                        generator$module0 = new generator1.<init>();
+                      generator$module0
+                    };
+                    ()
+                  }
+              }
+        } catch {
+          case (ex$0 @ _) => {
+            var temp0: java.lang.Throwable = ex$0;
+            if (temp0.$isInstanceOf[scala.tools.nsc.FatalError]())
+              {
+                var temp1: scala.tools.nsc.FatalError = temp0.$asInstanceOf[scala.tools.nsc.FatalError]();
+                {
+                  val ex: scala.tools.nsc.FatalError = temp1;
+                  val msg: java.lang.String = temp1.msg();
+                  {
+                    <synthetic> val r$0: scala.runtime.BoxedUnit = {
+                      if (command0.settings().debug().value())
+                        ex.printStackTrace();
+                      {
+                        Main.this.scala$tools$nsc$Main$$reporter().error(null, "fatal error: ".+(msg));
+                        scala.runtime.BoxedUnit.UNIT
+                      }
+                    };
+                    exit(r$0);
+                    true
+                  }
+                }
+              }
+            else
+              false.||({
+              {
+                <synthetic> val r$1: scala.runtime.BoxedUnit = throw ex$0;
+                exit(r$1);
+                true
+              }
+            });
+            throw new scala.MatchError.<init>("Main.scala", 52);
+            exit(result){
+              ()
+            }
+          }
+        };
+        Main.this.scala$tools$nsc$Main$$reporter().printSummary()
+      }
+}
+exception when transforming java.lang.Object with scala.tools.nsc.EvalLoop$class with scala.ScalaObject$class {\
+
+  def <init>(): scala.tools.nsc.Main = {
+    {
+      Main.super.<init>();
+      ()
+    };
+    Main.this./*EvalLoop$class*/$init$();
+    ()
+  };
+  private <local> val PRODUCT : java.lang.String = java.this.lang.System.getProperty("scala.product", "scalac");\
+
+  <stable> <accessor> def PRODUCT(): java.lang.String = Main.this.PRODUCT ;
+  private <local> val VERSION : java.lang.String = java.this.lang.System.getProperty("scala.version", "unknown v\
+ersion");
+  <stable> <accessor> def VERSION(): java.lang.String = Main.this.VERSION ;
+  private <local> val COPYRIGHT : java.lang.String = java.this.lang.System.getProperty("scala.copyright", "(c) 2\
+002-06 LAMP/EPFL");
+  <stable> <accessor> def COPYRIGHT(): java.lang.String = Main.this.COPYRIGHT ;
+  private <local> val versionMsg : java.lang.String = Main.this.PRODUCT().+(" ").+(Main.this.VERSION()).+(" -- "\
+).+(Main.this.COPYRIGHT());
+  <stable> <accessor> def versionMsg(): java.lang.String = Main.this.versionMsg ;
+  private <local> val prompt : java.lang.String = "
+nsc> ";
+  <stable> <accessor> def prompt(): java.lang.String = Main.this.prompt ;
+  private <local> var scala$tools$nsc$Main$$reporter : scala.tools.nsc.reporters.ConsoleReporter = _;
+  <accessor> def scala$tools$nsc$Main$$reporter(): scala.tools.nsc.reporters.ConsoleReporter = Main.this.scala$t\
+ools$nsc$Main$$reporter ;
+  private <accessor> def scala$tools$nsc$Main$$reporter_=(x$1: scala.tools.nsc.reporters.ConsoleReporter): scala\
+.Unit = Main.this.scala$tools$nsc$Main$$reporter  = x$1;
+  def error(msg: java.lang.String): scala.Unit = Main.this.scala$tools$nsc$Main$$reporter().error(new scala.tool\
+s.nsc.util.Position.<init>(Main.this.PRODUCT()), msg.+("
+  ").+(Main.this.PRODUCT()).+(" -help  gives more information"));
+  def errors(): scala.Int = Main.this.scala$tools$nsc$Main$$reporter().errors();
+  def resident(compiler0: scala.tools.nsc.Global): scala.Unit = Main.this.loop({
+    [scala.serializable]final <synthetic> class $anonfun0 extends java.lang.Object with scala.Function1 with sca\
+la.ScalaObject$class {
+      def <init>(): scala.tools.nsc.Main#$anonfun0 = {
+        {
+          $anonfun0.super.<init>();
+          ()
+        };
+        ()
+      };
+      final def apply(line: java.lang.String): scala.Unit = {
+        val args: scala.List = List.fromString(line, ' ');
+        val command: scala.tools.nsc.CompilerCommand = new scala.tools.nsc.CompilerCommand.<init>(args, {
+          {
+            [scala.serializable]final <synthetic> class $anonfun1 extends java.lang.Object with scala.Function1 \
+with scala.ScalaObject$class {
+              def <init>($outer: scala.tools.nsc.Main#$anonfun0): $anonfun1 = {
+                {
+                  $anonfun1.super.<init>();
+                  ()
+                };
+                ()
+              };
+              final def apply(eta$1: java.lang.String): scala.Unit = Main.this.error(eta$1);
+              private <local> <paramaccessor> val $outer : scala.tools.nsc.Main#$anonfun0 = _;
+              <stable> <accessor> <paramaccessor> def $outer(): scala.tools.nsc.Main#$anonfun0 = $anonfun1.this.\
+$outer ;
+              final <bridge> def apply(x$1: java.lang.Object): java.lang.Object = {
+                $anonfun1.this.apply(x$1.$asInstanceOf[java.lang.String]());
+                scala.runtime.BoxedUnit.UNIT
+              }
+            };
+            (new $anonfun1.<init>($anonfun0.this)) : scala.Function1
+          }
+        }, true);
+        new scala.tools.nsc.Global#Run.<init>(compiler0).compile(command.files())
+      };
+      final <bridge> def apply(x$1: java.lang.Object): java.lang.Object = {
+        $anonfun0.this.apply(x$1.$asInstanceOf[java.lang.String]());
+        scala.runtime.BoxedUnit.UNIT
+      }
+    };
+    (new scala.tools.nsc.Main#$anonfun0.<init>()) : scala.Function1
+  });
+  def process(args: scala.Array[java.lang.String]): scala.Unit = {
+    Main.this.scala$tools$nsc$Main$$reporter_=(new scala.tools.nsc.reporters.ConsoleReporter.<init>());
+    val command0: scala.tools.nsc.CompilerCommand = new scala.tools.nsc.CompilerCommand.<init>(List.fromArray(ne\
+w scala.runtime.BoxedObjectArray.<init>(args.$asInstanceOf[scala.Array[java.lang.Object]]())), {
+      {
+        [scala.serializable]final <synthetic> class $anonfun2 extends java.lang.Object with scala.Function1 with\
+ scala.ScalaObject$class {
+          def <init>(): scala.tools.nsc.Main#$anonfun2 = {
+            {
+              $anonfun2.super.<init>();
+              ()
+            };
+            ()
+          };
+          final def apply(eta$1: java.lang.String): scala.Unit = Main.this.error(eta$1);
+          final <bridge> def apply(x$1: java.lang.Object): java.lang.Object = {
+            $anonfun2.this.apply(x$1.$asInstanceOf[java.lang.String]());
+            scala.runtime.BoxedUnit.UNIT
+          }
+        };
+        (new scala.tools.nsc.Main#$anonfun2.<init>()) : scala.Function1
+      }
+    }, false);
+    Main.this.scala$tools$nsc$Main$$reporter().prompt_=(command0.settings().prompt().value());
+    if (command0.settings().version().value())
+      Main.this.scala$tools$nsc$Main$$reporter().info(null, Main.this.versionMsg(), true)
+    else
+      if (command0.settings().help().value())
+        Main.this.scala$tools$nsc$Main$$reporter().info(null, command0.usageMsg(), true)
+      else
+        {
+          try {
+            final class compiler2 extends scala.tools.nsc.Global with scala.ScalaObject$class {
+              def <init>(): scala.tools.nsc.Main#compiler2 = {
+                {
+                  compiler2.super.<init>(command0.settings(), Main.this.scala$tools$nsc$Main$$reporter());
+                  ()
+                };
+                ()
+              }
+            };
+            var compiler$module0: scala.tools.nsc.Main#compiler2 = null;
+            final <stable> def compiler1(): scala.tools.nsc.Main#compiler2 = {
+              if (compiler$module0.eq(null))
+                compiler$module0 = new scala.tools.nsc.Main#compiler2.<init>();
+              compiler$module0
+            };
+            if (command0.settings().resident().value())
+              Main.this.resident(compiler1())
+            else
+              if (command0.files().isEmpty())
+                Main.this.scala$tools$nsc$Main$$reporter().info(null, command0.usageMsg(), true)
+              else
+                {
+                  val run0: scala.tools.nsc.Main#compiler2#Run = new scala.tools.nsc.Main#compiler2#Run.<init>(c\
+ompiler1()).$asInstanceOf[scala.tools.nsc.Main#compiler2#Run]();
+                  run0.compile(command0.files());
+                  if (command0.settings().doc().value())
+                    {
+                      final class generator1 extends scala.tools.nsc.doc.DocGenerator with scala.ScalaObject$cla\
+ss {
+                        def <init>(): scala.tools.nsc.Main#generator1 = {
+                          {
+                            generator1.super.<init>();
+                            ()
+                          };
+                          ()
+                        };
+                        private <local> val compiler0 : scala.tools.nsc.Main#compiler2 = compiler1();
+                        <stable> <accessor> def compiler0(): scala.tools.nsc.Main#compiler2 = generator1.this.co\
+mpiler0 ;
+                        private <local> val outdir : java.lang.String = command0.settings().outdir().value();
+                        <stable> <accessor> def outdir(): java.lang.String = generator1.this.outdir ;
+                        private <local> val units : scala.Iterator = run0.units();
+                        <stable> <accessor> def units(): scala.Iterator = generator1.this.units ;
+                        <stable> <bridge> def compiler0(): scala.tools.nsc.Global = generator1.this.compiler0()\
+
+                      };
+                      var generator$module0: generator1 = null;
+                      final private <local> <stable> def generator0(): scala.tools.nsc.Main#generator1 = {
+                        if (generator$module0.eq(null))
+                          generator$module0 = new generator1.<init>();
+                        generator$module0
+                      };
+                      ()
+                    }
+                }
+          } catch {
+            case (ex$0 @ _) => {
+              var temp0: java.lang.Throwable = ex$0;
+              if (temp0.$isInstanceOf[scala.tools.nsc.FatalError]())
+                {
+                  var temp1: scala.tools.nsc.FatalError = temp0.$asInstanceOf[scala.tools.nsc.FatalError]();
+                  {
+                    val ex: scala.tools.nsc.FatalError = temp1;
+                    val msg: java.lang.String = temp1.msg();
+                    {
+                      <synthetic> val r$0: scala.runtime.BoxedUnit = {
+                        if (command0.settings().debug().value())
+                          ex.printStackTrace();
+                        {
+                          Main.this.scala$tools$nsc$Main$$reporter().error(null, "fatal error: ".+(msg));
+                          scala.runtime.BoxedUnit.UNIT
+                        }
+                      };
+                      exit(r$0);
+                      true
+                    }
+                  }
+                }
+              else
+                false.||({
+                {
+                  <synthetic> val r$1: scala.runtime.BoxedUnit = throw ex$0;
+                  exit(r$1);
+                  true
+                }
+              });
+              throw new scala.MatchError.<init>("Main.scala", 52);
+              exit(result){
+                ()
+              }
+            }
+          };
+          Main.this.scala$tools$nsc$Main$$reporter().printSummary()
+        }
+  };
+  def main(args: scala.Array[java.lang.String]): scala.Unit = {
+    Main.this.process(args);
+    java.this.lang.System.exit(if (Main.this.scala$tools$nsc$Main$$reporter().errors().>(0))
+      1
+    else
+      0)
+  }
+}
+exception when transforming final class Main extends java.lang.Object with scala.tools.nsc.EvalLoop$class with s\
+cala.ScalaObject$class {
+  def <init>(): scala.tools.nsc.Main = {
+    {
+      Main.super.<init>();
+      ()
+    };
+    Main.this./*EvalLoop$class*/$init$();
+    ()
+  };
+  private <local> val PRODUCT : java.lang.String = java.this.lang.System.getProperty("scala.product", "scalac");\
+
+  <stable> <accessor> def PRODUCT(): java.lang.String = Main.this.PRODUCT ;
+  private <local> val VERSION : java.lang.String = java.this.lang.System.getProperty("scala.version", "unknown v\
+ersion");
+  <stable> <accessor> def VERSION(): java.lang.String = Main.this.VERSION ;
+  private <local> val COPYRIGHT : java.lang.String = java.this.lang.System.getProperty("scala.copyright", "(c) 2\
+002-06 LAMP/EPFL");
+  <stable> <accessor> def COPYRIGHT(): java.lang.String = Main.this.COPYRIGHT ;
+  private <local> val versionMsg : java.lang.String = Main.this.PRODUCT().+(" ").+(Main.this.VERSION()).+(" -- "\
+).+(Main.this.COPYRIGHT());
+  <stable> <accessor> def versionMsg(): java.lang.String = Main.this.versionMsg ;
+  private <local> val prompt : java.lang.String = "
+nsc> ";
+  <stable> <accessor> def prompt(): java.lang.String = Main.this.prompt ;
+  private <local> var scala$tools$nsc$Main$$reporter : scala.tools.nsc.reporters.ConsoleReporter = _;
+  <accessor> def scala$tools$nsc$Main$$reporter(): scala.tools.nsc.reporters.ConsoleReporter = Main.this.scala$t\
+ools$nsc$Main$$reporter ;
+  private <accessor> def scala$tools$nsc$Main$$reporter_=(x$1: scala.tools.nsc.reporters.ConsoleReporter): scala\
+.Unit = Main.this.scala$tools$nsc$Main$$reporter  = x$1;
+  def error(msg: java.lang.String): scala.Unit = Main.this.scala$tools$nsc$Main$$reporter().error(new scala.tool\
+s.nsc.util.Position.<init>(Main.this.PRODUCT()), msg.+("
+  ").+(Main.this.PRODUCT()).+(" -help  gives more information"));
+  def errors(): scala.Int = Main.this.scala$tools$nsc$Main$$reporter().errors();
+  def resident(compiler0: scala.tools.nsc.Global): scala.Unit = Main.this.loop({
+    [scala.serializable]final <synthetic> class $anonfun0 extends java.lang.Object with scala.Function1 with sca\
+la.ScalaObject$class {
+      def <init>(): scala.tools.nsc.Main#$anonfun0 = {
+        {
+          $anonfun0.super.<init>();
+          ()
+        };
+        ()
+      };
+      final def apply(line: java.lang.String): scala.Unit = {
+        val args: scala.List = List.fromString(line, ' ');
+        val command: scala.tools.nsc.CompilerCommand = new scala.tools.nsc.CompilerCommand.<init>(args, {
+          {
+            [scala.serializable]final <synthetic> class $anonfun1 extends java.lang.Object with scala.Function1 \
+with scala.ScalaObject$class {
+              def <init>($outer: scala.tools.nsc.Main#$anonfun0): $anonfun1 = {
+                {
+                  $anonfun1.super.<init>();
+                  ()
+                };
+                ()
+              };
+              final def apply(eta$1: java.lang.String): scala.Unit = Main.this.error(eta$1);
+              private
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >shouldn't crash :)</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-02-17 12:29:31.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+that was a hard one to diagnose, but the fix was easy in the end. Some internals of the lambdalifter you don;t want to know about...
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

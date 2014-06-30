@@ -1,0 +1,114 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#248]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Nikolay</td>
+	  <td align="center" bgcolor="#FFFFFF">Nikolay</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2003-12-03 18:13:38.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">MSIL backend does not hadnle Switch tree nodes</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>Anything that would cause the sequence matcher to generate a Switch tree node.</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>The MSIL backend crashes because it doesn't handle Switch tree nodes. The .NET CLR  lacks the appropriate switch\
+ instruction, so this will not be fixed soon.
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >Working MSIL backend.</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2003-12-03 18:40:33.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+I do not like the PatternMatcher or any other phase to be dependent on the backend to use.
+<br>
+A sane way that does the same is make TreeGen.Switch clever enough that it fakes switches with nested if..then..elses.
+<br>
+Given that TreeGen.Switch should be the only way to generate switches, this should be fine, although I really think this is the problem of the backend, and not even TreeGen should be polluted (Philippe told me, the interpreter works fine now).
+</td></tr>
+<tr>
+        <td>
+        <strong>Nikolay&nbsp; edited on &nbsp;2003-12-04 10:26:03.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Changed the 'subject' and 'what expected' to reflect that this should be fixed in the MSIL backend (and better soon than later). Reassigned it to myself.
+</td></tr>
+<tr>
+        <td>
+        <strong>Nikolay&nbsp; edited on &nbsp;2003-12-17 16:41:10.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Fixed. The MSIL backend now unrolls Switch nodes to a multitude of if-else-ifs.
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

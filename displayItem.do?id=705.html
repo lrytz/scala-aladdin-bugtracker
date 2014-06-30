@@ -1,0 +1,223 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#705]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> high</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Stephane</td>
+	  <td align="center" bgcolor="#FFFFFF">Iulian</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2006-08-16 17:06:35.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">[Cygwin] StackOverflowError in typechecker</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre></pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre><pre>lamppc46:scala> rm -rf dists/* ; ant dist.devel
+rm: No match.
+Buildfile: build.xml
+     [echo] Running SABBUS for scala-core...
+
+init:
+     [echo] OS:   Cygwin (Windows XP x86 5.1);
+     [echo] Java: 1.5.0_07 ('c:\Progra~1\Java\jdk1.5.0_07\jre');
+     [echo] JVM:  Java HotSpot(TM) Client VM 1.5.0_07-b03;
+     [echo] Ant:  Apache Ant version 1.6.5 compiled on June 2 2005.
+
+dist.devel:
+
+clean.build:
+   [delete] Deleting directory C:\localhome\michelou\projects\scala-installer\dependencies\scala\build
+
+init:
+
+setup:
+     [echo] Build number is '2.1.7.8404'
+     [echo] Built mercredi, 16 aout 2006, 16:59:02 (CEST) from SVN revision 8404
+
+build.locker:
+    [mkdir] Created dir: C:\localhome\michelou\projects\scala-installer\dependencies\scala\build\locker\lib\libr\
+ary
+    [javac] Compiling 20 source files to C:\localhome\michelou\projects\scala-installer\dependencies\scala\build\
+\locker\lib\ library
+    [starr] Compiling 1 source file to C:\localhome\michelou\projects\scala-installer\dependencies\scala\build\l\
+ocker\lib\li brary
+    [starr] Compiling 184 source files to C:\localhome\michelou\projects\scala-installer\dependencies\scala\buil\
+d\locker\lib \library
+    [mkdir] Created dir: C:\localhome\michelou\projects\scala-installer\dependencies\scala\build\locker\lib\comp\
+iler
+    [starr] Compiling 157 source files to C:\localhome\michelou\projects\scala-installer\dependencies\scala\buil\
+d\locker\lib \compiler
+    [starr] java.lang.StackOverflowError
+    [starr]     at java.util.HashMap.getEntry(HashMap.java:360)
+    [starr]     at java.util.LinkedHashMap.get(LinkedHashMap.java:273)
+    [starr]     at java.io.ExpiringCache.entryFor(ExpiringCache.java:83)
+    [starr]     at java.io.ExpiringCache.get(ExpiringCache.java:58)
+    [starr]     at java.io.Win32FileSystem.canonicalize(Win32FileSystem.java:376)
+    [starr]     at java.io.File.getCanonicalPath(File.java:531)
+    [starr]     at scala.tools.nsc.io.PlainFile.hashCode(PlainFile.scala:46)
+    [starr]     at scala.collection.mutable.HashTable$class.elemHashCode(HashTable.scala:139)
+    [starr]     at scala.collection.mutable.HashSet.elemHashCode(HashSet.scala:21)
+    [starr]     at scala.collection.mutable.HashTable$class.findEntry(HashTable.scala:64)
+    [starr]     at scala.collection.mutable.HashSet.findEntry(HashSet.scala:21)
+    [starr]     at scala.collection.mutable.HashSet.$plus$eq(HashSet.scala:28)
+    [starr]     at scala.tools.nsc.typechecker.Infer$Inferencer.checkAccessible(Infer.scala:238)
+    [starr]     at scala.tools.nsc.typechecker.Typers$Typer.typedIdent$0(Typers.scala:1424)
+    [starr]     at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1704)
+    [starr]     at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1764)
+    [starr]     at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1629)
+    [starr]     at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1764)
+    [starr]     at scala.tools.nsc.typechecker.Typers$Typer.typedArg(Typers.scala:1028)
+    [starr]     at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$51.apply(Typers.scala:1060)
+    [starr]     at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$51.apply(Typers.scala:1059)
+    [starr]     at scala.List$.map2(List.scala:265)
+    [starr]     at scala.tools.nsc.typechecker.Typers$Typer.typedApply(Typers.scala:1059)
+    [starr]     at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1642)
+    [starr]     at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1764)
+    [starr]     at scala.tools.nsc.typechecker.Typers$Typer.typedQualifier(Typers.scala:1799)
+    [starr]     at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1693)
+    [starr]     at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1764)
+    [starr]     at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1629)
+    [starr]     at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1764)
+    [starr]     at scala.tools.nsc.typechecker.Typers$Typer.typedArg(Typers.scala:1028)
+    [starr]     at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$51.apply(Typers.scala:1060)
+    [starr]     at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$51.apply(Typers.scala:1059)
+    [starr]     at scala.List$.map2(List.scala:265)
+    [starr]     at scala.tools.nsc.typechecker.Typers$Typer.typedApply(Typers.scala:1059)
+    [starr]     at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1642)
+    [starr]     at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1764)
+    [starr]     at scala.tools.nsc.typechecker.Typers$Typer.typedArg(Typers.scala:1028)
+    [starr]     at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$51.apply(Typers.scala:1060)
+    [starr]     at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$51.apply(Typers.scala:1059)
+    [starr]     at scala.List$.map2(List.scala:265)
+    [starr]     at scala.tools.nsc.typechecker.Typers$Typer.typedApply(Typers.scala:1059)
+    [starr]     at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1642)
+    [starr]     at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1764)
+    [starr]     at scala.tools.nsc.typechecker.Typers$Typer.typedArg(Typers.scala:1028)
+    [starr]     at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$51.apply(Typers.scala:1060)
+    [starr]     at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$51.apply(Typers.scala:1059)
+    [starr]     at scala.List$.map2(List.scala:265)
+    [starr]     at scala.tools.nsc.typechecker.Typers$Typer.typedApply(Typers.scala:1059)
+    [starr]     at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1642)
+    [..]</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >compiles silently</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Stephane&nbsp; edited on &nbsp;2006-08-16 17:06:56.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Stephane&nbsp; edited on &nbsp;2006-08-16 17:07:25.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Stephane&nbsp; edited on &nbsp;2006-08-16 17:50:49.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Stephane&nbsp; edited on &nbsp;2006-08-17 12:30:23.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+The last successful build on Cygwin corresponds to rev 8378. Then it fails:
+8379 dragos Added InnerClasses attribute in classfiles
+8380 dragos Added initial icode reader.
+8381 dragos Added initial icode reader.
+</td></tr>
+<tr>
+        <td>
+        <strong>Stephane&nbsp; edited on &nbsp;2006-08-21 14:50:04.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Splitted "big" match expression in symtab/classfile/ICodeReader.scala as a temporary workaround.
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Iulian&nbsp; edited on &nbsp;2006-08-24 11:06:39.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Changed the match statement to allow the patternmatcher to translate it to a simple int switch.
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

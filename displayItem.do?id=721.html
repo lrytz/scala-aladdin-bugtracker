@@ -1,0 +1,114 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#721]</th>
+		<th><strong>project:</strong> specification</th>
+		<th><strong>priority:</strong> medium</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Gilles</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2006-09-01 15:33:33.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">Views lookup scope is ill-defined (see also #720)</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre></pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>In the Scala reference, chapter "views" (7.3) the lookup rules for views are not understandable by a Gilles. It \
+states that, to be applied, "the view must be denotable by a single identifier at the point for the application"\
+ (which is OK) "or else it must be a member of <b>some</b> companion module of the type [expression type => expe\
+cted type]". The exact companion module scope bounded by "some" is not precise enough. Same problem is true for \
+the other view case.
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" ><p>Solution depends on what is implemented exactly (see bug #720). What I would like to read (and have implemented) for chapter 7.3 is:</p>
+<p>Implicit parameters and methods can also define implicit conversions called views. A view from type S to type T is defined by an implicit value which has a type compatible with function type S=>T, or by a method convertible to a value of such a type.</p>
+<p>Views are applied in two situations.</p>
+<ol>
+<li>If an expression e is of type S, and S does not conform to the expression’s expected type T. In this case, a view v from type S to type T is searched in the view scope (c.f. infra) for e, S and T (in that order).</li>
+
+<li>In a selection e.m with e of type S, if the selector m does not denote a member of S. In this case, a view v from type S to type T where T is any class type containing a member called m is searched in the view scope (c.f. infra) for e and S (in that order).</li>
+</ol>
+<p>The view scope for an expression e is composed of all implicit members denotable by a single identifier in e. The view scope for a type T is composed of all implicit members of the companion modules of all classes associated with T.</p>
+<p>...</p></td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Gilles&nbsp; edited on &nbsp;2006-09-01 15:36:08.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-09-04 16:35:44.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

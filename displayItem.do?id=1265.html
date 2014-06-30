@@ -1,0 +1,323 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#1265]</th>
+		<th><strong>project:</strong> eclipse-plugin</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Iulian</td>
+	  <td align="center" bgcolor="#FFFFFF">Sean</td>
+	  <td align="center" bgcolor="#FFFFFF">open</td>
+          <td align="center" bgcolor="#FFFFFF">2007-08-08 11:01:48.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">[contrib #737] Presentation compiler error</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre></pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>Opening "scala.tools.nsc.Global.scala" in the editor gives a presentation compiler error with the message: "ille\
+gal cyclic reference involving object Predef". After that subsequent errors occur, such as "An error has occurre\
+d when activating this view". Environment: Win XP, JDK6, Eclipse 3.2.2, Scala Development Tools 2.6.3; viewed so\
+urce code taken from Scala 2.6.0-RC1 (also tried with 2.5.1-final)
+
+!ENTRY ch.epfl.lamp.sdt.core 4 4 2007-08-07 16:23:55.235
+!MESSAGE Presentation compiler error
+!STACK 0
+scala.tools.nsc.symtab.Symbols$CyclicReference: illegal cyclic reference involving object Predef
+	at scala.tools.nsc.symtab.Symbols$Symbol.info(Symbols.scala:442)
+	at scala.tools.nsc.symtab.Symbols$Symbol.tpe(Symbols.scala:427)
+	at scala.tools.nsc.symtab.Symbols$Symbol.tpeHK(Symbols.scala:575)
+	at scala.tools.nsc.symtab.Types$Type.memberType(Types.scala:335)
+	at scala.tools.nsc.ast.TreeGen.mkAttributedSelect(TreeGen.scala:120)
+	at scala.tools.nsc.ast.TreeGen.mkAttributedRef(TreeGen.scala:61)
+	at scala.tools.nsc.ast.TreeGen.mkAttributedRef(TreeGen.scala:67)
+	at scala.tools.nsc.ast.TreeGen.mkAttributedStableRef(TreeGen.scala:102)
+	at scala.tools.nsc.typechecker.Contexts$class.addImport$0(Contexts.scala:63)
+	at scala.tools.nsc.typechecker.Contexts$$anonfun$0.apply(Contexts.scala:71)
+	at scala.tools.nsc.typechecker.Contexts$$anonfun$0.apply(Contexts.scala:70)
+	at scala.List.foreach(List.scala:707)
+	at scala.tools.nsc.typechecker.Contexts$class.rootContext(Contexts.scala:70)
+	at scala.tools.nsc.Global$analyzer$.rootContext(Global.scala:267)
+	at scala.tools.nsc.typechecker.Contexts$class.rootContext(Contexts.scala:56)
+	at scala.tools.nsc.Global$analyzer$.rootContext(Global.scala:267)
+	at scala.tools.nsc.typechecker.Analyzer$namerFactory$$anon$0.apply(Analyzer.scala:28)
+	at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:251)
+	at scala.tools.nsc.Global$Run$$anonfun$9.apply(Global.scala:589)
+	at scala.tools.nsc.Global$Run$$anonfun$9.apply(Global.scala:589)
+	at scala.tools.nsc.symtab.SymbolTable.atPhase(SymbolTable.scala:85)
+	at scala.tools.nsc.Global$Run.compileLate(Global.scala:589)
+	at scala.tools.nsc.symtab.SymbolLoaders$SourcefileLoader.doComplete(SymbolLoaders.scala:277)
+	at scala.tools.nsc.symtab.SymbolLoaders$SymbolLoader.complete(SymbolLoaders.scala:52)
+	at scala.tools.nsc.symtab.Symbols$Symbol.info(Symbols.scala:448)
+	at scala.tools.nsc.symtab.Symbols$Symbol.tpe(Symbols.scala:427)
+	at scala.tools.nsc.symtab.Symbols$Symbol.tpeHK(Symbols.scala:575)
+	at scala.tools.nsc.symtab.Types$Type.memberType(Types.scala:335)
+	at scala.tools.nsc.ast.TreeGen.mkAttributedSelect(TreeGen.scala:120)
+	at scala.tools.nsc.ast.TreeGen.mkAttributedRef(TreeGen.scala:61)
+	at scala.tools.nsc.ast.TreeGen.mkAttributedRef(TreeGen.scala:67)
+	at scala.tools.nsc.ast.TreeGen.mkAttributedStableRef(TreeGen.scala:102)
+	at scala.tools.nsc.typechecker.Contexts$class.addImport$0(Contexts.scala:63)
+	at scala.tools.nsc.typechecker.Contexts$$anonfun$0.apply(Contexts.scala:71)
+	at scala.tools.nsc.typechecker.Contexts$$anonfun$0.apply(Contexts.scala:70)
+	at scala.List.foreach(List.scala:707)
+	at scala.tools.nsc.typechecker.Contexts$class.rootContext(Contexts.scala:70)
+	at scala.tools.nsc.Global$analyzer$.rootContext(Global.scala:267)
+	at scala.tools.nsc.typechecker.Contexts$class.rootContext(Contexts.scala:56)
+	at scala.tools.nsc.Global$analyzer$.rootContext(Global.scala:267)
+	at scala.tools.nsc.typechecker.Analyzer$namerFactory$$anon$0.apply(Analyzer.scala:28)
+	at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:251)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$2.apply(Global.scala:240)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$2.apply(Global.scala:240)
+	at scala.Iterator$class.foreach(Iterator.scala:364)
+	at scala.collection.mutable.ListBuffer$$anon$0.foreach(ListBuffer.scala:248)
+	at scala.tools.nsc.Global$GlobalPhase.run(Global.scala:240)
+	at scala.tools.nsc.Global$Run.compileSources(Global.scala:535)
+	at ch.epfl.lamp.sdt.build.ScalaCompilerManager$SemanticCompiler.unitFor(ScalaCompilerManager.java:478)
+	at ch.epfl.lamp.sdt.build.ScalaCompilerManager$SemanticCompiler.modelFor(ScalaCompilerManager.java:528)
+	at ch.epfl.lamp.sdt.core.ScalaProject.outline(ScalaProject.java:126)
+	at ch.epfl.lamp.sdt.ui.scalaeditor.ScalaEditor.outline(ScalaEditor.java:156)
+	at ch.epfl.lamp.sdt.ui.actions.HighlightAction.run(HighlightAction.java:109)
+	at ch.epfl.lamp.sdt.ui.actions.HighlightAction.run(HighlightAction.java:79)
+	at ch.epfl.lamp.sdt.ui.actions.HighlightAction$1.run(HighlightAction.java:63)
+	at ch.epfl.lamp.sdt.ui.actions.HighlightAction.run(HighlightAction.java:67)
+	at ch.epfl.lamp.sdt.ui.scalaeditor.ScalaEditor$2.focusGained(ScalaEditor.java:229)
+	at org.eclipse.swt.widgets.TypedListener.handleEvent(TypedListener.java:105)
+	at org.eclipse.swt.widgets.EventTable.sendEvent(EventTable.java:66)
+	at org.eclipse.swt.widgets.Widget.sendEvent(Widget.java:928)
+	at org.eclipse.swt.widgets.Widget.sendEvent(Widget.java:952)
+	at org.eclipse.swt.widgets.Widget.sendEvent(Widget.java:933)
+	at org.eclipse.swt.widgets.Control.sendFocusEvent(Control.java:1970)
+	at org.eclipse.swt.widgets.Widget.wmSetFocus(Widget.java:2145)
+	at org.eclipse.swt.widgets.Control.WM_SETFOCUS(Control.java:3860)
+	at org.eclipse.swt.widgets.Canvas.WM_SETFOCUS(Canvas.java:297)
+	at org.eclipse.swt.widgets.Control.windowProc(Control.java:3312)
+	at org.eclipse.swt.widgets.Display.windowProc(Display.java:4025)
+	at org.eclipse.swt.internal.win32.OS.SetFocus(Native Method)
+	at org.eclipse.swt.widgets.Control.forceFocus(Control.java:735)
+	at org.eclipse.swt.widgets.Control.setSavedFocus(Control.java:2546)
+	at org.eclipse.swt.widgets.Decorations.restoreFocus(Decorations.java:759)
+	at org.eclipse.swt.widgets.Decorations.WM_ACTIVATE(Decorations.java:1580)
+	at org.eclipse.swt.widgets.Shell.WM_ACTIVATE(Shell.java:1714)
+	at org.eclipse.swt.widgets.Control.windowProc(Control.java:3244)
+	at org.eclipse.swt.widgets.Decorations.windowProc(Decorations.java:1539)
+	at org.eclipse.swt.widgets.Shell.windowProc(Shell.java:1634)
+	at org.eclipse.swt.widgets.Display.windowProc(Display.java:4025)
+	at org.eclipse.swt.internal.win32.OS.PeekMessageW(Native Method)
+	at org.eclipse.swt.internal.win32.OS.PeekMessage(OS.java:2401)
+	at org.eclipse.swt.widgets.Display.readAndDispatch(Display.java:2963)
+	at org.eclipse.ui.internal.Workbench.runEventLoop(Workbench.java:1930)
+	at org.eclipse.ui.internal.Workbench.runUI(Workbench.java:1894)
+	at org.eclipse.ui.internal.Workbench.createAndRunWorkbench(Workbench.java:422)
+	at org.eclipse.ui.PlatformUI.createAndRunWorkbench(PlatformUI.java:149)
+	at org.eclipse.ui.internal.ide.IDEApplication.run(IDEApplication.java:95)
+	at org.eclipse.core.internal.runtime.PlatformActivator$1.run(PlatformActivator.java:78)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.runApplication(EclipseAppLauncher.java:92)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.start(EclipseAppLauncher.java:68)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:400)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:177)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+	at java.lang.reflect.Method.invoke(Unknown Source)
+	at org.eclipse.core.launcher.Main.invokeFramework(Main.java:336)
+	at org.eclipse.core.launcher.Main.basicRun(Main.java:280)
+	at org.eclipse.core.launcher.Main.run(Main.java:977)
+	at org.eclipse.core.launcher.Main.main(Main.java:952)
+
+!ENTRY ch.epfl.lamp.sdt.core 4 4 2007-08-07 16:23:55.329
+!MESSAGE Presentation compiler error
+!STACK 0
+java.lang.AssertionError: assertion failed
+	at scala.Predef$.assert(Predef.scala:85)
+	at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:253)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$2.apply(Global.scala:240)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$2.apply(Global.scala:240)
+	at scala.Iterator$class.foreach(Iterator.scala:364)
+	at scala.collection.mutable.ListBuffer$$anon$0.foreach(ListBuffer.scala:248)
+	at scala.tools.nsc.Global$GlobalPhase.run(Global.scala:240)
+	at scala.tools.nsc.Global$Run.compileSources(Global.scala:535)
+	at ch.epfl.lamp.sdt.build.ScalaCompilerManager$SemanticCompiler.unitFor(ScalaCompilerManager.java:478)
+	at ch.epfl.lamp.sdt.build.ScalaCompilerManager$SemanticCompiler.modelFor(ScalaCompilerManager.java:528)
+	at ch.epfl.lamp.sdt.core.ScalaProject.outline(ScalaProject.java:126)
+	at ch.epfl.lamp.sdt.ui.scalaeditor.ScalaEditor.outline(ScalaEditor.java:156)
+	at ch.epfl.lamp.sdt.ui.actions.HighlightAction.run(HighlightAction.java:109)
+	at ch.epfl.lamp.sdt.ui.actions.HighlightAction.run(HighlightAction.java:79)
+	at ch.epfl.lamp.sdt.ui.actions.HighlightAction$1.run(HighlightAction.java:63)
+	at ch.epfl.lamp.sdt.ui.actions.HighlightAction.run(HighlightAction.java:67)
+	at ch.epfl.lamp.sdt.ui.scalaeditor.ScalaEditor$2.focusGained(ScalaEditor.java:229)
+	at org.eclipse.swt.widgets.TypedListener.handleEvent(TypedListener.java:105)
+	at org.eclipse.swt.widgets.EventTable.sendEvent(EventTable.java:66)
+	at org.eclipse.swt.widgets.Widget.sendEvent(Widget.java:928)
+	at org.eclipse.swt.widgets.Widget.sendEvent(Widget.java:952)
+	at org.eclipse.swt.widgets.Widget.sendEvent(Widget.java:933)
+	at org.eclipse.swt.widgets.Control.sendFocusEvent(Control.java:1970)
+	at org.eclipse.swt.widgets.Widget.wmSetFocus(Widget.java:2145)
+	at org.eclipse.swt.widgets.Control.WM_SETFOCUS(Control.java:3860)
+	at org.eclipse.swt.widgets.Canvas.WM_SETFOCUS(Canvas.java:297)
+	at org.eclipse.swt.widgets.Control.windowProc(Control.java:3312)
+	at org.eclipse.swt.widgets.Display.windowProc(Display.java:4025)
+	at org.eclipse.swt.internal.win32.OS.SetFocus(Native Method)
+	at org.eclipse.swt.widgets.Control.forceFocus(Control.java:735)
+	at org.eclipse.swt.widgets.Control.setSavedFocus(Control.java:2546)
+	at org.eclipse.swt.widgets.Decorations.restoreFocus(Decorations.java:759)
+	at org.eclipse.swt.widgets.Decorations.WM_ACTIVATE(Decorations.java:1580)
+	at org.eclipse.swt.widgets.Shell.WM_ACTIVATE(Shell.java:1714)
+	at org.eclipse.swt.widgets.Control.windowProc(Control.java:3244)
+	at org.eclipse.swt.widgets.Decorations.windowProc(Decorations.java:1539)
+	at org.eclipse.swt.widgets.Shell.windowProc(Shell.java:1634)
+	at org.eclipse.swt.widgets.Display.windowProc(Display.java:4025)
+	at org.eclipse.swt.internal.win32.OS.PeekMessageW(Native Method)
+	at org.eclipse.swt.internal.win32.OS.PeekMessage(OS.java:2401)
+	at org.eclipse.swt.widgets.Display.readAndDispatch(Display.java:2963)
+	at org.eclipse.ui.internal.Workbench.runEventLoop(Workbench.java:1930)
+	at org.eclipse.ui.internal.Workbench.runUI(Workbench.java:1894)
+	at org.eclipse.ui.internal.Workbench.createAndRunWorkbench(Workbench.java:422)
+	at org.eclipse.ui.PlatformUI.createAndRunWorkbench(PlatformUI.java:149)
+	at org.eclipse.ui.internal.ide.IDEApplication.run(IDEApplication.java:95)
+	at org.eclipse.core.internal.runtime.PlatformActivator$1.run(PlatformActivator.java:78)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.runApplication(EclipseAppLauncher.java:92)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.start(EclipseAppLauncher.java:68)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:400)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:177)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+	at java.lang.reflect.Method.invoke(Unknown Source)
+	at org.eclipse.core.launcher.Main.invokeFramework(Main.java:336)
+	at org.eclipse.core.launcher.Main.basicRun(Main.java:280)
+	at org.eclipse.core.launcher.Main.run(Main.java:977)
+	at org.eclipse.core.launcher.Main.main(Main.java:952)
+
+!ENTRY org.eclipse.ui 4 4 2007-08-07 16:23:55.329
+!MESSAGE Unhandled event loop exception
+
+!ENTRY org.eclipse.ui 4 0 2007-08-07 16:23:55.344
+!MESSAGE Assertion failed: ContentViewer must have a content provider when input is set.
+!STACK 0
+org.eclipse.jface.util.Assert$AssertionFailedException: Assertion failed: ContentViewer must have a content prov\
+ider when input is set.
+	at org.eclipse.jface.util.Assert.isTrue(Assert.java:182)
+	at org.eclipse.jface.viewers.ContentViewer.setInput(ContentViewer.java:242)
+	at org.eclipse.jface.viewers.StructuredViewer.setInput(StructuredViewer.java:1542)
+	at ch.epfl.lamp.sdt.ui.actions.HighlightAction.run(HighlightAction.java:109)
+	at ch.epfl.lamp.sdt.ui.actions.HighlightAction.run(HighlightAction.java:79)
+	at ch.epfl.lamp.sdt.ui.actions.HighlightAction$1.run(HighlightAction.java:63)
+	at ch.epfl.lamp.sdt.ui.actions.HighlightAction.run(HighlightAction.java:67)
+	at ch.epfl.lamp.sdt.ui.scalaeditor.ScalaEditor$2.focusGained(ScalaEditor.java:229)
+	at org.eclipse.swt.widgets.TypedListener.handleEvent(TypedListener.java:105)
+	at org.eclipse.swt.widgets.EventTable.sendEvent(EventTable.java:66)
+	at org.eclipse.swt.widgets.Widget.sendEvent(Widget.java:928)
+	at org.eclipse.swt.widgets.Widget.sendEvent(Widget.java:952)
+	at org.eclipse.swt.widgets.Widget.sendEvent(Widget.java:933)
+	at org.eclipse.swt.widgets.Control.sendFocusEvent(Control.java:1970)
+	at org.eclipse.swt.widgets.Widget.wmSetFocus(Widget.java:2145)
+	at org.eclipse.swt.widgets.Control.WM_SETFOCUS(Control.java:3860)
+	at org.eclipse.swt.widgets.Canvas.WM_SETFOCUS(Canvas.java:297)
+	at org.eclipse.swt.widgets.Control.windowProc(Control.java:3312)
+	at org.eclipse.swt.widgets.Display.windowProc(Display.java:4025)
+	at org.eclipse.swt.internal.win32.OS.SetFocus(Native Method)
+	at org.eclipse.swt.widgets.Control.forceFocus(Control.java:735)
+	at org.eclipse.swt.widgets.Control.setSavedFocus(Control.java:2546)
+	at org.eclipse.swt.widgets.Decorations.restoreFocus(Decorations.java:759)
+	at org.eclipse.swt.widgets.Decorations.WM_ACTIVATE(Decorations.java:1580)
+	at org.eclipse.swt.widgets.Shell.WM_ACTIVATE(Shell.java:1714)
+	at org.eclipse.swt.widgets.Control.windowProc(Control.java:3244)
+	at org.eclipse.swt.widgets.Decorations.windowProc(Decorations.java:1539)
+	at org.eclipse.swt.widgets.Shell.windowProc(Shell.java:1634)
+	at org.eclipse.swt.widgets.Display.windowProc(Display.java:4025)
+	at org.eclipse.swt.internal.win32.OS.PeekMessageW(Native Method)
+	at org.eclipse.swt.internal.win32.OS.PeekMessage(OS.java:2401)
+	at org.eclipse.swt.widgets.Display.readAndDispatch(Display.java:2963)
+	at org.eclipse.ui.internal.Workbench.runEventLoop(Workbench.java:1930)
+	at org.eclipse.ui.internal.Workbench.runUI(Workbench.java:1894)
+	at org.eclipse.ui.internal.Workbench.createAndRunWorkbench(Workbench.java:422)
+	at org.eclipse.ui.PlatformUI.createAndRunWorkbench(PlatformUI.java:149)
+	at org.eclipse.ui.internal.ide.IDEApplication.run(IDEApplication.java:95)
+	at org.eclipse.core.internal.runtime.PlatformActivator$1.run(PlatformActivator.java:78)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.runApplication(EclipseAppLauncher.java:92)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.start(EclipseAppLauncher.java:68)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:400)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:177)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+	at java.lang.reflect.Method.invoke(Unknown Source)
+	at org.eclipse.core.launcher.Main.invokeFramework(Main.java:336)
+	at org.eclipse.core.launcher.Main.basicRun(Main.java:280)
+	at org.eclipse.core.launcher.Main.run(Main.java:977)
+	at org.eclipse.core.launcher.Main.main(Main.java:952)
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" ></td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Iulian&nbsp; edited on &nbsp;2007-08-08 11:02:05.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

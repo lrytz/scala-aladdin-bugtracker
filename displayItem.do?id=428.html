@@ -1,0 +1,151 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#428]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Philippe</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2005-05-03 13:59:34.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">Class bodies are not evaluated linearly</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>object Test {
+
+  abstract class Foo(_a: Int, _b: Int) {
+
+    Console.println(&quot;Foo 1: &quot; + this);
+    val a: Int = _a;
+    Console.println(&quot;Foo 2: &quot; + this);
+    val b: Int = { fun(); _b }
+    Console.println(&quot;Foo 3: &quot; + this);
+    val x: Int;
+    Console.println(&quot;Foo 4: &quot; + this);
+    val y: Int;
+    Console.println(&quot;Foo 5: &quot; + this);
+
+
+    def fun(): Unit = ();
+
+    override def toString(): String =
+      &quot;a = &quot; + a + &quot;, b = &quot; + b + &quot;, x = &quot; + x + &quot;, y = &quot; + y;
+
+  }
+
+  class Bar(_a: Int, _b: Int, _x: Int, _y: Int) extends Foo(_a, _b) {
+
+    Console.println(&quot;Bar 1: &quot; + this);
+    val x: Int = _x;
+    Console.println(&quot;Bar 2: &quot; + this);
+    val y: Int = { fun(); _y }
+    Console.println(&quot;Bar 3: &quot; + this);
+
+  }
+
+  def main (args: Array[String]): Unit = {
+    new Bar(2,3,5,7);
+  }
+
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>The program prints this:
+<pre>
+Foo 1: a = 2, b = 0, x = 5, y = 0
+Foo 2: a = 2, b = 0, x = 5, y = 0
+Foo 3: a = 2, b = 3, x = 5, y = 0
+Foo 4: a = 2, b = 3, x = 5, y = 0
+Foo 5: a = 2, b = 3, x = 5, y = 0
+Bar 1: a = 2, b = 3, x = 5, y = 0
+Bar 2: a = 2, b = 3, x = 5, y = 0
+Bar 3: a = 2, b = 3, x = 5, y = 7
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >It should print this (the class bodies should be evaluated linearly):
+<pre>
+Foo 1: a = 0, b = 0, x = 0, y = 0
+Foo 2: a = 2, b = 0, x = 0, y = 0
+Foo 3: a = 2, b = 3, x = 0, y = 0
+Foo 4: a = 2, b = 3, x = 0, y = 0
+Foo 5: a = 2, b = 3, x = 0, y = 0
+Bar 1: a = 2, b = 3, x = 0, y = 0
+Bar 2: a = 2, b = 3, x = 5, y = 0
+Bar 3: a = 2, b = 3, x = 5, y = 7
+</pre>
+</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-05-08 10:33:02.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

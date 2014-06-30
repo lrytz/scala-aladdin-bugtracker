@@ -1,0 +1,130 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#239]</th>
+		<th><strong>project:</strong> scala-doc</th>
+		<th><strong>priority:</strong> high</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Burak</td>
+	  <td align="center" bgcolor="#FFFFFF">Vincent</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2003-11-27 12:35:03.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">cannot handle operators</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>abstract case class %(s:Symbol,ns:Seq[scala.xml.Node])
+   extends scala.xml.nobinding.Element(s,ns) { }
+
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre><pre>
+/tmp> scaladoc \$percent.scala 
+Exception in thread "main" scalac.ApplicationError
+	at scalac.util.Debug.abort(Debug.java:54)
+	at scala.tools.scaladoc.DocModule.apply(DocModule.java:125)
+	at scala.tools.scaladoc.HTMLGeneratorPhase.apply(HTMLGeneratorPhase.java:46)
+	at scalac.Global.compile(Global.java:300)
+	at scalac.Global.compile(Global.java:272)
+	at scala.tools.scaladoc.Main$.main(sources/scala/tools/scaladoc/Main.scala:34)
+	at scala.tools.scaladoc.Main.main(sources/scala/tools/scaladoc/Main.scala)
+Caused by: java.lang.reflect.InvocationTargetException
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at scala.tools.scaladoc.DocModule.apply(DocModule.java:123)
+	... 5 more
+Caused by: scalac.ApplicationError: class % extends scala.xml.nobinding.Element { val s$: scala.Symbol,  def s: \
+scala.Symbol,  val ns$: scala.Seq[scala.xml.Node],  def ns: scala.Seq[scala.xml.Node] }
+	at scalac.util.Debug.abort(Debug.java:46)
+	at scala.tools.scaladoc.Location.getURI(Location.java:49)
+	at scala.tools.scaladoc.Location.get(Location.java:32)
+	at scala.tools.scaladoc.HTMLGenerator.definitionURL(HTMLGenerator.java:252)
+	at scala.tools.scaladoc.HTMLGenerator.addSymbolTable(HTMLGenerator.java:954)
+	at scala.tools.scaladoc.HTMLGenerator.createContainerIndexPage(HTMLGenerator.java:1014)
+	at scala.tools.scaladoc.HTMLGenerator$0.apply(HTMLGenerator.java:320)
+	at scala.tools.scaladoc.ScalaSearch.foreach(ScalaSearch.java:142)
+	at scala.tools.scaladoc.HTMLGenerator.apply(HTMLGenerator.java:314)
+	at scala.tools.scaladoc.HTMLGenerator.apply(HTMLGenerator.java:347)
+	at scala.tools.scaladoc.StandardDocModule.apply(StandardDocModule.java:42)
+	at scala.tools.scaladoc.StandardDocModule.apply(StandardDocModule.java:52)
+	... 10 more
+
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >execution without error</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Vincent&nbsp; edited on &nbsp;2004-01-09 17:12:37.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+I fixed the bug by using the encoding name of symbols for the web page names.
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

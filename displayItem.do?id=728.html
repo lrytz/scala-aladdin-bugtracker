@@ -1,0 +1,168 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#728]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Sean</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2006-09-05 10:44:09.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">extending type variable still causes compiler crash</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>trait TestA {
+  type Node &lt;: NodeImpl;
+  trait NodeImpl;
+}
+
+trait TestB extends TestA {
+  type Node &lt;: NodeImpl;
+  trait NodeImpl extends super.Node;
+  type Init &lt;: Node with InitImpl;
+  trait InitImpl extends NodeImpl;
+}</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre><pre>
+test/Test.scala:4 error: illegal cyclic reference involving trait NodeImpl
+  type Node <: NodeImpl;
+       ^
+test/Test.scala:5 error: class type expected
+  trait NodeImpl extends super.Node;
+                              ^
+test/Test.scala:5 error: illegal cyclic reference involving trait NodeImpl
+  trait NodeImpl extends super.Node;
+  ^
+Exception in thread "main" java.lang.NullPointerException
+	at scala.tools.nsc.symtab.Types$CompoundType.computeClosure$0(Types.scala:660)
+	at scala.tools.nsc.symtab.Types$CompoundType.closure(Types.scala:709)
+	at scala.tools.nsc.symtab.Symbols$Symbol.closureLength$0(Symbols.scala:491)
+	at scala.tools.nsc.symtab.Symbols$Symbol.isLess(Symbols.scala:494)
+	at scala.tools.nsc.symtab.Types$Type.closurePos(Types.scala:316)
+	at scala.tools.nsc.symtab.Types$CompoundType.baseType(Types.scala:759)
+	at scala.tools.nsc.symtab.Types$TypeRef.baseType(Types.scala:879)
+	at scala.tools.nsc.symtab.Types$class.isSubType0(Types.scala:1725)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType0(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$class.isSubType(Types.scala:1681)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$Type.$less$colon$less(Types.scala:256)
+	at scala.tools.nsc.symtab.Types$$anonfun$27.apply(Types.scala:1754)
+	at scala.tools.nsc.symtab.Types$$anonfun$27.apply(Types.scala:1754)
+	at scala.List.forall(List.scala:822)
+	at scala.tools.nsc.symtab.Types$class.isSubType0(Types.scala:1754)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType0(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$class.isSubType(Types.scala:1681)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$Type.$less$colon$less(Types.scala:256)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedAbsTypeDef(Typers.scala:857)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1490)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1815)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1842)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$48.apply(Typers.scala:1024)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$48.apply(Typers.scala:1013)
+	at scala.List$.loop$0(List.scala:232)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:1013)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedTemplate(Typers.scala:717)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedClassDef(Typers.scala:645)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1478)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1815)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1842)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$48.apply(Typers.scala:1024)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$48.apply(Typers.scala:1013)
+	at scala.List$.loop$0(List.scala:232)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:1013)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1474)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1815)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1842)
+	at scala.tools.nsc.typechecker.Analyzer$typerFactory$$anon$1.apply(Analyzer.scala:38)
+	at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:218)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$1.apply(Global.scala:207)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$1.apply(Global.scala:207)
+	at scala.Iterator$class.foreach(Iterator.scala:316)
+	at scala.collection.mutable.ListBuffer$$anon$0.foreach(ListBuffer.scala:216)
+	at scala.tools.nsc.Global$GlobalPhase.run(Global.scala:207)
+	at scala.tools.nsc.Global$Run.compileSources(Global.scala:469)
+	at scala.tools.nsc.Global$Run.compile(Global.scala:533)
+	at scala.tools.nsc.Main$.process(Main.scala:76)
+	at scala.tools.nsc.Main$.main(Main.scala:98)
+	at scala.tools.nsc.Main.main(Main.scala)
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >no crash</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-09-19 22:40:41.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

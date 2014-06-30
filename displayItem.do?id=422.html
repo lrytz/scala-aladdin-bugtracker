@@ -1,0 +1,161 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#422]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> high</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Burak</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2005-04-22 11:19:45.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">wrong type causes crash in ExpandMixin</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>import scala.util.regexp.WordExp;
+import scala.util.automata.WordBerrySethi;
+
+object BoolWordExp extends WordExp {
+  type _labelT = MyLabels;
+  type _regexpT = RegExp;
+  abstract class MyLabels extends Label ;
+  case class MyLabel(c:Char) extends MyLabels;
+}
+
+object MyTranslator extends WordBerrySethi {
+  override val lang = BoolWordExp;
+  import lang._;
+  override protected def seenLabel( r:RegExp, i:Int, label: _labelT ): Unit = {
+    super.seenLabel(r,i,label)
+  }
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>I am aware that this is not a small file (the library classes it uses are big), but given that it's not always p\
+ossible to decrease sizes and still reproduce these bugs...
+
+<pre>
+Exception in thread "main" scalac.symtab.Type$Malformed: malformed type: WordExp#_labelT
+        at scalac.symtab.Type.typeRef(Type.java:215)
+        at scalac.symtab.Type$Map.map(Type.java:1184)
+        at scalac.symtab.Type$AsSeenFromMap.apply(Type.java:1412)
+        at scalac.symtab.Type$Map.map(Type.java:1252)
+        at scalac.symtab.Type$Map.map(Type.java:1299)
+        at scalac.symtab.Type$Map.map(Type.java:1293)
+        at scalac.symtab.Type$Map.map(Type.java:1224)
+        at scalac.symtab.Type$AsSeenFromMap.apply(Type.java:1421)
+        at scalac.symtab.Type.asSeenFrom(Type.java:1469)
+        at scalac.symtab.Type.memberType(Type.java:1487)
+        at scalac.symtab.Type$SymbolSearch.getSeenTypeOf(Type.java:1051)
+        at scalac.symtab.Type$SymbolSearch.<init>(Type.java:1025)
+        at scalac.symtab.Type.lookup(Type.java:879)
+        at scalac.symtab.Symbol.overridingSymbol(Symbol.java:1784)
+        at scalac.symtab.Symbol.overridingSymbol(Symbol.java:1787)
+        at scalac.transformer.ExpandMixinsPhase$ClassTreeExpander.getSuperMember(ExpandMixinsPhase.java:241)
+        at scalac.transformer.ExpandMixinsPhase$ClassTreeExpander.transform(ExpandMixinsPhase.java:268)
+        at scalac.ast.GenTransformer.transform(Transformer.java:553)
+        at scalac.transformer.ExpandMixinsPhase$TreeExpander.transform(ExpandMixinsPhase.java:144)
+        at scalac.transformer.ExpandMixinsPhase$ClassTreeExpander.transform(ExpandMixinsPhase.java:274)
+        at scalac.ast.GenTransformer.transform(Transformer.java:468)
+        at scalac.transformer.ExpandMixinsPhase$TreeExpander.transform(ExpandMixinsPhase.java:144)
+        at scalac.transformer.ExpandMixinsPhase$ClassTreeExpander.transform(ExpandMixinsPhase.java:274)
+        at scalac.ast.GenTransformer.transform(Transformer.java:596)
+        at scalac.transformer.ExpandMixinsPhase.getExpandedBody(ExpandMixinsPhase.java:322)
+        at scalac.transformer.ExpandMixinsPhase.access$19(ExpandMixinsPhase.java:53)
+        at scalac.transformer.ExpandMixinsPhase$TreeExpander.transform(ExpandMixinsPhase.java:142)
+        at scalac.ast.GenTransformer.transform(Transformer.java:596)
+        at scalac.ast.GenTransformer.apply(Transformer.java:405)
+        at scalac.transformer.ExpandMixinsPhase$TreeExpander.apply(ExpandMixinsPhase.java:134)
+        at scalac.transformer.ExpandMixinsPhase.apply(ExpandMixinsPhase.java:97)        at scalac.CompilationLoo\
+p.loop(CompilationLoop.java:102)
+        at scalac.CompilationLoop.compile(CompilationLoop.java:60)
+        at scalac.Global.compile(Global.java:391)
+        at scalac.Global.compile(Global.java:366)
+        at scala.tools.scalac.Main$.main1(Main.scala:47)
+        at scala.tools.scalac.Main$.main(Main.scala:28)
+        at scala.tools.scalac.Main.main(Main.scala:28)
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >This should compile. The problem is somehow caused by the override. I don't see where the type <code>WordExp#_labelT</code> comes from, maybe it's the thing in the superclass <code>WordBerrySethi</code>.
+
+It must be possible to write a method <code>seenLabel(.,.,.:_labelT)</code> in an abstract class and then override it with <code>seenLabel(.,.,.:_labelT)</code> where _labelT is now concrete. Am I missing anything here?</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-05-08 18:42:26.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+No, you did not miss anything. The problem was the supercall which caused a type of the form super.lang.RegExp. The compiler did not realize that this is the same as this.lang.RegExp. This is a bit tricky, because type equality in this case boils down to reasoning when 
+<pre>
+  this.lang == super.lang
+</pre>
+The corrected version assumes this is the case whenever super.lang is either final or abstract. Questions: Do people agree that this is correct? And is it sufficient, or do we need other criteria?
+
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

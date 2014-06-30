@@ -1,0 +1,164 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#689]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> high</th>
+		<th><strong>category:</strong> missing feature</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Burak</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">won't fix</td>
+          <td align="center" bgcolor="#FFFFFF">2006-08-03 18:03:06.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">confusing constructors</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>package fk
+
+case object  ParseException extends Throwable {}
+
+class RexParser(input: Iterator[char]) {
+
+  init()
+  var ch = '%'; // illegal character that we *should* never see
+  
+  def next: char =  {
+    if(input.hasNext)
+                do { 
+                  ch = input.next; 
+                  System.out.println(&quot;'&quot;+ch+&quot;'&quot;); // DEBUG
+                } while (Character.isWhitespace(ch));
+    System.out.println(&quot;meet this cute character, ch = &quot;+ch); // DEBUG
+    return ch;
+  }
+  def init(): this.type  = { 
+    System.out.println(&quot;init()&quot;); 
+    this.next; 
+    System.out.println(&quot;after init() ch is now ch == '&quot;+ch+&quot;'&quot;); 
+    this; 
+  }
+  
+  def nextEvent: Object = {
+    System.out.println(&quot;nextEvent(), ch = &quot;+ch); // DEBUG
+    if (Character.isJavaIdentifierStart(ch)) {
+      Console.println(1); System.exit(-1); null
+    } else {
+      System.out.println(&quot;huh? I don't like this character ch == '&quot;+ch+&quot;'&quot;);
+      throw ParseException
+    } 
+  }
+  
+}
+
+object fk {
+  def main(args:Array[String]) = {
+    val z:Seq[Char] = &quot;port['int']&quot;
+    val p = new RexParser(z.elements)
+    p.nextEvent
+  }
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>Just because the call to <code>init()</code> comes before the vardef, the compiler assigns the '%' character to \
+the field <strong>after</strong> running init(). This leads to unpredictable behavior.
+<pre>
+[emir@lamppc31 /tmp]$ java -classpath .:/home/emir/sbaz/lib/scala-library.jar fk.fk
+init()
+'p'
+meet this cute character, ch = p
+after init() ch is now ch == 'p'
+nextEvent(), ch = %
+huh? I don't like this character ch == '%'
+Exception in thread "main" fk.ParseException$
+        at fk.ParseException$.<clinit>(fk.scala)
+        at fk.RexParser.nextEvent(fk.scala:33)
+        at fk.fk$.main(fk.scala:43)
+        at fk.fk.main(fk.scala)
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >either (1) all field assignments be done before methods are called in the constructor, or (2) warnings that side-effects of method called from the constructor might be undone by subsequent assignments. </td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-08-14 16:43:28.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+I agree that this is a trap. But it does not have an easy fix. Note that Scala and Java's behavior are exactly the same in this case. 
+
+Why does it not have an easy fix:
+
+"either (1) all field assignments be done before methods are called in the constructor"
+
+what if a field assignment involes a method call?
+
+"or (2) warnings that side-effects of method called from the constructor might be undone by subsequent assignments."
+
+This might be worth it, but ot would require a complicated and necessary incomplete flow analysis.
+
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

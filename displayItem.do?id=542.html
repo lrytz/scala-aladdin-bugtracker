@@ -1,0 +1,192 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#542]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Sean</td>
+	  <td align="center" bgcolor="#FFFFFF">Burak</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2006-03-03 18:00:29.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">XML  compiler crash</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>          for (val top &lt;- modules.elements.toList) yield 
+            &lt;TR&gt;&lt;TD class=&quot;signature&quot;&gt;
+            &lt;CODE&gt;{Text(&quot;package&quot;)}
+            {(aref(urlFor(top._2), &quot;_self&quot;, top._2.fullNameString('.')))}&lt;CODE&gt;;
+            &lt;/TD&gt;&lt;/TR&gt;;
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>The code is ill-formed because the last &lt;CODE> should really be a &lt;/CODE>, putting this code through the c\
+ompiler causes a crashes:
+<pre>
+scala.MatchError: _
+	at scala.tools.nsc.ast.parser.TreeBuilder.makeValue$0(TreeBuilder.scala:244)
+	at scala.tools.nsc.ast.parser.TreeBuilder$$anonfun$6.apply(TreeBuilder.scala:269)
+	at scala.tools.nsc.ast.parser.TreeBuilder$$anonfun$6.apply(TreeBuilder.scala:269)
+	at scala.List.map(List.scala:664)
+	at scala.tools.nsc.ast.parser.TreeBuilder.makeFor(TreeBuilder.scala:269)
+	at scala.tools.nsc.ast.parser.TreeBuilder.makeFor(TreeBuilder.scala:281)
+	at scala.tools.nsc.ast.parser.Parsers$Parser.expr(Parsers.scala:691)
+	at scala.tools.nsc.ast.parser.MarkupParsers$MarkupParser.xEmbeddedExpr(MarkupParsers.scala:489)
+	at
+...
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >Shouldn't crash. Fixing the syntax error makes the crash go away. </td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2006-03-06 11:53:56.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+That's strange, compiling the following code:
+<pre>
+for (val top <- List(&lt;a/>)) yield 
+    &lt;TR>&lt;TD class="signature">
+     &lt;CODE>{Text("package")}
+      {"blabla"}&lt;CODE>;
+  &lt;/TD>&lt;/TR>;
+</pre>
+yields the error message:
+[emir@lamppc31 /tmp]$ scalac -d . test.scala
+test.scala:18 error: in XML literal: expected closing tag of 
+<pre>
+CODE
+      {"blabla"}&lt;CODE>;
+                ^
+</pre>
+
+I am not sure how I can track this bug down. Do you have an example that crashes the compiler which I can reproduce?
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2006-10-11 14:50:26.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+did some formatting to this report so it is easier to read.
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2006-10-23 14:40:42.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+error handling got improved recently. the result on program
+<pre>
+object foo {
+for (val top <- List(<a/>)) yield
+    &lt;TR>&lt;TD class="signature">
+             &lt;CODE>{Text("package")}
+                       {"blabla"}&lt;CODE>;
+                             &lt;/TD>&lt;/TR>;
+                                 }
+
+
+</pre>
+is now
+/tmp/bo.scala:6 error: in XML literal: expected closing tag of CODE
+                             &lt;/TD>&lt;/TR>;
+                                 ^
+/tmp/bo.scala:6 error: in XML literal: '>' expected instead of '&lt;'
+                             &lt;/TD>&lt;/TR>;
+                                  ^
+/tmp/bo.scala:7 error: in XML literal: in XML content, please use '}}' to express '}'
+                                 }
+                                  ^
+/tmp/bo.scala:4 error: missing end tag in XML literal for &lt;CODE>
+             &lt;CODE>{Text("package")}
+               ^
+/tmp/bo.scala:5 error: ';' expected but something found.
+                       {"blabla"}&lt;CODE>;
+                                ^
+/tmp/bo.scala:9 error: '}' expected but eof found.
+
+^
+6 errors found
+</pre>
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2006-10-23 14:41:27.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+is now
+<pre>
+/tmp/bo.scala:6 error: in XML literal: expected closing tag of CODE
+                             &lt;/TD>&lt;/TR>;
+                                 ^
+...
+</pre>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

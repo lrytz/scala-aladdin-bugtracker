@@ -1,0 +1,343 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#623]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Sean</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">not repro</td>
+          <td align="center" bgcolor="#FFFFFF">2006-06-07 16:38:07.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">more NPE madness</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>package mylib;
+object constr {
+class Quantity{
+  private var value:Option[double]=None;
+  private var contraints:List[Contraint]=List();
+  private var informant:Contraint=NoContraint;
+  def getValue:Option[double]=value;
+  def setValue(v:double,setter:Contraint):unit=value match{
+    case Some(v1)=&gt;if(v!=v1) error(&quot;Error!Contradiction:&quot;+v+&quot; and &quot; +v1);
+    case None=&gt;{
+      informant=setter;
+      value=Some(v);
+      for(val c&lt;-contraints;c!=informant) 
+        c.newValue;
+    }
+    }
+  def setValue(v:double):unit=setValue(v,NoContraint);
+  def forgetValue(retractor:Contraint):unit={
+    if(retractor==informant)
+      {
+      value=None;
+      for(val c&lt;-contraints;c!=informant)c.dropValue;
+      }
+  }
+  def forgetValue:unit=forgetValue(NoContraint);
+  def connect(c:Contraint):unit={
+    contraints=c::contraints;
+    value match{
+      case Some(_)=&gt;c.newValue
+      case None=&gt;}
+    }
+  }
+
+
+
+trait Option[+a];
+case class Some[+a](value:a)extends Option[a];
+case object None extends Option[Nothing];
+
+abstract class Contraint{
+  def newValue:unit;
+  def dropValue:unit;
+}
+
+case class Adder(al:Quantity,a2:Quantity,sum:Quantity)extends Contraint{
+  def newValue:unit={Triple(al.getValue,a2.getValue,sum.getValue) match{
+    case Triple(Some(x1),Some(x2),_)=&gt;sum.setValue(x1+x2,this);
+    case Triple(Some(x1),_,Some(r))=&gt;a2.setValue(r-x1,this);
+    case Triple(_,Some(x2),Some(r))=&gt;al.setValue(r-x2,this);
+    case _=&gt;}}
+  def dropValue:unit={
+    al.forgetValue(this);
+    a2.forgetValue(this);
+    sum.forgetValue(this);
+  }
+  al connect this;
+  a2 connect this;
+  sum connect this;
+}
+
+case class Constant(q:Quantity,v:double)extends Contraint{
+  def newValue:unit=error(&quot;Constant.newValue&quot;);
+  def dropValue:unit=error(&quot;Constant.dropValue&quot;);
+  q connect this;
+  q.setValue(v,this);
+}
+case class NoContraint extends Contraint{
+  def newValue:unit=error(&quot;Constant.newValue&quot;);
+  def dropValue:unit=error(&quot;Constant.dropValue&quot;);
+}
+case class Multiplier(al:Quantity,a2:Quantity,sum:Quantity) extends Contraint{
+  def newValue:unit={Triple(al.getValue,a2.getValue,sum.getValue)match{
+  case Triple(Some(x1),Some(x2),_)=&gt;sum.setValue(x1*x2,this)
+  case Triple(Some(x1),_,Some(r))=&gt;a2.setValue(r/x1,this)
+  case Triple(_,Some(x2),Some(r))=&gt;al.setValue(r/x2,this)
+  case Triple(Some(0),_,_)=&gt;al.setValue(0,this)
+  case Triple(_,Some(0),_)=&gt;al.setValue(0,this)
+  case _=&gt;}
+  }
+  def dropValue:unit={
+    al.forgetValue(this);
+    a2.forgetValue(this);
+    sum.forgetValue(this);
+  }
+}
+
+case class Probe(name:String,q:Quantity) extends Contraint{
+  def newValue:unit=printProbe(q.getValue);
+  def dropValue:unit=printProbe(None);
+  private def printProbe(v:Option[double]):unit={
+    val vstr=v match{
+      case Some(x)=&gt;x.toString();
+      case None=&gt;&quot;?&quot;;
+    }
+    Console.println(&quot;Probe:&quot;+name+&quot;=&quot;+vstr);
+  }
+}
+
+  def CFconverter(c:Quantity,f:Quantity)={
+    val u,v,w,x,y=new Quantity;
+    Constant(x,9);
+    Multiplier(c,x,u);
+    Constant(w,-32);
+    Adder(f,w,v)
+    Constant(y,5);
+    Multiplier(v,y,u);
+  }
+def main(args : Array[String]):Unit = {
+  val C,F=new Quantity;
+  CFconverter(C,F);
+  Probe(&quot;Celsius temp&quot;,C);
+  Probe(&quot;Fahrenheit temp&quot;,F);
+  C setValue 25;
+  
+}
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>Note: bug was encountered by a student during progammiation lab. Someone should tell them to report compiler bug\
+s right away and not waste too much time trying to debug the compiler crash. 
+
+<pre>
+nsc> test/Test.scala
+error: class file /home/mcdirmid/runtime-workspace/scala/dists/latest/lib/scala-library.jar(scala/Option.class) \
+does not define object Option
+
+nsc> test/Test.scala
+Exception in thread "main" java.lang.NullPointerException
+        at scala.tools.nsc.typechecker.SuperAccessors$SuperAccTransformer.transform(SuperAccessors.scala:67)
+        at scala.tools.nsc.typechecker.SuperAccessors$SuperAccTransformer$$anonfun$4.apply(SuperAccessors.scala:\
+36)
+        at scala.tools.nsc.typechecker.SuperAccessors$SuperAccTransformer$$anonfun$4.apply(SuperAccessors.scala:\
+36)
+        at scala.List.map(List.scala:652)
+        at scala.tools.nsc.typechecker.SuperAccessors$SuperAccTransformer.transformArgs(SuperAccessors.scala:36)\
+
+        at scala.tools.nsc.typechecker.SuperAccessors$SuperAccTransformer.transform(SuperAccessors.scala:67)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$25.apply(Trees.scala:1038)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$25.apply(Trees.scala:1036)
+        at scala.List$.loop$0(List.scala:232)
+        at scala.List$.mapConserve(List.scala:249)
+        at scala.tools.nsc.ast.Trees$Transformer.transformStats(Trees.scala:1036)
+        at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:964)
+        at scala.tools.nsc.typechecker.SuperAccessors$SuperAccTransformer.transform(SuperAccessors.scala:73)
+        at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:966)
+        at scala.tools.nsc.typechecker.SuperAccessors$SuperAccTransformer.transform(SuperAccessors.scala:73)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$23.apply(Trees.scala:1032)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$23.apply(Trees.scala:1032)
+        at scala.List$.loop$0(List.scala:232)
+        at scala.List$.mapConserve(List.scala:249)
+        at scala.tools.nsc.ast.Trees$Transformer.transformCaseDefs(Trees.scala:1032)
+        at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:984)
+        at scala.tools.nsc.typechecker.SuperAccessors$SuperAccTransformer.transform(SuperAccessors.scala:73)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$16.apply(Trees.scala:943)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$16.apply(Trees.scala:942)
+        at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1044)
+        at scala.tools.nsc.typechecker.SuperAccessors$SuperAccTransformer.atOwner(SuperAccessors.scala:78)
+        at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:941)
+        at scala.tools.nsc.typechecker.SuperAccessors$SuperAccTransformer.transform(SuperAccessors.scala:73)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$19.apply(Trees.scala:1022)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$19.apply(Trees.scala:1022)
+        at scala.List$.loop$0(List.scala:232)
+        at scala.List$.mapConserve(List.scala:249)
+        at scala.tools.nsc.ast.Trees$Transformer.transformTrees(Trees.scala:1022)
+        at scala.tools.nsc.typechecker.SuperAccessors$SuperAccTransformer.transform(SuperAccessors.scala:43)
+        at scala.tools.nsc.ast.Trees$Transformer.transformTemplate(Trees.scala:1024)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$13.apply(Trees.scala:930)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$13.apply(Trees.scala:930)
+        at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1044)
+        at scala.tools.nsc.typechecker.SuperAccessors$SuperAccTransformer.atOwner(SuperAccessors.scala:78)
+        at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:929)
+        at scala.tools.nsc.typechecker.SuperAccessors$SuperAccTransformer.transform(SuperAccessors.scala:73)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$19.apply(Trees.scala:1022)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$19.apply(Trees.scala:1022)
+        at scala.List$.loop$0(List.scala:232)
+        at scala.List$.mapConserve(List.scala:249)
+        at scala.tools.nsc.ast.Trees$Transformer.transformTrees(Trees.scala:1022)
+        at scala.tools.nsc.typechecker.SuperAccessors$SuperAccTransformer.transform(SuperAccessors.scala:43)
+        at scala.tools.nsc.ast.Trees$Transformer.transformTemplate(Trees.scala:1024)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$14.apply(Trees.scala:934)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$14.apply(Trees.scala:934)
+        at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1044)
+        at scala.tools.nsc.typechecker.SuperAccessors$SuperAccTransformer.atOwner(SuperAccessors.scala:78)
+        at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:933)
+        at scala.tools.nsc.typechecker.SuperAccessors$SuperAccTransformer.transform(SuperAccessors.scala:73)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$25.apply(Trees.scala:1038)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$25.apply(Trees.scala:1036)
+        at scala.List$.loop$0(List.scala:232)
+        at scala.List$.mapConserve(List.scala:249)
+        at scala.tools.nsc.ast.Trees$Transformer.transformStats(Trees.scala:1036)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$12.apply(Trees.scala:926)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$12.apply(Trees.scala:926)
+        at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1044)
+        at scala.tools.nsc.typechecker.SuperAccessors$SuperAccTransformer.atOwner(SuperAccessors.scala:78)
+        at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:925)
+        at scala.tools.nsc.typechecker.SuperAccessors$SuperAccTransformer.transform(SuperAccessors.scala:73)
+        at scala.tools.nsc.ast.Trees$Transformer.transformUnit(Trees.scala:1039)
+        at scala.tools.nsc.transform.Transform$Phase.apply(Transform.scala:22)
+        at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:215)
+        at scala.tools.nsc.Global$GlobalPhase$$anonfun$1.apply(Global.scala:204)
+        at scala.tools.nsc.Global$GlobalPhase$$anonfun$1.apply(Global.scala:204)
+        at scala.Iterator$class.foreach(Iterator.scala:304)
+        at scala.collection.mutable.ListBuffer$$anon$0.foreach(ListBuffer.scala:216)
+        at scala.tools.nsc.Global$GlobalPhase.run(Global.scala:204)
+        at scala.tools.nsc.Global$Run.compileSources(Global.scala:455)
+        at scala.tools.nsc.Global$Run.compile(Global.scala:514)
+        at scala.tools.nsc.Main$$anonfun$0.apply(Main.scala:39)
+        at scala.tools.nsc.Main$$anonfun$0.apply(Main.scala:36)
+        at scala.tools.nsc.EvalLoop$class.loop(EvalLoop.scala:17)
+        at scala.tools.nsc.Main$.loop(Main.scala:16)
+        at scala.tools.nsc.EvalLoop$class.loop(EvalLoop.scala:18)
+        at scala.tools.nsc.Main$.loop(Main.scala:16)
+        at scala.tools.nsc.Main$.resident(Main.scala:36)
+        at scala.tools.nsc.Main$.process(Main.scala:55)
+        at scala.tools.nsc.Main$.main(Main.scala:82)
+        at scala.tools.nsc.Main.main(Main.scala)
+bash-3.00$ 
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" ></td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-06-07 17:08:40.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+I could not reproduce this one either. The program has two errors. It should be Some(x) instead of Option(x) and Multiplier misses a dropValue. I have corrected the code and then it compiles OK.
+
+
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Sean&nbsp; edited on &nbsp;2006-06-07 17:10:40.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Strange. I'll build a distribution so I can try from the command line, maybe its a resident compiler bug. 
+</td></tr>
+<tr>
+        <td>
+        <strong>Sean&nbsp; edited on &nbsp;2006-06-07 17:15:22.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Sean&nbsp; edited on &nbsp;2006-06-07 17:16:41.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Looks like a resident compiler bug. Sorry I didn't find this out before. 
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-06-08 15:11:20.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+I still can't reporduce it.
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

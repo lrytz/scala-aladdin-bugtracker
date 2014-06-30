@@ -1,0 +1,134 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#783]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Sean</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2006-10-19 15:35:30.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">case method through method call ignores method call</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>package test;
+
+object Main extends Application {
+  class Global {
+    case class Template(x : Int, y : Int) {
+      Console.println(&quot;outer: &quot; + Global.this);
+    }
+  }
+  trait Contexts requires Analyzer {
+    val xxx : global.Template = {
+      assert(globalInit0 != null);
+      globalInit0.Template(10, 20);
+    }
+  }
+  abstract class Analyzer extends Contexts {
+    type Global &lt;: Main.Global;
+    final val global : Global = globalInit;
+    def globalInit : Global;
+    final def globalInit0 = globalInit.asInstanceOf[global.type];
+  }
+  
+  object global0 extends Global {
+    object analyzer extends Analyzer {
+      type Global = global0.type;
+      override def globalInit = global0;
+    }
+  }
+  Console.println(global0.analyzer.xxx);
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre><pre>Exception in thread "main" java.lang.ExceptionInInitializerError
+	at test.Main$.<init>(Main.scala:28)
+	at test.Main$.<clinit>(Main.scala)
+	at test.Main.main(Main.scala)
+Caused by: java.lang.NullPointerException
+	at test.Main$Global$Template.<init>(Main.scala:5)
+	at test.Main$Contexts$class.$init$(Main.scala:12)
+	at test.Main$Analyzer.<init>(Main.scala:15)
+	at test.Main$global0$analyzer$.<init>(Main.scala:23)
+	at test.Main$global0$analyzer$.<clinit>(Main.scala)
+	... 3 more</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >No sure.
+
+Because new globalInit.Template(10, 20) would be rejected by the compiler (globalInit is not a stable identifier), I would guess that globalInit.Template(10, 20) should be rejected also. </td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-10-26 16:41:31.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

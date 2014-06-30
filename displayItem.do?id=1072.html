@@ -1,0 +1,197 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#1072]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Sean</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2007-04-29 05:37:41.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">weird unit inference/forgot semi-colon crash</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>package test;
+object Test {
+  trait ScannerConfiguration {
+    private var tokenName = new Array[String](128)
+    {
+      def enterKeyword(n: String, tokenId: int) {
+        (tokenId &gt;= tokenName.length)
+      }
+      {}
+    }
+  }
+}</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre><pre>sean-mcdirmid:~/workspace/test13/src mcdirmid$ ../../scala/build/quick/bin/scalac -d ../bin test/Test.scala\
+ 
+test/Test.scala:4: error: illegal inheritance from final class
+    private var tokenName = new Array[String](128)
+                                ^
+test/Test.scala:7: error: recursive method tokenName needs type
+        (tokenId >= tokenName.length)
+                    ^
+test/Test.scala:4: error: not found: type $anon
+    private var tokenName = new Array[String](128)
+                            ^
+Exception in thread "main" scala.MatchError: <error>
+	at scala.tools.nsc.typechecker.Infer$Inferencer.inferMethodAlternative(Infer.scala:1169)
+	at scala.tools.nsc.typechecker.Typers$Typer.doTypedApply(Typers.scala:1491)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$90.apply(Typers.scala:1961)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$90.apply(Typers.scala:1961)
+	at scala.tools.nsc.typechecker.Typers$Typer.silent(Typers.scala:515)
+	at scala.tools.nsc.typechecker.Typers$Typer.tryTypedApply$0(Typers.scala:1961)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedApply$0(Typers.scala:2011)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:2543)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2626)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2670)
+	at scala.tools.nsc.typechecker.Typers$Typer.transformedOrTyped(Typers.scala:2717)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedDefDef(Typers.scala:1172)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:2400)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2626)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2659)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedStat$0(Typers.scala:1394)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$58.apply(Typers.scala:1424)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$58.apply(Typers.scala:1424)
+	at scala.List$.loop$0(List.scala:243)
+	at scala.List$.mapConserve(List.scala:260)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:1424)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedTemplate(Typers.scala:1054)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedClassDef(Typers.scala:951)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:2391)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2626)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2659)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedStat$0(Typers.scala:1394)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$58.apply(Typers.scala:1424)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$58.apply(Typers.scala:1424)
+	at scala.List$.loop$0(List.scala:243)
+	at scala.List$.mapConserve(List.scala:260)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:1424)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedBlock(Typers.scala:1252)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:2421)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2626)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2670)
+	at scala.tools.nsc.typechecker.Typers$Typer.computeType(Typers.scala:2710)
+	at scala.tools.nsc.typechecker.Namers$Namer.typeSig(Namers.scala:643)
+	at scala.tools.nsc.typechecker.Namers$Namer$$anon$0.complete(Namers.scala:356)
+	at scala.tools.nsc.symtab.Symbols$Symbol.info(Symbols.scala:410)
+	at scala.tools.nsc.symtab.Symbols$Symbol.initialize(Symbols.scala:518)
+	at scala.tools.nsc.typechecker.Typers$Typer.addGetterSetter(Typers.scala:987)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$30.apply(Typers.scala:1052)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$30.apply(Typers.scala:1052)
+	at scala.List.flatMap(List.scala:966)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedTemplate(Typers.scala:1052)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedClassDef(Typers.scala:951)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:2391)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2626)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2659)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedStat$0(Typers.scala:1394)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$58.apply(Typers.scala:1424)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$58.apply(Typers.scala:1424)
+	at scala.List$.loop$0(List.scala:243)
+	at scala.List$.mapConserve(List.scala:260)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:1424)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedTemplate(Typers.scala:1054)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedModuleDef(Typers.scala:967)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:2394)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2626)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2659)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedStat$0(Typers.scala:1394)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$58.apply(Typers.scala:1424)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$58.apply(Typers.scala:1424)
+	at scala.List$.loop$0(List.scala:243)
+	at scala.List$.mapConserve(List.scala:260)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:1424)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:2387)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2626)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2659)
+	at scala.tools.nsc.typechecker.Analyzer$typerFactory$$anon$1.apply(Analyzer.scala:38)
+	at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:235)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$2.apply(Global.scala:224)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$2.apply(Global.scala:224)
+	at scala.Iterator$class.foreach(Iterator.scala:382)
+	at scala.collection.mutable.ListBuffer$$anon$0.foreach(ListBuffer.scala:245)
+	at scala.tools.nsc.Global$GlobalPhase.run(Global.scala:224)
+	at scala.tools.nsc.Global$Run.compileSources(Global.scala:492)
+	at scala.tools.nsc.Global$Run.compile(Global.scala:566)
+	at scala.tools.nsc.Main$.process(Main.scala:57)
+	at scala.tools.nsc.Main$.main(Main.scala:77)
+	at scala.tools.nsc.Main.main(Main.scala)</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" ></td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2007-04-29 15:27:21.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

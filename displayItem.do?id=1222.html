@@ -1,0 +1,135 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#1222]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> medium</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Philipp</td>
+	  <td align="center" bgcolor="#FFFFFF">Burak</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2007-07-18 12:25:45.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">Guard in pattern with unapply crashes compiler</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>object guardCrash2 extends Application {
+
+  class &amp;(left: Any, right: Any)
+
+  object &amp; {
+    def apply(left: Any, right: Any) = new &amp;(left, right)
+    def unapply(scrut: Any): Option[(Any, Any)] = Some((scrut, scrut))
+  }
+
+  class Sync {
+    def unapply(scrut: Any): Boolean = true
+  }
+
+  class Buffer {
+    case class Put(x: int)
+    object Get extends Sync
+
+    def pattern(x: Any) = x match {
+      // guard `if y &gt; 4' crashes compiler
+      case Get() &amp; Put(y) if y &gt; 4 =&gt; y
+    }
+  }
+}</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>exception when transforming def pattern(x: Any): Int = x match {
+  case guardCrash2.this.&.unapply(<unapply-selector>) <unapply> (Buffer.this.Get().unapply(<unapply-selector>) <\
+unapply> (), (Int)Buffer.this.Put((y @ _))) if y.>(4) => y
+}
+...
+Exception in thread "main" java.lang.AssertionError: assertion failed
+        at scala.Predef$.assert(Predef.scala:85)
+        at scala.tools.nsc.matching.PatternMatchers$PatternMatcher.enter1(PatternMatchers.scala:608)
+        at scala.tools.nsc.matching.PatternMatchers$PatternMatcher.enter(PatternMatchers.scala:698)
+        at scala.tools.nsc.matching.PatternMatchers$PatternMatcher.enter1(PatternMatchers.scala:665)
+        at scala.tools.nsc.matching.PatternMatchers$PatternMatcher.enter(PatternMatchers.scala:296)
+        at scala.tools.nsc.matching.PatternMatchers$PatternMatcher$$anonfun$4.apply(PatternMatchers.scala:211)
+        at scala.tools.nsc.matching.PatternMatchers$PatternMatcher$$anonfun$4.apply(PatternMatchers.scala:211)
+        at scala.List.foreach(List.scala:707)
+        at scala.tools.nsc.matching.PatternMatchers$PatternMatcher.constructIncremental(PatternMatchers.scala:21\
+1)
+        at scala.tools.nsc.matching.PatternMatchers$PatternMatcher.construct(PatternMatchers.scala:157)
+        at scala.tools.nsc.matching.TransMatcher$class.handlePattern(TransMatcher.scala:298)
+        at scala.tools.nsc.transform.ExplicitOuter.handlePattern(ExplicitOuter.scala:19)
+        at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer.transform(ExplicitOuter.scala:433)
+...
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >Should compile without error.</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2007-08-08 11:28:33.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+this must have got fixed along the way.
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

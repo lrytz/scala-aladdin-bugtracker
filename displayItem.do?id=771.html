@@ -1,0 +1,132 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#771]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Stephane</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2006-10-06 15:48:38.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">Compiler crash in type checker</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>class Foo(s: String) {
+  final val s = &quot;abc&quot;
+}</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre><pre>test.scala:2 error: s is already defined as value s
+  final val s = "abc"
+            ^
+Exception in thread "main" java.lang.AssertionError: assertion failed: final private <local> val s = "abc"
+        at scala.Predef$.assert(Predef.scala:95)
+        at scala.tools.nsc.typechecker.Typers$Typer.addGetterSetter(Typers.scala:725)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$21.apply(Typers.scala:771)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$21.apply(Typers.scala:771)
+        at scala.List.flatMap(List.scala:931)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedTemplate(Typers.scala:771)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedClassDef(Typers.scala:698)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1548)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1885)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1913)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedStat$0(Typers.scala:1087)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$47.apply(Typers.scala:1108)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$47.apply(Typers.scala:1108)
+        at scala.List$.loop$0(List.scala:239)
+        at scala.List$.mapConserve(List.scala:256)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:1108)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1544)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1885)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1913)
+        at scala.tools.nsc.typechecker.Analyzer$typerFactory$$anon$1.apply(Analyzer.scala:38)
+        at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:218)
+        at scala.tools.nsc.Global$GlobalPhase$$anonfun$1.apply(Global.scala:207)
+        at scala.tools.nsc.Global$GlobalPhase$$anonfun$1.apply(Global.scala:207)
+        at scala.Iterator$class.foreach(Iterator.scala:316)
+        at scala.collection.mutable.ListBuffer$$anon$0.foreach(ListBuffer.scala:220)
+        at scala.tools.nsc.Global$GlobalPhase.run(Global.scala:207)
+        at scala.tools.nsc.Global$Run.compileSources(Global.scala:469)
+        at scala.tools.nsc.Global$Run.compile(Global.scala:535)
+        at scala.tools.nsc.Main$.process(Main.scala:76)
+        at scala.tools.nsc.Main$.main(Main.scala:98)
+        at scala.tools.nsc.Main.main(Main.scala)</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" ><pre>test.scala:2 error: s is already defined as value s
+  final val s = "abc"
+            ^
+one error found</pre></td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-10-06 17:07:05.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

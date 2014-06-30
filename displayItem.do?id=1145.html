@@ -1,0 +1,146 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#1145]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Sean</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2007-05-29 07:38:52.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">class-qualified private constructor crash</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>package test1
+trait Contexts {
+  class Context private[Contexts]
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>sean-mcdirmid:~/workspace/test13/src mcdirmid$ ../../scala/build/quick/bin/scalac -d ../bin test1/Contexts.scala\
+
+Exception in thread "main" java.lang.AssertionError: assertion failed: java.lang.Object with ScalaObject
+  private[Contexts] def test1$Contexts$$this(): test1.Contexts#Context = {
+    Context.super.this();
+    ()
+  };
+  protected <synthetic> <paramaccessor> val $outer: test1.Contexts = _;
+  <synthetic> <stable> def test1$Contexts$Context$$$outer(): test1.Contexts = Context.this.$outer
+}
+	at scala.Predef$.assert(Predef.scala:90)
+	at scala.tools.nsc.transform.Constructors$ConstructorTransformer.transformClassTemplate(Constructors.scala:45)\
+
+	at scala.tools.nsc.transform.Constructors$ConstructorTransformer.transform(Constructors.scala:211)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$35.apply(Trees.scala:1326)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$35.apply(Trees.scala:1324)
+	at scala.List$.loop$0(List.scala:243)
+	at scala.List$.mapConserve(List.scala:260)
+	at scala.tools.nsc.ast.Trees$Transformer.transformStats(Trees.scala:1324)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1236)
+	at scala.tools.nsc.transform.Constructors$ConstructorTransformer.transform(Constructors.scala:213)
+	at scala.tools.nsc.ast.Trees$Transformer.transformTemplate(Trees.scala:1310)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$22.apply(Trees.scala:1204)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$22.apply(Trees.scala:1204)
+	at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1332)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1203)
+	at scala.tools.nsc.transform.Constructors$ConstructorTransformer.transform(Constructors.scala:213)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$35.apply(Trees.scala:1326)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$35.apply(Trees.scala:1324)
+	at scala.List$.loop$0(List.scala:243)
+	at scala.List$.mapConserve(List.scala:260)
+	at scala.tools.nsc.ast.Trees$Transformer.transformStats(Trees.scala:1324)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$21.apply(Trees.scala:1200)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$21.apply(Trees.scala:1200)
+	at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1332)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1199)
+	at scala.tools.nsc.transform.Constructors$ConstructorTransformer.transform(Constructors.scala:213)
+	at scala.tools.nsc.ast.Trees$Transformer.transformUnit(Trees.scala:1327)
+	at scala.tools.nsc.transform.Transform$Phase.apply(Transform.scala:30)
+	at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:241)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$2.apply(Global.scala:230)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$2.apply(Global.scala:230)
+	at scala.Iterator$class.foreach(Iterator.scala:364)
+	at scala.collection.mutable.ListBuffer$$anon$0.foreach(ListBuffer.scala:247)
+	at scala.tools.nsc.Global$GlobalPhase.run(Global.scala:230)
+	at scala.tools.nsc.Global$Run.compileSources(Global.scala:498)
+	at scala.tools.nsc.Global$Run.compile(Global.scala:572)
+	at scala.tools.nsc.Main$.process(Main.scala:57)
+	at scala.tools.nsc.Main$.main(Main.scala:77)
+	at scala.tools.nsc.Main.main(Main.scala)
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" ></td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2007-06-01 17:22:24.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

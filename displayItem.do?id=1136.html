@@ -1,0 +1,231 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#1136]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> high</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Stephane</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2007-05-23 20:21:52.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">Exception in type checker</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>//class test {  //OK
+object test {
+  def foo(s: Int*) {
+    s.toList match {
+      case t: List[Int] =&gt; foo(t: _*)
+      case _ =&gt;
+    }
+  }
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>Exception in thread "main" scala.tools.nsc.symtab.Types$TypeError: type mismatch;
+ found   : Seq[List[Int]]
+ required: Seq[Int]
+        at scala.tools.nsc.typechecker.Contexts$Context.error(Contexts.scala:268)
+        at scala.tools.nsc.typechecker.Infer$Inferencer.error(Infer.scala:277)
+        at scala.tools.nsc.typechecker.Infer$Inferencer.typeError(Infer.scala:286)
+        at scala.tools.nsc.typechecker.Infer$Inferencer.typeErrorTree(Infer.scala:292)
+        at scala.tools.nsc.typechecker.Typers$Typer.adapt(Typers.scala:725)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2651)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedArg(Typers.scala:1429)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$62.apply(Typers.scala:1455)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$62.apply(Typers.scala:1455)
+        at scala.List$.map2(List.scala:276)
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >no crash (contributed by David Pollak)
+</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2007-05-23 20:42:49.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+It happens in tailcalls so Iulian should look at it first.
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2007-05-23 21:54:07.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Here is the full stacktrace (which will hopefully display right after the last bugtracking update:o)
+<pre>
+Exception in thread "main" scala.tools.nsc.symtab.Types$TypeError: type mismatch;
+ found   : Seq[List[Int]]
+ required: Seq[Int]
+        at scala.tools.nsc.typechecker.Contexts$Context.error(Contexts.scala:268)
+        at scala.tools.nsc.typechecker.Infer$Inferencer.error(Infer.scala:277)
+        at scala.tools.nsc.typechecker.Infer$Inferencer.typeError(Infer.scala:286)
+        at scala.tools.nsc.typechecker.Infer$Inferencer.typeErrorTree(Infer.scala:292)
+        at scala.tools.nsc.typechecker.Typers$Typer.adapt(Typers.scala:726)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2651)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedArg(Typers.scala:1430)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$62.apply(Typers.scala:1456)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$62.apply(Typers.scala:1456)
+        at scala.List$.map2(List.scala:276)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedArgs(Typers.scala:1456)
+        at scala.tools.nsc.typechecker.Typers$Typer.doTypedApply(Typers.scala:1509)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedApply$0(Typers.scala:2023)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:2565)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2648)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2681)
+        at scala.tools.nsc.transform.TailCalls$TailCallElimination.rewriteTailCall(TailCalls.scala:287)
+        at scala.tools.nsc.transform.TailCalls$TailCallElimination.transform(TailCalls.scala:259)
+        at scala.tools.nsc.transform.TailCalls$TailCallElimination.transform(TailCalls.scala:211)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$29.apply(Trees.scala:1296)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$29.apply(Trees.scala:1296)
+        at scala.List$.loop$0(List.scala:243)
+        at scala.List$.mapConserve(List.scala:260)
+        at scala.tools.nsc.ast.Trees$Transformer.transformTrees(Trees.scala:1296)
+        at scala.tools.nsc.transform.TailCalls$TailCallElimination.transform(TailCalls.scala:228)
+        at scala.tools.nsc.transform.TailCalls$TailCallElimination.transform(TailCalls.scala:140)
+        at scala.tools.nsc.transform.TailCalls$TailCallElimination.transform(TailCalls.scala:168)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$35.apply(Trees.scala:1314)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$35.apply(Trees.scala:1312)
+        at scala.List$.loop$0(List.scala:243)
+        at scala.List$.mapConserve(List.scala:260)
+        at scala.tools.nsc.ast.Trees$Transformer.transformStats(Trees.scala:1312)
+        at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1226)
+        at scala.tools.nsc.transform.TailCalls$TailCallElimination.transform(TailCalls.scala:203)
+        at scala.tools.nsc.ast.Trees$Transformer.transformTemplate(Trees.scala:1298)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$22.apply(Trees.scala:1194)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$22.apply(Trees.scala:1194)
+        at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1320)
+        at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1193)
+        at scala.tools.nsc.transform.TailCalls$TailCallElimination.transform(TailCalls.scala:193)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$35.apply(Trees.scala:1314)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$35.apply(Trees.scala:1312)
+        at scala.List$.loop$0(List.scala:243)
+        at scala.List$.mapConserve(List.scala:260)
+        at scala.tools.nsc.ast.Trees$Transformer.transformStats(Trees.scala:1312)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$21.apply(Trees.scala:1190)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$21.apply(Trees.scala:1190)
+        at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1320)
+        at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1189)
+        at scala.tools.nsc.transform.TailCalls$TailCallElimination.transform(TailCalls.scala:189)
+        at scala.tools.nsc.ast.Trees$Transformer.transformUnit(Trees.scala:1315)
+        at scala.tools.nsc.transform.TailCalls$Phase.apply(TailCalls.scala:37)
+        at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:241)
+        at scala.tools.nsc.Global$GlobalPhase$$anonfun$2.apply(Global.scala:230)
+        at scala.tools.nsc.Global$GlobalPhase$$anonfun$2.apply(Global.scala:230)
+        at scala.Iterator$class.foreach(Iterator.scala:369)
+        at scala.collection.mutable.ListBuffer$$anon$0.foreach(ListBuffer.scala:245)
+        at scala.tools.nsc.Global$GlobalPhase.run(Global.scala:230)
+        at scala.tools.nsc.Global$Run.compileSources(Global.scala:498)
+        at scala.tools.nsc.Global$Run.compile(Global.scala:572)
+        at scala.tools.nsc.Main$.process(Main.scala:57)
+        at scala.tools.nsc.Main$.main(Main.scala:77)
+        at scala.tools.nsc.Main.main(Main.scala)
+</pre>
+</td></tr>
+<tr>
+        <td>
+        <strong>Iulian&nbsp; edited on &nbsp;2007-05-24 12:01:07.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+The problem is in Uncurry, which, IMO, assigns wrong types in calls with arguments coerced to repeated parameter types. In this case:
+
+foo(t: _*) 
+
+t will get the type Seq[List[Int]] (instead of Seq[Int]) because uncurry simply adds Seq[] around t's previous type. Somehow uncurry does not retype that tree, so it gets away, but tail calls uses those same trees to apply a label, and the typer complains.
+
+I think the proper way would be to check first if t's type conforms to Seq, in which case leave it alone.
+
+Funny thing this used to work before (according to SVN, that code hasn't change for quite a while..)
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2007-05-24 14:07:34.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Yes, I found that surprising, too ... It might be interesting to look at the log between RC2 and final.
+</td></tr>
+<tr>
+        <td>
+        <strong>Stephane&nbsp; edited on &nbsp;2007-05-29 14:40:21.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2007-05-29 16:14:27.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

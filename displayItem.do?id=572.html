@@ -1,0 +1,210 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#572]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> high</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Sean</td>
+	  <td align="center" bgcolor="#FFFFFF">_</td>
+	  <td align="center" bgcolor="#FFFFFF">noise</td>
+          <td align="center" bgcolor="#FFFFFF">2006-04-24 16:13:38.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">presentation compiler crash</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>package lampion.collections;
+
+object DirX {
+  abstract class Dir {
+    def reverse : Dir;
+  }
+  object BEFORE extends Dir {
+    def reverse = AFTER;
+  }
+  object AFTER  extends Dir {
+    def reverse = BEFORE;
+  }
+}
+import DirX._;
+abstract class Linked {
+  type Node &lt;: Node0;
+  
+  abstract class Node0 {
+  	var next : Node = _;
+    var prev : Node = _;
+    
+    def get(dir : Dir) = if (dir == BEFORE) prev; else next;
+    private def set(dir : Dir, node : Node) = 
+      if (dir == BEFORE) prev = node; else next = node;
+    
+    def link(dir : Dir, node : Node) = {
+      assert(get(dir) == null);
+      assert(node.get(dir.reverse) == null);
+      set(dir, node);
+      node.set(dir.reverse(), node);
+    }
+  }
+}</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>Notice that the code is incorrect because reverse() on the above last line is used rather than the correct rever\
+se. When loaded in presentation compiler (running only until type checking):
+<pre>
+java.lang.Error: tail of empty list
+	at scala.Predef$.error(Predef.scala:155)
+	at scala.Nil$.tail(List.scala:1063)
+	at scala.tools.nsc.typechecker.SyntheticMethods$class.forwardingMethod$0(SyntheticMethods.scala:84)
+	at scala.tools.nsc.typechecker.SyntheticMethods$class.addSyntheticMethods(SyntheticMethods.scala:168)
+	at scala.tools.nsc.Global$analyzer$.addSyntheticMethods(Global.scala:224)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedClassDef(Typers.scala:627)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1278)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1606)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1632)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$43.apply(Typers.scala:960)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$43.apply(Typers.scala:950)
+	at scala.List$.loop$0(List.scala:232)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:950)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1274)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1606)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1632)
+	at scala.tools.nsc.typechecker.Analyzer$typerFactory$$anon$1.apply(Analyzer.scala:38)
+	at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:213)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$1.apply(Global.scala:202)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$1.apply(Global.scala:202)
+	at scala.Iterator$class.foreach(Iterator.scala:285)
+	at scala.collection.mutable.ListBuffer$$anon$0.foreach(ListBuffer.scala:216)
+	at scala.tools.nsc.Global$GlobalPhase.run(Global.scala:202)
+	at scala.tools.nsc.Global$Run.compileSources(Global.scala:432)
+	at ch.epfl.lamp.sdt.build.ScalaCompilerManager$SemanticCompiler.unitFor(ScalaCompilerManager.java:322)
+	at ch.epfl.lamp.sdt.build.ScalaCompilerManager$SemanticCompiler.tokensFor(ScalaCompilerManager.java:338)
+	at ch.epfl.lamp.sdt.core.ScalaProject.refreshTokens(ScalaProject.java:160)
+	at ch.epfl.lamp.sdt.ui.actions.HighlightAction.run(HighlightAction.java:91)
+	at ch.epfl.lamp.sdt.ui.actions.HighlightAction.run(HighlightAction.java:77)
+	at ch.epfl.lamp.sdt.ui.actions.HighlightAction$1.run(HighlightAction.java:61)
+	at ch.epfl.lamp.sdt.ui.actions.HighlightAction.run(HighlightAction.java:65)
+	at ch.epfl.lamp.sdt.ui.actions.HighlightAction.run(HighlightAction.java:49)
+	at ch.epfl.lamp.sdt.ui.actions.HighlightAction.run(HighlightAction.java:47)
+	at org.eclipse.jface.action.Action.runWithEvent(Action.java:492)
+	at org.eclipse.ui.commands.ActionHandler.execute(ActionHandler.java:182)
+	at org.eclipse.ui.internal.handlers.LegacyHandlerWrapper.execute(LegacyHandlerWrapper.java:109)
+	at org.eclipse.core.commands.Command.executeWithChecks(Command.java:460)
+	at org.eclipse.core.commands.ParameterizedCommand.executeWithChecks(ParameterizedCommand.java:421)
+	at org.eclipse.ui.internal.handlers.HandlerService.executeCommand(HandlerService.java:160)
+	at org.eclipse.ui.internal.keys.WorkbenchKeyboard.executeCommand(WorkbenchKeyboard.java:466)
+	at org.eclipse.ui.internal.keys.WorkbenchKeyboard.press(WorkbenchKeyboard.java:798)
+	at org.eclipse.ui.internal.keys.WorkbenchKeyboard.processKeyEvent(WorkbenchKeyboard.java:845)
+	at org.eclipse.ui.internal.keys.WorkbenchKeyboard.filterKeySequenceBindings(WorkbenchKeyboard.java:563)
+	at org.eclipse.ui.internal.keys.WorkbenchKeyboard.access$3(WorkbenchKeyboard.java:506)
+	at org.eclipse.ui.internal.keys.WorkbenchKeyboard$KeyDownFilter.handleEvent(WorkbenchKeyboard.java:122)
+	at org.eclipse.swt.widgets.EventTable.sendEvent(EventTable.java:66)
+	at org.eclipse.swt.widgets.Display.filterEvent(Display.java:1336)
+	at org.eclipse.swt.widgets.Widget.sendEvent(Widget.java:1073)
+	at org.eclipse.swt.widgets.Widget.sendEvent(Widget.java:1098)
+	at org.eclipse.swt.widgets.Widget.sendEvent(Widget.java:1083)
+	at org.eclipse.swt.widgets.Widget.sendKeyEvent(Widget.java:1110)
+	at org.eclipse.swt.widgets.Widget.gtk_key_press_event(Widget.java:652)
+	at org.eclipse.swt.widgets.Control.gtk_key_press_event(Control.java:2045)
+	at org.eclipse.swt.widgets.Composite.gtk_key_press_event(Composite.java:608)
+	at org.eclipse.swt.widgets.Widget.windowProc(Widget.java:1423)
+	at org.eclipse.swt.widgets.Display.windowProc(Display.java:3790)
+	at org.eclipse.swt.internal.gtk.OS._gtk_main_do_event(Native Method)
+	at org.eclipse.swt.internal.gtk.OS.gtk_main_do_event(OS.java:5162)
+	at org.eclipse.swt.widgets.Display.eventProc(Display.java:1128)
+	at org.eclipse.swt.internal.gtk.OS._g_main_context_iteration(Native Method)
+	at org.eclipse.swt.internal.gtk.OS.g_main_context_iteration(OS.java:1407)
+	at org.eclipse.swt.widgets.Display.readAndDispatch(Display.java:2836)
+	at org.eclipse.ui.internal.Workbench.runEventLoop(Workbench.java:1899)
+	at org.eclipse.ui.internal.Workbench.runUI(Workbench.java:1863)
+	at org.eclipse.ui.internal.Workbench.createAndRunWorkbench(Workbench.java:417)
+	at org.eclipse.ui.PlatformUI.createAndRunWorkbench(PlatformUI.java:143)
+	at org.eclipse.ui.internal.ide.IDEApplication.run(IDEApplication.java:106)
+	at org.eclipse.core.internal.runtime.PlatformActivator$1.run(PlatformActivator.java:99)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.runApplication(EclipseAppLauncher.java:92)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.start(EclipseAppLauncher.java:68)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:374)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:169)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:585)
+	at org.eclipse.core.launcher.Main.invokeFramework(Main.java:338)
+	at org.eclipse.core.launcher.Main.basicRun(Main.java:282)
+	at org.eclipse.core.launcher.Main.run(Main.java:977)
+	at org.eclipse.core.launcher.Main.main(Main.java:952)
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" ></td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-04-25 17:21:19.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

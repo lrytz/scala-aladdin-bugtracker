@@ -1,0 +1,263 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#1026]</th>
+		<th><strong>project:</strong> eclipse-plugin</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Nikolay</td>
+	  <td align="center" bgcolor="#FFFFFF">Sean</td>
+	  <td align="center" bgcolor="#FFFFFF">not repro</td>
+          <td align="center" bgcolor="#FFFFFF">2007-03-26 13:38:22.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">[contrib #402] java.util.NoSuchElementException: tail of empty list</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>Clicking on the net.liftweb.example.controller.Chat I get an exception.  Here's that code:
+package net.liftweb.example.controller
+
+import scala.actors._
+import scala.actors.Actor._
+import net.liftweb.http._
+import net.liftweb.util.Helpers._
+import scala.collection.immutable.TreeMap
+import scala.xml._
+
+class Chat extends ControllerActor {
+  private var userName = &quot;&quot;
+  private var currentData: List[ChatLine] = Nil
+  
+  private val server = {
+    val ret = ChatServer.server
+    ret !? ChatServerAdd(this) match {
+      case ChatServerUpdate(value) =&gt; currentData = value
+      case _ =&gt; {}
+    }
+    ret
+  }
+  
+
+  override def lowPriority : PartialFunction[Any, Unit] = {
+    case ChatServerUpdate(value) =&gt; {
+      currentData = value
+      reRender
+      loop
+    }
+  } 
+  
+  def render = {
+    val inputName = this.uniqueId+&quot;_msg&quot;
+    
+    S.addFunctionMap(inputName, sendMessage)
+    
+    &lt;span&gt;Hello &quot;{userName}&quot;&lt;ul&gt;{
+      currentData.reverse.map{
+        cl =&gt;
+          &lt;li&gt;{hourFormat(cl.when)} {cl.user}: {cl.msg}&lt;/li&gt;
+      }.toList
+    }&lt;/ul&gt;&lt;lift:form method=&quot;POST&quot;&gt;
+    &lt;input name={inputName} type=&quot;text&quot; value=&quot;&quot;/&gt;&lt;input value=&quot;Send&quot; type=&quot;submit&quot;/&gt;
+    &lt;/lift:form&gt;&lt;/span&gt;
+  }
+  
+  override def localSetup {
+    if (userName.length == 0) {
+      ask(new AskName, &quot;what's your username&quot;) {
+	answer =&gt;
+	  answer match {
+            case s : String if (s.length &gt; 2) =&gt; userName = s; true
+            case _ =&gt; localSetup; true
+	  }
+      }
+    }
+  }
+  
+  def waitForUpdate : Option[List[ChatLine]] = {
+    receiveWithin(100) {
+      case ChatServerUpdate(l) =&gt; Some(l)
+      case TIMEOUT =&gt; None
+    }
+  }
+  
+  def sendMessage(in: List[String]) = {
+    server ! ChatServerMsg(userName, in.head)
+    waitForUpdate match {
+      case Some(l : List[ChatLine]) =&gt; currentData = l ; true
+      case _ =&gt; true
+    }
+  }
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>java.util.NoSuchElementException: tail of empty list
+        at scala.Nil$.tail(List.scala:1146)
+        at scala.tools.nsc.symtab.Symbols$Symbol.allOverriddenSymbols(Symbols.scala:795)
+        at ch.epfl.lamp.sdt.ui.scalaeditor.OverrideIndicatorManager$OverrideIndicator.overrides(OverrideIndicato\
+rManager.java:25)
+        at ch.epfl.lamp.sdt.ui.scalaeditor.OverrideIndicatorManager$OverrideIndicator.isValid(OverrideIndicatorM\
+anager.java:51)
+        at ch.epfl.lamp.sdt.ui.scalaeditor.OverrideIndicatorManager.refresh(OverrideIndicatorManager.java:82)
+        at ch.epfl.lamp.sdt.ui.actions.HighlightAction.run(HighlightAction.java:107)
+        at ch.epfl.lamp.sdt.ui.actions.HighlightAction.run(HighlightAction.java:79)
+        at ch.epfl.lamp.sdt.ui.actions.HighlightAction$1.run(HighlightAction.java:63)
+        at ch.epfl.lamp.sdt.ui.actions.HighlightAction.run(HighlightAction.java:67)
+        at ch.epfl.lamp.sdt.ui.scalaeditor.ScalaEditor$2.focusGained(ScalaEditor.java:229)
+        at org.eclipse.swt.widgets.TypedListener.handleEvent(TypedListener.java:105)
+        at org.eclipse.swt.widgets.EventTable.sendEvent(EventTable.java:66)
+        at org.eclipse.swt.widgets.Widget.sendEvent(Widget.java:1496)
+        at org.eclipse.swt.widgets.Widget.sendEvent(Widget.java:1520)
+        at org.eclipse.swt.widgets.Widget.sendEvent(Widget.java:1501)
+        at org.eclipse.swt.widgets.Control.sendFocusEvent(Control.java:2290)
+        at org.eclipse.swt.widgets.Control.forceFocus(Control.java:810)
+        at org.eclipse.swt.widgets.Control.setFocus(Control.java:2654)
+        at org.eclipse.swt.widgets.Composite.setFocus(Composite.java:892)
+        at org.eclipse.ui.texteditor.AbstractTextEditor.setFocus(AbstractTextEditor.java:4839)
+        at org.eclipse.ui.internal.PartPane.setFocus(PartPane.java:309)
+        at org.eclipse.ui.internal.EditorPane.setFocus(EditorPane.java:117)
+        at org.eclipse.ui.internal.WorkbenchPage$3.run(WorkbenchPage.java:600)
+        at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:37)
+        at org.eclipse.core.runtime.Platform.run(Platform.java:843)
+        at org.eclipse.ui.internal.WorkbenchPage.activatePart(WorkbenchPage.java:595)
+        at org.eclipse.ui.internal.WorkbenchPage.setActivePart(WorkbenchPage.java:3203)
+        at org.eclipse.ui.internal.WorkbenchPage.activate(WorkbenchPage.java:588)
+        at org.eclipse.ui.internal.WorkbenchPage.busyOpenEditorBatched(WorkbenchPage.java:2604)
+        at org.eclipse.ui.internal.WorkbenchPage.busyOpenEditor(WorkbenchPage.java:2528)
+        at org.eclipse.ui.internal.WorkbenchPage.access$10(WorkbenchPage.java:2520)
+        at org.eclipse.ui.internal.WorkbenchPage$9.run(WorkbenchPage.java:2505)
+        at org.eclipse.swt.custom.BusyIndicator.showWhile(BusyIndicator.java:67)
+        at org.eclipse.ui.internal.WorkbenchPage.openEditor(WorkbenchPage.java:2500)
+        at org.eclipse.ui.internal.WorkbenchPage.openEditor(WorkbenchPage.java:2485)
+        at org.eclipse.ui.ide.IDE.openEditor(IDE.java:388)
+        at org.eclipse.ui.ide.IDE.openEditor(IDE.java:350)
+        at org.eclipse.jdt.internal.ui.javaeditor.EditorUtility.openInEditor(EditorUtility.java:275)
+        at org.eclipse.jdt.internal.ui.javaeditor.EditorUtility.openInEditor(EditorUtility.java:139)
+        at org.eclipse.jdt.internal.ui.actions.OpenActionUtil.open(OpenActionUtil.java:49)
+        at org.eclipse.jdt.ui.actions.OpenAction.run(OpenAction.java:190)
+        at org.eclipse.jdt.ui.actions.OpenAction.run(OpenAction.java:174)
+        at org.eclipse.jdt.ui.actions.SelectionDispatchAction.dispatchRun(SelectionDispatchAction.java:267)
+        at org.eclipse.jdt.ui.actions.SelectionDispatchAction.run(SelectionDispatchAction.java:243)
+        at org.eclipse.jdt.internal.ui.packageview.PackageExplorerActionGroup.handleOpen(PackageExplorerActionGr\
+oup.java:306)
+        at org.eclipse.jdt.internal.ui.packageview.PackageExplorerPart$4.open(PackageExplorerPart.java:653)
+        at org.eclipse.jface.viewers.StructuredViewer$2.run(StructuredViewer.java:817)
+        at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:37)
+        at org.eclipse.core.runtime.Platform.run(Platform.java:843)
+        at org.eclipse.ui.internal.JFaceUtil$1.run(JFaceUtil.java:44)
+        at org.eclipse.jface.util.SafeRunnable.run(SafeRunnable.java:149)
+        at org.eclipse.jface.viewers.StructuredViewer.fireOpen(StructuredViewer.java:815)
+        at org.eclipse.jface.viewers.StructuredViewer.handleOpen(StructuredViewer.java:1069)
+        at org.eclipse.jface.viewers.StructuredViewer$6.handleOpen(StructuredViewer.java:1168)
+        at org.eclipse.jface.util.OpenStrategy.fireOpenEvent(OpenStrategy.java:249)
+        at org.eclipse.jface.util.OpenStrategy.access$2(OpenStrategy.java:243)
+        at org.eclipse.jface.util.OpenStrategy$1.handleEvent(OpenStrategy.java:283)
+        at org.eclipse.swt.widgets.EventTable.sendEvent(EventTable.java:66)
+        at org.eclipse.swt.widgets.Widget.sendEvent(Widget.java:1496)
+        at org.eclipse.swt.widgets.Widget.sendEvent(Widget.java:1520)
+        at org.eclipse.swt.widgets.Widget.sendEvent(Widget.java:1505)
+        at org.eclipse.swt.widgets.Widget.notifyListeners(Widget.java:1279)
+        at org.eclipse.swt.widgets.Display.runDeferredEvents(Display.java:3312)
+        at org.eclipse.swt.widgets.Display.readAndDispatch(Display.java:2941)
+        at org.eclipse.ui.internal.Workbench.runEventLoop(Workbench.java:1930)
+        at org.eclipse.ui.internal.Workbench.runUI(Workbench.java:1894)
+        at org.eclipse.ui.internal.Workbench.createAndRunWorkbench(Workbench.java:422)
+        at org.eclipse.ui.PlatformUI.createAndRunWorkbench(PlatformUI.java:149)
+        at org.eclipse.ui.internal.ide.IDEApplication.run(IDEApplication.java:95)
+        at org.eclipse.core.internal.runtime.PlatformActivator$1.run(PlatformActivator.java:78)
+        at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.runApplication(EclipseAppLauncher.java:9\
+2)
+        at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.start(EclipseAppLauncher.java:68)
+        at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:400)
+        at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:177)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+        at java.lang.reflect.Method.invoke(Method.java:585)
+        at org.eclipse.core.launcher.Main.invokeFramework(Main.java:336)
+        at org.eclipse.core.launcher.Main.basicRun(Main.java:280)
+        at org.eclipse.core.launcher.Main.run(Main.java:977)
+        at org.eclipse.core.launcher.Main.main(Main.java:952)
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >nothing should happen.  Running Eclipse 3.2.2 on a mac, scala plugin versions: scala debug 1.2, dev tools core 2.36, tools ui 2.4.0</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Nikolay&nbsp; edited on &nbsp;2007-03-26 13:40:31.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+contribution #402
+</td></tr>
+<tr>
+        <td>
+        <strong>Sean&nbsp; edited on &nbsp;2007-04-22 04:21:42.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Might be fixed already in Symbols. Anyways, Martin should tell me when allOverriddenSymbols works and when it doesn't. Right now, it only works sometimes, so this feature is not very dependable. 
+
+Can't deal with code sample in this bug report, too many dependencies I don't have. 
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

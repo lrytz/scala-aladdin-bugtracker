@@ -1,0 +1,150 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#111]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> medium</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Erik</td>
+	  <td align="center" bgcolor="#FFFFFF">Philippe</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2003-09-09 11:57:08.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">Illegal use of type selector crashes compiler</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>class H[A] {
+  def mk():H#H[A] = {
+    new H{};
+  } 
+}</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>Compiler chrash:
+H.scala:2: class H takes type parameters.
+  def mk():H#H[A] = {
+           ^
+Exception in thread "main" java.lang.AssertionError: field selector of class SelectFromType is not of kind Type,\
+ found: scalac.util.Name(<error>)
+        at scalac.checkers.CheckTreeNodes.check(CheckTreeNodes.java:710)
+        at scalac.checkers.CheckTreeNodes.checkNode(CheckTreeNodes.java:815)
+        at scalac.ast.Tree$SelectFromType.<init>(Tree.java:451)
+        at scalac.ast.Tree$ExtSelectFromType.<init>(Tree.java:1182)
+        at scalac.ast.DefaultTreeFactory.SelectFromType(DefaultTreeFactory.java:318)
+        at scalac.ast.StrictTreeCopier.SelectFromType(StrictTreeCopier.java:400)
+        at scalac.ast.LazyTreeCopier.SelectFromType(LazyTreeCopier.java:522)
+        at scalac.typechecker.Analyzer.transformSelect(Analyzer.java:1494)
+        at scalac.typechecker.Analyzer.transform(Analyzer.java:2436)
+        at scalac.typechecker.Analyzer.transform(Analyzer.java:1753)
+        at scalac.typechecker.Analyzer.transform(Analyzer.java:2454)
+        at scalac.typechecker.Analyzer.transform(Analyzer.java:1753)
+        at scalac.typechecker.Analyzer.defineSym(Analyzer.java:1036)
+        at scalac.typechecker.Analyzer$LazyTreeType.complete(Analyzer.java:639)
+        at scalac.symtab.Symbol.info(Symbol.java:736)
+        at scalac.symtab.Symbol.initialize(Symbol.java:702)
+        at scalac.typechecker.Analyzer.transform(Analyzer.java:1782)
+        at scalac.typechecker.Analyzer.transform(Analyzer.java:1753)
+        at scalac.typechecker.Analyzer.transformStatSeq(Analyzer.java:1556)
+        at scalac.typechecker.Analyzer.transformTemplate(Analyzer.java:1615)
+        at scalac.typechecker.Analyzer.transform(Analyzer.java:1820)
+        at scalac.typechecker.Analyzer.transform(Analyzer.java:1753)
+        at scalac.typechecker.Analyzer.transformStatSeq(Analyzer.java:1556)
+        at scalac.typechecker.Analyzer.apply(Analyzer.java:111)
+        at scalac.ast.Transformer.apply(Transformer.java:62)
+        at scalac.typechecker.Analyzer.apply(Analyzer.java:59)
+        at scalac.typechecker.AnalyzerPhase.apply(AnalyzerPhase.java:107)
+        at scalac.Global.compile(Global.java:293)
+        at scalac.Global.compile(Global.java:266)
+        at scalac.Main.main(Main.java:32)
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >An error message telling me that the first H in H#H[A] is not a type or something simmilar... not a crash. </td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2003-09-09 13:41:48.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+The problem is in the TreeCopier routine
+
+<pre>
+SelectFromType(tree, sym, qual)
+</pre>
+
+If `sym' is Symbol.ERROR, the name of the created tree 
+should be <pre><error>.toTypeName()</pre>, but it is 
+the term name <pre><error></pre>.
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Philippe&nbsp; edited on &nbsp;2003-09-09 16:48:15.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Changed class Name so that ERROR responds true to both isTermName() and isTypeName().
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

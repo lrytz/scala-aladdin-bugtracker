@@ -1,0 +1,198 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#591]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Sean</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2006-05-09 16:29:55.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">head of empty list when overloading assignment with private var of same name</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>abstract class BaseList {
+  type Node &lt;: BaseNode;
+  
+  
+  abstract class BaseNode {
+    protected def self : Node;
+    private[BaseList] def self00 = self;
+    def dirty : Unit = {}
+    def replaceWith(node : Node) = {}
+  }
+  
+  implicit def baseNode2Node(bnode : BaseNode): Node = bnode.self00;
+
+ 
+}
+
+
+trait BaseFlow extends BaseList {
+  type Node &lt;: BFNode;
+  type Flow &lt;: FlowBase;
+  type Output &lt;: OutputBase;
+  type  Input &lt;:  InputBase;
+  
+  abstract class FlowBase {
+    
+  }
+  trait OutputBase extends FlowBase {
+    
+  }
+  trait  InputBase extends FlowBase {
+    
+  }
+  
+  trait BFNode extends BaseNode {
+    private var  input : Input  = null;
+    private var output : Output = null;
+    
+    def input_=(in : Input) = {}
+    
+  }
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>bash-3.00$ ~/runtime-workspace/scala/dists/latest/bin/scalac -sourcepath . test/Test.scala 
+Exception in thread "main" java.lang.Error: head of empty list
+        at scala.Predef$.error(Predef.scala:159)
+        at scala.Nil$.head(List.scala:1084)
+        at scala.Nil$.head(List.scala:1082)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$19.apply(Typers.scala:663)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$19.apply(Typers.scala:660)
+        at scala.tools.nsc.ast.Trees$class.DefDef(Trees.scala:252)
+        at scala.tools.nsc.Global.DefDef(Global.scala:31)
+        at scala.tools.nsc.typechecker.Typers$Typer.setterDef$0(Typers.scala:660)
+        at scala.tools.nsc.typechecker.Typers$Typer.addGetterSetter(Typers.scala:665)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$22.apply(Typers.scala:687)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$22.apply(Typers.scala:687)
+        at scala.List.flatMap(List.scala:921)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedTemplate(Typers.scala:687)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedClassDef(Typers.scala:625)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1298)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1627)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1653)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$45.apply(Typers.scala:973)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$45.apply(Typers.scala:963)
+        at scala.List$.loop$0(List.scala:232)
+        at scala.List$.mapConserve(List.scala:249)
+        at scala.List$.loop$0(List.scala:236)
+        at scala.List$.mapConserve(List.scala:249)
+        at scala.List$.loop$0(List.scala:236)
+        at scala.List$.mapConserve(List.scala:249)
+        at scala.List$.loop$0(List.scala:236)
+        at scala.List$.mapConserve(List.scala:249)
+        at scala.List$.loop$0(List.scala:236)
+        at scala.List$.mapConserve(List.scala:249)
+        at scala.List$.loop$0(List.scala:236)
+        at scala.List$.mapConserve(List.scala:249)
+        at scala.List$.loop$0(List.scala:236)
+        at scala.List$.mapConserve(List.scala:249)
+        at scala.List$.loop$0(List.scala:236)
+        at scala.List$.mapConserve(List.scala:249)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:963)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedTemplate(Typers.scala:687)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedClassDef(Typers.scala:625)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1298)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1627)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1653)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$45.apply(Typers.scala:973)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$45.apply(Typers.scala:963)
+        at scala.List$.loop$0(List.scala:232)
+        at scala.List$.mapConserve(List.scala:249)
+        at scala.List$.loop$0(List.scala:236)
+        at scala.List$.mapConserve(List.scala:249)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:963)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1294)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1627)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1653)
+        at scala.tools.nsc.typechecker.Analyzer$typerFactory$$anon$1.apply(Analyzer.scala:38)
+        at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:210)
+        at scala.tools.nsc.Global$GlobalPhase$$anonfun$1.apply(Global.scala:199)
+        at scala.tools.nsc.Global$GlobalPhase$$anonfun$1.apply(Global.scala:199)
+        at scala.Iterator$class.foreach(Iterator.scala:304)
+        at scala.collection.mutable.ListBuffer$$anon$0.foreach(ListBuffer.scala:216)
+        at scala.tools.nsc.Global$GlobalPhase.run(Global.scala:199)
+        at scala.tools.nsc.Global$Run.compileSources(Global.scala:436)
+        at scala.tools.nsc.Global$Run.compile(Global.scala:494)
+        at scala.tools.nsc.Main$.process(Main.scala:60)
+        at scala.tools.nsc.Main$.main(Main.scala:82)
+        at scala.tools.nsc.Main.main(Main.scala)
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >I think there might be an error in my code, that I shouldn't be defining input_=, but I'm not sure. Anyways, it shouldn't crash :)</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-05-16 13:44:30.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+It is indeed a double definitions of input_=
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

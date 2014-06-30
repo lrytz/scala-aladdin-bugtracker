@@ -1,0 +1,162 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#133]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> high</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Matthias</td>
+	  <td align="center" bgcolor="#FFFFFF">Burak</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2003-09-11 15:33:33.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">ClassCastExceptions at runtime</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>class Expr;
+case class One(xs: List[Expr]) extends Expr;
+case class Two() extends Expr;
+object Foo with Executable {
+  def test(xs: List[Expr]) = xs match {
+    case List(a@(Two()*)) =&gt; System.out.println(&quot;a = &quot; + a);
+  }
+  test(List(Two(),Two(),Two(),Two()));
+  test(List(Two(),Two(),Two()));
+  test(List(Two(),Two()));
+  test(List(Two()));
+  test(List());
+}</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>Compiles, but at runtime it yields the following exception:
+<pre>
+Exception in thread "main" java.lang.ExceptionInInitializerError
+        at Foo.main(Foo.scala)
+Caused by: java.lang.ClassCastException
+        at Foo$.test(Foo.scala:1)
+        at Foo$.<init>(Foo.scala:8)
+        at Foo$.<clinit>(Foo.scala)
+        ... 1 more
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >Compiles and runs without errors.</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2003-09-23 18:25:25.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+change priority to high
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2003-09-24 14:09:25.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+this one is not reproducible anymore. Very likely that the
+fixing of previous errors fixed also this one, I do not know.
+
+Syntax is now <pre> List(a@(Two()*)) </pre>.
+</td></tr>
+<tr>
+        <td>
+        <strong>Matthias&nbsp; edited on &nbsp;2003-10-01 00:42:54.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+I just re-opened the bug again, because it seems to be not fully fixed. A small variation of the program above yields the same effect. Here's the program:
+<pre>
+case class One();
+object Foo with Executable {
+  def test(xs: List[Any]) = xs match {
+    case List(x@(One()*), y@(One())) => System.out.println("case");
+    case _ => System.out.println("default");
+  }
+}
+</pre>
+The runtime exception is:
+<pre>
+Exception in thread "main" java.lang.ExceptionInInitializerError
+        at Foo.main(D.scala)
+Caused by: java.lang.ClassCastException
+        at Foo$.test(D.scala:1)
+        at Foo$.<init>(D.scala:7)
+        at Foo$.<clinit>(D.scala)
+        ... 1 more
+</pre>
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2003-10-06 19:47:38.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+the bug was a wrong condition in Tracer2Scala.
+<br>
+the distinction between bindings x@_ and x@_* is correct now.
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

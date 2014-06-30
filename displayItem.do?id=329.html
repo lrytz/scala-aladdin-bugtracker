@@ -1,0 +1,186 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#329]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> high</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Burak</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2004-05-07 13:12:37.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">crash in type inference</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>import scala.collection._;
+
+object foo {
+  
+  val snafu = immutable.TreeMap.Empty;
+
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre><pre>
+Exception in thread "main" scalac.ApplicationError: illegal case: <notype>
+        at scalac.util.Debug.abort(Debug.java:58)
+        at scalac.symtab.ClosureHistory.addParents(ClosureHistory.java:70)
+        at scalac.symtab.ClosureHistory.computeValue(ClosureHistory.java:41)
+        at scalac.framework.History.computeValueAt(History.java:206)
+        at scalac.framework.History.incrementLimit(History.java:242)
+        at scalac.framework.History.getValueAt(History.java:98)
+        at scalac.framework.History.getValue(History.java:87)
+        at scalac.symtab.TypeSymbol.closure(Symbol.java:1875)
+        at scalac.symtab.Symbol.closurePos(Symbol.java:1419)
+        at scalac.symtab.Symbol.baseType(Symbol.java:1434)
+        at scalac.symtab.Type.baseType(Type.java:1196)
+        at scalac.symtab.Type.baseType(Type.java:1183)
+        at scalac.symtab.Type.isSubType0(Type.java:1904)
+        at scalac.symtab.Type.isSubType(Type.java:1850)
+        at scala.tools.scalac.typechecker.Infer$class.isCompatible(Infer.scala:739)
+        at scala.tools.scalac.typechecker.Infer$class.isCompatible(Infer.scala:760)
+        at scala.tools.scalac.typechecker.Infer$class.isApplicable(Infer.scala:1118)
+        at scala.tools.scalac.typechecker.Infer$class.bestView(Infer.scala:1299)
+        at scala.tools.scalac.typechecker.Analyzer$class.transformSelect(Analyzer.scala:1730)
+        at scala.tools.scalac.typechecker.Analyzer$$anon$21.apply(Analyzer.scala:2821)
+        at scala.tools.scalac.typechecker.Analyzer$$anon$21.apply(Analyzer.scala:2126)
+        at scala.runtime.ResultOrException.tryBlock(ResultOrException.java:34)
+        at scala.runtime.ScalaRunTime$.Try(ScalaRunTime.scala:19)
+        at scala.tools.scalac.typechecker.Analyzer$class.transform(Analyzer.scala:2125)
+        at scala.tools.scalac.typechecker.Analyzer$class.transform(Analyzer.scala:2047)
+        at scala.tools.scalac.typechecker.Analyzer$class.transform(Analyzer.scala:2062)
+        at scala.tools.scalac.typechecker.Analyzer$$anon$16.apply(Analyzer.scala:1180)
+        at scala.tools.scalac.typechecker.Analyzer$$anon$16.apply(Analyzer.scala:1078)
+        at scala.runtime.ResultOrException.tryBlock(ResultOrException.java:34)
+        at scala.runtime.ScalaRunTime$.Try(ScalaRunTime.scala:19)
+        at scala.tools.scalac.typechecker.Analyzer$class.defineSym(Analyzer.scala:1078)
+        at scala.tools.scalac.typechecker.Analyzer$LazyTreeType$class.complete(Analyzer.scala:649)
+        at scalac.symtab.Symbol.info(Symbol.java:1145)
+        at scalac.symtab.Symbol.initialize(Symbol.java:1111)
+        at scala.tools.scalac.typechecker.Analyzer$class.transform(Analyzer.scala:2123)
+        at scala.tools.scalac.typechecker.Analyzer$class.transform(Analyzer.scala:2066)
+        at scala.tools.scalac.typechecker.Analyzer$class.transformStatSeq(Analyzer.scala:1825)
+        at scala.tools.scalac.typechecker.Analyzer$class.transformTemplate(Analyzer.scala:1904)
+        at scala.tools.scalac.typechecker.Analyzer$$anon$21.apply(Analyzer.scala:2176)
+        at scala.tools.scalac.typechecker.Analyzer$$anon$21.apply(Analyzer.scala:2126)
+        at scala.runtime.ResultOrException.tryBlock(ResultOrException.java:34)
+        at scala.runtime.ScalaRunTime$.Try(ScalaRunTime.scala:19)
+        at scala.tools.scalac.typechecker.Analyzer$class.transform(Analyzer.scala:2125)
+        at scala.tools.scalac.typechecker.Analyzer$class.transform(Analyzer.scala:2066)
+        at scala.tools.scalac.typechecker.Analyzer$class.transformStatSeq(Analyzer.scala:1825)
+        at scala.tools.scalac.typechecker.Analyzer$class.apply(Analyzer.scala:130)
+        at scalac.ast.Transformer.apply(Transformer.java:64)
+        at scala.tools.scalac.typechecker.Analyzer$class.apply(Analyzer.scala:64)
+        at scala.tools.scalac.typechecker.AnalyzerPhase$class.apply(AnalyzerPhase.scala:61)
+        at scalac.Global.compile(Global.java:380)
+        at scalac.Global.compile(Global.java:351)
+        at scala.tools.scalac.Main$.main1(Main.scala:35)
+        at scala.tools.scalac.Main$.main(Main.scala:27)
+        at scala.tools.scalac.Main.main(Main.scala:27)
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >an error message telling me that Empty does not exist (the right thing would have been "empty", in lowercase).</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2004-05-07 13:20:57.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+further simplification. original code was
+<pre>
+val bar:Map[Int,Set[Int]] = 
+      immutable.TreeMap.Empty[Int,immutable.Set[Int]];
+
+val baz = immutable.TreeMap.Empty[Int,immutable.Set[Int]];
+</pre>
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2004-05-07 13:22:41.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+(parts of stacktrace were missing)
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2004-05-07 13:31:31.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+I corrected the "what expected" entry of this bug report, after realizing that Empty does not exist.
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2004-05-13 12:55:13.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

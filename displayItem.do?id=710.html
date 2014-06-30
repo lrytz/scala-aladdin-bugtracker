@@ -1,0 +1,280 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#710]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> high</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Sean</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2006-08-21 11:57:37.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">difficult-to-narrow resident compiler crash</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>See project plugin/lampion2 in the Scala SVN repository.</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>After a clean build:
+
+<pre>
+sean-mcdirmids-computer:~/workspace/lampion/src mcdirmid$ ../../scala/build/quick/bin/scalac -d ../bin -sourcepa\
+th . -resident
+
+nsc lampion/scalax/ScalaParser.scala
+
+nsc lampion/scalax/ScalaTest.scala
+Exception in thread "main" scala.tools.nsc.symtab.Symbols$CyclicReference: illegal cyclic reference involving ob\
+ject next
+	at scala.tools.nsc.symtab.Symbols$Symbol.info(Symbols.scala:340)
+	at scala.tools.nsc.symtab.Symbols$Symbol.tpe(Symbols.scala:322)
+	at scala.tools.nsc.symtab.Types$Type.memberType(Types.scala:203)
+	at scala.tools.nsc.symtab.Types$Type.findMember(Types.scala:415)
+	at scala.tools.nsc.symtab.Types$Type.member(Types.scala:173)
+	at scala.tools.nsc.symtab.Types$adaptToNewRunMap$.adaptToNewRun(Types.scala:1491)
+	at scala.tools.nsc.symtab.Types$adaptToNewRunMap$.adaptToNewRun(Types.scala:1488)
+	at scala.tools.nsc.symtab.Types$adaptToNewRunMap$.apply(Types.scala:1529)
+	at scala.tools.nsc.symtab.Types$Type.complete(Types.scala:349)
+	at scala.tools.nsc.symtab.Symbols$Symbol.info(Symbols.scala:346)
+	at scala.tools.nsc.transform.AddInterfaces.scala$tools$nsc$transform$AddInterfaces$$isInterfaceMember(AddInterf\
+aces.scala:39)
+	at scala.tools.nsc.transform.AddInterfaces$LazyImplClassType$$anonfun$1.apply(AddInterfaces.scala:71)
+	at scala.tools.nsc.transform.AddInterfaces$LazyImplClassType$$anonfun$1.apply(AddInterfaces.scala:70)
+	at scala.Iterator$class.foreach(Iterator.scala:304)
+	at scala.List$$anon$0.foreach(List.scala:464)
+	at scala.tools.nsc.transform.AddInterfaces$LazyImplClassType.implDecls(AddInterfaces.scala:70)
+	at scala.tools.nsc.transform.AddInterfaces$LazyImplClassType.implType$0(AddInterfaces.scala:92)
+	at scala.tools.nsc.transform.AddInterfaces$LazyImplClassType$$anonfun$3.apply(AddInterfaces.scala:97)
+	at scala.tools.nsc.transform.AddInterfaces$LazyImplClassType$$anonfun$3.apply(AddInterfaces.scala:97)
+	at scala.tools.nsc.symtab.SymbolTable.atPhase(SymbolTable.scala:71)
+	at scala.tools.nsc.transform.AddInterfaces$LazyImplClassType.complete(AddInterfaces.scala:97)
+	at scala.tools.nsc.symtab.Symbols$Symbol.info(Symbols.scala:346)
+	at scala.tools.nsc.symtab.Types$TypeRef.closure(Types.scala:881)
+	at scala.tools.nsc.symtab.Types$CompoundType$$anonfun$3.apply(Types.scala:643)
+	at scala.tools.nsc.symtab.Types$CompoundType$$anonfun$3.apply(Types.scala:642)
+	at scala.List.foreach(List.scala:680)
+	at scala.tools.nsc.symtab.Types$CompoundType.computeClosure$0(Types.scala:642)
+	at scala.tools.nsc.symtab.Types$CompoundType.closure(Types.scala:701)
+	at scala.tools.nsc.symtab.Types$TypeRef.closure(Types.scala:881)
+	at scala.tools.nsc.symtab.Types$CompoundType$$anonfun$3.apply(Types.scala:643)
+	at scala.tools.nsc.symtab.Types$CompoundType$$anonfun$3.apply(Types.scala:642)
+	at scala.List.foreach(List.scala:680)
+	at scala.tools.nsc.symtab.Types$CompoundType.computeClosure$0(Types.scala:642)
+	at scala.tools.nsc.symtab.Types$CompoundType.closure(Types.scala:701)
+	at scala.tools.nsc.symtab.Types$Type.closurePos(Types.scala:304)
+	at scala.tools.nsc.symtab.Types$CompoundType.baseType(Types.scala:751)
+	at scala.tools.nsc.symtab.Types$TypeRef.baseType(Types.scala:870)
+	at scala.tools.nsc.symtab.Types$class.isSubType0(Types.scala:1705)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType0(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$class.isSubType(Types.scala:1661)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$Type.$less$colon$less(Types.scala:251)
+	at scala.tools.nsc.typechecker.Typers$Typer.validateParentClass$0(Typers.scala:611)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$16.apply(Typers.scala:626)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$16.apply(Typers.scala:626)
+	at scala.List.foreach(List.scala:680)
+	at scala.tools.nsc.typechecker.Typers$Typer.validateParentClasses(Typers.scala:626)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedTemplate(Typers.scala:707)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedClassDef(Typers.scala:636)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1437)
+	at scala.tools.nsc.transform.Erasure$Eraser.typed1(Erasure.scala:367)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1763)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1790)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$46.apply(Typers.scala:1003)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$46.apply(Typers.scala:993)
+	at scala.List$.loop$0(List.scala:232)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.List$.loop$0(List.scala:236)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.List$.loop$0(List.scala:236)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.List$.loop$0(List.scala:236)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.List$.loop$0(List.scala:236)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.List$.loop$0(List.scala:236)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.List$.loop$0(List.scala:236)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.List$.loop$0(List.scala:236)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.List$.loop$0(List.scala:236)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.List$.loop$0(List.scala:236)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.List$.loop$0(List.scala:236)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.List$.loop$0(List.scala:236)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.List$.loop$0(List.scala:236)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.List$.loop$0(List.scala:236)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.List$.loop$0(List.scala:236)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.List$.loop$0(List.scala:236)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.List$.loop$0(List.scala:236)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.List$.loop$0(List.scala:236)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.List$.loop$0(List.scala:236)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.List$.loop$0(List.scala:236)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.List$.loop$0(List.scala:236)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.List$.loop$0(List.scala:236)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.List$.loop$0(List.scala:236)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.List$.loop$0(List.scala:236)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.List$.loop$0(List.scala:236)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.List$.loop$0(List.scala:236)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.List$.loop$0(List.scala:236)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.List$.loop$0(List.scala:236)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:993)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedTemplate(Typers.scala:708)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedClassDef(Typers.scala:636)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1437)
+	at scala.tools.nsc.transform.Erasure$Eraser.typed1(Erasure.scala:367)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1763)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1790)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$46.apply(Typers.scala:1003)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$46.apply(Typers.scala:993)
+	at scala.List$.loop$0(List.scala:232)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:993)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1433)
+	at scala.tools.nsc.transform.Erasure$Eraser.typed1(Erasure.scala:367)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1763)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1790)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$46.apply(Typers.scala:1003)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$46.apply(Typers.scala:993)
+	at scala.List$.loop$0(List.scala:232)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:993)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1433)
+	at scala.tools.nsc.transform.Erasure$Eraser.typed1(Erasure.scala:367)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1763)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1790)
+	at scala.tools.nsc.transform.Erasure$ErasureTransformer$$anonfun$21.apply(Erasure.scala:652)
+	at scala.tools.nsc.transform.Erasure$ErasureTransformer$$anonfun$21.apply(Erasure.scala:649)
+	at scala.tools.nsc.symtab.SymbolTable.atPhase(SymbolTable.scala:71)
+	at scala.tools.nsc.transform.Erasure$ErasureTransformer.transform(Erasure.scala:649)
+	at scala.tools.nsc.ast.Trees$Transformer.transformUnit(Trees.scala:1059)
+	at scala.tools.nsc.transform.Transform$Phase.apply(Transform.scala:26)
+	at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:220)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$1.apply(Global.scala:209)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$1.apply(Global.scala:209)
+	at scala.Iterator$class.foreach(Iterator.scala:304)
+	at scala.collection.mutable.ListBuffer$$anon$0.foreach(ListBuffer.scala:216)
+	at scala.tools.nsc.Global$GlobalPhase.run(Global.scala:209)
+	at scala.tools.nsc.Global$Run.compileSources(Global.scala:471)
+	at scala.tools.nsc.Global$Run.compile(Global.scala:535)
+	at scala.tools.nsc.Main$$anonfun$0.apply(Main.scala:39)
+	at scala.tools.nsc.Main$$anonfun$0.apply(Main.scala:36)
+	at scala.tools.nsc.EvalLoop$class.loop(EvalLoop.scala:17)
+	at scala.tools.nsc.Main$.loop(Main.scala:16)
+	at scala.tools.nsc.EvalLoop$class.loop(EvalLoop.scala:18)
+	at scala.tools.nsc.Main$.loop(Main.scala:16)
+	at scala.tools.nsc.Main$.resident(Main.scala:36)
+	at scala.tools.nsc.Main$.process(Main.scala:71)
+	at scala.tools.nsc.Main$.main(Main.scala:98)
+	at scala.tools.nsc.Main.main(Main.scala)</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" ></td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Sean&nbsp; edited on &nbsp;2006-08-21 12:25:52.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-08-22 17:55:36.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-08-24 19:17:28.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

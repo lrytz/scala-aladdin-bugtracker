@@ -1,0 +1,159 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#1236]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Nikolay</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2007-07-23 10:48:51.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">[contrib #711] AbstractMethodError with</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>// tested with nightly build  scala-2.5.1.12368.20070720-074545
+
+
+object AbstractMethodErrorTest extends Application
+{
+    def flattenWithSelf[T](self: T, deps: =&gt; List[T], recurse: T =&gt; List[T]): List[T] =
+    {
+        self :: deps.flatMap(recurse(_)).removeDuplicates
+    }
+
+    abstract class Module
+    { self =&gt;
+        final type commonModuleType = Module
+    
+        protected def moduleDemands: List[Module]
+    
+        final def moduleRequirementsWithSelf: List[commonModuleType] =
+            flattenWithSelf[Module](self, moduleDemands, _.moduleRequirementsWithSelf)
+    }
+
+    object FirstModule extends Module
+    {
+        def moduleDemands: List[Module] = Nil
+    }
+
+    object SecondModule extends Module
+    {
+        def moduleDemands: List[Module] = List(FirstModule)
+    }
+
+    assert(SecondModule.moduleRequirementsWithSelf == List(SecondModule, FirstModule))
+}
+
+
+/*
+Exception in thread &quot;main&quot; java.lang.AbstractMethodError: AbstractMethodErrorTest$Module$$anonfun$2.apply(Ljava/lang/Object;)Ljava/lang/Object;
+	at AbstractMethodErrorTest$$anonfun$0.apply(AbstractMethodErrorTest.scala:8)
+	at AbstractMethodErrorTest$$anonfun$0.apply(AbstractMethodErrorTest.scala:8)
+	at scala.List.flatMap(List.scala:995)
+	at AbstractMethodErrorTest$.flattenWithSelf(AbstractMethodErrorTest.scala:8)
+	at AbstractMethodErrorTest$Module.moduleRequirementsWithSelf(AbstractMethodErrorTest.scala:18)
+	at AbstractMethodErrorTest$.&lt;init&gt;(AbstractMethodErrorTest.scala:31)
+	at AbstractMethodErrorTest$.&lt;clinit&gt;(AbstractMethodErrorTest.scala)
+	at AbstractMethodErrorTest.main(AbstractMethodErrorTest.scala)
+
+
+Note that changing a return type gives successful execution:
+// final def moduleRequirementsWithSelf: List[Module]
+
+*/
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>java.lang.AbstractMethodError at runtime
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >successful execution with no output, as occurs with 2.5.1-final</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Nikolay&nbsp; edited on &nbsp;2007-07-23 10:51:43.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Iulian&nbsp; edited on &nbsp;2007-07-23 18:26:42.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+The closure class for (_.moduleRequirementsWithSelf) is missing a bridge method for its apply. Routed to Martin.
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2007-07-25 23:18:48.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

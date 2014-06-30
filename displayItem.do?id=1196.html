@@ -1,0 +1,159 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#1196]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> missing feature</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Nikolay</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">open</td>
+          <td align="center" bgcolor="#FFFFFF">2007-07-04 15:51:05.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">[contrib #673] match: wrong type of root v @</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>def f(l: List[Int]) { }
+
+val l: Seq[Int] = List(1, 2, 3)
+
+l match {
+    case x @ List(1, _) =&gt; f(x)
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>/Users/yozh/tmp/./hello.scala:6: error: type mismatch;
+ found   : Seq[Int]
+ required: List[Int]
+    case x @ List(1, _) => f(x)
+                             ^
+one error found
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >compilation without error, because type of x is known -- List</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Nikolay&nbsp; edited on &nbsp;2007-07-04 15:51:36.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2007-07-04 16:09:40.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+List is an unapply method, this is an extractor pattern - the outcome of the method call (method unapply that lives in *object* List) does not need to be related to type List in any way. The type is the best we have.
+<br />
+Also, we'd like x to have the same type in patterns <code>Foo(x)</code> and <code>Foo(x @ Crazyunapp())</code>
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2007-07-04 20:55:58.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+reopened this, Stepan Koltsov was right in submitting this. The actual signature of List.unapplySeq is 
+<pre>
+def unapply[A](x:List[A]): Some[List[A]]
+</pre>
+Now, in a pattern like x @ List(...), there is no harm in giving the better type when the thing accepts (it should be a subtype, so with multiple inheritance, one might need to give it a compoundtype I guess). It's also a spec change, I think. It could be very useful, we are already doing something similar with type tests (refining the expected type with the type we test for in the pattern.)
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2007-07-06 16:33:06.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+I checked in, but deactivated a line to Typers.scala that would IMHO fix the bug, if refinedType was doing something slightly more involved than what it does right now. As it is, the type's don't work out although I believe they should. Martin, could you comment?
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2007-07-14 11:51:10.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Which line? Can you find out what exactly goes wrong?
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2007-08-14 18:26:03.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+hm I tried the change again and it works now. tant pis;) for the record, the changed lines in the typer are 1690 and 1694.
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2007-08-14 20:42:43.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+actually, bug0646.scala fails, due to a very weird refinement type... i included information in typers.scala, from the said line onwards. re-open and assigned to martin.
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

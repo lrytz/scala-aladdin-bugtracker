@@ -1,0 +1,168 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#719]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Sean</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2006-08-31 12:55:04.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">mixins + private objects + separate compilation = very very bad</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>// A.scala
+package test;
+trait A {
+  trait Node {
+    def foo : Unit = {}
+  }
+}
+
+// B.scala
+package test; 
+import scala.collection.mutable._;
+trait B extends A {
+  private object xxx extends HashMap[String,String];
+  trait Node extends super.Node {
+    override def foo = {
+      super.foo;
+      xxx(&quot;Hello&quot;) = &quot;World&quot;;
+      Console.println(&quot;from B&quot;);
+    }
+  }
+}
+// E.scala
+package test;
+class E extends B {
+  class Node extends super.Node;
+  (new Node).foo;
+}</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre><pre>
+sean-mcdirmids-computer:~/workspace/test10/src mcdirmid$ ../../scala/build/quick/bin/scalac -d . -sourcepath . t\
+est/*.scala
+sean-mcdirmids-computer:~/workspace/test10/src mcdirmid$ javap -private test.E
+Compiled from "E.scala"
+public class test.E extends java.lang.Object implements test.B,scala.ScalaObject{
+    private test.B$xxx$ test$B$$xxx$module;
+    public test.E();
+    public int $tag();
+    public final test.B$xxx$ test$B$$xxx();
+}
+
+sean-mcdirmids-computer:~/workspace/test10/src mcdirmid$ ../../scala/build/quick/bin/scalac -d . -sourcepath . t\
+est/E.scala
+sean-mcdirmids-computer:~/workspace/test10/src mcdirmid$ javap -private test.E
+Compiled from "E.scala"
+public class test.E extends java.lang.Object implements test.B,scala.ScalaObject{
+    public test.E();
+    public int $tag();
+}
+
+sean-mcdirmids-computer:~/workspace/test10/src mcdirmid$ 
+</pre>
+
+Running it is even more fun:
+
+<pre>
+Exception in thread "main" java.lang.AbstractMethodError: test.E.test$B$$xxx()Ltest/B$xxx$;
+	at test.B$Node$class.foo(B.scala:8)
+	at test.E$Node.foo(E.scala:4)
+	at test.E.<init>(E.scala:5)
+	at test.Test$.main(Test.scala:5)
+	at test.Test.main(Test.scala)
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >Compiling E.scala separately from B.scala should also generate the xxx module and its accessor. Right now things will just crash at run-time.</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-09-04 19:30:38.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-09-12 00:53:11.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-09-19 23:04:40.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

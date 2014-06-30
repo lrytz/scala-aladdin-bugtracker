@@ -1,0 +1,142 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#444]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> high</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Gilles</td>
+	  <td align="center" bgcolor="#FFFFFF">Burak</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2005-06-13 13:43:35.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">New instance with overriden members in conditional match case body fails</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>class D;
+object Test with Application {
+  val tata = 1;
+  tata match {
+    case 1 | 2 =&gt; new D {}
+  }
+}</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre><font size="-1"><pre>
+Exception in thread "main" scalac.ApplicationError: overloadWith inapplicable for &lt;template&gt;
+        at scalac.symtab.Symbol.overloadWith(Symbol.java:1699)
+        at scalac.symtab.Scope.enterOrOverload(Scope.java:177)
+        at scalac.transformer.AddInterfacesPhase.transformInfo(AddInterfacesPhase.java:65)
+        at scalac.symtab.Symbol.transformInfo(Symbol.java:1430)
+        at scalac.symtab.Symbol.rawInfoAt(Symbol.java:1367)
+        at scalac.symtab.Symbol.rawInfo(Symbol.java:1341)
+        at scalac.symtab.Symbol.info(Symbol.java:1315)
+        at scalac.symtab.Symbol.nextInfo(Symbol.java:1322)
+        at scalac.transformer.AddInterfaces.getClassTree(AddInterfaces.java:230)
+        at scalac.transformer.AddInterfaces.template(AddInterfaces.java:175)
+        at scalac.transformer.AddInterfaces.transform(AddInterfaces.java:119)
+        at scalac.ast.GenTransformer.transform(Transformer.java:456)
+        at scalac.transformer.AddInterfaces.template(AddInterfaces.java:160)
+        at scalac.transformer.AddInterfaces.transform(AddInterfaces.java:119)
+        at scalac.ast.GenTransformer.apply(Transformer.java:405)
+        at scalac.transformer.AddInterfacesPhase.apply(AddInterfacesPhase.java:29)
+        at scalac.CompilationLoop.loop(CompilationLoop.java:102)
+        at scalac.CompilationLoop.compile(CompilationLoop.java:60)
+        at scalac.Global.compile(Global.java:391)
+        at scalac.Global.compile(Global.java:366)
+        at scala.tools.scalac.Main$.main1(Main.scala:47)
+        at scala.tools.scalac.Main$.main(Main.scala:28)
+        at scala.tools.scalac.Main.main(Main.scala:28)
+</pre></font>
+It does work for:<font size="-1"><pre>
+  tata match {
+    case 1 => new D {}
+  }
+</pre></font>
+Or:<font size="-1"><pre>
+  tata match {
+    case 1 | 2 => new D;
+  }
+</pre></font>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >A sucessful compilation.</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Gilles&nbsp; edited on &nbsp;2005-06-13 13:47:13.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Gilles&nbsp; edited on &nbsp;2005-06-13 14:25:30.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Actually, this bug had been corrected in the very latest version of scalac (13 June 2005).
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

@@ -1,0 +1,291 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#651]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Sean</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2006-07-10 15:23:09.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">private object weirdness</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>package test;
+
+trait Test3 {
+  trait MatchableImpl {
+    trait MatchImpl;
+  }
+  
+  trait BracePairImpl {
+    trait BraceImpl extends MatchableImpl {
+      private object MyMatch1 extends MatchImpl;
+      protected def match0 : MatchImpl = MyMatch1;
+      
+    }
+  }
+}</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre><pre>
+tsf-wpa-1-064:~/workspace/test/src mcdirmid$ ~/workspace/scala/build/quick/bin/scalac test/Test3.scala 
+exception when traversing Test3$BracePairImpl$BraceImpl$class.this.MyMatch1
+exception when traversing Test3$BracePairImpl$BraceImpl$class.this.MyMatch1()
+exception when traversing def match0(): test.Test3$MatchableImpl$MatchImpl = Test3$BracePairImpl$BraceImpl$class\
+.this.MyMatch1()
+exception when traversing java.lang.Object with test.Test3$MatchableImpl with scala.ScalaObject with test.Test3$\
+BracePairImpl$BraceImpl {
+  final private <stable> def MyMatch1(): object test.Test3$BracePairImpl$BraceImpl$MyMatch1;
+  def match0(): test.Test3$MatchableImpl$MatchImpl = Test3$BracePairImpl$BraceImpl$class.this.MyMatch1();
+  private <local> <paramaccessor> val test$Test3$BracePairImpl$BraceImpl$$$outer : test.Test3$BracePairImpl = _;\
+
+  <stable> <accessor> <paramaccessor> def test$Test3$BracePairImpl$BraceImpl$$$outer(): test.Test3$BracePairImpl\
+ = Test3$BracePairImpl$BraceImpl$class.this.test$Test3$BracePairImpl$BraceImpl$$$outer ;
+  def /*Test3$BracePairImpl$BraceImpl$class*/$init$($outer: test.Test3$BracePairImpl): scala.Unit = {
+    if ($outer.eq(null))
+      throw new java.lang.NullPointerException.this()
+    else
+      Test3$BracePairImpl$BraceImpl$class.this.test$Test3$BracePairImpl$BraceImpl$$$outer  = $outer;
+    ()
+  }
+}
+exception when traversing abstract trait Test3$BracePairImpl$BraceImpl$class extends java.lang.Object with test.\
+Test3$MatchableImpl with scala.ScalaObject with test.Test3$BracePairImpl$BraceImpl {
+  final private <stable> def MyMatch1(): object test.Test3$BracePairImpl$BraceImpl$MyMatch1;
+  def match0(): test.Test3$MatchableImpl$MatchImpl = Test3$BracePairImpl$BraceImpl$class.this.MyMatch1();
+  private <local> <paramaccessor> val test$Test3$BracePairImpl$BraceImpl$$$outer : test.Test3$BracePairImpl = _;\
+
+  <stable> <accessor> <paramaccessor> def test$Test3$BracePairImpl$BraceImpl$$$outer(): test.Test3$BracePairImpl\
+ = Test3$BracePairImpl$BraceImpl$class.this.test$Test3$BracePairImpl$BraceImpl$$$outer ;
+  def /*Test3$BracePairImpl$BraceImpl$class*/$init$($outer: test.Test3$BracePairImpl): scala.Unit = {
+    if ($outer.eq(null))
+      throw new java.lang.NullPointerException.this()
+    else
+      Test3$BracePairImpl$BraceImpl$class.this.test$Test3$BracePairImpl$BraceImpl$$$outer  = $outer;
+    ()
+  }
+}
+exception when traversing package test {
+  abstract trait Test3 extends java.lang.Object with scala.ScalaObject;
+  abstract trait Test3$class extends java.lang.Object with scala.ScalaObject with test.Test3 {
+    def /*Test3$class*/$init$(): scala.Unit = {
+      ()
+    }
+  };
+  abstract trait Test3$MatchableImpl$MatchImpl extends java.lang.Object with scala.ScalaObject;
+  abstract trait Test3$MatchableImpl extends java.lang.Object with scala.ScalaObject {
+    <stable> <accessor> <paramaccessor> def test$Test3$MatchableImpl$$$outer(): test.Test3
+  };
+  final class Test3$BracePairImpl$BraceImpl$MyMatch1 extends java.lang.Object with test.Test3$MatchableImpl$Matc\
+hImpl with scala.ScalaObject {
+    private <local> <paramaccessor> val $outer : test.Test3$BracePairImpl$BraceImpl = _;
+    <stable> <accessor> <paramaccessor> def $outer(): test.Test3$BracePairImpl$BraceImpl = Test3$BracePairImpl$B\
+raceImpl$MyMatch1.this.$outer ;
+    def this($outer: test.Test3$BracePairImpl$BraceImpl): object test.Test3$BracePairImpl$BraceImpl$MyMatch1 = {\
+
+      if ($outer.eq(null))
+        throw new java.lang.NullPointerException.this()
+      else
+        Test3$BracePairImpl$BraceImpl$MyMatch1.this.$outer  = $outer;
+      {
+        Test3$BracePairImpl$BraceImpl$MyMatch1.super.this();
+        ()
+      };
+      ()
+    }
+  };
+  abstract trait Test3$BracePairImpl$BraceImpl extends java.lang.Object with test.Test3$MatchableImpl with scala\
+.ScalaObject {
+    def match0(): test.Test3$MatchableImpl$MatchImpl;
+    <stable> <accessor> <paramaccessor> def test$Test3$BracePairImpl$BraceImpl$$$outer(): test.Test3$BracePairIm\
+pl
+  };
+  abstract trait Test3$BracePairImpl$BraceImpl$class extends java.lang.Object with test.Test3$MatchableImpl with\
+ scala.ScalaObject with test.Test3$BracePairImpl$BraceImpl {
+    final private <stable> def MyMatch1(): object test.Test3$BracePairImpl$BraceImpl$MyMatch1;
+    def match0(): test.Test3$MatchableImpl$MatchImpl = Test3$BracePairImpl$BraceImpl$class.this.MyMatch1();
+    private <local> <paramaccessor> val test$Test3$BracePairImpl$BraceImpl$$$outer : test.Test3$BracePairImpl = \
+_;
+    <stable> <accessor> <paramaccessor> def test$Test3$BracePairImpl$BraceImpl$$$outer(): test.Test3$BracePairIm\
+pl = Test3$BracePairImpl$BraceImpl$class.this.test$Test3$BracePairImpl$BraceImpl$$$outer ;
+    def /*Test3$BracePairImpl$BraceImpl$class*/$init$($outer: test.Test3$BracePairImpl): scala.Unit = {
+      if ($outer.eq(null))
+        throw new java.lang.NullPointerException.this()
+      else
+        Test3$BracePairImpl$BraceImpl$class.this.test$Test3$BracePairImpl$BraceImpl$$$outer  = $outer;
+      ()
+    }
+  };
+  abstract trait Test3$BracePairImpl extends java.lang.Object with scala.ScalaObject {
+    <stable> <accessor> <paramaccessor> def test$Test3$BracePairImpl$$$outer(): test.Test3
+  };
+  abstract trait Test3$MatchableImpl$class extends java.lang.Object with object scala.ScalaObject$class with tes\
+t.Test3$MatchableImpl {
+    private <local> <paramaccessor> val test$Test3$MatchableImpl$$$outer : test.Test3 = _;
+    <stable> <accessor> <paramaccessor> def test$Test3$MatchableImpl$$$outer(): test.Test3 = Test3$MatchableImpl\
+$class.this.test$Test3$MatchableImpl$$$outer ;
+    def /*Test3$MatchableImpl$class*/$init$($outer: test.Test3): scala.Unit = {
+      if ($outer.eq(null))
+        throw new java.lang.NullPointerException.this()
+      else
+        Test3$MatchableImpl$class.this.test$Test3$MatchableImpl$$$outer  = $outer;
+      ()
+    }
+  };
+  abstract trait Test3$BracePairImpl$class extends java.lang.Object with object scala.ScalaObject$class with tes\
+t.Test3$BracePairImpl {
+    private <local> <paramaccessor> val test$Test3$BracePairImpl$$$outer : test.Test3 = _;
+    <stable> <accessor> <paramaccessor> def test$Test3$BracePairImpl$$$outer(): test.Test3 = Test3$BracePairImpl\
+$class.this.test$Test3$BracePairImpl$$$outer ;
+    def /*Test3$BracePairImpl$class*/$init$($outer: test.Test3): scala.Unit = {
+      if ($outer.eq(null))
+        throw new java.lang.NullPointerException.this()
+      else
+        Test3$BracePairImpl$class.this.test$Test3$BracePairImpl$$$outer  = $outer;
+      ()
+    }
+  }
+}
+Exception in thread "main" java.lang.Error: assertion failed: object MyMatch1
+        at scala.Predef$.assert(Predef.scala:182)
+        at scala.tools.nsc.transform.Mixin$MixinTransformer.scala$tools$nsc$transform$Mixin$MixinTransformer$$po\
+stTransform(Mixin.scala:415)
+        at scala.tools.nsc.transform.Mixin$MixinTransformer$$anonfun$30.apply(Mixin.scala:437)
+        at scala.tools.nsc.transform.Mixin$MixinTransformer$$anonfun$30.apply(Mixin.scala:437)
+        at scala.tools.nsc.symtab.SymbolTable.atPhase(SymbolTable.scala:71)
+        at scala.tools.nsc.transform.Mixin$MixinTransformer.transform(Mixin.scala:437)
+        at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1031)
+        at scala.tools.nsc.transform.Mixin$MixinTransformer.transform(Mixin.scala:436)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$16.apply(Trees.scala:974)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$16.apply(Trees.scala:973)
+        at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1077)
+        at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:972)
+        at scala.tools.nsc.transform.Mixin$MixinTransformer.transform(Mixin.scala:436)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$25.apply(Trees.scala:1071)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$25.apply(Trees.scala:1069)
+        at scala.List$.loop$0(List.scala:232)
+        at scala.List$.mapConserve(List.scala:249)
+        at scala.List$.loop$0(List.scala:236)
+        at scala.List$.mapConserve(List.scala:249)
+        at scala.tools.nsc.ast.Trees$Transformer.transformStats(Trees.scala:1069)
+        at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:995)
+        at scala.tools.nsc.transform.Mixin$MixinTransformer.transform(Mixin.scala:436)
+        at scala.tools.nsc.ast.Trees$Transformer.transformTemplate(Trees.scala:1057)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$13.apply(Trees.scala:961)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$13.apply(Trees.scala:961)
+        at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1077)
+        at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:960)
+        at scala.tools.nsc.transform.Mixin$MixinTransformer.transform(Mixin.scala:436)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$25.apply(Trees.scala:1071)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$25.apply(Trees.scala:1069)
+        at scala.List$.loop$0(List.scala:232)
+        at scala.List$.mapConserve(List.scala:249)
+        at scala.List$.loop$0(List.scala:236)
+        at scala.List$.mapConserve(List.scala:249)
+        at scala.List$.loop$0(List.scala:236)
+        at scala.List$.mapConserve(List.scala:249)
+        at scala.List$.loop$0(List.scala:236)
+        at scala.List$.mapConserve(List.scala:249)
+        at scala.List$.loop$0(List.scala:236)
+        at scala.List$.mapConserve(List.scala:249)
+        at scala.List$.loop$0(List.scala:236)
+        at scala.List$.mapConserve(List.scala:249)
+        at scala.List$.loop$0(List.scala:236)
+        at scala.List$.mapConserve(List.scala:249)
+        at scala.tools.nsc.ast.Trees$Transformer.transformStats(Trees.scala:1069)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$12.apply(Trees.scala:957)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$12.apply(Trees.scala:957)
+        at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1077)
+        at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:956)
+        at scala.tools.nsc.transform.Mixin$MixinTransformer.transform(Mixin.scala:436)
+        at scala.tools.nsc.ast.Trees$Transformer.transformUnit(Trees.scala:1072)
+        at scala.tools.nsc.transform.Transform$Phase.apply(Transform.scala:22)
+        at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:216)
+        at scala.tools.nsc.Global$GlobalPhase$$anonfun$1.apply(Global.scala:205)
+        at scala.tools.nsc.Global$GlobalPhase$$anonfun$1.apply(Global.scala:205)
+        at scala.Iterator$class.foreach(Iterator.scala:304)
+        at scala.collection.mutable.ListBuffer$$anon$0.foreach(ListBuffer.scala:216)
+        at scala.tools.nsc.Global$GlobalPhase.run(Global.scala:205)
+        at scala.tools.nsc.Global$Run.compileSources(Global.scala:467)
+        at scala.tools.nsc.Global$Run.compile(Global.scala:527)
+        at scala.tools.nsc.Main$.process(Main.scala:76)
+        at scala.tools.nsc.Main$.main(Main.scala:98)
+        at scala.tools.nsc.Main.main(Main.scala)
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" ></td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-07-11 16:10:13.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

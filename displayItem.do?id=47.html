@@ -1,0 +1,146 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#47]</th>
+		<th><strong>project:</strong> specification</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> missing feature</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Burak</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">open</td>
+          <td align="center" bgcolor="#FFFFFF">2003-06-27 12:24:12.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">Constr( T* ) not 1st class</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>// this is not possible
+
+MySuperXML_Tag( children: Elem* ) extends Elem;
+
+factory = new HashMap( String, Elem* =&gt; Elem )
+factory.put(&quot;MySuperXML_Tag&quot;, MySuperXML_Tag )
+//                            ^
+// error &quot;methods with repeated args have to be
+//        fully applied&quot;</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>if you have a constructor with "repeated parameters", then it is not possible to use the constructor as a value,\
+ like above.
+The dtd-import tool + parser interface critically depend on 1st class constructors, because you decide
+on runtime, which class to construct.
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >To be able to use MySuperXML_Tag as if it was
+ a constructor My...( children:Seq[Elem] )</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Matthias&nbsp; edited on &nbsp;2003-06-27 12:24:12.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+ I have the strong feeling that currently, classes with such constructors can only be used in a <i>very</i> limited form. In particular, you can only construct objects of such classes if you <i>statically</i> know <i>all</i> the elements you want to pass to the constructor. If you just have a variable that contains the elements, you are out of luck... Maybe we should rethink what we want to achieve with such classes.
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2003-07-10 15:43:00.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2003-09-23 18:30:32.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Lex&nbsp; edited on &nbsp;2006-03-28 14:02:44.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Here's a cleaned up version of the proposal:
+<pre>
+import scala.collection.mutable.HashMap
+
+object Test {
+case class MySuperXML_Tag( children: Any* )
+
+val factory = new HashMap[String, Any* => Any ]
+factory("MySuperXML_Tag") = MySuperXML_Tag
+}
+</pre>
+
+<p>It still is not implemented.  Additionally, it is not allowed to change the HashMap to use Seq[Any], either:
+<pre>
+val factory = new HashMap[String, Seq[Any] => Any ]
+</pre>
+
+<p>It strikes me that it would be nice to have <em>some</em> way to refer to MySuperXML_Tag as a value....  Either * types should be allowed in functions, or there should be a conversion available from embedded * types to Seq types.
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

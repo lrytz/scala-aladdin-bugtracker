@@ -1,0 +1,161 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#1013]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Iulian</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2007-03-23 10:42:39.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">[contrib #385] VerifyError in secondary constructor</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>object Bug extends Application {
+  class Graph[V](n: List[V], e: List[Pair[V,V]]) {
+    def this(e: List[Pair[V,V]]) = this(
+      (e.map(p=&gt;p._1) ::: e.map(p=&gt;p._2)), e);
+  }
+  new Graph(Nil, Nil);
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre><pre>
+$ scalac -version
+Scala compiler version 2.4.0-RC2 -- (c) 2002-2007 LAMP/EPFL
+$ scalac Bug.scala
+$ scala Bug
+java.lang.VerifyError: (class: Bug$Graph, method: <init> signature: (Lscala/List;)V) Expecting to find object/ar\
+ray on stack
+        at Bug$.<init>(Bug.scala:6)
+        at Bug$.<clinit>(Bug.scala)
+        at Bug.main(Bug.scala)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+        at java.lang.reflect.Method.invoke(Method.java:585)
+        at scala.tools.nsc.ObjectRunner$.run(ObjectRunner.scala:76)
+        at scala.tools.nsc.MainGenericRunner$.main(MainGenericRunner.scala:106)
+        at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
+$ java -version
+java version "1.5.0_07"
+Java(TM) 2 Runtime Environment, Standard Edition (build 1.5.0_07-b03)
+Java HotSpot(TM) Client VM (build 1.5.0_07-b03, mixed mode, sharing)
+$ javap -c Bug
+Compiled from "Bug.scala"
+public final class Bug extends java.lang.Object{
+public static final int $tag();
+  Code:
+   0:   getstatic       #11; //Field Bug$.MODULE$:LBug$;
+   3:   invokevirtual   #13; //Method Bug$.$tag:()I
+   6:   ireturn
+
+public static final void main(java.lang.String[]);
+  Code:
+   0:   getstatic       #11; //Field Bug$.MODULE$:LBug$;
+   3:   aload_0
+   4:   invokevirtual   #17; //Method Bug$.main:([Ljava/lang/String;)V
+   7:   return
+
+public static final void executionStart_$eq(long);
+  Code:
+   0:   getstatic       #11; //Field Bug$.MODULE$:LBug$;
+   3:   lload_0
+   4:   invokevirtual   #21; //Method Bug$.executionStart_$eq:(J)V
+   7:   return
+
+public static final long executionStart();
+  Code:
+   0:   getstatic       #11; //Field Bug$.MODULE$:LBug$;
+   3:   invokevirtual   #25; //Method Bug$.executionStart:()J
+   6:   lreturn
+
+}
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >No crash or an (implementation restriction) error.
+
+</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Iulian&nbsp; edited on &nbsp;2007-03-23 10:46:38.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+The problem is that the argument to the other constructor needs the two closures, and each closure needs an 'outer'. The outer they see is the uninitialized instance we are currently constructing. It would be probably easy to issue a type-error, but it's troubling to note that the 'outer' instance is not needed here!
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2007-03-30 18:16:52.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

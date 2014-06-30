@@ -1,0 +1,148 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#79]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> medium</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Matthias</td>
+	  <td align="center" bgcolor="#FFFFFF">Michel</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2003-07-21 14:05:26.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">Too many methods mixed in</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>object Test {
+  import scala.collection._;
+  def main(args: Array[String]) = {
+    val map =
+        new mutable.ImmutableMapAdaptor[Int, String, immutable.ListMap[Int, String]](
+            immutable.ListMap.Empty[Int, String]);
+      map += 1 -&gt; &quot;one&quot;;
+      map += 2 -&gt; &quot;two&quot;;
+      map -= 1;
+      System.out.println(map);
+  }
+}</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>Compiles, but when executing the program, the following exception is thrown:
+<pre>
+Exception in thread "main" java.lang.ClassFormatError: scala/collection/mutable/ImmutableMapAdaptor
+(Repetitive method name/signature)
+        at java.lang.ClassLoader.defineClass0(Native Method)
+        at java.lang.ClassLoader.defineClass(ClassLoader.java:502)
+        at java.security.SecureClassLoader.defineClass(SecureClassLoader.java:123)
+        at java.net.URLClassLoader.defineClass(URLClassLoader.java:250)
+        at java.net.URLClassLoader.access$100(URLClassLoader.java:54)
+        at java.net.URLClassLoader$1.run(URLClassLoader.java:193)
+        at java.security.AccessController.doPrivileged(Native Method)
+        at java.net.URLClassLoader.findClass(URLClassLoader.java:186)
+        at java.lang.ClassLoader.loadClass(ClassLoader.java:299)
+        at sun.misc.Launcher$AppClassLoader.loadClass(Launcher.java:265)
+        at java.lang.ClassLoader.loadClass(ClassLoader.java:255)
+        at java.lang.ClassLoader.loadClassInternal(ClassLoader.java:315)
+        at Test.main(T.scala)
+</pre>
+Sorry, I couldn't reduce the program.
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >In the Java interface representing <code>scala.collection.mutable.ImmutableMapAdaptor</code> there are two abstract <code>toString</code> methods. Of course, we want only one; in the optimal case even none! (since every interface defines implicitly a subtype of <code>java.lang.Object</code>.</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Matthias&nbsp; edited on &nbsp;2003-07-21 14:05:49.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Matthias&nbsp; edited on &nbsp;2003-07-21 14:08:04.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Michel&nbsp; edited on &nbsp;2003-07-22 09:23:02.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+<p>This was actually a bug in ImmutableMapAdaptor.scala, which defined the "toString" method twice. Since this is not catched (yet) by the compiler, it goes to the backend which generates two identical method definitions. I fixed ImmutableMapAdaptor, and your program now runs.
+
+<p>As we discussed already several times, this should (and will) be fixed in Erasure.
+</td></tr>
+<tr>
+        <td>
+        <strong>Matthias&nbsp; edited on &nbsp;2003-07-22 10:02:56.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Ah, this explains why I couldn't reduce the "bug".... Sorry!
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

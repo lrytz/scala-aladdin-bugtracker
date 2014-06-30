@@ -1,0 +1,119 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#1127]</th>
+		<th><strong>project:</strong> eclipse-plugin</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Nikolay</td>
+	  <td align="center" bgcolor="#FFFFFF">Sean</td>
+	  <td align="center" bgcolor="#FFFFFF">not repro</td>
+          <td align="center" bgcolor="#FFFFFF">2007-05-21 21:04:38.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">[contrib #516] **** COMPILER CRASH, RESET RESIDENT AND RETRY</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre></pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>A project that used to build last week now always crashes with
+**** COMPILER CRASH, RESET RESIDENT AND RETRY
+**** COMPILER CRASH, GIVE UP, MAYBE DO CLEAN BUILD
+while compiling a file I have not changed since, which incidentally is the alphabetically first file which gets \
+compiled last. I cannot open this file for editing, while I can open all other files (and get syntx highlighting\
+). Doing a clean build doesn't change anything. Updating to the latest plugin version (2.5.8, lib 2.5.0-RC2) doe\
+sn't change anything.
+The compiler error dialog says 'java heap error'
+
+.metadata/.log says
+
+
+!ENTRY ch.epfl.lamp.sdt.core 4 4 2007-05-21 17:19:00.224
+!MESSAGE Presentation compiler error
+!STACK 0
+java.lang.OutOfMemoryError: Java heap space
+
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >It should work like it did last week, or even better, like the scala plugin distributed two or three months ago.</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Nikolay&nbsp; edited on &nbsp;2007-05-21 21:07:47.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Sean&nbsp; edited on &nbsp;2007-05-21 22:01:45.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+I can't diagnose this without code. It could be some new bug in the compiler, I'm betting the XML bug whose fix didn't seem to make it into the last plugin release. 
+<p>
+They should also specify if it crashes on the command line also. If so, its not a plugin bug but a Scala bug.
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

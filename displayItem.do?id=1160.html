@@ -1,0 +1,214 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#1160]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Nikolay</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2007-06-01 09:05:58.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">[contrib #625] computeClosure failed with virtual types</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>// derived from the code in mailing list thread &quot;referring to the self class&quot;
+
+// Tested using 2.5.0-final and 2.5.0.11868.20070531-045012
+
+trait MyNode
+{
+    type selfType = this.type
+
+    def child: selfType
+}
+
+abstract class MyContainer {
+    type nodeType &lt;: MyNode
+
+    def root: MyNode { type selfType = nodeType }
+    def child: MyNode { type selfType &lt;: nodeType } = root.child
+    def child2: nodeType = child.child
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>Exception in thread "main" java.lang.AssertionError: assertion failed
+	at scala.Predef$.assert(Predef.scala:85)
+	at scala.tools.nsc.symtab.Types$CompoundType.computeClosure$0(Types.scala:865)
+	at scala.tools.nsc.symtab.Types$CompoundType$$anonfun$5.apply(Types.scala:889)
+	at scala.tools.nsc.symtab.Types$CompoundType$$anonfun$5.apply(Types.scala:889)
+	at scala.tools.nsc.symtab.Types$CompoundType.memo(Types.scala:947)
+	at scala.tools.nsc.symtab.Types$CompoundType.closure(Types.scala:889)
+	at scala.tools.nsc.symtab.Types$Type.closurePos(Types.scala:449)
+	at scala.tools.nsc.symtab.Types$CompoundType.baseType(Types.scala:952)
+	at scala.tools.nsc.symtab.Types$TypeRef.baseType(Types.scala:1273)
+	at scala.tools.nsc.symtab.Types$SubType.baseType(Types.scala:633)
+	at scala.tools.nsc.symtab.Types$AsSeenFromMap.base(Types.scala:1911)
+	at scala.tools.nsc.symtab.Types$AsSeenFromMap.toPrefix$0(Types.scala:1927)
+	at scala.tools.nsc.symtab.Types$AsSeenFromMap.apply(Types.scala:1928)
+	at scala.tools.nsc.symtab.Types$AsSeenFromMap.apply(Types.scala:1903)
+	at scala.tools.nsc.symtab.Types$TypeMap.mapOver(Types.scala:1786)
+	at scala.tools.nsc.symtab.Types$AsSeenFromMap.apply(Types.scala:1970)
+	at scala.tools.nsc.symtab.Types$Type.asSeenFrom(Types.scala:314)
+	at scala.tools.nsc.symtab.Types$Type.memberInfo(Types.scala:320)
+	at scala.tools.nsc.symtab.Types$class.scala$tools$nsc$symtab$Types$$specializesSym(Types.scala:2584)
+	at scala.tools.nsc.symtab.Types$$anonfun$51.apply(Types.scala:2578)
+	at scala.tools.nsc.symtab.Types$$anonfun$51.apply(Types.scala:2578)
+	at scala.List.exists(List.scala:874)
+	at scala.tools.nsc.symtab.Types$class.specializesSym(Types.scala:2577)
+	at scala.tools.nsc.symtab.SymbolTable.specializesSym(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$Type.specializes(Types.scala:400)
+	at scala.tools.nsc.symtab.Types$$anonfun$47.apply(Types.scala:2530)
+	at scala.tools.nsc.symtab.Types$$anonfun$47.apply(Types.scala:2530)
+	at scala.List.forall(List.scala:858)
+	at scala.tools.nsc.symtab.Types$class.isSubType0(Types.scala:2530)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType0(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$class.isSubType(Types.scala:2427)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$Type.$less$colon$less(Types.scala:383)
+	at scala.tools.nsc.typechecker.Typers$Typer.adapt(Typers.scala:683)
+	at scala.tools.nsc.typechecker.Typers$Typer.adapt(Typers.scala:570)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2651)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2692)
+	at scala.tools.nsc.typechecker.Typers$Typer.transformedOrTyped(Typers.scala:2739)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedDefDef(Typers.scala:1174)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:2422)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2648)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2681)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedStat$0(Typers.scala:1396)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$58.apply(Typers.scala:1426)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$58.apply(Typers.scala:1426)
+	at scala.List$.loop$0(List.scala:243)
+	at scala.List$.mapConserve(List.scala:260)
+	at scala.List$.loop$0(List.scala:247)
+	at scala.List$.mapConserve(List.scala:260)
+	at scala.List$.loop$0(List.scala:247)
+	at scala.List$.mapConserve(List.scala:260)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:1426)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedTemplate(Typers.scala:1056)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedClassDef(Typers.scala:946)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:2413)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2648)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2681)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedStat$0(Typers.scala:1396)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$58.apply(Typers.scala:1426)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$58.apply(Typers.scala:1426)
+	at scala.List$.loop$0(List.scala:243)
+	at scala.List$.mapConserve(List.scala:260)
+	at scala.List$.loop$0(List.scala:247)
+	at scala.List$.mapConserve(List.scala:260)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:1426)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:2409)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2648)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2681)
+	at scala.tools.nsc.typechecker.Analyzer$typerFactory$$anon$1.apply(Analyzer.scala:38)
+	at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:241)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$2.apply(Global.scala:230)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$2.apply(Global.scala:230)
+	at scala.Iterator$class.foreach(Iterator.scala:369)
+	at scala.collection.mutable.ListBuffer$$anon$0.foreach(ListBuffer.scala:245)
+	at scala.tools.nsc.Global$GlobalPhase.run(Global.scala:230)
+	at scala.tools.nsc.Global$Run.compileSources(Global.scala:498)
+	at scala.tools.nsc.Global$Run.compile(Global.scala:572)
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >I'm sure if this code or something similar should now be able to compile successfully, making use of 'bug' #1119 "equivalent to requires for virtual types".
+
+If I use  "type selfType <: this.type"  then with 2.5.0.11868.20070531-045012 I receive the following:
+
+error: type mismatch;
+ found   : MyNode{type selfType = MyContainer.this.nodeType}#selfType
+ required: MyNode{type selfType <: MyContainer.this.nodeType}
+    def child: MyNode { type selfType <: nodeType } = root.child
+
+                                                          ^
+error: method child cannot be accessed in MyNode{type selfType <: MyContainer.this.nodeType}
+ because its instance type => MyNode{type selfType <: MyContainer.this.nodeType}#selfType contains a malformed type: MyNode{type selfType <: MyContainer.this.nodeType}#selfType
+    def child2: nodeType = child.child
+
+                                ^
+two errors found
+)
+
+</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Nikolay&nbsp; edited on &nbsp;2007-06-01 09:07:43.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2007-06-01 16:16:34.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+<
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

@@ -1,0 +1,178 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#268]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> medium</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Vincent</td>
+	  <td align="center" bgcolor="#FFFFFF">Michel</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2004-01-06 19:10:43.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">IllegalAccessError</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>object bug with Executable {
+  private var x = 42; // &quot;private&quot; and &quot;var&quot; necessary for the bug
+  def id[a](def y: a) = y; // &quot;polymorphism&quot;, &quot;def&quot; and &quot;y&quot; necessary for the bug
+  id(x);
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre><p>
+Silent run with <code>java -cp scala.jar:. bug</code>.
+
+<p>
+But with <code>java -Xbootclasspath/a:scala.jar:. bug</code>:
+
+<p>
+Exception in thread "main" java.lang.IllegalAccessError: tried to access method bug$.x()I from class bug$$anon$0\
+
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >The second way of calling the program is in fact the one used when executing the command scala. The problem can occur quite often, in particular each time a private variable is used inside a synchronized statement.</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Philippe&nbsp; edited on &nbsp;2004-01-06 19:50:07.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+<p> Here is a simplified example: </p>
+<code>
+object Test {
+  private def x: Int = 0;
+  class Inner { x }
+  new Inner();
+  final def main(args: Array[String]): Unit = ();
+}
+</code>
+
+<p> The problem is that we neither generate an interface  for class Test nor make all its private method non-private, so we end up calling the private method Test.x from inner class Inner. However, it's very strange that this works if the classes are found in the classpath.
+</p>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Erik&nbsp; edited on &nbsp;2004-01-08 13:51:34.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+I changed priority to high since this is a very annoying bug.
+
+Arguments to functions are automatically private so you don't even have to have explicit private fields in order to be bitten byt this. In the following test class in the top level package the first println works but not the second.
+
+---
+<pre>
+object t with Executable {
+  def f(g:int=>int) = (s:int) => (1::Nil).map((x:int)=>g(s));
+
+  Console.println(f((x:int) => x)(42));
+  Console.println(scala.testing.QuickCheck.f((x:int) => x)(42));
+}
+</pre>
+---
+<pre>
+package scala.testing;
+object QuickCheck {
+
+  def f(g:int=>int) = (s:int) => (1::Nil).map((x:int)=>g(s));
+
+}
+</pre>
+
+Test:
+<pre>
+scala -classpath ./classes t
+List(42)
+Exception in thread "main" java.lang.IllegalAccessError: tried to access method scala.testing.QuickCheck$$anon$12.g$1()Lscala/Function1; from class scala.testing.QuickCheck$$anon$12$$anon$34
+        at scala.testing.QuickCheck$$anon$12$$anon$34.apply(sources/scala/testing/QuickCheck.scala:276)
+        at scala.testing.QuickCheck$$anon$12$$anon$34.apply(sources/scala/testing/QuickCheck.scala:276)
+        at scala.List$class.map(sources/scala/List.scala:351)
+        at scala.testing.QuickCheck$$anon$12.apply(sources/scala/testing/QuickCheck.scala:276)
+        at scala.testing.QuickCheck$$anon$12.apply(sources/scala/testing/QuickCheck.scala:276)
+        at t$.<init>(test.scala:7)
+        at t$.<clinit>(test.scala)
+        at t.main(test.scala)
+</pre>
+</td></tr>
+<tr>
+        <td>
+        <strong>Michel&nbsp; edited on &nbsp;2004-01-08 15:26:05.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+I fixed the bug in a relatively crude fashion, by simply renaming and making public all members. I don't know of another solution, though.
+</td></tr>
+<tr>
+        <td>
+        <strong>Michel&nbsp; edited on &nbsp;2004-01-08 15:26:40.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+(In my last comment, I meant renaming all <b>private</b> members, of course)
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

@@ -1,0 +1,132 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#323]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> medium</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Erik</td>
+	  <td align="center" bgcolor="#FFFFFF">Philippe</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2004-04-30 16:27:30.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">Compiler crashes in Erasure</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>object IllegalBoolean2Float {
+var myBool :boolean = true;
+var myInt:int = 10;
+
+def main(args: Array[String]): unit = {
+	myInt = myBool.asInstanceOf[int];
+ }
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>Exception in thread "main" scalac.ApplicationError: illegal case: 17 -> 13
+        at scalac.util.Debug.abort(Debug.java:46)
+        at scalac.backend.Primitives.getConvertSymbol(Primitives.java:1119)
+        at scalac.backend.Primitives.getConvertSymbol(Primitives.java:1039)
+        at scalac.backend.Primitives.getConvertSymbol(Primitives.java:1019)
+        at scalac.transformer.Erasure.convert(Erasure.java:373)
+        at scalac.transformer.Erasure.coerce(Erasure.java:323)
+        at scalac.transformer.Erasure.transform(Erasure.java:167)
+        at scalac.ast.GenTransformer.transform(Transformer.java:573)
+        at scalac.transformer.Erasure.transform(Erasure.java:179)
+        at scalac.transformer.Erasure.transform(Erasure.java:283)
+        at scalac.transformer.Erasure.transform(Erasure.java:128)
+        at scalac.ast.GenTransformer.transform(Transformer.java:578)
+        at scalac.transformer.Erasure.transform(Erasure.java:115)
+        at scalac.ast.GenTransformer.transform(Transformer.java:573)
+        at scalac.ast.GenTransformer.apply(Transformer.java:406)
+        at scalac.transformer.Erasure.apply(Erasure.java:106)
+        at scalac.ast.GenTransformer.apply(Transformer.java:400)
+        at scalac.transformer.ErasurePhase.apply(ErasurePhase.java:52)
+        at scalac.Global.compile(Global.java:372)
+        at scalac.Global.compile(Global.java:344)
+        at scala.tools.scalac.Main$.main1(Main.scala:35)
+        at scala.tools.scalac.Main$.main(Main.scala:27)
+        at scala.tools.scalac.Main.main(Main.scala:27)
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >Perhaps an error message but not a crash.</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Erik&nbsp; edited on &nbsp;2004-04-30 16:27:54.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Discovered by Urs.
+</td></tr>
+<tr>
+        <td>
+        <strong>Lex&nbsp; edited on &nbsp;2006-03-28 14:14:08.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+This now compiles and then throughs a ClassCastException at runtime.  That is the correct behavior.
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

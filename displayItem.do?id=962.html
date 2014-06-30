@@ -1,0 +1,132 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#962]</th>
+		<th><strong>project:</strong> interpreter</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> missing feature</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Nikolay</td>
+	  <td align="center" bgcolor="#FFFFFF">Lex</td>
+	  <td align="center" bgcolor="#FFFFFF">open</td>
+          <td align="center" bgcolor="#FFFFFF">2007-02-23 15:23:58.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">[contrib #347] default load-directory</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>This is related to feature request, bug #929.
+
+If one could set the default directory for :load, dealing with multiple files would be fast.
+:setdir &quot;long-path&quot;
+:load &quot;now.scala&quot;
+=&gt; loads &quot;long-path&quot;+&quot;/&quot;+&quot;now.scala&quot;
+
+If you compare this to #929, one could get the same effect by using:
+val base = &quot;long-path/&quot;
+val work = base + &quot;now.scala&quot;
+val another = base + &quot;do.scala&quot;
+
+The latter is more general, and much handier if there's many directories involved.
+But you could use both, or just default dir -solution in case the implementing time of the feature is important.</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" ></td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Nikolay&nbsp; edited on &nbsp;2007-02-23 15:24:23.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+contribution #347
+</td></tr>
+<tr>
+        <td>
+        <strong>Nikolay&nbsp; edited on &nbsp;2007-02-23 15:31:26.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+In a personal email, Henrik Huttunen further specified
+<p>
+The default dir should be permanent between sessions.
+e.g. if the interpreter crashes, it's annoying to type the dir again and again, especially, when the path is quite a long.
+Implementation issue: should check that the default dir exists when scala is started and when :load is used (if the dir was removed). One would then get different message than "error opening file" which is for .scala files.
+</p>
+</td></tr>
+<tr>
+        <td>
+        <strong>Lex&nbsp; edited on &nbsp;2007-02-23 17:32:34.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+<p>Making loading convenient requires thinking about how people can organize their script files.<p>
+
+<p>As one quick thought, it would seem nice to have a load *path*.  It would work just like a Java classpath or a shell PATH.  One way would be to expose this as a var that is manipulated by interpreted code...  Otherwise there would have to be : commands for setpath, addfront, addend, reset, append, and on and on, and there would be no good way to use strings as discussed in #929.</p>
+
+<p>Additionally, there should be a way to set these things in the environment, perhaps with Java properties and property files....</p>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

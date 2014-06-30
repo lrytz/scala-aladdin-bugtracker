@@ -1,0 +1,153 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#1070]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Nikolay</td>
+	  <td align="center" bgcolor="#FFFFFF">Iulian</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2007-04-24 17:29:34.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">[contrib #438] Performance optimization: java.lang.StringBuilder instead of StringBuffer</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>In looking through disassembled Scala code, it appears that even
+with the -target:jvm-1.5 command line option, String's are still
+built using java.lang.StringBuffer instead of java.lang.StringBuilder.
+Using StringBuilder is faster than StringBuffer since it's not
+synchronized:
+
+http://java.sun.com/j2se/1.5.0/docs/api/java/lang/StringBuilder.html
+
+object Test extends Application
+{
+  val r = &quot;12345&quot;
+  val z = &quot;abc&quot; + r + &quot;def&quot;
+}
+
+generates code like this:
+
+   23:  invokespecial   #36; //Method java/lang/StringBuffer.&quot;&lt;init&gt;&quot;:()V
+   26:  ldc     #38; //String abc
+   28:  invokevirtual   #42; //Method java/lang/StringBuffer.append:(Ljava/lang/Object;)Ljava/lang/StringBuffer;
+   31:  aload_0
+   32:  invokevirtual   #45; //Method r:()Ljava/lang/String;
+   35:  invokevirtual   #42; //Method java/lang/StringBuffer.append:(Ljava/lang/Object;)Ljava/lang/StringBuffer;
+   38:  ldc     #47; //String def
+   40:  invokevirtual   #42; //Method java/lang/StringBuffer.append:(Ljava/lang/Object;)Ljava/lang/StringBuffer;
+   43:  invokevirtual   #50; //Method java/lang/StringBuffer.toString:()Ljava/lang/String;
+
+Compiling this little Java code with JDK1.6
+
+class JavaTest {
+    String f()
+        {
+            String r = &quot;def&quot;;
+            return &quot;abc&quot; + r + &quot;def&quot;;
+        }
+}
+
+shows this:
+
+   7:   invokespecial   #4; //Method java/lang/StringBuilder.&quot;&lt;init&gt;&quot;:()V
+   10:  ldc     #5; //String abc
+   12:  invokevirtual   #6; //Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+   15:  aload_1
+   16:  invokevirtual   #6; //Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+   19:  ldc     #2; //String def
+   21:  invokevirtual   #6; //Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+   24:  invokevirtual   #7; //Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+
+I think this should be enabled if the -target:jvm-1.5 is used, since
+StringBuilder was only introduced in 1.5.
+
+Regards,
+Blair
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" ></td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Nikolay&nbsp; edited on &nbsp;2007-04-24 17:30:12.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+contribution #438
+</td></tr>
+<tr>
+        <td>
+        <strong>Iulian&nbsp; edited on &nbsp;2007-05-01 10:09:38.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

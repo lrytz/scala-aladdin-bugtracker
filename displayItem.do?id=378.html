@@ -1,0 +1,144 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#378]</th>
+		<th><strong>project:</strong> specification</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> feature</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Philippe</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2004-11-16 11:28:45.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">Method implementations implicitly refine the method</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>class Foo;
+class FooA extends Foo;
+class FooB extends Foo;
+
+abstract class Bar1 {
+  def foo: Foo;
+}
+
+class Bar2 extends Bar1 {
+  def foo = new FooA;
+}
+
+class Bar3 extends Bar2 {
+  override def foo = new FooB;
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre><pre>
+tmp/test.scala:14: method foo in class Bar3 of type FooB
+ cannot override method foo in class Bar2 of type FooA
+  override def foo = new FooB;
+               ^
+one error found
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" ><p>The error occurs because in class <code>Bar2</code> the analyzer infers the type <code>FooA</code> for the return type of method <code>foo</code>. This type is more precise than the type given in class <code>Bar1</code> thus it refines the type of <code>foo</code> in class <code>Bar2</code>. The implementation of <code>foo</code> in class <code>Bar3</code> is refused because <code>FooB</code> is not an instance of the inferred type <code>FooA</code> of <code>foo</code> in class <code>Bar2</code>.</p>
+
+<p>I wonder if we should use the inferred type only if the method is a new one and not when it's an implementation of an existing one. This would imply that missing return types in method implementations would always be replaced by the return type declared in the method that is implemented or overridden. With that rule, the program above would be legal and method <code>foo</code> would have type <code>Foo</code> in all three classes.</p>
+</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2004-11-19 17:42:09.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+I think this change would make the language easier to use, and more efficient to implement. It would however require significant changes in the spec and in the compiler. I am not yet sure how easy it would be, the compiler changes look tricky, at least.
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2004-11-19 18:28:39.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-10-30 16:34:53.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+I now tried the change, but it seems to break seveal pieces of code, in unexpected ways. It's probably better to leave things as they are, and not introduce another rule how types are inferred. 
+
+I did introduce a change that an inherited return type is used as initial approximation, so that recursion for such methods is possible, even if no explicit result type is given.
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-10-30 16:35:14.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

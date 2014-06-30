@@ -1,0 +1,137 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#791]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Burak</td>
+	  <td align="center" bgcolor="#FFFFFF">_</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2006-10-29 02:14:42.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">unapply/products: accessor handling broken</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>trait Complex extends Product2[double,double] 
+
+class ComplexRect(val _1:double, _2:double) extends Complex {
+  override def toString = &quot;ComplexRect(&quot;+_1+&quot;,&quot;+_2+&quot;)&quot;
+}
+
+class ComplexPolar(val _1:double, _2:double) extends Complex {
+  override def toString = &quot;ComplexPolar(&quot;+_1+&quot;,&quot;+_2+&quot;)&quot;
+}
+
+object ComplexRect {
+  def unapply(z:Complex): Option[Complex] = {
+    if(z.isInstanceOf[ComplexRect]) Some(z) else z match {
+      case ComplexPolar(mod, arg) =&gt;
+	Some(new ComplexRect(mod*Math.cos(arg), mod*Math.sin(arg)))
+} } }
+
+object ComplexPolar {
+  def unapply(z:Complex): Option[Complex] = {
+    if(z.isInstanceOf[ComplexPolar]) Some(z) else z match {
+      case ComplexRect(re,im) =&gt;
+	Some(new ComplexPolar(Math.sqrt(re*re + im*im), Math.atan(re/im)))
+} } }
+
+object Test {
+  def main(args:Array[String]) = {
+    new ComplexRect(1,1) match {
+      case ComplexPolar(mod,arg) =&gt; // z @ ???
+	Console.println(&quot;mod&quot;+mod+&quot;arg&quot;+arg)
+    }
+    val Komplex = ComplexRect
+    new ComplexPolar(Math.sqrt(2),Math.PI / 4.0) match {
+      case Komplex(re,im) =&gt; // z @ ???
+	Console.println(&quot;re&quot;+re+&quot; im&quot;+im)
+    }
+  }
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>concerns the -Xunapply compiler option.
+the program is not correct, because "_2" should have been defined as "val _2". There is no public implementation\
+ of the _2 method which is required by trait Product2, however this thing compiles.
+<pre>
+buraq$ build/quick/bin/scalac -d /tmp test/pending/pos/unapplyComplex.scala -Xunapply
+buraq$ build/quick/bin/scala -classpath /tmp Test
+java.lang.AbstractMethodError: ComplexRect._2()Ljava/lang/Object;
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >an error message telling me that ComplexRect and ComplexPolar do not implement _2 required by trait Product2.</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2006-10-30 06:49:19.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+fixed it by using the other accessors methods, constrParamAccessors, when the class is in question is not a case class. 
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

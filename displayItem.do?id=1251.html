@@ -1,0 +1,189 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#1251]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> high</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">Burak</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2007-07-28 11:00:58.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">[contrib #722] Compiler crash on type inference in match block</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>object Z {
+  case class X
+  &quot;&quot; match {
+    case &quot;&quot; =&gt; new Array[X](1)
+    case _ =&gt; Nil
+  }
+}</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>Compiler crashes:
+
+java.lang.NullPointerException
+        at scala.$colon$colon.equals(List.scala:1204)
+        at scala.$colon$colon.equals(List.scala:1204)
+        at scala.$colon$colon.equals(List.scala:1204)
+        at scala.$colon$colon.equals(List.scala:1204)
+        at scala.tools.nsc.ast.Trees$LazyTreeCopier.Template(Trees.scala:1025)
+        at scala.tools.nsc.transform.Erasure$ErasureTransformer$$anon$2.transform(Erasure.scala:848)
+        at scala.tools.nsc.ast.Trees$Transformer.transformTemplate(Trees.scala:1311)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$21.apply(Trees.scala:1209)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$21.apply(Trees.scala:1209)
+        at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1333)
+        at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1208)
+        at scala.tools.nsc.transform.Erasure$ErasureTransformer$$anon$2.transform(Erasure.scala:864)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$33.apply(Trees.scala:1327)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$33.apply(Trees.scala:1325)
+        at scala.List$.loop$0(List.scala:244)
+        at scala.List$.mapConserve(List.scala:261)
+        at scala.tools.nsc.ast.Trees$Transformer.transformStats(Trees.scala:1325)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$20.apply(Trees.scala:1205)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$20.apply(Trees.scala:1205)
+        at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1333)
+        at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1204)
+        at scala.tools.nsc.transform.Erasure$ErasureTransformer$$anon$2.transform(Erasure.scala:864)
+        at scala.tools.nsc.transform.Erasure$ErasureTransformer.transform(Erasure.scala:873)
+        at scala.tools.nsc.ast.Trees$Transformer.transformUnit(Trees.scala:1328)
+        at scala.tools.nsc.transform.Transform$Phase.apply(Transform.scala:30)
+        at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:258)
+        at scala.tools.nsc.Global$GlobalPhase$$anonfun$2.apply(Global.scala:247)
+        at scala.tools.nsc.Global$GlobalPhase$$anonfun$2.apply(Global.scala:247)
+        at scala.Iterator$class.foreach(Iterator.scala:375)
+        at scala.collection.mutable.ListBuffer$$anon$0.foreach(ListBuffer.scala:255)
+        at scala.tools.nsc.Global$GlobalPhase.run(Global.scala:247)
+        at scala.tools.nsc.Global$Run.compileSources(Global.scala:542)
+        at scala.tools.nsc.Global$Run.compile(Global.scala:623)
+        at scala.tools.nsc.StandardCompileServer.session(CompileServer.scala:143)
+        at scala.tools.util.SocketServer$$anonfun$0.apply(SocketServer.scala:69)
+        at scala.tools.util.SocketServer$$anonfun$0.apply(SocketServer.scala:69)
+        at scala.util.DynamicVariable.withValue(DynamicVariable.scala:73)
+        at scala.Console$.withOut(Console.scala:84)
+        at scala.Console$.withOut(Console.scala:102)
+        at scala.tools.util.SocketServer.run(SocketServer.scala:68)
+        at scala.tools.nsc.StandardCompileServer.main(CompileServer.scala:185)
+        at scala.tools.nsc.CompileServer.main(CompileServer.scala)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+        at java.lang.reflect.Method.invoke(Method.java:585)
+        at scala.tools.nsc.ObjectRunner$$anonfun$0.apply(ObjectRunner.scala:75)
+        at scala.tools.nsc.ObjectRunner$.withContextClassLoader(ObjectRunner.scala:49)
+        at scala.tools.nsc.ObjectRunner$.run(ObjectRunner.scala:74)
+        at scala.tools.nsc.MainGenericRunner$.main(MainGenericRunner.scala:154)
+        at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
+error: fatal error (server aborted): null
+one error found
+[died while typechecking the translated pattern match:]
+if ("".==(""))
+  body32345120(){
+    new Array[Z.this.X](1)
+  }
+else
+  body9092916(){
+    scala.Nil
+  }
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >Silent compilation</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2007-07-28 11:03:23.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2007-07-28 11:31:26.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+I fixed the first problem but now we get another error:
+<pre>
+scala.tools.nsc.symtab.Types$TypeError: type mismatch;
+ found   : Seq[Z.this.X]{def projection(): Seq.Projection[Z.this.X]{def append[B >: Z.this.X](() => Iterable[B(in method append)]): Seq.Projection[B(in method append)]}}
+ required: Seq[Z.this.X]{def projection(): Seq.Projection[Z.this.X]{def append[B >: Z.this.X](() => Iterable[(some other)(some other)B(in method append)]): Seq.Projection[(some other)(some other)B(in method append)]}}
+</pre>
+It seems the types are needlessly complex. Maybe we can solve this by adding result type annotations to the generated bodyXXXXXXX methods?
+
+
+
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2007-08-14 18:10:07.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+I do assign result type of the match now. this used to crash the compiler elsewhere but I worked around it by special casing: when the body has tpe Nothing, I use that type (it gives problems when Nothing is used in place of Unit, the typer does not digest just setting the type by fiat for this combination... this problem will probably surface elsewhere later)
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

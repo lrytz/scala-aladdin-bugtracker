@@ -1,0 +1,132 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#274]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Philippe</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2004-01-15 16:38:19.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">compound types with single types crash the compiler</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>trait Test {
+  type T;
+  val x: T;
+  val y: T;
+  type X &lt;: x.type with y.type;
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre><pre>
+Exception in thread "main" java.lang.AssertionError: class Test.<ct> Test.this.x.type value x -1
+	at scalac.symtab.TypeSymbol.adjustType(Symbol.java:1653)
+	at scalac.symtab.TypeSymbol.adjustType(Symbol.java:1658)
+	at scalac.symtab.TypeSymbol.computeClosureAt(Symbol.java:1621)
+	at scalac.symtab.TypeSymbol.closure(Symbol.java:1579)
+	at scalac.typechecker.RefCheck.validateBaseTypes(RefCheck.java:333)
+	at scalac.typechecker.RefCheck.transform(RefCheck.java:1015)
+	at scalac.ast.Transformer.transform(Transformer.java:120)
+	at scalac.typechecker.RefCheck.transform(RefCheck.java:963)
+	at scalac.typechecker.RefCheck.transformStat(RefCheck.java:933)
+	at scalac.typechecker.RefCheck.transformStats(RefCheck.java:890)
+	at scalac.typechecker.RefCheck.transform(RefCheck.java:971)
+	at scalac.ast.Transformer.transform(Transformer.java:272)
+	at scalac.ast.Transformer.transform(Transformer.java:86)
+	at scalac.typechecker.RefCheck.transform(RefCheck.java:945)
+	at scalac.typechecker.RefCheck.transformStat(RefCheck.java:933)
+	at scalac.typechecker.RefCheck.transformStats(RefCheck.java:890)
+	at scalac.typechecker.RefCheck.apply(RefCheck.java:54)
+	at scalac.typechecker.RefCheckPhase.apply(RefCheckPhase.java:26)
+	at scalac.Global.compile(Global.java:306)
+	at scalac.Global.compile(Global.java:278)
+	at scala.tools.scalac.Main$.main(sources/scala/tools/scalac/Main.scala:33)
+	at scala.tools.scalac.Main.main(sources/scala/tools/scalac/Main.scala)
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" ><p> Don't know but not a compiler crash. </p>
+</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2004-01-20 12:35:51.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+The compiler nows rejects the illegal type.
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2004-01-20 12:36:19.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

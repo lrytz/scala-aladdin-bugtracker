@@ -1,0 +1,209 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#261]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Philippe</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2003-12-11 14:14:24.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">separate compilation problem</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre></pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre><p>Do a <code>make distclean; make</code>, touch the file <code>sources/scala/tools/scalac/typechecker/DeSugariz\
+e.scala</code> and redo a <code>make</code>. Here is what you get: </p>
+
+<pre>
+Exception in thread "main" java.lang.AssertionError: class scala.tools.scalac.typechecker.Infer scala.Object cla\
+ss scala.Object -1
+	at scalac.symtab.TypeSymbol.adjustType(Symbol.java:1632)
+	at scalac.symtab.TypeSymbol.adjustType(Symbol.java:1637)
+	at scalac.symtab.TypeSymbol.computeClosureAt(Symbol.java:1600)
+	at scalac.symtab.TypeSymbol.closure(Symbol.java:1556)
+	at scalac.symtab.Symbol.closurePos(Symbol.java:1062)
+	at scalac.symtab.Symbol.baseType(Symbol.java:1077)
+	at scalac.symtab.Type.baseType(Type.java:1171)
+	at scalac.symtab.Type.isSubType0(Type.java:1849)
+	at scalac.symtab.Type.isSubType(Type.java:1800)
+	at scala.tools.scalac.typechecker.Analyzer$class.adapt(sources/scala/tools/scalac/typechecker/Analyzer.scala:13\
+76)
+	at scala.tools.scalac.typechecker.Analyzer$class.adapt(sources/scala/tools/scalac/typechecker/Analyzer.scala:12\
+61)
+	at scala.tools.scalac.typechecker.Analyzer$class.transform(sources/scala/tools/scalac/typechecker/Analyzer.scal\
+a:1833)
+	at scala.tools.scalac.typechecker.Analyzer$class.transformArgs(sources/scala/tools/scalac/typechecker/Analyzer.\
+scala:1725)
+	at scala.tools.scalac.typechecker.Analyzer$$anon$37.handleApply$0(sources/scala/tools/scalac/typechecker/Analyz\
+er.scala:2496)
+	at scala.tools.scalac.typechecker.Analyzer$$anon$37.apply(sources/scala/tools/scalac/typechecker/Analyzer.scala\
+:2581)
+	at scala.tools.scalac.typechecker.Analyzer$$anon$37.apply(sources/scala/tools/scalac/typechecker/Analyzer.scala\
+:1925)
+	at scala.runtime.ResultOrException.tryBlock(ResultOrException.java:34)
+	at scala.runtime.ScalaRunTime$.Try(sources/scala/runtime/ScalaRunTime.scala:19)
+	at scala.tools.scalac.typechecker.Analyzer$class.transform(sources/scala/tools/scalac/typechecker/Analyzer.scal\
+a:1924)
+	at scala.tools.scalac.typechecker.Analyzer$class.transform(sources/scala/tools/scalac/typechecker/Analyzer.scal\
+a:1833)
+	at scala.tools.scalac.typechecker.Analyzer$$anon$37.apply(sources/scala/tools/scalac/typechecker/Analyzer.scala\
+:1988)
+	at scala.tools.scalac.typechecker.Analyzer$$anon$37.apply(sources/scala/tools/scalac/typechecker/Analyzer.scala\
+:1925)
+	at scala.runtime.ResultOrException.tryBlock(ResultOrException.java:34)
+	at scala.runtime.ScalaRunTime$.Try(sources/scala/runtime/ScalaRunTime.scala:19)
+	at scala.tools.scalac.typechecker.Analyzer$class.transform(sources/scala/tools/scalac/typechecker/Analyzer.scal\
+a:1924)
+	at scala.tools.scalac.typechecker.Analyzer$class.transform(sources/scala/tools/scalac/typechecker/Analyzer.scal\
+a:1852)
+	at scala.tools.scalac.typechecker.Analyzer$class.transformStatSeq(sources/scala/tools/scalac/typechecker/Analyz\
+er.scala:1620)
+	at scala.tools.scalac.typechecker.Analyzer$class.transformTemplate(sources/scala/tools/scalac/typechecker/Analy\
+zer.scala:1683)
+	at scala.tools.scalac.typechecker.Analyzer$$anon$37.apply(sources/scala/tools/scalac/typechecker/Analyzer.scala\
+:1960)
+	at scala.tools.scalac.typechecker.Analyzer$$anon$37.apply(sources/scala/tools/scalac/typechecker/Analyzer.scala\
+:1925)
+	at scala.runtime.ResultOrException.tryBlock(ResultOrException.java:34)
+	at scala.runtime.ScalaRunTime$.Try(sources/scala/runtime/ScalaRunTime.scala:19)
+	at scala.tools.scalac.typechecker.Analyzer$class.transform(sources/scala/tools/scalac/typechecker/Analyzer.scal\
+a:1924)
+	at scalac.ast.Transformer.transform(Transformer.java:277)
+	at scala.tools.scalac.typechecker.Analyzer$class.transform(sources/scala/tools/scalac/typechecker/Analyzer.scal\
+a:1874)
+	at scala.tools.scalac.typechecker.Analyzer$$anon$37.apply(sources/scala/tools/scalac/typechecker/Analyzer.scala\
+:1936)
+	at scala.tools.scalac.typechecker.Analyzer$$anon$37.apply(sources/scala/tools/scalac/typechecker/Analyzer.scala\
+:1925)
+	at scala.runtime.ResultOrException.tryBlock(ResultOrException.java:34)
+	at scala.runtime.ScalaRunTime$.Try(sources/scala/runtime/ScalaRunTime.scala:19)
+	at scala.tools.scalac.typechecker.Analyzer$class.transform(sources/scala/tools/scalac/typechecker/Analyzer.scal\
+a:1924)
+	at scalac.ast.Transformer.transform(Transformer.java:277)
+	at scala.tools.scalac.typechecker.Analyzer$class.transform(sources/scala/tools/scalac/typechecker/Analyzer.scal\
+a:1874)
+	at scala.tools.scalac.typechecker.Analyzer$$anon$37.apply(sources/scala/tools/scalac/typechecker/Analyzer.scala\
+:1936)
+	at scala.tools.scalac.typechecker.Analyzer$$anon$37.apply(sources/scala/tools/scalac/typechecker/Analyzer.scala\
+:1925)
+	at scala.runtime.ResultOrException.tryBlock(ResultOrException.java:34)
+	at scala.runtime.ScalaRunTime$.Try(sources/scala/runtime/ScalaRunTime.scala:19)
+	at scala.tools.scalac.typechecker.Analyzer$class.transform(sources/scala/tools/scalac/typechecker/Analyzer.scal\
+a:1924)
+	at scalac.ast.Transformer.transform(Transformer.java:277)
+	at scala.tools.scalac.typechecker.Analyzer$class.transform(sources/scala/tools/scalac/typechecker/Analyzer.scal\
+a:1874)
+	at scala.tools.scalac.typechecker.Analyzer$$anon$37.apply(sources/scala/tools/scalac/typechecker/Analyzer.scala\
+:1936)
+	at scala.tools.scalac.typechecker.Analyzer$$anon$37.apply(sources/scala/tools/scalac/typechecker/Analyzer.scala\
+:1925)
+	at scala.runtime.ResultOrException.tryBlock(ResultOrException.java:34)
+	at scala.runtime.ScalaRunTime$.Try(sources/scala/runtime/ScalaRunTime.scala:19)
+	at scala.tools.scalac.typechecker.Analyzer$class.transform(sources/scala/tools/scalac/typechecker/Analyzer.scal\
+a:1924)
+	at scalac.ast.Transformer.transform(Transformer.java:277)
+	at scala.tools.scalac.typechecker.Analyzer$class.transform(sources/scala/tools/scalac/typechecker/Analyzer.scal\
+a:1874)
+	at scala.tools.scalac.typechecker.Analyzer$$anon$37.apply(sources/scala/tools/scalac/typechecker/Analyzer.scala\
+:1936)
+	at scala.tools.scalac.typechecker.Analyzer$$anon$37.apply(sources/scala/tools/scalac/typechecker/Analyzer.scala\
+:1925)
+	at scala.runtime.ResultOrException.tryBlock(ResultOrException.java:34)
+	at scala.runtime.ScalaRunTime$.Try(sources/scala/runtime/ScalaRunTime.scala:19)
+	at scala.tools.scalac.typechecker.Analyzer$class.transform(sources/scala/tools/scalac/typechecker/Analyzer.scal\
+a:1924)
+	at scala.tools.scalac.typechecker.Analyzer$class.transform(sources/scala/tools/scalac/typechecker/Analyzer.scal\
+a:1852)
+	at scala.tools.scalac.typechecker.Analyzer$class.transformStatSeq(sources/scala/tools/scalac/typechecker/Analyz\
+er.scala:1620)
+	at scala.tools.scalac.typechecker.Analyzer$class.apply(sources/scala/tools/scalac/typechecker/Analyzer.scala:11\
+5)
+	at scalac.ast.Transformer.apply(Transformer.java:63)
+	at scala.tools.scalac.typechecker.Analyzer$class.apply(sources/scala/tools/scalac/typechecker/Analyzer.scala:57\
+)
+	at scala.tools.scalac.typechecker.AnalyzerPhase$class.apply(sources/scala/tools/scalac/typechecker/AnalyzerPhas\
+e.scala:61)
+	at scalac.Global.compile(Global.java:300)
+	at scalac.Global.compile(Global.java:272)
+	at scala.tools.scalac.Main$.main(sources/scala/tools/scalac/Main.scala:33)
+	at scala.tools.scalac.Main.main(sources/scala/tools/scalac/Main.scala)
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >No error.</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2004-01-05 17:06:37.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

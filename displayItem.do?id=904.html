@@ -1,0 +1,136 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#904]</th>
+		<th><strong>project:</strong> distribution</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> missing feature</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Nikolay</td>
+	  <td align="center" bgcolor="#FFFFFF">Gilles</td>
+	  <td align="center" bgcolor="#FFFFFF">won't fix</td>
+          <td align="center" bgcolor="#FFFFFF">2007-01-19 10:52:33.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">[contrib #293] bin/scala command line not friendly to javaagent</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>Specifying a &quot;-javaagent:&lt;path&gt;&quot; is difficult with the bin/scala, but really the CLASSPATH handling causes a big problem.
+
+This is what I was doing:
+export JAVACMD=&quot;java -javaagent:lib/aspectjweaver.jar&quot;
+
+scala -classpath bin/example.jar:lib/aspectjrt.jar:lib/dash-obtain-0.9.1.jar:lib/weaveroptions example.ExampleApp
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>The java.class.path doesn't include the lib/aspectjrt.jar file (that is instead placed into env.classpath)
+
+The aspectjweaver.jar javaagent handling (for load-time-weaving of AspectJ Aspects) relies on the aspectjrt.jar \
+classes to be present.
+
+End result: NoClassDefFoundException
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >More granular command-line options for bin/scala. I would like to see:
+* -Xclasspath (to really add things to the java.class.path)
+* -Xbootclasspath/a (to append to the bootclasspath)
+* -Xbootclasspath/p (to prepend to the bootclasspath)
+* -javaopts to set arbitrary options right after the JAVACMD
+</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Nikolay&nbsp; edited on &nbsp;2007-01-19 10:52:57.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+contribution #293
+</td></tr>
+<tr>
+        <td>
+        <strong>Lex&nbsp; edited on &nbsp;2007-01-19 12:17:38.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Gilles&nbsp; edited on &nbsp;2007-05-10 15:47:33.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+The “scala” script deals with most cases. But for complex ones, “java” should be used directly.
+</td></tr>
+<tr>
+        <td>
+        <strong>Lex&nbsp; edited on &nbsp;2007-05-14 11:02:03.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+<p>As Gilles writes, you can use the java command directly if you want precise control over the flags sent to the JVM.  You mainly need to ensure that scala-library.jar is available on the classpath; everything else is up to you.</p>
+
+<p>That said, JAVACMD should work, as should the more recent JAVA_OPTS. So you can use things like JAVA_OPTS="-classpath blah -Xbootclasspath/a blarg -enableassertions".  If you find that this is not so, then please reopen the bug.</p>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

@@ -1,0 +1,131 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#292]</th>
+		<th><strong>project:</strong> interpreter</th>
+		<th><strong>priority:</strong> medium</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Nikolay</td>
+	  <td align="center" bgcolor="#FFFFFF">Philippe</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2004-02-02 19:07:20.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">[contrib #16] Empty class definition crashes the interpreter</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>&gt; class A
+class A extends java.lang.Object with scala.ScalaObject
+&gt; class B extends A
+Exception in thread &quot;main&quot; java.lang.IndexOutOfBoundsException: Index: 0, Size
+0
+        at java.util.ArrayList.RangeCheck(ArrayList.java:508)
+        at java.util.ArrayList.get(ArrayList.java:320)
+        at scalac.transformer.AddConstructors.transform(AddConstructors.java:2
+)
+        at scalac.transformer.AddConstructors.transform(AddConstructors.java:1
+)
+        at scalac.ast.GenTransformer.transform(Transformer.java:569)
+        at scalac.transformer.AddConstructors.transform(AddConstructors.java:2
+)
+        at scalac.transformer.AddConstructors.transform(AddConstructors.java:1
+)
+        at scalac.ast.GenTransformer.transform(Transformer.java:569)
+        at scalac.ast.GenTransformer.apply(Transformer.java:402)
+        at scalac.transformer.AddConstructorsPhase.apply(AddConstructorsPhase.
+va:60)
+        at scalac.Global.compile(Global.java:306)
+        at scalac.Global.compile(Global.java:292)
+        at scala.tools.scalai.Interpreter.interpret(Interpreter.java:68)
+        at scala.tools.scalai.InterpreterShell.eval(InterpreterShell.java:243)
+        at scala.tools.scalai.InterpreterShell.handle(InterpreterShell.java:11
+
+        at scala.tools.scalai.InterpreterShell.loop(InterpreterShell.java:105)
+        at scala.tools.scalai.InterpreterShell.main(InterpreterShell.java:98)
+        at scala.tools.scalai.Main.main(Main.java:34)
+H:\_Th\scala&gt;</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>scalaint crashed and exit
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >The definition should be accepted.</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Nikolay&nbsp; edited on &nbsp;2004-02-02 19:08:58.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+The problem is in only with the interpreter. The compiler accepts it.
+</td></tr>
+<tr>
+        <td>
+        <strong>Philippe&nbsp; edited on &nbsp;2004-03-24 12:52:23.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Magically solved by some unknown change.
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

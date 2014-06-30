@@ -1,0 +1,313 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#834]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> medium</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Lex</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2006-11-24 14:58:13.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">return in a closure in a method in a method</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>object Test {
+  def response: String = {
+    def check: Option[String] = {
+      val closure: String=&gt;Nothing =
+        p =&gt; return Some(&quot;deep return&quot;) // should return from check
+
+      closure(&quot;whatever&quot;)
+    }
+
+    check
+
+    return &quot;ok&quot;
+  }
+
+  def main(args: Array[String]) {
+    Console.println(response)
+  }
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre><pre>
+exception when traversing def check: scala.Option[java.lang.String] = {
+  val closure: (java.lang.String) => scala.Nothing = ((p: java.lang.String) => return new scala.Some[java.lang.S\
+tring]("deep return"));
+  closure.apply("whatever")
+}
+exception when traversing {
+  def check: scala.Option[java.lang.String] = {
+    val closure: (java.lang.String) => scala.Nothing = ((p: java.lang.String) => return new scala.Some[java.lang\
+.String]("deep return"));
+    closure.apply("whatever")
+  };
+  check;
+  return "ok"
+}
+exception when traversing def response: java.lang.String = {
+  def check: scala.Option[java.lang.String] = {
+    val closure: (java.lang.String) => scala.Nothing = ((p: java.lang.String) => return new scala.Some[java.lang\
+.String]("deep return"));
+    closure.apply("whatever")
+  };
+  check;
+  return "ok"
+}
+exception when traversing java.lang.Object with scala.ScalaObject {
+  def this(): object Test = {
+    Test.super.this();
+    ()
+  };
+  def response: java.lang.String = {
+    def check: scala.Option[java.lang.String] = {
+      val closure: (java.lang.String) => scala.Nothing = ((p: java.lang.String) => return new scala.Some[java.la\
+ng.String]("deep return"));
+      closure.apply("whatever")
+    };
+    check;
+    return "ok"
+  };
+  def main(args: scala.Array[java.lang.String]): scala.Unit = scala.Console.println(Test.this.response)
+}
+exception when traversing final class Test extends java.lang.Object with scala.ScalaObject {
+  def this(): object Test = {
+    Test.super.this();
+    ()
+  };
+  def response: java.lang.String = {
+    def check: scala.Option[java.lang.String] = {
+      val closure: (java.lang.String) => scala.Nothing = ((p: java.lang.String) => return new scala.Some[java.la\
+ng.String]("deep return"));
+      closure.apply("whatever")
+    };
+    check;
+    return "ok"
+  };
+  def main(args: scala.Array[java.lang.String]): scala.Unit = scala.Console.println(Test.this.response)
+}
+exception when traversing package <empty> {
+  final class Test extends java.lang.Object with scala.ScalaObject {
+    def this(): object Test = {
+      Test.super.this();
+      ()
+    };
+    def response: java.lang.String = {
+      def check: scala.Option[java.lang.String] = {
+        val closure: (java.lang.String) => scala.Nothing = ((p: java.lang.String) => return new scala.Some[java.\
+lang.String]("deep return"));
+        closure.apply("whatever")
+      };
+      check;
+      return "ok"
+    };
+    def main(args: scala.Array[java.lang.String]): scala.Unit = scala.Console.println(Test.this.response)
+  }
+}
+Exception in thread "main" scala.tools.nsc.symtab.Types$TypeError: type _ escapes its defining scope as part of \
+type _
+	at scala.tools.nsc.typechecker.Contexts$Context.error(Contexts.scala:252)
+	at scala.tools.nsc.typechecker.Infer$Inferencer.error(Infer.scala:245)
+	at scala.tools.nsc.typechecker.Typers$Typer$checkNoEscaping$.check(Typers.scala:338)
+	at scala.tools.nsc.typechecker.Typers$Typer$checkNoEscaping$.locals(Typers.scala:318)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedCase(Typers.scala:1164)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$39.apply(Typers.scala:1171)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$39.apply(Typers.scala:1170)
+	at scala.List$.loop$0(List.scala:244)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedCases(Typers.scala:1170)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1998)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2221)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedBlock(Typers.scala:1131)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1878)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2221)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2253)
+	at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.scala$tools$nsc$transform$UnCurry$UnCurryTransformer$$n\
+onLocalReturnTry(UnCurry.scala:170)
+	at scala.tools.nsc.transform.UnCurry$UnCurryTransformer$$anonfun$17.apply(UnCurry.scala:437)
+	at scala.tools.nsc.transform.UnCurry$UnCurryTransformer$$anonfun$17.apply(UnCurry.scala:423)
+	at scala.tools.nsc.symtab.SymbolTable.atPhase(SymbolTable.scala:77)
+	at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.postTransform(UnCurry.scala:423)
+	at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.transform(UnCurry.scala:95)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$30.apply(Trees.scala:1178)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$30.apply(Trees.scala:1176)
+	at scala.List$.loop$0(List.scala:244)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.tools.nsc.ast.Trees$Transformer.transformStats(Trees.scala:1176)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1098)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:46)
+	at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.mainTransform(UnCurry.scala:415)
+	at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.transform(UnCurry.scala:95)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$20.apply(Trees.scala:1077)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$20.apply(Trees.scala:1076)
+	at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1184)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:33)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:27)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1075)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:46)
+	at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.scala$tools$nsc$transform$UnCurry$UnCurryTransformer$$s\
+uper$transform(UnCurry.scala:345)
+	at scala.tools.nsc.transform.UnCurry$UnCurryTransformer$$anonfun$5.apply(UnCurry.scala:345)
+	at scala.tools.nsc.transform.UnCurry$UnCurryTransformer$$anonfun$5.apply(UnCurry.scala:329)
+	at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.withNeedLift$0(UnCurry.scala:313)
+	at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.mainTransform(UnCurry.scala:328)
+	at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.transform(UnCurry.scala:95)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$30.apply(Trees.scala:1178)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$30.apply(Trees.scala:1176)
+	at scala.List$.loop$0(List.scala:244)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.tools.nsc.ast.Trees$Transformer.transformStats(Trees.scala:1176)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1096)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.scala$tools$nsc$transform$TypingTransformers$\
+TypingTransformer$$super$transform(TypingTransformers.scala:44)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer$$anonfun$0.apply(TypingTransformers.scala:44)\
+
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer$$anonfun$0.apply(TypingTransformers.scala:44)\
+
+	at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1184)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:33)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:27)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:44)
+	at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.scala$tools$nsc$transform$UnCurry$UnCurryTransformer$$s\
+uper$transform(UnCurry.scala:345)
+	at scala.tools.nsc.transform.UnCurry$UnCurryTransformer$$anonfun$16.apply(UnCurry.scala:412)
+	at scala.tools.nsc.transform.UnCurry$UnCurryTransformer$$anonfun$16.apply(UnCurry.scala:412)
+	at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.withInConstructorFlag$0(UnCurry.scala:321)
+	at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.mainTransform(UnCurry.scala:412)
+	at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.transform(UnCurry.scala:95)
+	at scala.tools.nsc.ast.Trees$Transformer.transformTemplate(Trees.scala:1164)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$17.apply(Trees.scala:1064)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$17.apply(Trees.scala:1063)
+	at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1184)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:33)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:27)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1062)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:46)
+	at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.mainTransform(UnCurry.scala:415)
+	at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.transform(UnCurry.scala:95)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$30.apply(Trees.scala:1178)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$30.apply(Trees.scala:1176)
+	at scala.List$.loop$0(List.scala:244)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.tools.nsc.ast.Trees$Transformer.transformStats(Trees.scala:1176)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$16.apply(Trees.scala:1059)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$16.apply(Trees.scala:1059)
+	at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1184)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:33)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:27)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1058)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:46)
+	at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.mainTransform(UnCurry.scala:415)
+	at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.transform(UnCurry.scala:95)
+	at scala.tools.nsc.ast.Trees$Transformer.transformUnit(Trees.scala:1179)
+	at scala.tools.nsc.transform.Transform$Phase.apply(Transform.scala:30)
+	at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:220)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$1.apply(Global.scala:209)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$1.apply(Global.scala:209)
+	at scala.Iterator$class.foreach(Iterator.scala:341)
+	at scala.collection.mutable.ListBuffer$$anon$0.foreach(ListBuffer.scala:244)
+	at scala.tools.nsc.Global$GlobalPhase.run(Global.scala:209)
+	at scala.tools.nsc.Global$Run.compileSources(Global.scala:475)
+	at scala.tools.nsc.Global$Run.compile(Global.scala:547)
+	at scala.tools.nsc.Main$.process(Main.scala:74)
+	at scala.tools.nsc.Main$.main(Main.scala:96)
+	at scala.tools.nsc.Main.main(Main.scala)
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >This should compile and print "deep return"
+</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Lex&nbsp; edited on &nbsp;2006-11-24 14:58:45.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Lex&nbsp; edited on &nbsp;2006-11-24 15:01:55.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Err, actually, this should print "ok", not "deep return".  Anyway, this return should be allowed.
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-11-27 15:15:21.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+The change in typed patterns triggered this, so this would probably affect all non-local returns, not just deep ones :-(
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

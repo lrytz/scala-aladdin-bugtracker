@@ -1,0 +1,316 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#837]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> medium</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Sean</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2006-11-24 21:30:43.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">resident compiler explicit outer crash from NSC</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>// See test/pending/bug837.res
+// TWO FILES mined from NSC
+// test/DataFlowAnalysis.scala
+package test;
+import scala.collection.mutable._;
+trait CompleteLattice {
+  trait Elem;
+}
+trait DataFlowAnalysis[L &lt;: CompleteLattice] {
+  type P;
+  val lattice : L;
+  val out: Map[P, lattice.Elem] = new HashMap;
+}
+abstract class Liveness {
+  object livenessLattice extends CompleteLattice;
+  final class LivenessAnalysis extends DataFlowAnalysis[livenessLattice.type] {
+    type P = String;
+    val lattice = livenessLattice;
+  }
+}
+// test/Test.scala
+package test;
+trait DeadcodeAnalysis {
+  object liveness extends Liveness;  
+  val a = new liveness.LivenessAnalysis();
+  var live = a.out(&quot;hello&quot;);
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>Looks like another problem with object types and the resident compiler:
+
+<pre>sean-mcdirmid:~/workspace/test36/src mcdirmid$ rm -rf ../bin/* && ../../scala/build/quick/bin/scalac -resid\
+ent -sourcepath . -d ../bin
+
+nsc> test/Test.scala test/DataFlowAnalysis.scala
+
+nsc> test/Test.scala
+exception when transforming DeadcodeAnalysis.this.a().out().apply("hello")
+exception when transforming private <local> var live: DeadcodeAnalysis.this.a.lattice.Elem = DeadcodeAnalysis.th\
+is.a().out().apply("hello")
+exception when transforming java.lang.Object with scala.ScalaObject {
+  final class liveness extends test.Liveness with scala.ScalaObject {
+    def this(): object DeadcodeAnalysis.this.liveness = {
+      liveness.super.this();
+      ()
+    }
+  };
+  final <stable> def liveness(): object DeadcodeAnalysis.this.liveness;
+  private <local> val a: DeadcodeAnalysis.this.liveness.LivenessAnalysis = new DeadcodeAnalysis.this.liveness.Li\
+venessAnalysis();
+  <stable> <accessor> def a(): DeadcodeAnalysis.this.liveness.LivenessAnalysis = DeadcodeAnalysis.this.a;
+  private <local> var live: DeadcodeAnalysis.this.a.lattice.Elem = DeadcodeAnalysis.this.a().out().apply("hello"\
+);
+  <accessor> def live(): DeadcodeAnalysis.this.a.lattice.Elem = DeadcodeAnalysis.this.live;
+  <accessor> def live_=(x$1: DeadcodeAnalysis.this.a.lattice.Elem): scala.Unit = DeadcodeAnalysis.this.live = x$\
+1
+}
+exception when transforming abstract trait DeadcodeAnalysis extends java.lang.Object with scala.ScalaObject {
+  final class liveness extends test.Liveness with scala.ScalaObject {
+    def this(): object DeadcodeAnalysis.this.liveness = {
+      liveness.super.this();
+      ()
+    }
+  };
+  final <stable> def liveness(): object DeadcodeAnalysis.this.liveness;
+  private <local> val a: DeadcodeAnalysis.this.liveness.LivenessAnalysis = new DeadcodeAnalysis.this.liveness.Li\
+venessAnalysis();
+  <stable> <accessor> def a(): DeadcodeAnalysis.this.liveness.LivenessAnalysis = DeadcodeAnalysis.this.a;
+  private <local> var live: DeadcodeAnalysis.this.a.lattice.Elem = DeadcodeAnalysis.this.a().out().apply("hello"\
+);
+  <accessor> def live(): DeadcodeAnalysis.this.a.lattice.Elem = DeadcodeAnalysis.this.live;
+  <accessor> def live_=(x$1: DeadcodeAnalysis.this.a.lattice.Elem): scala.Unit = DeadcodeAnalysis.this.live = x$\
+1
+}
+exception when transforming package test {
+  abstract trait DeadcodeAnalysis extends java.lang.Object with scala.ScalaObject {
+    final class liveness extends test.Liveness with scala.ScalaObject {
+      def this(): object DeadcodeAnalysis.this.liveness = {
+        liveness.super.this();
+        ()
+      }
+    };
+    final <stable> def liveness(): object DeadcodeAnalysis.this.liveness;
+    private <local> val a: DeadcodeAnalysis.this.liveness.LivenessAnalysis = new DeadcodeAnalysis.this.liveness.\
+LivenessAnalysis();
+    <stable> <accessor> def a(): DeadcodeAnalysis.this.liveness.LivenessAnalysis = DeadcodeAnalysis.this.a;
+    private <local> var live: DeadcodeAnalysis.this.a.lattice.Elem = DeadcodeAnalysis.this.a().out().apply("hell\
+o");
+    <accessor> def live(): DeadcodeAnalysis.this.a.lattice.Elem = DeadcodeAnalysis.this.live;
+    <accessor> def live_=(x$1: DeadcodeAnalysis.this.a.lattice.Elem): scala.Unit = DeadcodeAnalysis.this.live = \
+x$1
+  }
+}
+Exception in thread "main" scala.tools.nsc.symtab.Types$TypeError: something is wrong (wrong class file?): trait\
+ DataFlowAnalysis with type parameters [L] gets applied to arguments ()
+	at scala.tools.nsc.symtab.Types$AsSeenFromMap.toInstance$0(Types.scala:1496)
+	at scala.tools.nsc.symtab.Types$AsSeenFromMap.apply(Types.scala:1507)
+	at scala.tools.nsc.symtab.Types$AsSeenFromMap.apply(Types.scala:1453)
+	at scala.tools.nsc.symtab.Types$TypeMap.mapOver(Types.scala:1386)
+	at scala.tools.nsc.symtab.Types$AsSeenFromMap.apply(Types.scala:1509)
+	at scala.tools.nsc.symtab.Types$Type.asSeenFrom(Types.scala:202)
+	at scala.tools.nsc.symtab.Types$Type.memberType(Types.scala:230)
+	at scala.tools.nsc.symtab.Types$SingleType.singleDeref(Types.scala:602)
+	at scala.tools.nsc.symtab.Types$SingletonType.supertype(Types.scala:510)
+	at scala.tools.nsc.symtab.Types$SubType.baseClasses(Types.scala:501)
+	at scala.tools.nsc.symtab.Types$Type.findMember(Types.scala:417)
+	at scala.tools.nsc.symtab.Types$adaptToNewRunMap$.adaptToNewRun(Types.scala:1657)
+	at scala.tools.nsc.symtab.Types$adaptToNewRunMap$.apply(Types.scala:1695)
+	at scala.tools.nsc.symtab.Types$adaptToNewRunMap$.apply(Types.scala:1650)
+	at scala.List$.loop$0(List.scala:244)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.tools.nsc.symtab.Types$adaptToNewRunMap$.apply(Types.scala:1694)
+	at scala.tools.nsc.symtab.Types$adaptToNewRunMap$.apply(Types.scala:1650)
+	at scala.tools.nsc.symtab.Types$TypeMap.mapOver(Types.scala:1386)
+	at scala.tools.nsc.symtab.Types$adaptToNewRunMap$.apply(Types.scala:1716)
+	at scala.tools.nsc.symtab.Symbols$Symbol.adaptToNewRun$0(Symbols.scala:483)
+	at scala.tools.nsc.symtab.Symbols$Symbol.adaptInfos(Symbols.scala:487)
+	at scala.tools.nsc.symtab.Symbols$Symbol.rawInfo(Symbols.scala:446)
+	at scala.tools.nsc.symtab.Symbols$Symbol.info(Symbols.scala:403)
+	at scala.tools.nsc.symtab.Symbols$Symbol.tpe(Symbols.scala:371)
+	at scala.tools.nsc.symtab.Types$Type.memberType(Types.scala:212)
+	at scala.tools.nsc.symtab.Types$SingleType.singleDeref(Types.scala:602)
+	at scala.tools.nsc.symtab.Types$SingletonType.widen(Types.scala:512)
+	at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer.transform(ExplicitOuter.scala:364)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1141)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:46)
+	at scala.tools.nsc.transform.ExplicitOuter$OuterPathTransformer.transform(ExplicitOuter.scala:191)
+	at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer.transform(ExplicitOuter.scala:423)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$19.apply(Trees.scala:1077)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$19.apply(Trees.scala:1077)
+	at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1189)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:33)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:27)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1076)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:46)
+	at scala.tools.nsc.transform.ExplicitOuter$OuterPathTransformer.transform(ExplicitOuter.scala:191)
+	at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer.transform(ExplicitOuter.scala:423)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$30.apply(Trees.scala:1183)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$30.apply(Trees.scala:1181)
+	at scala.List$.loop$0(List.scala:244)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.tools.nsc.ast.Trees$Transformer.transformStats(Trees.scala:1181)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1101)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.scala$tools$nsc$transform$TypingTransformers$\
+TypingTransformer$$super$transform(TypingTransformers.scala:44)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer$$anonfun$0.apply(TypingTransformers.scala:44)\
+
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer$$anonfun$0.apply(TypingTransformers.scala:44)\
+
+	at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1189)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:33)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:27)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:44)
+	at scala.tools.nsc.transform.ExplicitOuter$OuterPathTransformer.transform(ExplicitOuter.scala:191)
+	at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer.transform(ExplicitOuter.scala:331)
+	at scala.tools.nsc.ast.Trees$Transformer.transformTemplate(Trees.scala:1169)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$17.apply(Trees.scala:1069)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$17.apply(Trees.scala:1068)
+	at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1189)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:33)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:27)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1067)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:46)
+	at scala.tools.nsc.transform.ExplicitOuter$OuterPathTransformer.transform(ExplicitOuter.scala:191)
+	at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer.transform(ExplicitOuter.scala:423)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$30.apply(Trees.scala:1183)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$30.apply(Trees.scala:1181)
+	at scala.List$.loop$0(List.scala:244)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.tools.nsc.ast.Trees$Transformer.transformStats(Trees.scala:1181)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$16.apply(Trees.scala:1064)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$16.apply(Trees.scala:1064)
+	at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1189)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:33)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:27)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1063)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:46)
+	at scala.tools.nsc.transform.ExplicitOuter$OuterPathTransformer.transform(ExplicitOuter.scala:191)
+	at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer.transform(ExplicitOuter.scala:423)
+	at scala.tools.nsc.ast.Trees$Transformer.transformUnit(Trees.scala:1184)
+	at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer.scala$tools$nsc$transform$ExplicitOuter$Exp\
+licitOuterTransformer$$super$transformUnit(ExplicitOuter.scala:430)
+	at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer$$anonfun$7.apply(ExplicitOuter.scala:430)
+	at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer$$anonfun$7.apply(ExplicitOuter.scala:430)
+	at scala.tools.nsc.symtab.SymbolTable.atPhase(SymbolTable.scala:77)
+	at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer.transformUnit(ExplicitOuter.scala:430)
+	at scala.tools.nsc.transform.Transform$Phase.apply(Transform.scala:30)
+	at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:220)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$1.apply(Global.scala:209)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$1.apply(Global.scala:209)
+	at scala.Iterator$class.foreach(Iterator.scala:341)
+	at scala.collection.mutable.ListBuffer$$anon$0.foreach(ListBuffer.scala:244)
+	at scala.tools.nsc.Global$GlobalPhase.run(Global.scala:209)
+	at scala.tools.nsc.Global$Run.compileSources(Global.scala:475)
+	at scala.tools.nsc.Global$Run.compile(Global.scala:547)
+	at scala.tools.nsc.Main$$anonfun$0.apply(Main.scala:37)
+	at scala.tools.nsc.Main$$anonfun$0.apply(Main.scala:34)
+	at scala.tools.nsc.EvalLoop$class.loop(EvalLoop.scala:17)
+	at scala.tools.nsc.Main$.loop(Main.scala:17)
+	at scala.tools.nsc.EvalLoop$class.loop(EvalLoop.scala:18)
+	at scala.tools.nsc.Main$.loop(Main.scala:17)
+	at scala.tools.nsc.Main$.resident(Main.scala:34)
+	at scala.tools.nsc.Main$.process(Main.scala:69)
+	at scala.tools.nsc.Main$.main(Main.scala:96)
+	at scala.tools.nsc.Main.main(Main.scala)
+sean-mcdirmid:~/workspace/test36/src mcdirmid$</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >Can't really resident compile NSC very well until this is fixed (minor changes can cause DeadCode to be recompiled, and then crash...). </td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Sean&nbsp; edited on &nbsp;2006-11-25 07:42:57.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Sean&nbsp; edited on &nbsp;2006-11-25 07:44:29.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-12-01 16:06:10.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

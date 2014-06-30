@@ -1,0 +1,131 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#270]</th>
+		<th><strong>project:</strong> interpreter</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Erik</td>
+	  <td align="center" bgcolor="#FFFFFF">Philippe</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2004-01-07 16:48:52.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">Interpreter crashes on import</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>&gt; import scala.collection.Map
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>Exception in thread "main" scalac.ApplicationError: illegal case: <empty>
+        at scalac.util.Debug.abort(Debug.java:58)
+        at scalac.checkers.TreeChecker.expression(TreeChecker.java:326)
+        at scalac.checkers.TreeChecker.vapply(TreeChecker.java:351)
+        at scalac.checkers.TreeChecker.expression(TreeChecker.java:284)
+        at scalac.checkers.TreeChecker.statement(TreeChecker.java:207)
+        at scalac.checkers.TreeChecker.expression(TreeChecker.java:241)
+        at scalac.checkers.TreeChecker.member(TreeChecker.java:176)
+        at scalac.checkers.TreeChecker.member(TreeChecker.java:143)
+        at scalac.checkers.TreeChecker.template(TreeChecker.java:111)
+        at scalac.checkers.TreeChecker.template(TreeChecker.java:91)
+        at scalac.checkers.TreeChecker.check(TreeChecker.java:81)
+        at scalac.transformer.MakeBoxingExplicitPhase.apply(MakeBoxingExplicitPhase.java:46)
+        at scalac.Global.compile(Global.java:306)
+        at scalac.Global.compile(Global.java:292)
+        at scala.tools.scalai.Interpreter.interpret(Interpreter.java:68)
+        at scala.tools.scalai.InterpreterShell.eval(InterpreterShell.java:241)
+        at scala.tools.scalai.InterpreterShell.handle(InterpreterShell.java:111)
+        at scala.tools.scalai.InterpreterShell.loop(InterpreterShell.java:103)
+        at scala.tools.scalai.InterpreterShell.main(InterpreterShell.java:96)
+        at scala.tools.scalai.Main.main(Main.java:34)
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >Success or at least a nice error message that imports are not supported (or possibly that scala.collection.Map does not excist).</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2004-01-13 16:08:44.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+(changed project to interpreter)
+</td></tr>
+<tr>
+        <td>
+        <strong>Philippe&nbsp; edited on &nbsp;2004-03-24 12:37:15.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+<p> The crash has been fixed, but the import still doesn't work. </p>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Gilles&nbsp; edited on &nbsp;2006-03-27 17:45:59.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Fixed in Scala2
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

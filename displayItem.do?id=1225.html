@@ -1,0 +1,184 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#1225]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Nikolay</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">open</td>
+          <td align="center" bgcolor="#FFFFFF">2007-07-18 16:40:57.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">[contrib #699] Compiler exception</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>trait A1 {}
+trait A2 {}
+trait A3 {}
+
+trait A extends (A1 with A2) with A3 {}</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>exception when traversing A1 with A2
+exception when traversing A1 with A2
+exception when traversing A1 with A2 with A3 with ScalaObject
+exception when traversing abstract trait A extends A1 with A2 with A3 with ScalaObject
+exception when traversing package <empty> {
+  abstract trait A1 extends java.lang.Object with ScalaObject;
+  abstract trait A2 extends java.lang.Object with ScalaObject;
+  abstract trait A3 extends java.lang.Object with ScalaObject;
+  abstract trait A extends A1 with A2 with A3 with ScalaObject
+}
+Exception in thread "main" java.lang.NullPointerException
+        at scala.tools.nsc.transform.UnCurry.scala$tools$nsc$transform$UnCurry$$expandAlias(UnCurry.scala:49)
+        at scala.tools.nsc.transform.UnCurry$$anon$1.apply(UnCurry.scala:52)
+        at scala.tools.nsc.transform.UnCurry$$anon$1.apply(UnCurry.scala:51)
+        at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.uncurryTreeType(UnCurry.scala:127)
+        at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.mainTransform(UnCurry.scala:463)
+        at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.transform(UnCurry.scala:103)
+        at scala.tools.nsc.ast.Trees$Transformer.transformTemplate(Trees.scala:1304)
+        at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1294)
+        at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:46)\
+
+        at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.mainTransform(UnCurry.scala:451)
+        at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.transform(UnCurry.scala:103)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$29.apply(Trees.scala:1302)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$29.apply(Trees.scala:1302)
+        at scala.List$.loop$0(List.scala:243)
+        at scala.List$.mapConserve(List.scala:260)
+        at scala.tools.nsc.ast.Trees$Transformer.transformTrees(Trees.scala:1302)
+        at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1232)
+        at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.scala$tools$nsc$transform$TypingTransf\
+ormers$TypingTrans
+former$$super$transform(TypingTransformers.scala:44)
+        at scala.tools.nsc.transform.TypingTransformers$TypingTransformer$$anonfun$0.apply(TypingTransformers.sc\
+ala:44)
+        at scala.tools.nsc.transform.TypingTransformers$TypingTransformer$$anonfun$0.apply(TypingTransformers.sc\
+ala:44)
+        at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1326)
+        at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:33)
+        at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:27)
+        at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:44)\
+
+        at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.scala$tools$nsc$transform$UnCurry$UnCurryTransfo\
+rmer$$super$transf
+orm(UnCurry.scala:373)
+        at scala.tools.nsc.transform.UnCurry$UnCurryTransformer$$anonfun$16.apply(UnCurry.scala:448)
+        at scala.tools.nsc.transform.UnCurry$UnCurryTransformer$$anonfun$16.apply(UnCurry.scala:448)
+        at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.withInConstructorFlag$0(UnCurry.scala:351)
+        at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.mainTransform(UnCurry.scala:448)
+        at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.transform(UnCurry.scala:103)
+        at scala.tools.nsc.ast.Trees$Transformer.transformTemplate(Trees.scala:1304)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$22.apply(Trees.scala:1200)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$22.apply(Trees.scala:1200)
+        at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1326)
+        at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:33)
+        at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:27)
+        at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1199)
+        at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:46)\
+
+        at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.mainTransform(UnCurry.scala:451)
+        at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.transform(UnCurry.scala:103)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$35.apply(Trees.scala:1320)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$35.apply(Trees.scala:1318)
+        at scala.List$.loop$0(List.scala:243)
+        at scala.List$.mapConserve(List.scala:260)
+        at scala.tools.nsc.ast.Trees$Transformer.transformStats(Trees.scala:1318)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$21.apply(Trees.scala:1196)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$21.apply(Trees.scala:1196)
+        at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1326)
+        at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:33)
+        at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:27)
+        at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1195)
+        at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:46)\
+
+        at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.mainTransform(UnCurry.scala:451)
+        at scala.tools.nsc.transform.UnCurry$UnCurryTransformer.transform(UnCurry.scala:103)
+        at scala.tools.nsc.ast.Trees$Transformer.transformUnit(Trees.scala:1321)
+        at scala.tools.nsc.transform.Transform$Phase.apply(Transform.scala:30)
+        at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:245)
+        at scala.tools.nsc.Global$GlobalPhase$$anonfun$2.apply(Global.scala:234)
+        at scala.tools.nsc.Global$GlobalPhase$$anonfun$2.apply(Global.scala:234)
+        at scala.Iterator$class.foreach(Iterator.scala:364)
+        at scala.collection.mutable.ListBuffer$$anon$0.foreach(ListBuffer.scala:245)
+        at scala.tools.nsc.Global$GlobalPhase.run(Global.scala:234)
+        at scala.tools.nsc.Global$Run.compileSources(Global.scala:502)
+        at scala.tools.nsc.Global$Run.compile(Global.scala:580)
+        at scala.tools.nsc.Main$.process(Main.scala:61)
+        at scala.tools.nsc.Main$.main(Main.scala:81)
+        at scala.tools.nsc.Main.main(Main.scala)
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" ></td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Nikolay&nbsp; edited on &nbsp;2007-07-18 16:41:34.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

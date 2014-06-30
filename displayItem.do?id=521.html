@@ -1,0 +1,247 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#521]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> medium</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Sean</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2006-01-26 16:37:23.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">weird assertion error instead of compilation error message</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>// AbstractFile.scala
+package scala.tools.nsc.io;
+import java.io._;
+abstract class AbstractFile {
+  def path : String;
+}
+// PlainFile.scala
+package scala.tools.nsc.io;
+import java.io._;
+class PlainFile(val file : File) extends AbstractFile {}
+// VirtualFile.scala
+package scala.tools.nsc.io;
+class VirtualFile(val name : String, val path : String) extends AbstractFile {
+}
+// ZipArchive.scala
+package scala.tools.nsc.io;
+import java.io._;
+import java.util.zip._;
+final class ZipArchive(val file : File, archive : ZipFile) extends PlainFile(file) {
+  class Entry(name : String, path : String) extends VirtualFile(name, path) {
+    override def path = &quot;&quot;;
+  }
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>On compilation of these files:
+
+<pre>   [locker] Compiling source files: scala/tools/nsc/io/AbstractFile.scala, scala/tools/nsc/io/PlainFile.sca\
+la, scala/tools/nsc/io/ZipArchive.scala to /home/mcdirmid/runtime-workspace/scala/build/quick/compiler
+   [locker] java.lang.Error: assertion failed
+   [locker]     at scala.Predef$.assert(Predef.scala:139)
+   [locker]     at scala.tools.nsc.symtab.Symbols$TermSymbol.setAlias(Symbols.scala:835)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer$$anonfun22.apply(Typers.scala:711)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer$$anonfun22.apply(Typers.scala:697)
+   [locker]     at scala.List$.map2(List.scala:274)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.computeParamAliases(Typers.scala:697)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typedDefDef(Typers.scala:760)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1140)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1449)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1473)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer$$anonfun40.apply(Typers.scala:886)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer$$anonfun40.apply(Typers.scala:876)
+   [locker]     at scala.List$.loop0(List.scala:241)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:876)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typedTemplate(Typers.scala:649)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typedClassDef(Typers.scala:587)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1131)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1449)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1473)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer$$anonfun40.apply(Typers.scala:886)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer$$anonfun40.apply(Typers.scala:876)
+   [locker]     at scala.List$.loop0(List.scala:241)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:876)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typedTemplate(Typers.scala:649)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typedClassDef(Typers.scala:587)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1131)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1449)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1473)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer$$anonfun40.apply(Typers.scala:886)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer$$anonfun40.apply(Typers.scala:876)
+   [locker]     at scala.List$.loop0(List.scala:241)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:876)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1127)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1449)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1473)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer$$anonfun40.apply(Typers.scala:886)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer$$anonfun40.apply(Typers.scala:876)
+   [locker]     at scala.List$.loop0(List.scala:241)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:876)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1127)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1449)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1473)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer$$anonfun40.apply(Typers.scala:886)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer$$anonfun40.apply(Typers.scala:876)
+   [locker]     at scala.List$.loop0(List.scala:241)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:876)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1127)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1449)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1473)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer$$anonfun40.apply(Typers.scala:886)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer$$anonfun40.apply(Typers.scala:876)
+   [locker]     at scala.List$.loop0(List.scala:241)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:876)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1127)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1449)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1473)
+   [locker]     at scala.tools.nsc.typechecker.Analyzer$typerFactory$$anon1.apply(Analyzer.scala:39)
+   [locker]     at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:179)
+   [locker]     at scala.tools.nsc.Global$GlobalPhase$$anonfun1.apply(Global.scala:168)
+   [locker]     at scala.tools.nsc.Global$GlobalPhase$$anonfun1.apply(Global.scala:168)
+   [locker]     at scala.Iterator$class.foreach(Iterator.scala:262)
+   [locker]     at scala.collection.mutable.ListBuffer$$anon0.foreach(ListBuffer.scala:196)
+   [locker]     at scala.tools.nsc.Global$GlobalPhase.run(Global.scala:168)
+   [locker]     at scala.tools.nsc.Global$Run.compileSources(Global.scala:385)
+   [locker]     at scala.tools.nsc.Global$Run.compile(Global.scala:442)
+   [locker]     at scala.tools.ant.Scalac.execute(Scalac.scala:468)
+   [locker]     at org.apache.tools.ant.UnknownElement.execute(UnknownElement.java:275)
+   [locker]     at org.apache.tools.ant.Task.perform(Task.java:364)
+   [locker]     at org.apache.tools.ant.Target.execute(Target.java:341)
+   [locker]     at org.apache.tools.ant.Target.performTasks(Target.java:369)
+   [locker]     at org.apache.tools.ant.Project.executeSortedTargets(Project.java:1216)
+   [locker]     at org.apache.tools.ant.Project.executeTarget(Project.java:1185)
+   [locker]     at org.apache.tools.ant.helper.DefaultExecutor.executeTargets(DefaultExecutor.java:40)
+   [locker]     at org.apache.tools.ant.Project.executeTargets(Project.java:1068)
+   [locker]     at org.apache.tools.ant.Main.runBuild(Main.java:668)
+   [locker]     at org.apache.tools.ant.Main.startAnt(Main.java:187)
+   [locker]     at org.apache.tools.ant.launch.Launcher.run(Launcher.java:246)
+   [locker]     at org.apache.tools.ant.launch.Launcher.main(Launcher.java:67)</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >Should give error message, which does occur if override def path = ""; is commented out:
+
+<pre>xxx/PlainFile.scala:6 error: class PlainFile needs to be abstract, since method path in class AbstractFile of type => java.lang.String is not defined
+class PlainFile(val file : File) extends AbstractFile {
+^
+xxx/ZipArchive.scala:6 error: error overriding value file in class PlainFile of type => java.io.File;
+ value file needs `override' modifier
+final class ZipArchive(val file : File, archive : ZipFile) extends PlainFile(file) {
+                       ^
+xxx/ZipArchive.scala:6 error: class ZipArchive needs to be abstract, since method path in class AbstractFile of type => java.lang.String is not defined
+final class ZipArchive(val file : File, archive : ZipFile) extends PlainFile(file) {
+      ^
+three errors found
+</pre>
+
+UPDATE:
+
+I fixed all the compile errors in the new Scala IO classes (checked in under scala.tools.nsc.io). The build will still crash if the path method is overriden in class ZipArchive.Entry, so it is commented out for now. 
+
+</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Sean&nbsp; edited on &nbsp;2006-01-26 18:23:04.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-01-30 18:26:02.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

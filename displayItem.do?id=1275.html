@@ -1,0 +1,375 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#1275]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> high</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Stephane</td>
+	  <td align="center" bgcolor="#FFFFFF">Adriaan</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2007-08-17 16:36:18.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">[contrib #746] exception in Types$class.appliedType</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>// tested using Scala compiler version 2.6.0-RC1 -- (c) 2002-2007 LAMP/EPFL
+
+// prompted by &quot;Covariant return types&quot; mailing list question
+object TestCovariance {
+
+    // see  Type constructor polymorphism  in  http://www.scala-lang.org/docu/changelog.html
+    trait Seq[+t] {
+        type MyType[+t] &lt;: Seq[t]
+
+        def f: MyType[t]
+    }
+
+    def span[a, s &lt;: Seq[a] { type MyType &lt;: s } ](xs: s): s = xs f
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>error: illegal cyclic reference involving type s
+    def span[a, s <: Seq[a] { type MyType <: s } ](xs: s): s = xs f
+                                   ^
+class scala.tools.nsc.symtab.Types$$anon$4
+110849785
+Exception in thread "main" java.lang.Error
+	at scala.tools.nsc.symtab.Types$class.appliedType(Types.scala:1919)
+	at scala.tools.nsc.symtab.SymbolTable.appliedType(SymbolTable.scala:11)
+	at scala.tools.nsc.symtab.Types$TypeRef.transformInfo(Types.scala:1279)
+	at scala.tools.nsc.symtab.Types$TypeRef.thisInfo(Types.scala:1282)
+	at scala.tools.nsc.symtab.Types$TypeRef.bounds(Types.scala:1311)
+	at scala.tools.nsc.symtab.Types$class.isSubType0(Types.scala:2925)
+	at scala.tools.nsc.symtab.Types$class.isSubType(Types.scala:2854)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType(SymbolTable.scala:11)
+	at scala.tools.nsc.symtab.Types$Type.$less$colon$less(Types.scala:455)
+	at scala.tools.nsc.typechecker.Typers$Typer.adapt(Typers.scala:724)
+	at scala.tools.nsc.typechecker.Typers$Typer.adapt(Typers.scala:602)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2888)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2930)
+	at scala.tools.nsc.typechecker.Typers$Typer.transformedOrTyped(Typers.scala:2979)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedDefDef(Typers.scala:1221)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:2631)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2886)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2919)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedStat$0(Typers.scala:1442)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$58.apply(Typers.scala:1472)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$58.apply(Typers.scala:1472)
+	at scala.List$.loop$0(List.scala:244)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:1472)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedTemplate(Typers.scala:1101)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedModuleDef(Typers.scala:1003)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:2625)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2886)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2919)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedStat$0(Typers.scala:1442)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$58.apply(Typers.scala:1472)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$58.apply(Typers.scala:1472)
+	at scala.List$.loop$0(List.scala:244)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:1472)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:2618)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2886)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2919)
+	at scala.tools.nsc.typechecker.Analyzer$typerFactory$$anon$1.apply(Analyzer.scala:38)
+	at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:258)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$2.apply(Global.scala:247)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$2.apply(Global.scala:247)
+	at scala.Iterator$class.foreach(Iterator.scala:375)
+	at scala.collection.mutable.ListBuffer$$anon$0.foreach(ListBuffer.scala:255)
+	at scala.tools.nsc.Global$GlobalPhase.run(Global.scala:247)
+	at scala.tools.nsc.Global$Run.compileSources(Global.scala:542)
+	at scala.tools.nsc.Global$Run.compile(Global.scala:623)
+	at scala.tools.nsc.Main$.process(Main.scala:86)
+	at scala.tools.nsc.Main$.main(Main.scala:107)
+	at scala.tools.nsc.Main.main(Main.scala)
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >error message, but no compiler stack trace
+<pre>
+/Users/adriaan/src/scala/trunk/test/files/neg/bug1275.scala:13: error: error overriding type MyType in trait Seq with bounds [+t]>: Nothing <: TestCovariance.this.Seq[t];
+ type MyType has incompatible type >: Nothing <: s
+    def span[a, s <: Seq[a] { type MyType <: s } ](xs: s): s = xs f
+                                   ^
+one error found
+</pre></td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Stephane&nbsp; edited on &nbsp;2007-08-17 16:37:04.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2007-08-21 16:04:41.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+It looks like this has to do with higher-kinded types.
+</td></tr>
+<tr>
+        <td>
+        <strong>Adriaan&nbsp; edited on &nbsp;2007-08-21 17:40:27.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+It seems the problem is triggered because overriding is not checked in refinements (although it is properly checked for normal inheritance), and this breaks assumptions in appliedType. Here's some example code to illustrate the issue:
+
+<pre>
+trait Bla {
+  type T <: Int
+}
+
+/* this is rightfully rejected:
+trait WrongBla1 extends Bla {
+ type T <: String
+}
+*/
+
+trait Test {
+ val wrong1: Bla{ type T <: String} // accepted! (should be rejected) 
+}
+</pre>
+
+I feel this is a bug in itself, and if fixed, would prevent the current bug. The current crash occurs because a higher-kinded type is allowed to be overridden with a single-kinded type. The latter is then  applied to type arguments.  (A quick fix  would be to have appliedType return ErrorType instead of throwing an exception, but that doesn't solve the fundamental problem of course)
+
+As far as I understand it, overriding for classes is checked during refchecks, whereas this check is needed earlier. Maybe `classBound` in Typers would be the right place? I don't really know how to proceed from here, so, Martin, I hope you don't mind if I bounce the ball back to you ;-) (I'd be happy to implement a fix if you point me in the right direction, though)
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2007-08-21 19:19:53.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+I think there are two possibilities:
+<p>
+1. Do a check for overriding conditions very early. I 
+tried to do the following in Namers.typeDefSig:
+<pre>
+    //@M! an abstract type definition (abstract type member/type parameter) may take type parameters, which are in scope in its bounds
+    private def typeDefSig(tpsym: Symbol, tparams: List[TypeDef], rhs: Tree) = {
+      val tparamSyms = typer.reenterTypeParams(tparams) //@M make tparams available in scope (just for this abstypedef)
+      val tp = typer.typedType(rhs).tpe match {
+        case TypeBounds(lt, rt) if (lt.isError || rt.isError) =>
+          TypeBounds(AllClass.tpe, AnyClass.tpe)
+        case tp => tp
+      }
+      var result = parameterizedType(tparamSyms, tp) //@M 
+      def verifyOverriding(tsym: Symbol, tinfo: Type, other: Symbol) = {
+        // Martin to Adriaan: need to fill this out
+        println("need to verify overriding of "+tpsym+tpsym.locationString+" with info "+tinfo+" and "+
+                other+other.locationString)
+        false
+      }
+      if (tpsym.owner.isRefinementClass) // we can't do this for normal type parameters because we'd get spurious cyclic reference errors
+        for (val other <- tpsym.allOverriddenSymbols)
+          if (!verifyOverriding(tpsym, result, other)) result = ErrorType
+      result
+    }
+</pre>
+I'm not yet convinced this would not cause more spurious 
+cyclicity errors, though. 
+<p>
+2. Let appliedType throw a TypeError instead of just an Error. The TypeError would be caught by Typers.
+<p>
+I'm more in favor of (1), provided we don't get any cyclic reference errors that way.
+<p>
+Back to you, Adriaan ;-)
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Adriaan&nbsp; edited on &nbsp;2007-08-22 14:04:27.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+I worked out approach (1). I haven't committed my changes yet, as I had to refactor RefChecks a little and I wanted to check with you first. Below's the summary of what I did. I'm still running scalatest locally (the code in this report now gives the expected error message instead of stack trace), but my working copy bootstraps and I'm ready to commit if you give the green light.
+
+In Namers:
+<pre>
+    //@M! an abstract type definition (abstract type member/type parameter) may take type parameters, which are in scope in its bounds
+    private def typeDefSig(tpsym: Symbol, tparams: List[TypeDef], rhs: Tree) = {
+...      
+      val result = parameterizedType(tparamSyms, tp)
+      
+      // @M: make sure refinements respect rules for overriding  
+      // have to do this early, as otherwise we might get crashes: (see neg/bug1275.scala and neg/overrides_in_refinements.scala)
+      //   suppose some parameterized type member is overridden by a type member w/o params, 
+      //   then appliedType will be called on a type that does not expect type args --> crash
+      if (tpsym.owner.isRefinementClass) { // we can't do this for normal type parameters because we'd get spurious cyclic reference errors
+        val refchecker = refchecks.newTransformer(context.unit)
+        if(!tpsym.allOverriddenSymbols.forall{other => refchecker.checkOverride(tpsym.owner, tpsym, result, other, true)})
+          ErrorType
+        else result
+      } else result
+    }
+</pre>
+
+My refactoring in RefChecks basically makes checkOverride publicly available:
+
+<pre>
+    /** 1. Check all members of class `clazz' for overriding conditions. See `checkOverride` below.
+     *  2. Check that only abstract classes have deferred members
+     *  3. Check that concrete classes do not have deferred definitions
+     *     that are not implemented in a subclass.
+     *  4. Check that every member with an `override' modifier
+     *     overrides some other member.
+     */
+    private def checkAllOverrides(clazz: Symbol) {
+
+      val self = clazz.thisType
+
+      val opc = new overridingPairs.Cursor(clazz)
+      while (opc.hasNext) { ...
+        if (!opc.overridden.isClass) checkOverride(clazz, opc.overriding, self.memberType(opc.overriding), opc.overridden, false);
+        
+        opc.next
+      }
+      // 2. Check that only abstract classes have deferred members
+...
+    }
+
+    private def infoString(self: Type, clazz: Symbol, sym: Symbol) 
+...
+
+    private def overridesType(tp1: Type, tp2: Type): Boolean = (tp1.normalize, tp2.normalize) match {
+...
+    }
+
+    /** Check that all conditions for overriding <code>other</code> by
+     *  <code>member</code> are met.
+     *  That is for overriding member M (`member`) and overridden member O (`other`):
+     * ...
+     * @argument memberTp the type of member, as seen from clazz (CBN so that it's only computed when necessary)
+     * @argument calledEarly true if called early (i.e., during namer phase when checking refinements)
+     */
+    def checkOverride(clazz: Symbol, member: Symbol, memberTp: => Type, other: Symbol, calledEarly: Boolean): Boolean = { 
+      var result = true
+      val self = clazz.thisType
+      val pos = if (member.owner == clazz) member.pos else clazz.pos
+
+      def overrideError(msg: String) 
+...
+
+      def overrideTypeError() {
+        if (other.tpe != ErrorType && member.tpe != ErrorType) {
+          overrideError("has incompatible type "+(if(calledEarly) memberTp else analyzer.underlying(member).tpe.normalize));
+          explainTypes(member.tpe, other.tpe);
+        }
+      }
+
+      def overrideAccessError() 
+...
+
+      } else {
+        if (other.isAliasType) {  
+          if (!(memberTp.substSym(member.typeParams, other.typeParams) =:= self.memberType(other))) // (1.6)
+            overrideTypeError();
+        } else if (other.isAbstractType) {
+          if (!(self.memberInfo(other).bounds containsType memberTp)) { // (1.7.1) {
+            overrideTypeError(); // todo: do an explaintypes with bounds here
+          }
+          
+...
+       
+      result
+    }
+</pre>
+</td></tr>
+<tr>
+        <td>
+        <strong>Adriaan&nbsp; edited on &nbsp;2007-08-22 14:40:20.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+running scalatest (pos/bug807) revealed a case where this change causes a spurious cyclicity error:
+<pre>
+  trait Link {
+    type Self <: Link;
+    type Match <: Link { type Match = Link.this.Self; }
+  }
+</pre>
+
+<p>
+I don't see an easy way out. The only thing I can think of is to catch the error in `typeDefSig` and retry when the offending symbol is unlocked. This would require adding some machinery to `Symbol` so that it remembers a list of closures that are to be executed when `setFlag` cause the symbol to unlock. I'll experiment with that later, please preempt me if  this is overkill or if you think of another approach.
+</td></tr>
+<tr>
+        <td>
+        <strong>Adriaan&nbsp; edited on &nbsp;2007-08-22 15:48:22.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+fixed in r12633 
+
+ added minimal early check to Namers so that overriding of type members in refinements cannot change number of type parameters (in principle the full overriding checks should be performed at a later point, when they don't cause cyclicity errors -- this is TODO)
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

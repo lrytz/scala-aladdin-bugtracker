@@ -1,0 +1,217 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#781]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Nikolay</td>
+	  <td align="center" bgcolor="#FFFFFF">Burak</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2006-10-19 12:27:31.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">[contrib #229] pattern-matching null gives inconsistent results</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>scala&gt; null.asInstanceOf[String] match { case x : String =&gt; true }
+line0: scala.Boolean = true
+
+scala&gt; null.asInstanceOf[AnyRef] match { case x : String =&gt; true }
+java.lang.NullPointerException
+        at scala.MatchError.&lt;init&gt;(MatchError.scala:45)
+        at line1$object$.&lt;init&gt;(&lt;console&gt;:4)
+        at line1$object$.&lt;clinit&gt;(&lt;console&gt;)
+        at RequestResult$line1$object$.&lt;init&gt;(&lt;console&gt;:3)
+        at RequestResult$line1$object$.&lt;clinit&gt;(&lt;console&gt;)
+        at RequestResult$line1$object.result(&lt;console&gt;)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+        at java.lang.reflect.Method.invoke(Method.java:324)
+        at scala.tools.nsc.Interpreter$Request.loadAndRun(Interpreter.scala:517)        at scala.tools.nsc.Interpreter.interpret(Interpreter.scala:246)
+        at scala.tools.nsc.InterpreterLoop.command(InterpreterLoop.scala:168)
+        at scala.tools.nsc.InterpreterLoop.repl(InterpreterLoop.scala:81)
+        at scala.tools.nsc.InterpreterLoop.main(InterpreterLoop.scala:187)
+        at scala.tools.nsc.MainGenericRunner$.main(MainGenericRunner.scala:82)
+        at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
+
+scala&gt; null.asInstanceOf[String] match { case x : String =&gt; true; case _ =&gt; false }
+&lt;console&gt;:4 error: unreachable code
+  val line2 = null.asInstanceOf[String] match { case x : String =&gt; true; case _ =&gt; false }
+    ^
+
+scala&gt; null.asInstanceOf[String] match { case x : String =&gt; true; case null =&gt; false }
+line3: scala.Boolean = true
+
+scala&gt; null.asInstanceOf[AnyRef] match { case x : String =&gt; true; case null =&gt; false }
+line4: scala.Boolean = false
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>see above
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >The line0 and line1 examples should give the same results (either both should return true, or both should fail).
+
+The line2 and line3 examples should give the same results (either both should error out as having unreachable code, or both should return false).  Note that the line3 example does have unreachable code (it's evidently impossible to reach the second branch), and the compiler should be able to know this.
+
+The line3 and line4 examples should give the same results (either both should error out as having unreachable code, or both should return false).
+
+I realize that making the implementation consistent in this way may reduce performance; if you choose not to fix it, these odd behaviors should at least be documented.  (Although I think that anybody who writes the code in the line3 example would really want it to return false, even if that slows things down a little!)</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Nikolay&nbsp; edited on &nbsp;2006-10-19 12:28:15.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Transferred from the contributions and assigned to Burak
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2006-10-19 14:31:01.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Due to an incorrect optimization of typed patterns.
+There is no unreachable code. The behavior is now
+
+<pre>
+scala> null.asInstanceOf[String] match { case x : String => true }
+scala.MatchError
+</pre>
+<pre> 
+scala> null.asInstanceOf[AnyRef] match { case x : String => true }
+scala.MatchError: null
+</pre>
+<pre>
+scala> null.asInstanceOf[String] match { case x : String => true; case _ => false }
+false
+</pre>
+<pre>
+scala> null.asInstanceOf[String] match { case x : String => true; case null => false }
+false
+</pre>
+<pre>
+scala> null.asInstanceOf[AnyRef] match { case x : String => true; case null => false }
+false
+</pre>
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2006-10-19 14:32:39.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+The spec on pattern matching really means non-null values (or equivalently, instance in terms of "instanceOf") when it says a typed pattern matches any value that is instance of the type.
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2006-10-19 16:14:36.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+(set to fix again just to test contrib)
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2006-10-19 17:44:47.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+(test)
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2006-10-19 17:45:13.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2006-10-19 17:52:14.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2006-10-19 17:55:21.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2006-10-19 17:55:40.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

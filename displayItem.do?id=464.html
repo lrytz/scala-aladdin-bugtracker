@@ -1,0 +1,138 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#464]</th>
+		<th><strong>project:</strong> nsc</th>
+		<th><strong>priority:</strong> medium</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Iulian</td>
+	  <td align="center" bgcolor="#FFFFFF">_</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2005-10-26 15:32:50.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">Non-local super calls are not lifted</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>class A {
+  def transform() = ();
+}
+
+class B extends A {
+  def atPhase(str: String)(bl: =&gt; Unit): Unit = bl;
+
+  override def transform() = {
+    atPhase(&quot;0&quot;)(super.transform());
+  }
+}</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>The call to 'super.transform()' should refer to B.super, but after the closure gets created and lifted, super wi\
+ll be interpreted as anonfun0.super, which of course, does not contain a transform method. This is a tricky thin\
+g, because super calls have to be made from a subclass of the 'desired' class (in this case, somewhere in B).
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >I think a scheme similar to what is done for mixins. Or, forbid super calls in closures, the same way 'return' are not allowed in scalac.</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Iulian&nbsp; edited on &nbsp;2005-10-26 16:14:21.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Iulian&nbsp; edited on &nbsp;2005-10-27 09:49:33.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+I think this should make things a bit clearer. Here's the output of scalac after erasure, for the given example:
+<code>
+class B$class() extends A$class() with B() {
+  override def transform(): void = B$class.this.atPhase("0", {
+      <empty>;
+      new $anon$0[].<init>(B$class.this)
+    });
+
+  final def B$access$super$A$transform(): void = B$class.super.transform();
+  }
+
+class $anon$0() extends Any() with Function0() {
+    final def apply(): void = $anon$0.this.B$$anon$0$outer$B.B$access$super$A$transform();
+</code>
+(I erased uninteresting parts).
+
+On this example, scalac creates a super accessor method in B, which is called by the closer's apply method. NSC does nothing special about super. I think scalac's behavior is the right one.
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Iulian&nbsp; edited on &nbsp;2005-11-04 10:36:45.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

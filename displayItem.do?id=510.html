@@ -1,0 +1,297 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#510]</th>
+		<th><strong>project:</strong> nsc</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Philippe</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2006-01-10 14:11:50.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">Cyclic type crashes the compiler</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>abstract class C {
+
+  type T &lt;: Any;
+
+}
+
+abstract class D[S &lt;: C](_c: S) extends C {
+
+  val c: S = _c;
+  type T &lt;: c.T;
+
+}
+
+abstract class E(e: E) extends D[E](e);
+
+object Test {
+
+  def f(e: E): Unit = {
+    def g(t: e.T): Unit = {
+      val i: Int = t;
+      ()
+    }
+    ()
+  }
+
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre><pre>
+tmp/test.scala:19 error: cyclic aliasing or subtyping involving type T
+    def g(t: e.T): Unit = {
+          ^
+Exception in thread "main" java.lang.Error: recursive &lt;:&lt;
+	at scala.tools.nsc.symtab.Types$class.isSubType(Types.scala:1485)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$Type.$less$colon$less(Types.scala:220)
+	at scala.tools.nsc.symtab.Types$class.isSubType0(Types.scala:1523)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType0(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$class.isSubType(Types.scala:1486)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$Type.$less$colon$less(Types.scala:220)
+	at scala.tools.nsc.symtab.Types$class.isSubType0(Types.scala:1523)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType0(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$class.isSubType(Types.scala:1486)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$Type.$less$colon$less(Types.scala:220)
+	at scala.tools.nsc.symtab.Types$class.isSubType0(Types.scala:1523)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType0(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$class.isSubType(Types.scala:1486)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$Type.$less$colon$less(Types.scala:220)
+	at scala.tools.nsc.symtab.Types$class.isSubType0(Types.scala:1523)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType0(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$class.isSubType(Types.scala:1486)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$Type.$less$colon$less(Types.scala:220)
+	at scala.tools.nsc.symtab.Types$class.isSubType0(Types.scala:1523)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType0(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$class.isSubType(Types.scala:1486)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$Type.$less$colon$less(Types.scala:220)
+	at scala.tools.nsc.symtab.Types$class.isSubType0(Types.scala:1523)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType0(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$class.isSubType(Types.scala:1486)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$Type.$less$colon$less(Types.scala:220)
+	at scala.tools.nsc.symtab.Types$class.isSubType0(Types.scala:1523)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType0(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$class.isSubType(Types.scala:1486)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$Type.$less$colon$less(Types.scala:220)
+	at scala.tools.nsc.symtab.Types$class.isSubType0(Types.scala:1523)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType0(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$class.isSubType(Types.scala:1486)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$Type.$less$colon$less(Types.scala:220)
+	at scala.tools.nsc.symtab.Types$class.isSubType0(Types.scala:1523)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType0(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$class.isSubType(Types.scala:1486)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$Type.$less$colon$less(Types.scala:220)
+	at scala.tools.nsc.symtab.Types$class.isSubType0(Types.scala:1523)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType0(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$class.isSubType(Types.scala:1486)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$Type.$less$colon$less(Types.scala:220)
+	at scala.tools.nsc.symtab.Types$class.isSubType0(Types.scala:1523)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType0(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$class.isSubType(Types.scala:1486)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$Type.$less$colon$less(Types.scala:220)
+	at scala.tools.nsc.symtab.Types$class.isSubType0(Types.scala:1523)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType0(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$class.isSubType(Types.scala:1486)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$Type.$less$colon$less(Types.scala:220)
+	at scala.tools.nsc.symtab.Types$class.isSubType0(Types.scala:1523)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType0(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$class.isSubType(Types.scala:1486)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$Type.$less$colon$less(Types.scala:220)
+	at scala.tools.nsc.symtab.Types$class.isSubType0(Types.scala:1523)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType0(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$class.isSubType(Types.scala:1486)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$Type.$less$colon$less(Types.scala:220)
+	at scala.tools.nsc.symtab.Types$class.isSubType0(Types.scala:1523)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType0(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$class.isSubType(Types.scala:1486)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$Type.$less$colon$less(Types.scala:220)
+	at scala.tools.nsc.symtab.Types$class.isSubType0(Types.scala:1523)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType0(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$class.isSubType(Types.scala:1486)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$Type.$less$colon$less(Types.scala:220)
+	at scala.tools.nsc.symtab.Types$class.isSubType0(Types.scala:1523)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType0(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$class.isSubType(Types.scala:1486)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$Type.$less$colon$less(Types.scala:220)
+	at scala.tools.nsc.symtab.Types$class.isSubType0(Types.scala:1523)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType0(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$class.isSubType(Types.scala:1486)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$Type.$less$colon$less(Types.scala:220)
+	at scala.tools.nsc.symtab.Types$class.isSubType0(Types.scala:1523)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType0(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$class.isSubType(Types.scala:1486)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$Type.$less$colon$less(Types.scala:220)
+	at scala.tools.nsc.typechecker.Typers$Typer.adapt(Typers.scala:395)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1426)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1452)
+	at scala.tools.nsc.typechecker.Typers$Typer.transformedOrTyped(Typers.scala:1486)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedValDef(Typers.scala:639)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1124)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1424)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1448)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun42.apply(Typers.scala:859)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun42.apply(Typers.scala:849)
+	at scala.List$.loop0(List.scala:241)
+	at scala.List$.mapConserve(List.scala:258)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:849)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedBlock(Typers.scala:772)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1156)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1424)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1452)
+	at scala.tools.nsc.typechecker.Typers$Typer.transformedOrTyped(Typers.scala:1486)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedDefDef(Typers.scala:735)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1127)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1424)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1448)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun42.apply(Typers.scala:859)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun42.apply(Typers.scala:849)
+	at scala.List$.loop0(List.scala:241)
+	at scala.List$.mapConserve(List.scala:258)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:849)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedBlock(Typers.scala:772)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1156)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1424)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1452)
+	at scala.tools.nsc.typechecker.Typers$Typer.transformedOrTyped(Typers.scala:1486)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedDefDef(Typers.scala:735)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1127)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1424)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1448)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun42.apply(Typers.scala:859)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun42.apply(Typers.scala:849)
+	at scala.List$.loop0(List.scala:241)
+	at scala.List$.mapConserve(List.scala:258)
+	at scala.List$.loop0(List.scala:245)
+	at scala.List$.mapConserve(List.scala:258)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:849)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedTemplate(Typers.scala:622)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedModuleDef(Typers.scala:571)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1121)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1424)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1448)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun42.apply(Typers.scala:859)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun42.apply(Typers.scala:849)
+	at scala.List$.loop0(List.scala:241)
+	at scala.List$.mapConserve(List.scala:258)
+	at scala.List$.loop0(List.scala:245)
+	at scala.List$.mapConserve(List.scala:258)
+	at scala.List$.loop0(List.scala:245)
+	at scala.List$.mapConserve(List.scala:258)
+	at scala.List$.loop0(List.scala:245)
+	at scala.List$.mapConserve(List.scala:258)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:849)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1114)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1424)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1448)
+	at scala.tools.nsc.typechecker.Analyzer$typerFactory$$anon1.apply(Analyzer.scala:39)
+	at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:175)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun1.apply(Global.scala:164)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun1.apply(Global.scala:164)
+	at scala.Iterator$class.foreach(Iterator.scala:262)
+	at scala.List$$anon1.foreach(List.scala:474)
+	at scala.tools.nsc.Global$GlobalPhase.run(Global.scala:164)
+	at scala.tools.nsc.Global$Run.compileSources(Global.scala:373)
+	at scala.tools.nsc.Global$Run.compile(Global.scala:440)
+	at scala.tools.nsc.Main$.process(Main.scala:57)
+	at scala.tools.nsc.Main$.main(Main.scala:69)
+	at scala.tools.nsc.Main.main(Main.scala)
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >No compiler crash. The type <code>e.T</code> of <code>t</code> is cyclic: <code>e.T &lt;: e.c.T &lt;: e.c.c.T &lt;: ...</code>. The cycle is correctly detected but the analyzer crashes when it checks whether <code>t</code> is of type <code>Int</code>.
+</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-01-20 18:34:04.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

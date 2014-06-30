@@ -1,0 +1,135 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#942]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Nikolay</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">open</td>
+          <td align="center" bgcolor="#FFFFFF">2007-02-11 17:24:21.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">[contrib #326] null : Scala.null(null) which is not <:</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>// in the scala 2.3.3 interpreter:
+// &quot;bind&quot; for Option using null for None and everything else for Some
+scala&gt; def maybe[t &lt;: AnyRef, s &gt;: Null &lt;: AnyRef ](x: t)(f: t =&gt; s): s = if(x==null) null else f(x)
+
+maybe: [t &lt;: java.lang.Object,s &gt;: scala.Null &lt;: java.lang.Object](t)((t) =&gt; s)s
+
+scala&gt; 
+scala&gt; maybe(&quot;foo&quot;)((x:String) =&gt; x.length)
+&lt;console&gt;:5: error: type mismatch;
+ found   : () =&gt; scala.Int
+ required: scala.Null
+  val line1 = maybe(&quot;foo&quot;)((x:String) =&gt; x.length)
+                                          ^
+
+scala&gt; maybe(&quot;foo&quot;)(x =&gt; new Integer(x.length))
+&lt;console&gt;:5: error: type mismatch;
+ found   : java.lang.Integer
+ required: scala.Null
+  val line2 = maybe(&quot;foo&quot;)(x =&gt; new Integer(x.length))
+                                ^
+
+scala&gt; maybe(&quot;foo&quot;)((x: String) =&gt; new Integer(x.length))
+&lt;console&gt;:5: error: type mismatch;
+ found   : java.lang.Integer
+ required: scala.Null
+  val line3 = maybe(&quot;foo&quot;)((x: String) =&gt; new Integer(x.length))
+                                          ^
+
+scala&gt; maybe[String,Integer](&quot;foo&quot;)(x =&gt; new Integer(x.length))
+line4: java.lang.Integer = 3</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>none of the error messages make sense to me
+I understand that Int's are not nullable, so the "obvious" first attempt doesn't work (although I guess they cou\
+ld be autoboxed?)
+However, the next two error messages seem to indicate something goes wrong with inferencing type parameters.
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >Better error messages. (Maybe better inferencing, even more maybe: autoboxing?)
+
+ps: This null business is of course a big no-no in pure Scala code, but when interfacing with Java code, you don't always want to manually wrap everything to use Option</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Nikolay&nbsp; edited on &nbsp;2007-02-11 17:24:55.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+contribution #326
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2007-03-05 23:47:04.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+The problem is that no type parameters can be found that work. The system inferences some which then cause errors in the second curried argument. Maybe the error messages should take account of this, suggesting that the user insert type parameters himself?
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

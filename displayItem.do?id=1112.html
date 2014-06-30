@@ -1,0 +1,206 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#1112]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Nikolay</td>
+	  <td align="center" bgcolor="#FFFFFF">Adriaan</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2007-05-15 20:40:12.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">[contrib #475] Currying error with java.lang.UnsupportedOperationException: Nil.init</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>class Test {
+  type Type1 = () =&gt; unit
+  
+  def call(p: int)(f: =&gt; Type1) = {
+    f()
+  }
+  
+  def run = {
+    call(0,() =&gt; System.out.println(&quot;here we are&quot;))
+  }
+}</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>$ scala -version
+Scala code runner version 2.5.0-RC2 -- (c) 2002-2007 LAMP/EPFL
+
+$ scalac wiresim.scala -d target
+Exception in thread "main" java.lang.UnsupportedOperationException: Nil.init
+        at scala.List.init(List.scala:506)
+        at scala.tools.nsc.symtab.Types$TypeRef.toString(Types.scala:1305)
+        at scala.tools.nsc.symtab.Types$TypeRef.toString(Types.scala:1303)
+        at java.lang.String.valueOf(String.java:2827)
+        at java.lang.StringBuffer.append(StringBuffer.java:219)
+        at scala.compat.StringBuilder.append(StringBuilder.scala:26)
+        at scala.Iterable$class.addString(Iterable.scala:407)
+        at scala.List.addString(List.scala:381)
+        at scala.Iterable$class.mkString(Iterable.scala:384)
+        at scala.List.mkString(List.scala:381)
+        at scala.tools.nsc.symtab.Types$MethodType.toString(Types.scala:1358)
+        at java.lang.String.valueOf(String.java:2827)
+        at java.lang.StringBuffer.append(StringBuffer.java:219)
+        at scala.tools.nsc.symtab.Types$MethodType.toString(Types.scala:1358)
+        at java.lang.String.valueOf(String.java:2827)
+        at java.lang.StringBuffer.append(StringBuffer.java:219)
+        at scala.tools.nsc.typechecker.Infer$Inferencer.treeSymTypeMsg(Infer.scala:257)
+        at scala.tools.nsc.typechecker.Typers$Typer.doTypedApply(Typers.scala:1503)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$91.apply(Typers.scala:1972)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$91.apply(Typers.scala:1972)
+        at scala.tools.nsc.typechecker.Typers$Typer.silent(Typers.scala:517)
+        at scala.tools.nsc.typechecker.Typers$Typer.tryTypedApply$0(Typers.scala:1972)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedApply$0(Typers.scala:2023)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:2567)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2650)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2694)
+        at scala.tools.nsc.typechecker.Typers$Typer.computeType(Typers.scala:2734)
+        at scala.tools.nsc.typechecker.Namers$Namer.methodSig(Namers.scala:585)        at scala.tools.nsc.typech\
+ecker.Namers$Namer.typeSig(Namers.scala:672)
+        at scala.tools.nsc.typechecker.Namers$Namer$$anon$0.complete(Namers.scala:356)
+        at scala.tools.nsc.symtab.Symbols$Symbol.info(Symbols.scala:413)
+        at scala.tools.nsc.symtab.Symbols$Symbol.initialize(Symbols.scala:521)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:2406)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2650)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2683)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedStat$0(Typers.scala:1398)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$58.apply(Typers.scala:1428)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$58.apply(Typers.scala:1428)
+        at scala.List$.loop$0(List.scala:243)
+        at scala.List$.mapConserve(List.scala:260)
+        at scala.List$.loop$0(List.scala:247)
+        at scala.List$.mapConserve(List.scala:260)
+        at scala.List$.loop$0(List.scala:247)
+        at scala.List$.mapConserve(List.scala:260)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:1428)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedTemplate(Typers.scala:1058)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedClassDef(Typers.scala:953)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:2415)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2650)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2683)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedStat$0(Typers.scala:1398)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$58.apply(Typers.scala:1428)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$58.apply(Typers.scala:1428)
+        at scala.List$.loop$0(List.scala:243)
+        at scala.List$.mapConserve(List.scala:260)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:1428)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:2411)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2650)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2683)
+        at scala.tools.nsc.typechecker.Analyzer$typerFactory$$anon$1.apply(Analyzer.scala:38)
+        at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:241)
+        at scala.tools.nsc.Global$GlobalPhase$$anonfun$2.apply(Global.scala:230)
+        at scala.tools.nsc.Global$GlobalPhase$$anonfun$2.apply(Global.scala:230)
+        at scala.Iterator$class.foreach(Iterator.scala:369)
+        at scala.collection.mutable.ListBuffer$$anon$0.foreach(ListBuffer.scala:245)
+        at scala.tools.nsc.Global$GlobalPhase.run(Global.scala:230)
+        at scala.tools.nsc.Global$Run.compileSources(Global.scala:498)
+        at scala.tools.nsc.Global$Run.compile(Global.scala:572)
+        at scala.tools.nsc.Main$.process(Main.scala:57)
+        at scala.tools.nsc.Main$.main(Main.scala:77)
+        at scala.tools.nsc.Main.main(Main.scala)
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >correct error diagnostics. working code is 
+
+  def run = {
+    call(0)(() => System.out.println("here we are"))
+  }</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Nikolay&nbsp; edited on &nbsp;2007-05-15 20:51:39.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Adriaan&nbsp; edited on &nbsp;2007-05-15 22:46:40.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+looks like a normalize is needed before args is called -- will fix asap (intermittent connectivity on vacation)
+</td></tr>
+<tr>
+        <td>
+        <strong>Adriaan&nbsp; edited on &nbsp;2007-05-16 00:58:59.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+should be fixed in r11055
+</td></tr>
+<tr>
+        <td>
+        <strong>Stephane&nbsp; edited on &nbsp;2007-05-16 13:47:26.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

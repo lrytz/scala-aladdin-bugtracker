@@ -1,0 +1,128 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#303]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Matthias</td>
+	  <td align="center" bgcolor="#FFFFFF">Philippe</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2004-03-02 21:00:50.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">Semantics of Definitions.getClass</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>==== file A.scala ====
+package bug;
+class A {
+  def foo: B = new B;
+}
+==== file B.scala ====
+package bug;
+class B;
+==== file C.scala ====
+object C {
+  val x = new bug.A().foo;
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>First compile A.scala and B.scala. Then remove the file bug/B.class and run scalac with file C.scala. Now you wi\
+ll get the following message:
+<pre>
+Exception in thread "main" java.lang.AssertionError: no class 'bug.B'
+        at scalac.symtab.Definitions.getClass(Definitions.java:657)
+        at scalac.symtab.classfile.JavaTypeCreator.classType(JavaTypeCreator.java:93)
+        at scalac.symtab.classfile.Signatures.sigToType(Signatures.java:82)
+        at scalac.symtab.classfile.Signatures.sigToType(Signatures.java:98)
+        at scalac.symtab.classfile.Signatures.sigToType(Signatures.java:54)
+        at scalac.symtab.classfile.ClassfileParser.readType(ClassfileParser.java:177)
+        at scalac.symtab.classfile.ClassfileParser.parseMethod(ClassfileParser.java:206)
+        at scalac.symtab.classfile.ClassfileParser.parse(ClassfileParser.java:115)
+        at scalac.symtab.classfile.ClassParser.doComplete(ClassParser.java:34)
+        at scalac.symtab.classfile.MetadataParser.complete(MetadataParser.java:34)
+        at scalac.symtab.classfile.ClassParser$StaticsParser.complete(ClassParser.java:64)
+        at scalac.symtab.Symbol.info(Symbol.java:830)
+ ...
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >The method Definitions.getClass should never throw an exception. Instead, when a class is not found, it should create a dummy/error symbol with the requested name. Using this symbol in the compilation should then provoke a real compiler error message without throwing an exception.</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Philippe&nbsp; edited on &nbsp;2004-03-24 13:57:08.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+<p> The latest partial rewrite/redesign of class loading and name resolution changed the crash into the following error message: </p>
+
+<pre>
+error: class file '/tmp/classes/bug/A.class': could not find class bug.B
+one error found
+</pre>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

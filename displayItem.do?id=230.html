@@ -1,0 +1,150 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#230]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> medium</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Stephane</td>
+	  <td align="center" bgcolor="#FFFFFF">Matthias</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2003-11-19 14:58:04.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">Problem in for construct</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>object Test with Executable {
+  for (val i: Int &lt;- Iterator.range(1, 2)) {
+    Console.println(i);
+  }
+}</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre><pre>Test.scala:3: unreachable code
+  for (val i: Int <- Iterator.range(1, 2)) {
+                                         ^
+one error found</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >index value is printed out !</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2003-11-19 16:29:02.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Matthias&nbsp; edited on &nbsp;2003-11-20 11:38:25.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+This must be a bug in the analyzer which generates two default cases in a pattern matching construct. I'm not even sure why pattern matching is involved at all...
+
+Here's the code after the Analyzer phase:
+<pre>
+final object Test extends scala.Object() with scala.Executable() {
+  scala.Iterator.range(1, 2).filter({
+      class $anon() extends scala.Object() with scala.Function1[scala.Int, scala.Boolean]() {
+        final def apply(ds$0: scala.Int): scala.Boolean = ds$0.match({
+            case i @ (_) : scala.Int => true
+            case _ => false
+          })
+      };
+      new $anon()
+    }).foreach({
+      class $anon() extends scala.Object() with scala.Function1[scala.Int, scala.Unit]() {
+        final def apply(ds$1: scala.Int): scala.Unit = ds$1.match({
+            case i @ (_) : scala.Int => scala.Console.println(i)
+          })
+      };
+      new $anon()
+    })
+}
+</pre>
+</td></tr>
+<tr>
+        <td>
+        <strong>Matthias&nbsp; edited on &nbsp;2003-11-20 12:06:22.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Okay, I just checked the spec. It seems like there are no restrictions on case sequences, which consequently means for my checks that they are too strict. To comply with the spec I allow for now to have duplicate cases (also multiple default cases).
+
+But overall I think the spec of pattern matching expressions doesn't fit to Scala! Scala is, in the terminology of Smalltalk/Lisp programmers, a <i>pesimistic</i> language, forbiding programs which are totally fine but where the type system cannot exclude errors. For pattern matching the Scala spec is pretty <i>optimistic</i>, allowing pattern combinations where it would be perfectly feasible to statically prove their redundancy.
+</td></tr>
+<tr>
+        <td>
+        <strong>Matthias&nbsp; edited on &nbsp;2003-11-20 12:07:02.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Okay, I just checked the spec. It seems like there are no restrictions on case sequences, which consequently means for my checks that they are too strict. To comply with the spec I allow for now to have duplicate cases (also multiple default cases).
+
+But overall I think the spec of pattern matching expressions doesn't fit to Scala! Scala is, in the terminology of Smalltalk/Lisp programmers, a <i>pesimistic</i> language, forbiding programs which are totally fine but where the type system cannot exclude errors. For pattern matching the Scala spec is pretty <i>optimistic</i>, allowing pattern combinations where it would be perfectly feasible to statically prove their redundancy.
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

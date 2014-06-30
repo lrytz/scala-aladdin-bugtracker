@@ -1,0 +1,208 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#709]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> high</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Sean</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2006-08-21 11:48:49.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">latest breaks objects in def</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>trait A {
+  private def foo = {
+    object x;
+    null;
+  }
+  
+}</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre><pre>
+  private def foo(): scala.AllRef = {
+    var x$module$0: scala.runtime.ObjectRef = new scala.runtime.ObjectRef.this(null);
+    null
+  };
+  final private <local> <stable> def x$0(x$module$0: scala.runtime.ObjectRef): object test.A$x$1 = {
+    if (x$module$0.elem.$asInstanceOf[object test.A$x$1]().eq(null))
+      x$module$0.elem = new object test.A$x$1.this(A$class.this);
+    x$module$0.elem.$asInstanceOf[object test.A$x$1]()
+  };
+  def /*A$class*/$init$(): scala.Unit = {
+    ()
+  }
+}
+exception when traversing abstract trait A$class extends java.lang.Object with scala.ScalaObject with test.A {
+  private def foo(): scala.AllRef = {
+    var x$module$0: scala.runtime.ObjectRef = new scala.runtime.ObjectRef.this(null);
+    null
+  };
+  final private <local> <stable> def x$0(x$module$0: scala.runtime.ObjectRef): object test.A$x$1 = {
+    if (x$module$0.elem.$asInstanceOf[object test.A$x$1]().eq(null))
+      x$module$0.elem = new object test.A$x$1.this(A$class.this);
+    x$module$0.elem.$asInstanceOf[object test.A$x$1]()
+  };
+  def /*A$class*/$init$(): scala.Unit = {
+    ()
+  }
+}
+exception when traversing package test {
+  abstract trait A extends java.lang.Object with scala.ScalaObject;
+  abstract trait A$class extends java.lang.Object with scala.ScalaObject with test.A {
+    private def foo(): scala.AllRef = {
+      var x$module$0: scala.runtime.ObjectRef = new scala.runtime.ObjectRef.this(null);
+      null
+    };
+    final private <local> <stable> def x$0(x$module$0: scala.runtime.ObjectRef): object test.A$x$1 = {
+      if (x$module$0.elem.$asInstanceOf[object test.A$x$1]().eq(null))
+        x$module$0.elem = new object test.A$x$1.this(A$class.this);
+      x$module$0.elem.$asInstanceOf[object test.A$x$1]()
+    };
+    def /*A$class*/$init$(): scala.Unit = {
+      ()
+    }
+  };
+  final class A$x$1 extends java.lang.Object with scala.ScalaObject$class {
+    private <local> <paramaccessor> val $outer : test.A = _;
+    <stable> <accessor> <paramaccessor> def $outer(): test.A = A$x$1.this.$outer ;
+    def this($outer: test.A): object test.A$x$1 = {
+      if ($outer.eq(null))
+        throw new java.lang.NullPointerException.this()
+      else
+        A$x$1.this.$outer  = $outer;
+      {
+        A$x$1.super.this();
+        ()
+      };
+      ()
+    }
+  }
+}
+Exception in thread "main" scala.tools.nsc.symtab.Types$TypeError: wrong number of arguments for constructor A$x\
+$1: (test.A)object test.A$x$1
+	at scala.tools.nsc.typechecker.Contexts$Context.error(Contexts.scala:185)
+	at scala.tools.nsc.typechecker.Typers$Typer.reportTypeError(Typers.scala:148)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1772)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1790)
+	at scala.tools.nsc.transform.Mixin$MixinTransformer.attributedDef$0(Mixin.scala:264)
+	at scala.tools.nsc.transform.Mixin$MixinTransformer.implementPrivateObject$0(Mixin.scala:303)
+	at scala.tools.nsc.transform.Mixin$MixinTransformer$$anonfun$31.apply(Mixin.scala:345)
+	at scala.tools.nsc.transform.Mixin$MixinTransformer$$anonfun$31.apply(Mixin.scala:345)
+	at scala.List.flatMap(List.scala:920)
+	at scala.tools.nsc.transform.Mixin$MixinTransformer.addNewDefs(Mixin.scala:345)
+	at scala.tools.nsc.transform.Mixin$MixinTransformer.scala$tools$nsc$transform$Mixin$MixinTransformer$$postTrans\
+form(Mixin.scala:357)
+	at scala.tools.nsc.transform.Mixin$MixinTransformer$$anonfun$35.apply(Mixin.scala:426)
+	at scala.tools.nsc.transform.Mixin$MixinTransformer$$anonfun$35.apply(Mixin.scala:426)
+	at scala.tools.nsc.symtab.SymbolTable.atPhase(SymbolTable.scala:71)
+	at scala.tools.nsc.transform.Mixin$MixinTransformer.transform(Mixin.scala:426)
+	at scala.tools.nsc.ast.Trees$Transformer.transformTemplate(Trees.scala:1044)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$13.apply(Trees.scala:950)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$13.apply(Trees.scala:949)
+	at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1064)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:948)
+	at scala.tools.nsc.transform.Mixin$MixinTransformer.transform(Mixin.scala:425)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$25.apply(Trees.scala:1058)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$25.apply(Trees.scala:1056)
+	at scala.List$.loop$0(List.scala:232)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.List$.loop$0(List.scala:236)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.tools.nsc.ast.Trees$Transformer.transformStats(Trees.scala:1056)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$12.apply(Trees.scala:945)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$12.apply(Trees.scala:945)
+	at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1064)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:944)
+	at scala.tools.nsc.transform.Mixin$MixinTransformer.transform(Mixin.scala:425)
+	at scala.tools.nsc.ast.Trees$Transformer.transformUnit(Trees.scala:1059)
+	at scala.tools.nsc.transform.Transform$Phase.apply(Transform.scala:26)
+	at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:220)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$1.apply(Global.scala:209)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$1.apply(Global.scala:209)
+	at scala.Iterator$class.foreach(Iterator.scala:304)
+	at scala.collection.mutable.ListBuffer$$anon$0.foreach(ListBuffer.scala:216)
+	at scala.tools.nsc.Global$GlobalPhase.run(Global.scala:209)
+	at scala.tools.nsc.Global$Run.compileSources(Global.scala:471)
+	at scala.tools.nsc.Global$Run.compile(Global.scala:535)
+	at scala.tools.nsc.Main$.process(Main.scala:76)
+	at scala.tools.nsc.Main$.main(Main.scala:98)
+	at scala.tools.nsc.Main.main(Main.scala)
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" ></td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-08-21 22:04:45.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

@@ -1,0 +1,136 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#1164]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Burak</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">_</td>
+          <td align="center" bgcolor="#FFFFFF">2007-06-04 00:48:30.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">gen.mkAsInstanceOf gets the erased type</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre> class Foo {
+   case class Bar extends Foo
+
+   def foo() = this match {
+     case Bar() =&gt; println(&quot;bar&quot;)
+   }
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>while typing vdef_untyped = <synthetic> var temp8: Foo.this.Bar = temp5.asInstanceOf$erased[Foo.this.Bar]()
+casted.tpe = Foo.this.Bar
+(a) selector.tpe       = Foo
+(b) pattern type(ntpe) = Foo.this.Bar
+isSubType(a, b) = false
+cast.type = Foo#Bar
+
+exception when transforming def foo(): Unit = this match {
+  case ()Foo.this.Bar() => scala.this.Predef.println("bar")
+}
+...
+Exception in thread "main" scala.tools.nsc.symtab.Types$TypeError: type mismatch;
+ found   : Foo#Bar
+ required: Foo.this.Bar
+        at scala.tools.nsc.typechecker.Contexts$Context.error(Contexts.scala:268)
+        at scala.tools.nsc.typechecker.Infer$Inferencer.error(Infer.scala:277)
+        at scala.tools.nsc.typechecker.Infer$Inferencer.typeError(Infer.scala:286)
+        at scala.tools.nsc.typechecker.Infer$Inferencer.typeErrorTree(Infer.scala:292)
+        at scala.tools.nsc.typechecker.Typers$Typer.adapt(Typers.scala:733)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2660)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2701)
+        at scala.tools.nsc.typechecker.Typers$Typer.transformedOrTyped(Typers.scala:2748)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedValDef(Typers.scala:1083)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:2424)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2657)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2690)
+        at scala.tools.nsc.matching.PatternMatchers$PatternMatcher.toTree_refined(PatternMatchers.scala:1211)
+...
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >I inserted and checked in relevant output that appears when the exception is thrown. The problem is that the cast does not get the proper type. I could of course set the type manually, but I wonder why I should need to, whether I need to do it systematically and whether this hints at a more general problem regarding casts to dependent types. Maybe we need asInstanceOf$nonErased back?
+</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2007-06-04 10:41:20.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+In what phase is this being typed? 
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2007-06-04 11:01:49.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+ah, it's phase.next ... which is erasure! But what exactly does this mean for typing tree nodes during ExplicitOuter? Shall I just type the cast at phase.prev?
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

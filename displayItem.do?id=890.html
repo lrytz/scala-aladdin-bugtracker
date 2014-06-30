@@ -1,0 +1,151 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#890]</th>
+		<th><strong>project:</strong> eclipse-plugin</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Nikolay</td>
+	  <td align="center" bgcolor="#FFFFFF">Sean</td>
+	  <td align="center" bgcolor="#FFFFFF">open</td>
+          <td align="center" bgcolor="#FFFFFF">2007-01-16 11:08:32.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">[contrib #297] bug in ui when clicking problem</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>here is the log
+&lt;pre&gt;
+
+!ENTRY org.eclipse.ui.workbench 4 2 2007-01-16 09:44:06.218
+!MESSAGE Problems occurred when invoking code from plug-in: &quot;org.eclipse.ui.workbench&quot;.
+!STACK 0
+java.lang.NoSuchMethodError: org.eclipse.jface.viewers.TreeViewer.setComparator(Lorg/eclipse/jface/viewers/ViewerComparator;)V
+	at ch.epfl.lamp.sdt.ui.scalaeditor.ScalaContentOutline.createControl(ScalaContentOutline.java:42)
+	at org.eclipse.ui.views.contentoutline.ContentOutline.doCreatePage(ContentOutline.java:133)
+	at org.eclipse.ui.part.PageBookView.createPage(PageBookView.java:393)
+	at org.eclipse.ui.part.PageBookView.partActivated(PageBookView.java:731)
+	at org.eclipse.ui.internal.PartListenerList$1.run(PartListenerList.java:71)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:37)
+	at org.eclipse.core.runtime.Platform.run(Platform.java:816)
+	at org.eclipse.ui.internal.PartListenerList.fireEvent(PartListenerList.java:57)
+	at org.eclipse.ui.internal.PartListenerList.firePartActivated(PartListenerList.java:69)
+	at org.eclipse.ui.internal.PartService.firePartActivated(PartService.java:73)
+	at org.eclipse.ui.internal.PartService.setActivePart(PartService.java:171)
+	at org.eclipse.ui.internal.WorkbenchPagePartList.fireActivePartChanged(WorkbenchPagePartList.java:56)
+	at org.eclipse.ui.internal.PartList.setActivePart(PartList.java:117)
+	at org.eclipse.ui.internal.WorkbenchPage.setActivePart(WorkbenchPage.java:2975)
+	at org.eclipse.ui.internal.WorkbenchPage.activate(WorkbenchPage.java:555)
+	at org.eclipse.ui.views.markers.internal.ActionOpenMarker.run(ActionOpenMarker.java:68)
+	at org.eclipse.ui.views.markers.internal.MarkerView.handleOpenEvent(MarkerView.java:985)
+	at org.eclipse.ui.views.markers.internal.TableView$2.open(TableView.java:165)
+	at org.eclipse.jface.viewers.StructuredViewer$2.run(StructuredViewer.java:780)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:37)
+	at org.eclipse.core.runtime.Platform.run(Platform.java:816)
+	at org.eclipse.ui.internal.JFaceUtil$1.run(JFaceUtil.java:44)
+	at org.eclipse.jface.util.SafeRunnable.run(SafeRunnable.java:148)
+	at org.eclipse.jface.viewers.StructuredViewer.fireOpen(StructuredViewer.java:778)
+	at org.eclipse.jface.viewers.StructuredViewer.handleOpen(StructuredViewer.java:1009)
+	at org.eclipse.jface.viewers.StructuredViewer$6.handleOpen(StructuredViewer.java:1108)
+	at org.eclipse.jface.util.OpenStrategy.fireOpenEvent(OpenStrategy.java:244)
+	at org.eclipse.jface.util.OpenStrategy.access$2(OpenStrategy.java:239)
+	at org.eclipse.jface.util.OpenStrategy$1.handleEvent(OpenStrategy.java:278)
+	at org.eclipse.swt.widgets.EventTable.sendEvent(EventTable.java:66)
+	at org.eclipse.swt.widgets.Widget.sendEvent(Widget.java:925)
+	at org.eclipse.swt.widgets.Display.runDeferredEvents(Display.java:3287)
+	at org.eclipse.swt.widgets.Display.readAndDispatch(Display.java:2907)
+	at org.eclipse.ui.internal.Workbench.runEventLoop(Workbench.java:1899)
+	at org.eclipse.ui.internal.Workbench.runUI(Workbench.java:1863)
+	at org.eclipse.ui.internal.Workbench.createAndRunWorkbench(Workbench.java:417)
+	at org.eclipse.ui.PlatformUI.createAndRunWorkbench(PlatformUI.java:143)
+	at org.eclipse.ui.internal.ide.IDEApplication.run(IDEApplication.java:106)
+	at org.eclipse.core.internal.runtime.PlatformActivator$1.run(PlatformActivator.java:99)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.runApplication(EclipseAppLauncher.java:92)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.start(EclipseAppLauncher.java:68)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:374)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:169)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+	at java.lang.reflect.Method.invoke(Unknown Source)
+	at org.eclipse.core.launcher.Main.invokeFramework(Main.java:338)
+	at org.eclipse.core.launcher.Main.basicRun(Main.java:282)
+	at org.eclipse.core.launcher.Main.run(Main.java:977)
+	at org.eclipse.core.launcher.Main.main(Main.java:952)
+&lt;/pre&gt;</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>get this error when clicking on a problem in UI
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" ></td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Nikolay&nbsp; edited on &nbsp;2007-01-16 11:09:52.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+contribution #297
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

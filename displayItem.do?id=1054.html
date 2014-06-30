@@ -1,0 +1,141 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#1054]</th>
+		<th><strong>project:</strong> scala-doc</th>
+		<th><strong>priority:</strong> medium</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Nikolay</td>
+	  <td align="center" bgcolor="#FFFFFF">Stephane</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2007-04-18 13:10:53.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">[contrib #428] Resource files still not found</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>Contrib 390 is marked as &quot;Fixed in 2.4.0-final&quot;.  Using XP Pro SP2, I still see the error.
+
+From Windows' Command Prompt:-
+
+C:\...&gt;scaladoc.bat -version
+Scala compiler version 2.4.0-final -- (c) 2002-2007 LAMP/EPFL
+
+C:\...&gt;scaladoc.bat -d ../docs src/*.scala
+error: Resource file 'style.css' not found
+error: Resource file 'script.js' not found
+two errors found
+
+
+From ant:-
+ [scaladoc] error: Resource file 'style.css' not found
+ [scaladoc] error: Resource file 'script.js' not found
+ [scaladoc] ...\build.xml:89: Document failed with 2 errors; see the documenter error output for details.
+... (stacktrace)
+
+
+
+From a cygwin prompt, this time running a nightly build:-
+
+$ scaladoc -version
+Scala compiler version 2.4.0.10647.20070410-031836 -- (c) 2002-2007 LAMP/EPFL
+
+$ scaladoc -d ../docs  src/*.scala
+Exception in thread &quot;main&quot; java.lang.Error: Resource file 'style.css' not found
+	at scala.Predef$.error(Predef.scala:74)
+	at scala.tools.nsc.doc.ModelFrames$$anonfun$11.apply(ModelFrames.scala:319)
+	at scala.tools.nsc.doc.ModelFrames$$anonfun$11.apply(ModelFrames.scala:305)
+	at scala.List.foreach(List.scala:699)
+	at scala.tools.nsc.doc.ModelFrames$class.copyResources(ModelFrames.scala:305)
+	at scala.tools.nsc.doc.DocDriver.copyResources(DocDriver.scala:6)
+	at scala.tools.nsc.doc.DocDriver.process(DocDriver.scala:54)
+	at scala.tools.nsc.Main$.process(Main.scala:65)
+	at scala.tools.nsc.Main$.main(Main.scala:79)
+	at scala.tools.nsc.Main.main(Main.scala)
+
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>Resource file 'style.css' not found
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >successful execution
+</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Nikolay&nbsp; edited on &nbsp;2007-04-18 13:11:52.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+contribution #428
+</td></tr>
+<tr>
+        <td>
+        <strong>Stephane&nbsp; edited on &nbsp;2007-04-18 17:11:09.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Name of a resource is a '/'-separated path name ! Fixed in rev 10732.
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

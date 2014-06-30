@@ -1,0 +1,154 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#216]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Vincent</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2003-11-04 17:39:43.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">Looping module evaluation</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>object stackOverflow with Executable {
+  object m {
+    val f = x: unit =&gt; ();
+  }
+  m;
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>During execution: Exception in thread "main" java.lang.StackOverflowError
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >Nothing special.
+</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Michel&nbsp; edited on &nbsp;2003-11-24 10:57:24.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+This is a problem with "recursive" nested objects, whose creation can loop infinitely. The above example can be reduced even more, as follows:
+<pre>
+object stackOverflow {
+  object m { m }
+  def main(args: Array[String]): Unit = { m; }
+}
+</pre>
+This gets expanded by <code>RefCheck</code> to:
+<pre>
+// Scala source: bug216.scala
+final class stackOverflow() extends scala.Object() {
+  final class m() extends scala.Object() {
+    stackOverflow.m
+  };
+  private var m$: stackOverflow.m = null;
+  final def m: stackOverflow.m = {
+    if (null.$eq$eq(stackOverflow.m$))
+      stackOverflow.m$ = new stackOverflow.m()
+    else
+       {
+        
+      };
+    stackOverflow.m$
+  };
+  private def m_$eq(m: stackOverflow.m): scala.Unit = stackOverflow.m$ = m;
+  final def main(args: scala.Array[java.lang.String]): scala.Unit = {
+    stackOverflow.m;
+    {
+      
+    }
+  }
+};
+final /*object*/ val stackOverflow: stackOverflow = new stackOverflow();
+</pre>
+Here we see that to build <code>m</code> we need <code>m</code> itself, which results in an endless chain of calls to the <code>m()</code> function. For top-level modules, this has been fixed by assigning the field containing the module instance at the <emph>very beginning</emph> of the module's constructor. Something similar could be done here, by adding a
+<pre>
+  stackOverflow.m$ = this;
+</pre>
+at the very beginning of class <code>m</code> so that this is the first thing done at construction. However, this is a bit fragile since we have no way of guaranteeing that later phases won't put code before that assignment. I don't see a clean solution with the current tree.
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2004-01-08 15:47:25.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-05-28 15:08:26.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

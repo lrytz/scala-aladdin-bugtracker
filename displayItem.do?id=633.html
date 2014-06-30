@@ -1,0 +1,167 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#633]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Nikolay</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2006-06-20 14:09:11.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">[contrib #159] Missing types misdiagnosed</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>object Test
+{
+        def t(a : ListBuffer[String]) = {
+                Console.println(a.length)
+        }
+
+        def main(argv : Array[String]) = t(null)
+}</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>Compiler prints an incorrect error and then crashes:
+
+<pre>
+test.scala:4 error: recursive value a needs type
+                Console.println(a.length)
+                                ^
+Exception in thread "main" java.lang.Error: assertion failed
+        at scala.Predef$.assert(Predef.scala:171)
+        at scala.tools.nsc.typechecker.Typers$Typer.scala$tools$nsc$typechecker$Typers$Typer$$inferView(Typers.s\
+cala:61)
+        at scala.tools.nsc.typechecker.Typers$Typer.inferView(Typers.scala:76)
+        at scala.tools.nsc.typechecker.Typers$Typer.adaptToMember(Typers.scala:507)
+        at scala.tools.nsc.typechecker.Typers$Typer.tryTypedApply$0(Typers.scala:1169)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1576)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1693)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1719)
+        at scala.tools.nsc.typechecker.Typers$Typer.computeType(Typers.scala:1750)
+        at scala.tools.nsc.typechecker.Namers$Namer.methodSig(Namers.scala:409)
+        at scala.tools.nsc.typechecker.Namers$Namer.liftedTry0$0(Namers.scala:477)
+        at scala.tools.nsc.typechecker.Namers$Namer.scala$tools$nsc$typechecker$Namers$Namer$$typeSig(Namers.sca\
+la:463)
+        at scala.tools.nsc.typechecker.Namers$Namer$$anon$0.complete(Namers.scala:312)
+        at scala.tools.nsc.symtab.Symbols$Symbol.info(Symbols.scala:346)
+        at scala.tools.nsc.symtab.Symbols$Symbol.initialize(Symbols.scala:423)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1331)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1693)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1719)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$46.apply(Typers.scala:995)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$46.apply(Typers.scala:985)
+        at scala.List$.loop$0(List.scala:232)
+        at scala.List$.mapConserve(List.scala:249)
+        at scala.List$.loop$0(List.scala:236)
+        at scala.List$.mapConserve(List.scala:249)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:985)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedTemplate(Typers.scala:709)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedModuleDef(Typers.scala:651)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1343)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1693)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1719)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$46.apply(Typers.scala:995)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$46.apply(Typers.scala:985)
+        at scala.List$.loop$0(List.scala:232)
+        at scala.List$.mapConserve(List.scala:249)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:985)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1336)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1693)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1719)
+        at scala.tools.nsc.typechecker.Analyzer$typerFactory$$anon$1.apply(Analyzer.scala:38)
+        at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:216)
+        at scala.tools.nsc.Global$GlobalPhase$$anonfun$1.apply(Global.scala:205)
+        at scala.tools.nsc.Global$GlobalPhase$$anonfun$1.apply(Global.scala:205)
+        at scala.Iterator$class.foreach(Iterator.scala:304)
+        at scala.collection.mutable.ListBuffer$$anon$0.foreach(ListBuffer.scala:216)
+        at scala.tools.nsc.Global$GlobalPhase.run(Global.scala:205)
+        at scala.tools.nsc.Global$Run.compileSources(Global.scala:467)
+        at scala.tools.nsc.Global$Run.compile(Global.scala:527)
+        at scala.tools.nsc.Main$.process(Main.scala:76)
+        at scala.tools.nsc.Main$.main(Main.scala:98)
+        at scala.tools.nsc.Main.main(Main.scala)
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" ><pre>error: not found: type ListBuffer</pre></td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Nikolay&nbsp; edited on &nbsp;2006-06-20 14:09:49.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-06-27 17:34:22.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

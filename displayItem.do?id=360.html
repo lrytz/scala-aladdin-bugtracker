@@ -1,0 +1,147 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#360]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> high</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">Philippe</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2004-08-26 08:51:57.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">Checker complains after MakeBoxingExplicit</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>abstract class A: C {
+  def f: String = &quot;hello&quot;;
+}
+abstract class B: C {
+  object d {
+    System.out.println(f);
+  }
+}
+abstract class C extends A with B;
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre><pre>
+Exception in thread "main" java.lang.AssertionError:
+unit        : test/nsc2.scala
+clasz       : B.d
+member      : B.d.<init>
+owner       : B.d.<init>
+tree        : outer$0$B.f
+tree.pos    : 6:24
+tree.symbol : A.f
+tree.type   : ()String#outer$0$B$B/class A
+        at scalac.checkers.TreeChecker.selection(TreeChecker.java:396)
+        at scalac.checkers.TreeChecker.function(TreeChecker.java:350)
+        at scalac.checkers.TreeChecker.expression(TreeChecker.java:289)
+        at scalac.checkers.TreeChecker.vapply(TreeChecker.java:332)
+        at scalac.checkers.TreeChecker.expression(TreeChecker.java:281)
+        at scalac.checkers.TreeChecker.statement(TreeChecker.java:199)
+        at scalac.checkers.TreeChecker.expression(TreeChecker.java:233)
+        at scalac.checkers.TreeChecker.statement(TreeChecker.java:199)
+        at scalac.checkers.TreeChecker.expression(TreeChecker.java:233)
+        at scalac.checkers.TreeChecker.member(TreeChecker.java:168)
+        at scalac.checkers.TreeChecker.member(TreeChecker.java:135)
+        at scalac.checkers.TreeChecker.template(TreeChecker.java:111)
+        at scalac.checkers.TreeChecker.member(TreeChecker.java:147)
+        at scalac.checkers.TreeChecker.member(TreeChecker.java:135)
+        at scalac.checkers.TreeChecker.template(TreeChecker.java:111)
+        at scalac.checkers.TreeChecker.template(TreeChecker.java:91)
+        at scalac.checkers.TreeChecker.check(TreeChecker.java:81)
+        at scalac.transformer.MakeBoxingExplicitPhase.apply(MakeBoxingExplicitPhase.java:46)
+        at scalac.Global.compile(Global.java:386)
+        at scalac.Global.compile(Global.java:356)
+        at scala.tools.scalac.Main$.main1(Main.scala:42)
+        at scala.tools.scalac.Main$.main(Main.scala:28)
+        at scala.tools.scalac.Main.main(Main.scala:28)
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >Succesful compilation. I think the problem is that the system forgets about self types after erasure. Therefore, function `f' ceases to be visible in class `B'.
+Surprisingly, the program compiles as long as access to `f' in `B' is outside the module `d'.
+</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Philippe&nbsp; edited on &nbsp;2004-08-26 11:30:11.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Replaced a <code>type()</code> by a <code>typeOfThis()</code> in <code>ExplicitOuter</code>.
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Philippe&nbsp; edited on &nbsp;2004-08-26 11:30:23.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Replaced a <code>type()</code> by a <code>typeOfThis()</code> in <code>ExplicitOuter</code>.
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

@@ -1,0 +1,123 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#244]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Erik</td>
+	  <td align="center" bgcolor="#FFFFFF">Matthias</td>
+	  <td align="center" bgcolor="#FFFFFF">open</td>
+          <td align="center" bgcolor="#FFFFFF">2003-12-01 16:17:15.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">Non-separate compilation does not always work</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre></pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>scalac -separate:no -classpath ./classes -d ./classes 'sources/scala/tools/dtd2scala/DeclToScala.scala'  'source\
+s/scala/tools/dtd2scala/DeclToSQL.scala' 'sources/scala/tools/dtd2scala/regexp/Scanner.scala'
+/home/stenman/sync/scala/sources/scalac/ast/parser/Scanner.scala:746: 'while' expected but 'for' found.
+      key(i) = IDENTIFIER;
+                          ^
+/home/stenman/sync/scala/sources/scalac/ast/parser/Scanner.scala:748: '(' expected but ';' found.
+      if (tokenName(j) != null) key(tokenName(j).index) = j.asInstanceOf[byte];
+                                                                              ^
+sources/scala/tools/dtd2scala/DeclToScala.scala:188: wrong number of arguments for constructor scalac.ast.parser\
+.Scanner(scalac.Unit)
+  private val toy:Scanner = new Scanner();
+                                       ^
+sources/scala/tools/dtd2scala/DeclToSQL.scala:41: expected pattern type scala.tools.dtd2scala.regexp.RegExp does\
+ not conform to sequence trait scala.Seq
+      case Seq( rs@_* ) => rs.map( mults ); { }
+           ^
+sources/scala/tools/dtd2scala/DeclToSQL.scala:48: expected pattern type scala.tools.dtd2scala.regexp.RegExp does\
+ not conform to sequence trait scala.Seq
+      case Seq( rs@_* ) => rs.map( singles ); { }
+           ^
+/home/stenman/sync/scala/sources/scala/Symbol.scala:25: `*' parameter must be the only parameter of a `('...`)' \
+section
+case class Symbol(name: String, elems: Any*) {
+                                ^
+/home/stenman/sync/scala/sources/scala/xml/nobinding/NoBindingFactoryAdapter.scala:21: wrong number of arguments\
+ for method scala.Symbol(java.lang.String,scala.Seq[scala.Any])
+          val el = new Element( Symbol( label ), children ) {
+                                      ^
+7 errors found
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >Succesful compilation as with separate compialtion turned on
+> scalac -classpath ./classes -d ./classes 'sources/scala/tools/dtd2scala/DeclToScala.scala'  'sources/scala/tools/dtd2scala/DeclToSQL.scala' 'sources/scala/tools/dtd2scala/regexp/Scanner.scala'
+[lamppc35]scala 1076 > </td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Erik&nbsp; edited on &nbsp;2003-12-01 16:17:44.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

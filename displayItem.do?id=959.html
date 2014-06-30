@@ -1,0 +1,134 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#959]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Nikolay</td>
+	  <td align="center" bgcolor="#FFFFFF">Lex</td>
+	  <td align="center" bgcolor="#FFFFFF">open</td>
+          <td align="center" bgcolor="#FFFFFF">2007-02-18 15:58:28.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">[contrib #328] fsc SocketException</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>Start-&gt;Run-&gt;cmd
+
+Microsoft Windows XP [Version 5.1.2600]
+(C) Copyright 1985-2001 Microsoft Corp.
+
+C:\Documents and Settings\Iouri Goussev&gt;c:\scala\bin\fsc
+Exception in thread &quot;main&quot; java.net.SocketException: Connection reset
+        at java.net.SocketInputStream.read(Unknown Source)
+        at sun.nio.cs.StreamDecoder.readBytes(Unknown Source)
+        at sun.nio.cs.StreamDecoder.implRead(Unknown Source)
+        at sun.nio.cs.StreamDecoder.read(Unknown Source)
+        at java.io.InputStreamReader.read(Unknown Source)
+        at java.io.BufferedReader.fill(Unknown Source)
+        at java.io.BufferedReader.readLine(Unknown Source)
+        at java.io.BufferedReader.readLine(Unknown Source)
+        at scala.tools.nsc.CompileClient$.main0(CompileClient.scala:107)
+        at scala.tools.nsc.CompileClient$.main(CompileClient.scala:122)
+        at scala.tools.nsc.CompileClient.main(CompileClient.scala)
+
+C:\Documents and Settings\Iouri Goussev&gt;c:\scala\bin\fsc
+Usage: fsc &lt;options | source files&gt;
+where possible options include:
+
+.....
+.....
+.....
+
+C:\Documents and Settings\Iouri Goussev&gt;java -version
+java version &quot;1.6.0&quot;
+Java(TM) SE Runtime Environment (build 1.6.0-b105)
+Java HotSpot(TM) Client VM (build 1.6.0-b105, mixed mode, sharing)
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>Scala compiler threw an exception first time I run it. When I run it again, everything was ok.
+
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >Scala compiler should not throw exceptions.</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Nikolay&nbsp; edited on &nbsp;2007-02-20 17:50:38.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+I sent an email asking if someone could reproduce the problem. Since there was no response I mark this not repro.
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2007-02-20 19:01:57.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+I have also noted the problem occasionally. I think we should just catch the exception and treat it be a restart.
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

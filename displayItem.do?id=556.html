@@ -1,0 +1,154 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#556]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> medium</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Gilles</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2006-03-23 16:14:59.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">Crash when function parameter has wrong number of arguments</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>object Main extends Application {
+  def f(a:Int=&gt;Int):Int = a(4)
+  def g:Int = f((x,y)=&gt;x)
+}</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre><code>Exception in thread "main" java.lang.Error: unexpected tree: <type ?>
+        at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1546)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1556)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedType(Typers.scala:1602)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedValDef(Typers.scala:685)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$39.apply(Typers.scala:907)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$39.apply(Typers.scala:907)
+        at scala.List$.loop$0(List.scala:232)
+        at scala.List$.mapConserve(List.scala:249)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedFunction(Typers.scala:907)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1319)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1556)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedArg$0(Typers.scala:990)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$47.apply(Typers.scala:1010)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$47.apply(Typers.scala:1010)
+        at scala.List$.map2(List.scala:265)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedApply$0(Typers.scala:1010)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1441)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1556)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1586)
+        at scala.tools.nsc.typechecker.Typers$Typer.transformedOrTyped(Typers.scala:1620)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedDefDef(Typers.scala:801)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1241)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1556)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1582)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$43.apply(Typers.scala:943)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$43.apply(Typers.scala:933)
+        at scala.List$.loop$0(List.scala:232)
+        at scala.List$.mapConserve(List.scala:249)
+        at scala.List$.loop$0(List.scala:236)
+        at scala.List$.mapConserve(List.scala:249)
+        at scala.List$.loop$0(List.scala:236)
+        at scala.List$.mapConserve(List.scala:249)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:933)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedTemplate(Typers.scala:676)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedModuleDef(Typers.scala:625)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1235)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1556)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1582)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$43.apply(Typers.scala:943)
+        at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$43.apply(Typers.scala:933)
+        at scala.List$.loop$0(List.scala:232)
+        at scala.List$.mapConserve(List.scala:249)
+        at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:933)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1228)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1556)
+        at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1582)
+        at scala.tools.nsc.typechecker.Analyzer$typerFactory$$anon$1.apply(Analyzer.scala:39)
+        at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:208)
+        at scala.tools.nsc.Global$GlobalPhase$$anonfun$1.apply(Global.scala:197)
+        at scala.tools.nsc.Global$GlobalPhase$$anonfun$1.apply(Global.scala:197)
+        at scala.Iterator$class.foreach(Iterator.scala:285)
+        at scala.collection.mutable.ListBuffer$$anon$0.foreach(ListBuffer.scala:216)
+        at scala.tools.nsc.Global$GlobalPhase.run(Global.scala:197)
+        at scala.tools.nsc.Global$Run.compileSources(Global.scala:422)
+        at scala.tools.nsc.Global$Run.compile(Global.scala:480)
+        at scala.tools.nsc.Main$.process(Main.scala:60)
+        at scala.tools.nsc.Main$.main(Main.scala:80)
+        at scala.tools.nsc.Main.main(Main.scala)</code>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >A sensible error message</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-03-27 22:26:30.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

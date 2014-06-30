@@ -1,0 +1,167 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#1143]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> high</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Sean</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2007-05-28 17:01:39.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">return of the mixin sandwich crash</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>// 3 files
+// test/Presentations.scala
+package test;
+import scala.collection.jcl._
+trait Presentations { 
+  type File &lt;: FileImpl
+  trait FileImpl { 
+    private[Presentations] val set = new LinkedHashSet[String]
+    def f = {
+      Console println set.getClass
+    }
+  }
+}
+// test/AutoEdits.scala
+package test;
+import scala.collection.jcl._
+trait AutoEdits extends Presentations {
+  type File &lt;: FileImpl
+  trait FileImpl extends super.FileImpl {
+    private[AutoEdits] val set = new LinkedHashSet[String] // Node]
+    override def f = {
+      super.f
+      Console println set.getClass
+    }
+  }
+}
+// test/Test.scala
+package test;
+object Test extends AutoEdits {
+  class File extends super[AutoEdits].FileImpl {}
+  def main(args : Array[String]) : Unit = {
+    val file = new File
+    file.f
+  }
+}
+
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>sean-mcdirmid:~/workspace/test13/src mcdirmid$ ../../scala/build/quick/bin/scalac -resident -d ../bin
+
+nsc> test/Presentations.scala test/AutoEdits.scala test/Test.scala
+
+nsc>
+sean-mcdirmid:~/workspace/test13/src mcdirmid$ ../../scala/build/quick/bin/scala -classpath ../bin test.Test
+class scala.collection.jcl.LinkedHashSet
+class scala.collection.jcl.LinkedHashSet
+sean-mcdirmid:~/workspace/test13/src mcdirmid$ ../../scala/build/quick/bin/scalac -resident -d ../bin
+
+nsc> test/Presentations.scala test/Test.scala
+
+nsc>
+sean-mcdirmid:~/workspace/test13/src mcdirmid$ ../../scala/build/quick/bin/scala -classpath ../bin test.Test
+class scala.collection.jcl.LinkedHashSet
+class scala.collection.jcl.LinkedHashSet
+sean-mcdirmid:~/workspace/test13/src mcdirmid$ ../../scala/build/quick/bin/scalac -resident -d ../bin
+
+nsc> test/Presentations.scala test/AutoEdits.scala test/Test.scala
+
+nsc> test/Presentations.scala test/Test.scala
+
+nsc>
+sean-mcdirmid:~/workspace/test13/src mcdirmid$ ../../scala/build/quick/bin/scala -classpath ../bin test.Test
+java.lang.AbstractMethodError: test.Test$File.test$AutoEdits$$set_$eq(Lscala/collection/jcl/LinkedHashSet;)V
+	at test.AutoEdits$FileImpl$class.$init$(AutoEdits.scala:6)
+	at test.Test$File.<init>(Test.scala:4)
+	at test.Test$.main(Test.scala:6)
+	at test.Test.main(Test.scala)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:585)
+	at scala.tools.nsc.ObjectRunner$.run(ObjectRunner.scala:75)
+	at scala.tools.nsc.MainGenericRunner$.main(MainGenericRunner.scala:106)
+	at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
+
+
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >I'm sure this is a repeat of the mixin sandwhich problems we had last year. I'm surprised this wasn't caught in the test suite, I'll look into getting this test in there.
+</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2007-05-29 16:13:43.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

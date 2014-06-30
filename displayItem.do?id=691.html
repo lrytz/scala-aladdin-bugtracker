@@ -1,0 +1,132 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#691]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Sean</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2006-08-06 16:33:03.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">super selector broken in twisty mixin composition</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>trait Base {
+  trait AssignArrow {
+    type T &lt;: Ti;
+    trait Ti;
+  }
+  abstract class Arrow extends AssignArrow;
+  val arrow : Arrow;
+}
+
+trait Ext0 extends Base {
+  trait AssignArrow extends super.AssignArrow {
+    type T &lt;: Ti;
+    trait Ti extends super.Ti;
+  }
+}
+trait Ext1 extends Base {
+  trait Arrow extends super.Arrow {
+    type T &lt;: Ti;
+    trait Ti extends super.Ti;
+    trait TiXX extends Ti;
+  }
+  val arrow : Arrow;
+}
+trait Composition extends Ext0 with Ext1 {
+  object arrow0 extends Arrow with AssignArrow {
+    type T = Ti /* with TiXX */;
+    trait Ti extends super[Arrow].Ti with super[AssignArrow].Ti;
+  }
+}</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>error overriding type T in trait Arrow with bounds >: scala.All <: arrow0.this.Ti;
+type T has incompatible type	test2/src/test	test.scala	line 30	1154812245171	34629
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >No type error. I think super[Arrow].Ti is resolving to Base#Arrow#Ti rather than Ext1#Arrow#Ti (the symbol provided to the presentation compiler backs this up). Note that if we uncomment the /* with TiXX */ the type error goes away because TiXX allows us to get at Ext1#Arrow#Ti.
+</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-08-22 16:37:33.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+This was hard to figure out. The problem is that
+Ext1.Arrow is a trait, whose superclass is Base.Arrow. Furthermore, the extends caluse of arrow0 starts with trait Ext1.Arrow, and is therefore implicitly augmented with a superclass. The augmented signature of arrow0 reads:
+<pre>
+object arrow0 extends Base#Arrow with Ext1#Arrow with ...
+</pre>
+Hence, in object arrow0 the reference super[Arrow] really referred to Base#Arrow, because the spec said that the *first* parent class with the given name would be picked.
+
+To prevent mystifing behavior like this, I changed spec and compiler so that only a single parent class may have the given name, otherwise an ambiguity error results.
+
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

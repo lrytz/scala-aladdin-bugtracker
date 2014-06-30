@@ -1,0 +1,263 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#1175]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> medium</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Nikolay</td>
+	  <td align="center" bgcolor="#FFFFFF">Lex</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2007-06-13 16:40:50.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">[contrib #657] jdk6 build failed after r11936</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>after r11936 (plugins support) can't compile locker under jdk6. under jdk5 - ok
+
+ANT_OPTS=-Xmx1024M -Xms600M -Xss500K</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>~/work/scala$ ant -verbose
+Apache Ant version 1.6.5 compiled on July 1 2006
+Buildfile: build.xml
+Detected Java version: 1.5 in: /usr/lib/jvm/java-6-sun-1.6.0.00/jre
+Detected OS: Linux
+parsing buildfile /opt/home/admin/work/scala/build.xml with URI = file:///opt/home/admin/work/scala/build.xml
+Project base dir set to: /opt/home/admin/work/scala
+     [echo] Running SABBUS for scala-core...
+ [property] Loading Environment env.
+ [property] Loading /opt/home/admin/work/scala/build.properties
+ [property] Unable to find property file: /opt/home/admin/work/scala/build.properties
+Build sequence for target(s) `build' is [ant-init, init, setup, build.locker, setup.locker, build]
+Complete build sequence is [ant-init, init, setup, build.locker, setup.locker, build, setup.quick, msil.sources,\
+ msil, clean.build, clean.all, build.strap, test.stability, test.strap, test, binaries, docs, docs.manual, build\
+.dist, dist, build.archive, build.sbaz, pack, clean.cldc, cldc.sources, cldclib, clean.unfreeze, newlocker, dist\
+.minor, test.quick, docs.compiler, clean, dist.patch, dist.devel, clean.msil, ]
+
+ant-init:
+[available] Found: lib/scala-library.jar
+[available] Found: lib/scala-compiler.jar
+[available] Found: lib/fjbg.jar
+[available] Found: lib/msil.jar
+[available] Found: lib/ant-contrib.jar
+parsing buildfile jar:file:/opt/home/admin/work/scala/lib/ant-contrib.jar!/net/sf/antcontrib/antlib.xml with URI\
+ = jar:file:/opt/home/admin/work/scala/lib/ant-contrib.jar!/net/sf/antcontrib/antlib.xml
+[available] Found: /usr/share/ant/lib/ant-nodeps.jar
+
+init:
+     [exec] Current OS is Linux
+     [exec] Output redirected to property: svn.out
+     [exec] Error redirected to property: svn.err
+     [exec] Executing 'svn' with arguments:
+     [exec] 'info'
+     [exec] '/opt/home/admin/work/scala'
+     [exec] 
+     [exec] The ' characters around the executable and arguments are
+     [exec] not part of the command.
+     [echo] OS:     UNIX (Linux i386 2.6.18-3-xen-686);
+     [echo] Java:   Java HotSpot(TM) Client VM 1.6.0-b105 ('/usr/lib/jvm/java-6-sun-1.6.0.00/jre');
+     [echo] Memory: 1024 MB;
+     [echo] Ant:    Apache Ant version 1.6.5 compiled on July 1 2006.
+
+setup:
+[available] Found: build/locker/complete
+ [uptodate] scala-compiler.jar omitted as /opt/home/admin/work/scala/build/locker/complete is up to date.
+ [uptodate] scala-library-src.jar omitted as /opt/home/admin/work/scala/build/locker/complete is up to date.
+ [uptodate] scala-library.jar omitted as /opt/home/admin/work/scala/build/locker/complete is up to date.
+[available] Unable to find build.excludes to set property excludes.avail
+[available] Found: build/locker/complete
+ [property] Loading /opt/home/admin/work/scala/build.number
+     [echo] Build number is '2.5.1.12006.20070613-183140'
+     [echo] Built &#1089;&#1088;&#1077;&#1076;&#1072;, 13 &#1048;&#1102;&#1085;&#1100; 2007, 18:31:40 (MSD) from\
+ SVN revision 12006
+
+build.locker:
+Skipped because property 'locker.avail' set.
+
+setup.locker:
+
+build:
+    [javac] scala/runtime/BooleanRef.java omitted as scala/runtime/BooleanRef.class is up to date.
+    [javac] scala/runtime/BoxedUnit.java omitted as scala/runtime/BoxedUnit.class is up to date.
+    [javac] scala/runtime/BoxesUtility.java omitted as scala/runtime/BoxesUtility.class is up to date.
+    [javac] scala/runtime/ByteRef.java omitted as scala/runtime/ByteRef.class is up to date.
+    [javac] scala/runtime/CharRef.java omitted as scala/runtime/CharRef.class is up to date.
+    [javac] scala/runtime/Comparator.java omitted as scala/runtime/Comparator.class is up to date.
+    [javac] scala/runtime/DoubleRef.java omitted as scala/runtime/DoubleRef.class is up to date.
+    [javac] scala/runtime/ExceptionHandling.java omitted as scala/runtime/ExceptionHandling.class is up to date.\
+
+    [javac] scala/runtime/FloatRef.java omitted as scala/runtime/FloatRef.class is up to date.
+    [javac] scala/runtime/IntRef.java omitted as scala/runtime/IntRef.class is up to date.
+    [javac] scala/runtime/LongRef.java omitted as scala/runtime/LongRef.class is up to date.
+    [javac] scala/runtime/ObjectRef.java omitted as scala/runtime/ObjectRef.class is up to date.
+    [javac] scala/runtime/ShortRef.java omitted as scala/runtime/ShortRef.class is up to date.
+   [locker] scala/Predef.scala added as scala/Predef.class doesn't exist.
+   [locker] Compiling 1 source file to /opt/home/admin/work/scala/build/quick/lib/library
+   [locker] /usr/lib/jvm/java-6-sun-1.6.0.00/jre/lib/ext
+   [locker] /usr/java/packages/lib/ext
+
+BUILD FAILED
+/opt/home/admin/work/scala/build.xml:467: java.lang.NullPointerException
+        at org.apache.tools.ant.Task.perform(Task.java:373)
+        at org.apache.tools.ant.Target.execute(Target.java:341)
+        at org.apache.tools.ant.Target.performTasks(Target.java:369)
+        at org.apache.tools.ant.Project.executeSortedTargets(Project.java:1216)
+        at org.apache.tools.ant.Project.executeTarget(Project.java:1185)
+        at org.apache.tools.ant.helper.DefaultExecutor.executeTargets(DefaultExecutor.java:40)
+        at org.apache.tools.ant.Project.executeTargets(Project.java:1068)
+        at org.apache.tools.ant.Main.runBuild(Main.java:668)
+        at org.apache.tools.ant.Main.startAnt(Main.java:187)
+        at org.apache.tools.ant.launch.Launcher.run(Launcher.java:246)
+        at org.apache.tools.ant.launch.Launcher.main(Launcher.java:67)
+Caused by: java.lang.NullPointerException
+        at scala.runtime.BoxedObjectArray.length(BoxedObjectArray.scala:21)
+        at scala.runtime.BoxedArray$$anon$0.hasNext(BoxedArray.scala:48)
+        at scala.Iterator$class.toList(Iterator.scala:599)
+        at scala.runtime.BoxedArray$$anon$0.toList(BoxedArray.scala:46)
+        at scala.Iterable$class.toList(Iterable.scala:384)
+        at scala.runtime.BoxedArray.toList(BoxedArray.scala:25)
+        at scala.tools.nsc.plugins.Plugin$$anonfun$2.apply(Plugin.scala:134)
+        at scala.tools.nsc.plugins.Plugin$$anonfun$2.apply(Plugin.scala:133)
+        at scala.List.map(List.scala:678)
+        at scala.tools.nsc.plugins.Plugin$.loadAllFrom(Plugin.scala:133)
+        at scala.tools.nsc.plugins.Plugins$class.loadPlugins(Plugins.scala:30)
+        at scala.tools.nsc.Global.loadPlugins(Global.scala:35)
+        at scala.tools.nsc.plugins.Plugins$class.plugins(Plugins.scala:108)
+        at scala.tools.nsc.Global.plugins(Global.scala:35)
+        at scala.tools.nsc.plugins.Plugins$class.computePhaseDe5cr1p7-haX0Rors(Plugins.scala:138)
+        at scala.tools.nsc.Global.computePhaseDe5cr1p7-haX0Rors(Global.scala:35)
+        at scala.tools.nsc.Global.phaseDe5cr1p7-haX0Rors(Global.scala:406)
+        at scala.tools.nsc.Global$Run.<init>(Global.scala:449)
+        at scala.tools.nsc.Global.<init>(Global.scala:679)
+        at scala.tools.ant.Scalac.newGlobal(Scalac.scala:442)
+        at scala.tools.ant.Scalac.execute(Scalac.scala:555)
+        at org.apache.tools.ant.UnknownElement.execute(UnknownElement.java:275)
+        at org.apache.tools.ant.Task.perform(Task.java:364)
+        ... 10 more
+--- Nested Exception ---
+java.lang.NullPointerException
+        at scala.runtime.BoxedObjectArray.length(BoxedObjectArray.scala:21)
+        at scala.runtime.BoxedArray$$anon$0.hasNext(BoxedArray.scala:48)
+        at scala.Iterator$class.toList(Iterator.scala:599)
+        at scala.runtime.BoxedArray$$anon$0.toList(BoxedArray.scala:46)
+        at scala.Iterable$class.toList(Iterable.scala:384)
+        at scala.runtime.BoxedArray.toList(BoxedArray.scala:25)
+        at scala.tools.nsc.plugins.Plugin$$anonfun$2.apply(Plugin.scala:134)
+        at scala.tools.nsc.plugins.Plugin$$anonfun$2.apply(Plugin.scala:133)
+        at scala.List.map(List.scala:678)
+        at scala.tools.nsc.plugins.Plugin$.loadAllFrom(Plugin.scala:133)
+        at scala.tools.nsc.plugins.Plugins$class.loadPlugins(Plugins.scala:30)
+        at scala.tools.nsc.Global.loadPlugins(Global.scala:35)
+        at scala.tools.nsc.plugins.Plugins$class.plugins(Plugins.scala:108)
+        at scala.tools.nsc.Global.plugins(Global.scala:35)
+        at scala.tools.nsc.plugins.Plugins$class.computePhaseDe5cr1p7-haX0Rors(Plugins.scala:138)
+        at scala.tools.nsc.Global.computePhaseDe5cr1p7-haX0Rors(Global.scala:35)
+        at scala.tools.nsc.Global.phaseDe5cr1p7-haX0Rors(Global.scala:406)
+        at scala.tools.nsc.Global$Run.<init>(Global.scala:449)
+        at scala.tools.nsc.Global.<init>(Global.scala:679)
+        at scala.tools.ant.Scalac.newGlobal(Scalac.scala:442)
+        at scala.tools.ant.Scalac.execute(Scalac.scala:555)
+        at org.apache.tools.ant.UnknownElement.execute(UnknownElement.java:275)
+        at org.apache.tools.ant.Task.perform(Task.java:364)
+        at org.apache.tools.ant.Target.execute(Target.java:341)
+        at org.apache.tools.ant.Target.performTasks(Target.java:369)
+        at org.apache.tools.ant.Project.executeSortedTargets(Project.java:1216)
+        at org.apache.tools.ant.Project.executeTarget(Project.java:1185)
+        at org.apache.tools.ant.helper.DefaultExecutor.executeTargets(DefaultExecutor.java:40)
+        at org.apache.tools.ant.Project.executeTargets(Project.java:1068)
+        at org.apache.tools.ant.Main.runBuild(Main.java:668)
+        at org.apache.tools.ant.Main.startAnt(Main.java:187)
+        at org.apache.tools.ant.launch.Launcher.run(Launcher.java:246)
+        at org.apache.tools.ant.launch.Launcher.main(Launcher.java:67)
+
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >successful compilation</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Nikolay&nbsp; edited on &nbsp;2007-06-13 16:41:23.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Stephane&nbsp; edited on &nbsp;2007-06-19 13:44:03.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+fixed tests in method loadAllFrom
+</td></tr>
+<tr>
+        <td>
+        <strong>Stephane&nbsp; edited on &nbsp;2007-06-19 13:44:36.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

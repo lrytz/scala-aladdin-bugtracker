@@ -1,0 +1,191 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#1111]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Nikolay</td>
+	  <td align="center" bgcolor="#FFFFFF">Nikolay</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2007-05-15 20:37:50.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">[contrib #473] wrong Comparator (or compiler)</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>val l = Math.MAX_LONG
+
+val b = BigInt(l)
+val b2 = b * 2
+
+println(b2.==(-2L))
+println(b2.equals(-2L))
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>prints:
+
+true
+false
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >should print:
+
+false
+false</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Nikolay&nbsp; edited on &nbsp;2007-05-15 20:59:26.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+I assigned this contribution #474 to myself but it calls for discussion. Esentially, the problem is that the BigInt.equals method correctly returns false but we ignore it in the Comparator.equals method and squeeze the BigInt into a long because the counterpart in the comparison is boxed long. Maybe we should only perform the additional checks if both sides are  Java boxes and simply trust 'equals' to do the right thing for anything else. Any thoughts?
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2007-05-16 16:37:44.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+I fixed this by turning the comparator logic around. A primitive comparison is only executed if both operands are known to be in the domain of the comparison. That said, there should be an architecture that also ensures sane equality for different user-defined number types. Right now it works for bigint/bigint, bigint/int, int/bigint, say, but it does not necessarily work for bigint/decimal.
+
+Code is attached.
+<pre>
+public class Comparator {
+
+    private static int CHAR = 0, BYTE = 1, SHORT = 2, INT = 3, LONG = 4, FLOAT = 5, DOUBLE = 6, OTHER = 7; 
+    
+    private static int typeCode(Object a) {
+        if (a instanceof Integer) return INT;
+        if (a instanceof Character) return CHAR;
+        if (a instanceof Long) return LONG;
+        if (a instanceof Double) return DOUBLE;
+        if (a instanceof Float) return FLOAT;
+        if (a instanceof Byte) return BYTE;
+        if (a instanceof Short) return SHORT;
+        return OTHER;
+    }
+
+    /** A rich implementation of the equals method that overrides the default
+     *  equals because Java's boxed primitives are utterly broken. This equals
+     *  is inserted instead of a normal equals by the Scala compiler (in the
+     *  ICode phase, method <code>genEqEqPrimitive</code>) only when either
+     *  side of the comparison is a subclass of <code>AnyVal</code>, of
+     *  <code>java.lang.Number</code>, of <code>java.lang.Character</code> or
+     *  is exactly <code>Any</code> or <code>AnyRef</code>.
+     */
+    public static boolean equals(Object a, Object b) {
+        if (a == null)
+            return b == null;
+        else if (a.equals(b))
+            return true;
+        else {
+            int acode = typeCode(a);
+            int bcode = typeCode(b);
+            int maxcode = (acode < bcode) ? bcode : acode;
+            if (maxcode <= INT) {
+                int aa = (acode == CHAR) ? ((Character) a).charValue() : ((Number) a).intValue();
+                int bb = (bcode == CHAR) ? ((Character) b).charValue() : ((Number) b).intValue();
+                return aa == bb;
+            } else if (maxcode <= LONG) {
+                long aa = (acode == CHAR) ? ((Character) a).charValue() : ((Number) a).longValue();
+                long bb = (bcode == CHAR) ? ((Character) b).charValue() : ((Number) b).longValue();
+                return aa == bb;
+            } else if (maxcode <= FLOAT) {
+                float aa = (acode == CHAR) ? ((Character) a).charValue() : ((Number) a).floatValue();
+                float bb = (bcode == CHAR) ? ((Character) b).charValue() : ((Number) b).floatValue();
+                return aa == bb;
+            } else if (maxcode <= DOUBLE) {
+                double aa = (acode == CHAR) ? ((Character) a).charValue() : ((Number) a).doubleValue();
+                double bb = (bcode == CHAR) ? ((Character) b).charValue() : ((Number) b).doubleValue();
+                return aa == bb;
+            } else {
+                return a == b;
+            }
+        }
+    }
+}
+</pre>
+
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2007-05-16 16:44:45.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+The previous version of equals still does not work. You have to include one more case:
+<pre>
+...     
+            } else if (acode != OTHER) {
+                return b.equals(a);
+            } else {
+                return a == b;
+            }
+        }
+</pre>
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

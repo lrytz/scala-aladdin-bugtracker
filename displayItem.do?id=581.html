@@ -1,0 +1,201 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#581]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> medium</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Sean</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2006-04-28 16:03:36.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">resident compiler crash</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>Directory src/lampion/collections in SVN project https://lampsvn.epfl.ch/svn-repos/scala/plugin/lampion/</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>With the above SVN project checked out, run the resident compiler in the project's src/lampion/collections direc\
+tory. In the same resident session, compile PriorityTree.scala first, then compile Test.scala, you should get th\
+e following crash:
+
+<pre>nsc> PriorityTree.scala
+
+nsc> Test.scala
+Exception in thread "main" java.lang.Error: key not found: trait BasicTreeNode$class
+        at scala.Predef$.error(Predef.scala:155)
+        at scala.collection.Map$class.default(Map.scala:184)
+        at scala.collection.mutable.HashMap.default(HashMap.scala:21)
+        at scala.collection.Map$class.apply(Map.scala:62)
+        at scala.collection.mutable.HashMap.apply(HashMap.scala:21)
+        at scala.tools.nsc.transform.OverridingPairs$Cursor.hasCommonParent(OverridingPairs.scala:82)
+        at scala.tools.nsc.transform.OverridingPairs$Cursor.next(OverridingPairs.scala:106)
+        at scala.tools.nsc.transform.OverridingPairs$Cursor.next(OverridingPairs.scala:119)
+        at scala.tools.nsc.transform.OverridingPairs$Cursor.next(OverridingPairs.scala:119)
+        at scala.tools.nsc.transform.OverridingPairs$Cursor.next(OverridingPairs.scala:119)
+        at scala.tools.nsc.transform.OverridingPairs$Cursor.next(OverridingPairs.scala:119)
+        at scala.tools.nsc.transform.OverridingPairs$Cursor.next(OverridingPairs.scala:119)
+        at scala.tools.nsc.transform.OverridingPairs$Cursor.next(OverridingPairs.scala:119)
+        at scala.tools.nsc.transform.OverridingPairs$Cursor.next(OverridingPairs.scala:119)
+        at scala.tools.nsc.transform.OverridingPairs$Cursor.next(OverridingPairs.scala:119)
+        at scala.tools.nsc.transform.OverridingPairs$Cursor.next(OverridingPairs.scala:119)
+        at scala.tools.nsc.transform.OverridingPairs$Cursor.next(OverridingPairs.scala:119)
+        at scala.tools.nsc.transform.OverridingPairs$Cursor.next(OverridingPairs.scala:119)
+        at scala.tools.nsc.transform.OverridingPairs$Cursor.next(OverridingPairs.scala:119)
+        at scala.tools.nsc.transform.OverridingPairs$Cursor.next(OverridingPairs.scala:119)
+        at scala.tools.nsc.transform.OverridingPairs$Cursor.next(OverridingPairs.scala:119)
+        at scala.tools.nsc.transform.OverridingPairs$Cursor.next(OverridingPairs.scala:119)
+        at scala.tools.nsc.transform.OverridingPairs$Cursor.next(OverridingPairs.scala:119)
+        at scala.tools.nsc.transform.OverridingPairs$Cursor.next(OverridingPairs.scala:119)
+        at scala.tools.nsc.transform.OverridingPairs$Cursor.next(OverridingPairs.scala:119)
+        at scala.tools.nsc.transform.OverridingPairs$Cursor.next(OverridingPairs.scala:119)
+        at scala.tools.nsc.transform.OverridingPairs$Cursor.next(OverridingPairs.scala:119)
+        at scala.tools.nsc.transform.OverridingPairs$Cursor.next(OverridingPairs.scala:119)
+        at scala.tools.nsc.transform.OverridingPairs$Cursor.next(OverridingPairs.scala:119)
+        at scala.tools.nsc.typechecker.RefChecks$RefCheckTransformer.checkAllOverrides(RefChecks.scala:207)
+        at scala.tools.nsc.typechecker.RefChecks$RefCheckTransformer.transform(RefChecks.scala:553)
+        at scala.tools.nsc.ast.Trees$Transformer.transformTemplate(Trees.scala:1024)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$13.apply(Trees.scala:930)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$13.apply(Trees.scala:930)
+        at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1044)
+        at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:929)
+        at scala.tools.nsc.typechecker.RefChecks$RefCheckTransformer.transform(RefChecks.scala:624)
+        at scala.tools.nsc.typechecker.RefChecks$RefCheckTransformer.transformStat(RefChecks.scala:488)
+        at scala.tools.nsc.typechecker.RefChecks$RefCheckTransformer$$anonfun$12.apply(RefChecks.scala:443)
+        at scala.tools.nsc.typechecker.RefChecks$RefCheckTransformer$$anonfun$12.apply(RefChecks.scala:443)
+        at scala.List.flatMap(List.scala:921)
+        at scala.tools.nsc.typechecker.RefChecks$RefCheckTransformer.transformStats(RefChecks.scala:443)
+        at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:962)
+        at scala.tools.nsc.typechecker.RefChecks$RefCheckTransformer.transform(RefChecks.scala:624)
+        at scala.tools.nsc.ast.Trees$Transformer.transformTemplate(Trees.scala:1024)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$13.apply(Trees.scala:930)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$13.apply(Trees.scala:930)
+        at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1044)
+        at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:929)
+        at scala.tools.nsc.typechecker.RefChecks$RefCheckTransformer.transform(RefChecks.scala:624)
+        at scala.tools.nsc.typechecker.RefChecks$RefCheckTransformer.transformStat(RefChecks.scala:488)
+        at scala.tools.nsc.typechecker.RefChecks$RefCheckTransformer$$anonfun$12.apply(RefChecks.scala:443)
+        at scala.tools.nsc.typechecker.RefChecks$RefCheckTransformer$$anonfun$12.apply(RefChecks.scala:443)
+        at scala.List.flatMap(List.scala:921)
+        at scala.tools.nsc.typechecker.RefChecks$RefCheckTransformer.transformStats(RefChecks.scala:443)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$12.apply(Trees.scala:926)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$12.apply(Trees.scala:926)
+        at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1044)
+        at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:925)
+        at scala.tools.nsc.typechecker.RefChecks$RefCheckTransformer.transform(RefChecks.scala:624)
+        at scala.tools.nsc.typechecker.RefChecks$RefCheckTransformer.transformStat(RefChecks.scala:488)
+        at scala.tools.nsc.typechecker.RefChecks$RefCheckTransformer$$anonfun$12.apply(RefChecks.scala:443)
+        at scala.tools.nsc.typechecker.RefChecks$RefCheckTransformer$$anonfun$12.apply(RefChecks.scala:443)
+        at scala.List.flatMap(List.scala:921)
+        at scala.tools.nsc.typechecker.RefChecks$RefCheckTransformer.transformStats(RefChecks.scala:443)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$12.apply(Trees.scala:926)
+        at scala.tools.nsc.ast.Trees$Transformer$$anonfun$12.apply(Trees.scala:926)
+        at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1044)
+        at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:925)
+        at scala.tools.nsc.typechecker.RefChecks$RefCheckTransformer.transform(RefChecks.scala:624)
+        at scala.tools.nsc.ast.Trees$Transformer.transformUnit(Trees.scala:1039)
+        at scala.tools.nsc.transform.Transform$Phase.apply(Transform.scala:22)
+        at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:208)
+        at scala.tools.nsc.Global$GlobalPhase$$anonfun$1.apply(Global.scala:197)
+        at scala.tools.nsc.Global$GlobalPhase$$anonfun$1.apply(Global.scala:197)
+        at scala.Iterator$class.foreach(Iterator.scala:277)
+        at scala.collection.mutable.ListBuffer$$anon$0.foreach(ListBuffer.scala:216)
+        at scala.tools.nsc.Global$GlobalPhase.run(Global.scala:197)
+        at scala.tools.nsc.Global$Run.compileSources(Global.scala:422)
+        at scala.tools.nsc.Global$Run.compile(Global.scala:480)
+        at scala.tools.nsc.Main$$anonfun$0.apply(Main.scala:39)
+        at scala.tools.nsc.Main$$anonfun$0.apply(Main.scala:36)
+        at scala.tools.nsc.EvalLoop$class.loop(EvalLoop.scala:11)
+        at scala.tools.nsc.Main$.loop(Main.scala:16)
+        at scala.tools.nsc.EvalLoop$class.loop(EvalLoop.scala:12)
+        at scala.tools.nsc.Main$.loop(Main.scala:16)
+        at scala.tools.nsc.EvalLoop$class.loop(EvalLoop.scala:12)
+        at scala.tools.nsc.Main$.loop(Main.scala:16)
+        at scala.tools.nsc.Main$.resident(Main.scala:36)
+        at scala.tools.nsc.Main$.process(Main.scala:55)
+        at scala.tools.nsc.Main$.main(Main.scala:80)
+        at scala.tools.nsc.Main.main(Main.scala)
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" ></td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Sean&nbsp; edited on &nbsp;2006-04-28 16:04:16.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-04-28 19:23:21.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

@@ -1,0 +1,411 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#535]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> high</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Sean</td>
+	  <td align="center" bgcolor="#FFFFFF">_</td>
+	  <td align="center" bgcolor="#FFFFFF">not repro</td>
+          <td align="center" bgcolor="#FFFFFF">2006-02-22 18:02:49.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">resident compiler still broken?</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>// DocGenerator.scala:
+package scala.tools.nsc.doc;
+
+import scala.tools.nsc._;
+import java.io.File;
+import scala.tools.nsc.models._;
+import scala.collection.immutable._;
+import scala.xml._;
+  
+abstract class DocGenerator extends Models {
+  import global._;
+  
+  def dquote(str : String) = Text(&quot;\&quot;&quot; + str + &quot;\&quot;&quot;);
+  val header = &lt;meta http-equiv=&quot;content-type&quot; content=&quot;text/html; charset=iso-8859-1&quot;/&gt;
+               &lt;meta name=&quot;generator&quot; content=&quot;scaladoc (1.4.0.4)&quot;/&gt;
+               &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;style.css&quot;/&gt;
+               &lt;script type=&quot;text/javascript&quot; src=&quot;script.js&quot;&gt;&lt;/script&gt;;
+  
+  val emptyMap = ListMap.Empty[Kind,TreeSet[HasTree]];
+  def process(units : Iterator[CompilationUnit], outdir : String) : Unit = {
+    val outdir0 = new File(outdir);
+    if (!outdir0.exists()) outdir0.mkdir();
+    var members = emptyMap;
+    var topLevel = ListMap.Empty[ModuleSymbol,ListMap[Kind,TreeSet[HasTree]]];
+    for (val unit &lt;- units) {
+      val sourceMod = new SourceMod(unit);
+      for (val mmbr &lt;- sourceMod.members) mmbr.tree match {
+      case cdef:  ImplDef =&gt; 
+        assert(cdef.symbol.owner != NoSymbol);
+        val sym = cdef.symbol.owner.asInstanceOf[ModuleSymbol];
+        if (!topLevel.contains(sym)) topLevel = topLevel.update(sym, emptyMap);
+        topLevel = topLevel.update(sym, organize0(mmbr, topLevel(sym))); 
+      case _ =&gt; throw new Error(&quot;unknown: &quot; + mmbr.tree + &quot; &quot; + mmbr.tree.getClass());
+      }
+    }
+    var packages = new TreeMap[String,ModuleSymbol];
+    for (val top &lt;- topLevel.elements) 
+      packages = packages.insert(nameFor(top._1), top._1);
+    
+    
+    val packageFrame = &lt;HTML&gt;
+      &lt;HEAD&gt;&lt;TITLE&gt;List of modules&lt;/TITLE&gt;
+            {header}
+      &lt;/HEAD&gt;
+      &lt;body&gt;
+      &lt;div class=&quot;doctitle-larger&quot;&gt;
+        Scala&lt;br/&gt;1.4.0.4
+      &lt;/div&gt;
+      &lt;a href=&quot;module-page.html&quot; target=&quot;classesFrame&quot;&gt;All objects and classes&lt;/a&gt;&lt;p/&gt;
+      &lt;b&gt;Modules&lt;/b&gt;
+      &lt;table class=&quot;list&quot;&gt;
+      &lt;tr&gt;
+      &lt;td style=&quot;white-space:nowrap;&quot;&gt;
+      { {
+       for (val top &lt;- packages.elements) {
+         val sym = top._2;
+       } 
+      } }
+      &lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/body&gt;&lt;/HTML&gt;;
+    
+   
+    
+      
+      // output HTML for each package. 
+      for (val top &lt;- topLevel.elements) {
+        val sym = top._1;
+        val members = top._2;
+        val index = &lt;HTML&gt;{ {
+          process(members, sym);
+        } }&lt;/HTML&gt;;
+        
+        
+        System.out.println(&quot;SAVE-TO: &quot; + sym);
+        System.out.println(index);
+        // save...
+      }
+      
+  }
+  
+  def nameFor(sym : ModuleSymbol) : String = sym.fullNameString;
+  
+  def process(members : ListMap[Kind,TreeSet[HasTree]], sym : Symbol) : NodeSeq = {
+    for (val kind &lt;- KINDS; members.contains(kind)) yield process(kind, members(kind), sym);
+  };
+
+  def organize(c : Composite, map0 : ListMap[Kind,TreeSet[HasTree]]) = {
+    var map = map0;
+    for (val mmbr &lt;- c.members.toList) map = organize0(mmbr, map);
+    map;
+  }
+  def organize0(mmbr : HasTree, map0 : ListMap[Kind,TreeSet[HasTree]]) = {
+    var map = map0;
+    if (!map.contains(mmbr.kind))
+      map = map.update(mmbr.kind, new TreeSet[HasTree]);
+    map = map.update(mmbr.kind, map(mmbr.kind) + mmbr);
+    map;    
+  }
+  
+  
+  def process(kind : Kind, set : TreeSet[HasTree], sym : Symbol) : Node = {
+    val ret = 
+    &lt;table cellpadding=&quot;3&quot; class=&quot;member&quot;&gt;
+    &lt;tr&gt;
+      &lt;td colspan=&quot;2&quot; class=&quot;title&quot;&gt;
+      { { labelFor(kind) + &quot; Summary&quot;; } }
+      &lt;/td&gt;
+    &lt;/tr&gt;
+    { { for (val mmbr &lt;- set.toList) yield process(mmbr, sym); } }
+    &lt;/table&gt;;
+    ret;
+  }
+  def stringsFor(mods : Modifiers) = {
+    var modString : List[String] = Nil;
+    if (mods . isPrivate  ) modString = &quot;private&quot;   :: modString;
+    if (mods . isProtected) modString = &quot;protected&quot; :: modString;
+    if (mods . isOverride ) modString = &quot;override&quot;  :: modString;
+    if (mods . isAbstract ) modString = &quot;abstract&quot;  :: modString;
+    if (mods . isCase     ) modString = &quot;case&quot;      :: modString;
+    if (mods . isSealed   ) modString = &quot;sealed&quot;    :: modString;
+    if (mods . isFinal    ) modString = &quot;final&quot;    :: modString;
+    if (mods . isMixin    ) modString = &quot;mixin&quot;    :: modString;
+    modString;
+  }
+  
+  
+  def targetFor(ht : HasTree) : String = {
+    // compute a URL.
+    &quot;Foo&quot;;
+  }
+  def forSymbol(symbol : Symbol, tpe : Type) : NodeSeq =
+    Text(symbol.nameString);
+  
+  
+  def ifT (cond : Boolean, nodes : NodeSeq) = if (cond) nodes else NodeSeq.Empty;
+  def ifT (tree : Tree, nodes : NodeSeq, before : Boolean) =
+    if (tree != EmptyTree) {
+      if (before) nodes.concat(forTree(tree));
+      else forTree(tree).concat(nodes);
+    } else NodeSeq.Empty;
+  
+  def forTree(tree : Tree) : NodeSeq = tree match {
+    case vdef : ValDef =&gt; 
+      Text(vdef.symbol.name.toString()).concat(Text(&quot; : &quot;)).concat(forTree(vdef.tpt));
+    case id  : Ident  =&gt; forSymbol(id.symbol, id.tpe);
+    case sel : Select =&gt; forTree(sel.qualifier).concat(forSymbol(sel.symbol, sel.tpe));
+    case tree : AbsTypeDef =&gt; 
+      ifT(tree.lo, Text(&quot; &lt;: &quot;), true).
+        concat(forSymbol(tree.symbol, tree.tpe)).concat(ifT(tree.hi, Text(&quot; &lt;: &quot;), false));
+    case EmptyTree =&gt; NodeSeq.Empty;    
+    case _ =&gt; Text(&quot;XX=&quot; + tree.toString());
+  }
+  def forTrees(trees : List[Tree]) : NodeSeq = {
+    if (trees.isEmpty) NodeSeq.Empty;
+    else {
+      val head = forTree(trees.head);
+      head.concat(if (trees.tail.isEmpty) NodeSeq.Empty else Text(&quot;, &quot;)).concat(forTrees(trees.tail));
+    }
+  }
+  
+  def surround(open : String, close : String, node : NodeSeq) : NodeSeq = 
+    Text(open).concat(node).concat(Text(close));
+  
+  def typesFor(ht : HasTree) : NodeSeq = {
+    val tparams = ht.tree match {
+      case cdef : ClassDef =&gt; cdef.tparams;
+      case ddef : DefDef   =&gt; ddef.tparams;
+      case adef : AliasTypeDef =&gt; adef.tparams;
+      case _ =&gt; Nil;
+    }
+    if (tparams.isEmpty) Text(&quot;&quot;);
+    else surround(&quot;[&quot;, &quot;]&quot;, forTrees(tparams));
+  }
+  def  argsFor(ht : HasTree) : NodeSeq = ht.tree match {
+    case ddef : DefDef =&gt;
+      val nodes = for (val vparams &lt;- ddef.vparamss) 
+        yield surround(&quot;(&quot;, &quot;)&quot;, forTrees(vparams));
+      nodes.flatMap(x =&gt; x.asList);
+    case _ =&gt; NodeSeq.Empty;
+  }
+  def urlFor(ht : HasTree) : String =
+    &quot;\&quot;unknown\&quot;&quot;;
+  
+  def  nameFor(ht : HasTree) : NodeSeq =
+    &lt;A href={ urlFor(ht) } target=&quot;_self&quot;&gt; { forSymbol(ht.tree.symbol, null) } &lt;/A&gt;;
+
+  def resultFor(ht : HasTree) : NodeSeq = ht.tree match {
+    case vdef : ValOrDefDef =&gt;
+      Text(&quot; : &quot;).concat(forTree(vdef.tpt));
+    case cdef : ImplDef =&gt;
+      if (cdef.impl.parents.isEmpty) NodeSeq.Empty;
+      else Text(&quot;extends &quot;).concat(forTrees(cdef.impl.parents));
+    case _ =&gt; NodeSeq.Empty;
+  } 
+  
+  def comment(comment : String, isShort : Boolean) : NodeSeq = {
+    var ret : List[Node] = Nil;
+    if (comment != null) {
+      // strip out any stars.
+      var comment0 = comment.trim();
+      assert(comment0.startsWith(JDOC_START));
+      comment0 = comment0.substring(JDOC_START.length());
+      assert(comment0.endsWith(JDOC_END));
+      comment0 = comment0.substring(0, comment0.length() - JDOC_END.length());
+      var idx = 0;
+      while (idx != -1) {
+        idx = comment0.indexOf('*', idx);
+        if (idx != -1) 
+          comment0 = comment0.substring(0, idx) +
+            comment0.substring(idx + 1, comment0.length());
+      }
+      val tokenizer = new java.util.StringTokenizer(comment0, &quot;@&quot;);
+      val body = tokenizer.nextToken();
+
+      var attributes : List[String] = Nil;
+      if (!isShort) while (tokenizer.hasMoreElements()) 
+        attributes = attributes ::: (tokenizer.nextToken() :: Nil);
+      val node = &lt;BR&gt; { Text(comment) } &lt;/BR&gt;;
+      val nodes = { { for (val a &lt;- attributes) yield &lt;BR&gt; { Text(a) } &lt;/BR&gt;; } };
+      val nodes0 : NodeSeq = node :: nodes;
+      nodes0;
+    } else NodeSeq.Empty;
+  };
+  
+  
+  def process(ht : HasTree, sym : Symbol) : scala.xml.Node = {
+    val comment0 = if (comments.contains(ht.tree.symbol)) 
+      comments(ht.tree.symbol) else null;
+
+    
+    val index =     
+    &lt;tr&gt;
+      &lt;td valign=&quot;top&quot; class=&quot;modifiers&quot;&gt;
+        &amp;nbsp;
+        &lt;code&gt;{ {
+          (for (val mod &lt;- stringsFor(ht.mods)) yield Text(mod + &quot; &quot;));
+        } }&lt;/code&gt;
+      &lt;/td&gt;
+      &lt;td class=&quot;signature&quot;&gt;
+        &lt;code&gt;
+        { labelFor(ht.kind).toLowerCase() }
+        { nameFor(ht) }
+        { typesFor(ht) }
+        {  argsFor(ht) }
+        {resultFor(ht) }
+        &lt;/code&gt;
+        { comment(comment0, true) }
+      &lt;/td&gt;
+    &lt;/tr&gt;;
+  
+    val body = &lt;X&gt;&lt;/X&gt;;
+    
+    
+    
+    
+  
+  
+    index;
+  }
+  
+  
+/*
+  val index0 = &lt;HTML&gt;
+  &lt;HEAD&gt;&lt;TITLE&gt;API Documentation&lt;/TITLE&gt;&lt;/HEAD&gt;
+  &lt;FRAMESET cols=&quot;20%,80%&quot; title=&quot;&quot; onLoad=&quot;top.loadFrames()&quot;&gt;
+  &lt;FRAMESET rows=&quot;30%,70%&quot; title=&quot;&quot; onLoad=&quot;top.loadFrames()&quot;&gt;
+  &lt;FRAME src=&quot;overview-frame.html&quot; name=&quot;packageListFrame&quot; title=&quot;All Packages&quot;&gt;
+  &lt;FRAME src=&quot;allclasses-frame.html&quot; name=&quot;packageFrame&quot; title=&quot;All classes and interfaces (except non-static nested types)&quot;&gt;
+  &lt;/FRAMESET&gt;
+  &lt;FRAME src=&quot;overview-summary.html&quot; name=&quot;classFrame&quot; title=&quot;Package, class and interface descriptions&quot; scrolling=&quot;yes&quot;&gt;
+  &lt;/FRAMESET&gt;
+  &lt;/HTML&gt;;
+*/
+ 
+  def index = { 
+    val index0 = &lt;HTML&gt;&lt;/HTML&gt;;
+  }
+
+  private val JDOC_START = &quot;/**&quot;;
+  private val JDOC_END   = &quot;*/&quot;;
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>On rebuild all, then rebuild DocGenerator.scala:
+
+<pre>
+scala.tools.nsc.symtab.Types$MalformedType: malformed type: scala.tools.nsc.models#subscriber
+at scala.tools.nsc.symtab.Types$adaptToNewRunMap$.adaptToNewRun(Types.scala:1356)
+at scala.tools.nsc.symtab.Types$adaptToNewRunMap$.adaptToNewRun(Types.scala:1351)
+at scala.tools.nsc.symtab.Types$adaptToNewRunMap$.apply(Types.scala:1377)
+at scala.tools.nsc.symtab.Types$Type.complete(Types.scala:315)
+at scala.tools.nsc.symtab.Symbols$Symbol.info(Symbols.scala:342)
+at scala.tools.nsc.symtab.Symbols$Symbol.tpe(Symbols.scala:318)
+at scala.tools.nsc.backend.jvm.GenJVM$BytecodeGenerator.genField(GenJVM.scala:181)
+at scala.tools.nsc.backend.jvm.GenJVM$BytecodeGenerator$$anonfun$10.apply(GenJVM.scala:159)
+at scala.tools.nsc.backend.jvm.GenJVM$BytecodeGenerator$$anonfun$10.apply(GenJVM.scala:159)
+at scala.List.foreach(List.scala:690)
+at scala.tools.nsc.backend.jvm.GenJVM$BytecodeGenerator.genClass(GenJVM.scala:159)
+at scala.tools.nsc.backend.jvm.GenJVM$JvmPhase$$anonfun$0.apply(GenJVM.scala:41)
+at scala.tools.nsc.backend.jvm.GenJVM$JvmPhase$$anonfun$0.apply(GenJVM.scala:41)
+at scala.Iterator$class.foreach(Iterator.scala:262)
+at scala.collection.Map$$anon1.foreach(Map.scala:91)
+at scala.tools.nsc.backend.jvm.GenJVM$JvmPhase.run(GenJVM.scala:41)
+at scala.tools.nsc.Global$Run.compileSources(Global.scala:421)
+at scala.tools.nsc.Global$Run.compile(Global.scala:479)
+at ch.epfl.lamp.sdt.build.ScalaCompilerManager$ScalaCompiler.compile(ScalaCompilerManager.java:183)
+at ch.epfl.lamp.sdt.build.ScalaProjectBuilder.build(ScalaProjectBuilder.java:76)
+at org.eclipse.core.internal.events.BuildManager$2.run(BuildManager.java:593)
+at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:37)
+at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:168)
+at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:202)
+at org.eclipse.core.internal.events.BuildManager$1.run(BuildManager.java:231)
+at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:37)
+at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:234)
+at org.eclipse.core.internal.events.BuildManager.build(BuildManager.java:303)
+at org.eclipse.core.internal.resources.Project.build(Project.java:87)
+at org.eclipse.ui.actions.BuildAction.invokeOperation(BuildAction.java:190)
+at org.eclipse.ui.actions.WorkspaceAction.execute(WorkspaceAction.java:133)
+at org.eclipse.ui.actions.WorkspaceAction$2.runInWorkspace(WorkspaceAction.java:424)
+at org.eclipse.core.internal.resources.InternalWorkspaceJob.run(InternalWorkspaceJob.java:38)
+at org.eclipse.core.internal.jobs.Worker.run(Worker.java:58)
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" ></td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Sean&nbsp; edited on &nbsp;2006-02-22 18:15:29.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+My library was probably out of synch again.
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

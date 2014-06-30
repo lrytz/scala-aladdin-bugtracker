@@ -1,0 +1,165 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#1246]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> medium</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Adriaan</td>
+	  <td align="center" bgcolor="#FFFFFF">Gilles</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2007-07-27 09:31:31.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">unexpected error using structural types: Parameter is defined as type variable T in a refinement.</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>// based on code by Jon Pretty
+object Test {
+   type Summable[T] = { def +(v : T) : T }
+
+// we can now directly use a type bound, as e.g., Int should be a structural subtype of Summable[Int]
+   def sum[T &lt;: Summable[T]](xs : List[T]) = xs.reduceLeft[T](_ + _)
+}</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>error: Parameter is defined as type variable T in a refinement.
+  def sum[T <: Summable[T]](xs : List[T]) = xs.reduceLeft[T](_ + _)
+                                                               ^
+
+Note: inlining Summable[T] gave rise to a cyclic reference error (should I file a separate report on that?)
+   def sum[T <: { def +(v : T) : T } ](xs : List[T]) = xs.reduceLeft[T](_ + _)
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >no error</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2007-07-27 10:13:02.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+I don't understand the error message?
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2007-07-27 11:20:26.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Concerning the cyclic reference error: This has nothing to do with structural types, but happens for every F-bounded type refinement. To see that, just make Summable into a class instead of a type alias.
+
+I have become more and more convinced that F-bounds are a pain in the neck (they also seriously mess up type inference and make subtype checking incomplete). Maybe we can eliminate them? I see only one way to do this: Replace F-bounds by higher-kinded types. Here's a sketch:
+
+We now have:
+<pre>
+  def less[T <: Ordered[T]](x: T, y: T) = x < y
+</pre>
+Instead of that we could maybe write:
+<pre>
+  def less[O[X = T] <: Ordered[X], T]
+           (x: O[T], y: O[T]) = 
+           x < y
+</pre>
+One thing that's tricky is that we should be able to complete the example as follows:
+<pre>
+  class Str extends Ordered[Str]
+  less[Str, Str](x, y)
+</pre>
+That is the first parameter Str would need to match the signature 
+<pre>
+  O[X] <: Ordered[X]
+</pre> 
+It doesn't of course, because it is not polymorphic. However, we have specified in the signature of `less' that the 
+<pre>
+  O[X] <: Ordered[X] 
+</pre>
+relationship needs to hold only for X = T, and T is Str, so the types work out. 
+
+This is all very preliminary. It's driven by the motivation that using refinements instead of higher-kinded types we can  eliminate the F-bound:
+<pre>
+  trait Ordered { 
+    type Elem; 
+    def < (x: Elem, y; Elem): Boolean 
+  }
+  def less[T, O <: Ordered{ type Elem = T }]
+           (x: Ordered { type Elem = T }, 
+            y: Ordered { type Elem = T }) = 
+           x < y
+  less[Str, Str](x, y)
+</pre>
+Is this better than F-bounds? I am not sure yet. But it seems worth investigating. Another requirement for this is that we can do type inference for such higher-kinded types. Adriaan, do maybe you want to try you hand with this?
+
+
+
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Gilles&nbsp; edited on &nbsp;2007-07-27 13:18:28.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

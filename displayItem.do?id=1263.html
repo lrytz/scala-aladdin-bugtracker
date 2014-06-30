@@ -1,0 +1,741 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#1263]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Iulian</td>
+	  <td align="center" bgcolor="#FFFFFF">Burak</td>
+	  <td align="center" bgcolor="#FFFFFF">open</td>
+          <td align="center" bgcolor="#FFFFFF">2007-08-08 10:50:27.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">[contrib #733] no-symbol does not have owner</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>// script executed using 2.6.0-RC1
+
+object Wrapper
+{
+    private sealed abstract class State {}
+    private case object StateA extends State {}
+    private case object StateB extends State {}
+
+    private def f(x: State) = x match
+    {
+        case StateA =&gt; ()
+        case StateB =&gt; ()
+    }
+}
+
+{}
+
+
+$ scala -savecompiled c\:/cygwin/usr/local/bin/script
+
+
+
+exception when transforming private def f(x: Wrapper.this.State): Unit = x match {
+  case Wrapper.this.Main$Wrapper$$StateA() =&gt; ()
+  case Wrapper.this.Main$Wrapper$$StateB() =&gt; ()
+}
+exception when transforming java.lang.Object with ScalaObject {
+  def this(): object Wrapper = {
+    Wrapper.super.this();
+    ()
+  };
+  sealed abstract class State extends java.lang.Object with ScalaObject {
+    def this(): Wrapper.this.State = {
+      State.super.this();
+      ()
+    }
+  };
+  @serializable final case class StateA extends Wrapper.this.State with ScalaObject with Product {
+    def this(): object Wrapper.this.StateA = {
+      StateA.super.this();
+      ()
+    };
+    final override def $tag(): Int = 1029405824;
+    final override def toString(): java.lang.String = &quot;StateA&quot;;
+    final override def productPrefix(): java.lang.String = &quot;StateA&quot;;
+    final override def productArity(): Int = 0;
+    final override def productElement(x$1: Int): Any = x$1 match {
+      case _ =&gt; throw new java.lang.IndexOutOfBoundsException(x$1.toString())
+    };
+    protected def readResolve(): java.lang.Object = Wrapper.this.Main$Wrapper$$StateA()
+  };
+  &lt;synthetic&gt; private[this] var StateA$module: object Wrapper.this.StateA = _;
+  final case &lt;stable&gt; def Main$Wrapper$$StateA(): object Wrapper.this.StateA = {
+    if (Wrapper.this.StateA$module.eq(null))
+      Wrapper.this.StateA$module = new object Wrapper.this.StateA();
+    Wrapper.this.StateA$module
+  };
+  @serializable final case class StateB extends Wrapper.this.State with ScalaObject with Product {
+    def this(): object Wrapper.this.StateB = {
+      StateB.super.this();
+      ()
+    };
+    final override def $tag(): Int = 1029405825;
+    final override def toString(): java.lang.String = &quot;StateB&quot;;
+    final override def productPrefix(): java.lang.String = &quot;StateB&quot;;
+    final override def productArity(): Int = 0;
+    final override def productElement(x$1: Int): Any = x$1 match {
+      case _ =&gt; throw new java.lang.IndexOutOfBoundsException(x$1.toString())
+    };
+    protected def readResolve(): java.lang.Object = Wrapper.this.Main$Wrapper$$StateB()
+  };
+  &lt;synthetic&gt; private[this] var StateB$module: object Wrapper.this.StateB = _;
+  final case &lt;stable&gt; def Main$Wrapper$$StateB(): object Wrapper.this.StateB = {
+    if (Wrapper.this.StateB$module.eq(null))
+      Wrapper.this.StateB$module = new object Wrapper.this.StateB();
+    Wrapper.this.StateB$module
+  };
+  private def f(x: Wrapper.this.State): Unit = x match {
+    case Wrapper.this.Main$Wrapper$$StateA() =&gt; ()
+    case Wrapper.this.Main$Wrapper$$StateB() =&gt; ()
+  }
+}
+exception when transforming final class Wrapper extends java.lang.Object with ScalaObject {
+  def this(): object Wrapper = {
+    Wrapper.super.this();
+    ()
+  };
+  sealed abstract class State extends java.lang.Object with ScalaObject {
+    def this(): Wrapper.this.State = {
+      State.super.this();
+      ()
+    }
+  };
+  @serializable final case class StateA extends Wrapper.this.State with ScalaObject with Product {
+    def this(): object Wrapper.this.StateA = {
+      StateA.super.this();
+      ()
+    };
+    final override def $tag(): Int = 1029405824;
+    final override def toString(): java.lang.String = &quot;StateA&quot;;
+    final override def productPrefix(): java.lang.String = &quot;StateA&quot;;
+    final override def productArity(): Int = 0;
+    final override def productElement(x$1: Int): Any = x$1 match {
+      case _ =&gt; throw new java.lang.IndexOutOfBoundsException(x$1.toString())
+    };
+    protected def readResolve(): java.lang.Object = Wrapper.this.Main$Wrapper$$StateA()
+  };
+  &lt;synthetic&gt; private[this] var StateA$module: object Wrapper.this.StateA = _;
+  final case &lt;stable&gt; def Main$Wrapper$$StateA(): object Wrapper.this.StateA = {
+    if (Wrapper.this.StateA$module.eq(null))
+      Wrapper.this.StateA$module = new object Wrapper.this.StateA();
+    Wrapper.this.StateA$module
+  };
+  @serializable final case class StateB extends Wrapper.this.State with ScalaObject with Product {
+    def this(): object Wrapper.this.StateB = {
+      StateB.super.this();
+      ()
+    };
+    final override def $tag(): Int = 1029405825;
+    final override def toString(): java.lang.String = &quot;StateB&quot;;
+    final override def productPrefix(): java.lang.String = &quot;StateB&quot;;
+    final override def productArity(): Int = 0;
+    final override def productElement(x$1: Int): Any = x$1 match {
+      case _ =&gt; throw new java.lang.IndexOutOfBoundsException(x$1.toString())
+    };
+    protected def readResolve(): java.lang.Object = Wrapper.this.Main$Wrapper$$StateB()
+  };
+  &lt;synthetic&gt; private[this] var StateB$module: object Wrapper.this.StateB = _;
+  final case &lt;stable&gt; def Main$Wrapper$$StateB(): object Wrapper.this.StateB = {
+    if (Wrapper.this.StateB$module.eq(null))
+      Wrapper.this.StateB$module = new object Wrapper.this.StateB();
+    Wrapper.this.StateB$module
+  };
+  private def f(x: Wrapper.this.State): Unit = x match {
+    case Wrapper.this.Main$Wrapper$$StateA() =&gt; ()
+    case Wrapper.this.Main$Wrapper$$StateB() =&gt; ()
+  }
+}
+exception when transforming {
+  val args: Array[java.lang.String] = argv;
+  final class Wrapper extends java.lang.Object with ScalaObject {
+    def this(): object Wrapper = {
+      Wrapper.super.this();
+      ()
+    };
+    sealed abstract class State extends java.lang.Object with ScalaObject {
+      def this(): Wrapper.this.State = {
+        State.super.this();
+        ()
+      }
+    };
+    @serializable final case class StateA extends Wrapper.this.State with ScalaObject with Product {
+      def this(): object Wrapper.this.StateA = {
+        StateA.super.this();
+        ()
+      };
+      final override def $tag(): Int = 1029405824;
+      final override def toString(): java.lang.String = &quot;StateA&quot;;
+      final override def productPrefix(): java.lang.String = &quot;StateA&quot;;
+      final override def productArity(): Int = 0;
+      final override def productElement(x$1: Int): Any = x$1 match {
+        case _ =&gt; throw new java.lang.IndexOutOfBoundsException(x$1.toString())
+      };
+      protected def readResolve(): java.lang.Object = Wrapper.this.Main$Wrapper$$StateA()
+    };
+    &lt;synthetic&gt; private[this] var StateA$module: object Wrapper.this.StateA = _;
+    final case &lt;stable&gt; def Main$Wrapper$$StateA(): object Wrapper.this.StateA = {
+      if (Wrapper.this.StateA$module.eq(null))
+        Wrapper.this.StateA$module = new object Wrapper.this.StateA();
+      Wrapper.this.StateA$module
+    };
+    @serializable final case class StateB extends Wrapper.this.State with ScalaObject with Product {
+      def this(): object Wrapper.this.StateB = {
+        StateB.super.this();
+        ()
+      };
+      final override def $tag(): Int = 1029405825;
+      final override def toString(): java.lang.String = &quot;StateB&quot;;
+      final override def productPrefix(): java.lang.String = &quot;StateB&quot;;
+      final override def productArity(): Int = 0;
+      final override def productElement(x$1: Int): Any = x$1 match {
+        case _ =&gt; throw new java.lang.IndexOutOfBoundsException(x$1.toString())
+      };
+      protected def readResolve(): java.lang.Object = Wrapper.this.Main$Wrapper$$StateB()
+    };
+    &lt;synthetic&gt; private[this] var StateB$module: object Wrapper.this.StateB = _;
+    final case &lt;stable&gt; def Main$Wrapper$$StateB(): object Wrapper.this.StateB = {
+      if (Wrapper.this.StateB$module.eq(null))
+        Wrapper.this.StateB$module = new object Wrapper.this.StateB();
+      Wrapper.this.StateB$module
+    };
+    private def f(x: Wrapper.this.State): Unit = x match {
+      case Wrapper.this.Main$Wrapper$$StateA() =&gt; ()
+      case Wrapper.this.Main$Wrapper$$StateB() =&gt; ()
+    }
+  };
+  var Wrapper$module: object Wrapper = null;
+  final &lt;stable&gt; def Wrapper(): object Wrapper = {
+    if (Wrapper$module.eq(null))
+      Wrapper$module = new object Wrapper();
+    Wrapper$module
+  };
+  ()
+}
+exception when transforming def main(argv: Array[java.lang.String]): Unit = {
+  val args: Array[java.lang.String] = argv;
+  final class Wrapper extends java.lang.Object with ScalaObject {
+    def this(): object Wrapper = {
+      Wrapper.super.this();
+      ()
+    };
+    sealed abstract class State extends java.lang.Object with ScalaObject {
+      def this(): Wrapper.this.State = {
+        State.super.this();
+        ()
+      }
+    };
+    @serializable final case class StateA extends Wrapper.this.State with ScalaObject with Product {
+      def this(): object Wrapper.this.StateA = {
+        StateA.super.this();
+        ()
+      };
+      final override def $tag(): Int = 1029405824;
+      final override def toString(): java.lang.String = &quot;StateA&quot;;
+      final override def productPrefix(): java.lang.String = &quot;StateA&quot;;
+      final override def productArity(): Int = 0;
+      final override def productElement(x$1: Int): Any = x$1 match {
+        case _ =&gt; throw new java.lang.IndexOutOfBoundsException(x$1.toString())
+      };
+      protected def readResolve(): java.lang.Object = Wrapper.this.Main$Wrapper$$StateA()
+    };
+    &lt;synthetic&gt; private[this] var StateA$module: object Wrapper.this.StateA = _;
+    final case &lt;stable&gt; def Main$Wrapper$$StateA(): object Wrapper.this.StateA = {
+      if (Wrapper.this.StateA$module.eq(null))
+        Wrapper.this.StateA$module = new object Wrapper.this.StateA();
+      Wrapper.this.StateA$module
+    };
+    @serializable final case class StateB extends Wrapper.this.State with ScalaObject with Product {
+      def this(): object Wrapper.this.StateB = {
+        StateB.super.this();
+        ()
+      };
+      final override def $tag(): Int = 1029405825;
+      final override def toString(): java.lang.String = &quot;StateB&quot;;
+      final override def productPrefix(): java.lang.String = &quot;StateB&quot;;
+      final override def productArity(): Int = 0;
+      final override def productElement(x$1: Int): Any = x$1 match {
+        case _ =&gt; throw new java.lang.IndexOutOfBoundsException(x$1.toString())
+      };
+      protected def readResolve(): java.lang.Object = Wrapper.this.Main$Wrapper$$StateB()
+    };
+    &lt;synthetic&gt; private[this] var StateB$module: object Wrapper.this.StateB = _;
+    final case &lt;stable&gt; def Main$Wrapper$$StateB(): object Wrapper.this.StateB = {
+      if (Wrapper.this.StateB$module.eq(null))
+        Wrapper.this.StateB$module = new object Wrapper.this.StateB();
+      Wrapper.this.StateB$module
+    };
+    private def f(x: Wrapper.this.State): Unit = x match {
+      case Wrapper.this.Main$Wrapper$$StateA() =&gt; ()
+      case Wrapper.this.Main$Wrapper$$StateB() =&gt; ()
+    }
+  };
+  var Wrapper$module: object Wrapper = null;
+  final &lt;stable&gt; def Wrapper(): object Wrapper = {
+    if (Wrapper$module.eq(null))
+      Wrapper$module = new object Wrapper();
+    Wrapper$module
+  };
+  ()
+}
+exception when transforming java.lang.Object with ScalaObject {
+  def this(): object Main = {
+    Main.super.this();
+    ()
+  };
+  def main(argv: Array[java.lang.String]): Unit = {
+    val args: Array[java.lang.String] = argv;
+    final class Wrapper extends java.lang.Object with ScalaObject {
+      def this(): object Wrapper = {
+        Wrapper.super.this();
+        ()
+      };
+      sealed abstract class State extends java.lang.Object with ScalaObject {
+        def this(): Wrapper.this.State = {
+          State.super.this();
+          ()
+        }
+      };
+      @serializable final case class StateA extends Wrapper.this.State with ScalaObject with Product {
+        def this(): object Wrapper.this.StateA = {
+          StateA.super.this();
+          ()
+        };
+        final override def $tag(): Int = 1029405824;
+        final override def toString(): java.lang.String = &quot;StateA&quot;;
+        final override def productPrefix(): java.lang.String = &quot;StateA&quot;;
+        final override def productArity(): Int = 0;
+        final override def productElement(x$1: Int): Any = x$1 match {
+          case _ =&gt; throw new java.lang.IndexOutOfBoundsException(x$1.toString())
+        };
+        protected def readResolve(): java.lang.Object = Wrapper.this.Main$Wrapper$$StateA()
+      };
+      &lt;synthetic&gt; private[this] var StateA$module: object Wrapper.this.StateA = _;
+      final case &lt;stable&gt; def Main$Wrapper$$StateA(): object Wrapper.this.StateA = {
+        if (Wrapper.this.StateA$module.eq(null))
+          Wrapper.this.StateA$module = new object Wrapper.this.StateA();
+        Wrapper.this.StateA$module
+      };
+      @serializable final case class StateB extends Wrapper.this.State with ScalaObject with Product {
+        def this(): object Wrapper.this.StateB = {
+          StateB.super.this();
+          ()
+        };
+        final override def $tag(): Int = 1029405825;
+        final override def toString(): java.lang.String = &quot;StateB&quot;;
+        final override def productPrefix(): java.lang.String = &quot;StateB&quot;;
+        final override def productArity(): Int = 0;
+        final override def productElement(x$1: Int): Any = x$1 match {
+          case _ =&gt; throw new java.lang.IndexOutOfBoundsException(x$1.toString())
+        };
+        protected def readResolve(): java.lang.Object = Wrapper.this.Main$Wrapper$$StateB()
+      };
+      &lt;synthetic&gt; private[this] var StateB$module: object Wrapper.this.StateB = _;
+      final case &lt;stable&gt; def Main$Wrapper$$StateB(): object Wrapper.this.StateB = {
+        if (Wrapper.this.StateB$module.eq(null))
+          Wrapper.this.StateB$module = new object Wrapper.this.StateB();
+        Wrapper.this.StateB$module
+      };
+      private def f(x: Wrapper.this.State): Unit = x match {
+        case Wrapper.this.Main$Wrapper$$StateA() =&gt; ()
+        case Wrapper.this.Main$Wrapper$$StateB() =&gt; ()
+      }
+    };
+    var Wrapper$module: object Wrapper = null;
+    final &lt;stable&gt; def Wrapper(): object Wrapper = {
+      if (Wrapper$module.eq(null))
+        Wrapper$module = new object Wrapper();
+      Wrapper$module
+    };
+    ()
+  }
+}
+exception when transforming final class Main extends java.lang.Object with ScalaObject {
+  def this(): object Main = {
+    Main.super.this();
+    ()
+  };
+  def main(argv: Array[java.lang.String]): Unit = {
+    val args: Array[java.lang.String] = argv;
+    final class Wrapper extends java.lang.Object with ScalaObject {
+      def this(): object Wrapper = {
+        Wrapper.super.this();
+        ()
+      };
+      sealed abstract class State extends java.lang.Object with ScalaObject {
+        def this(): Wrapper.this.State = {
+          State.super.this();
+          ()
+        }
+      };
+      @serializable final case class StateA extends Wrapper.this.State with ScalaObject with Product {
+        def this(): object Wrapper.this.StateA = {
+          StateA.super.this();
+          ()
+        };
+        final override def $tag(): Int = 1029405824;
+        final override def toString(): java.lang.String = &quot;StateA&quot;;
+        final override def productPrefix(): java.lang.String = &quot;StateA&quot;;
+        final override def productArity(): Int = 0;
+        final override def productElement(x$1: Int): Any = x$1 match {
+          case _ =&gt; throw new java.lang.IndexOutOfBoundsException(x$1.toString())
+        };
+        protected def readResolve(): java.lang.Object = Wrapper.this.Main$Wrapper$$StateA()
+      };
+      &lt;synthetic&gt; private[this] var StateA$module: object Wrapper.this.StateA = _;
+      final case &lt;stable&gt; def Main$Wrapper$$StateA(): object Wrapper.this.StateA = {
+        if (Wrapper.this.StateA$module.eq(null))
+          Wrapper.this.StateA$module = new object Wrapper.this.StateA();
+        Wrapper.this.StateA$module
+      };
+      @serializable final case class StateB extends Wrapper.this.State with ScalaObject with Product {
+        def this(): object Wrapper.this.StateB = {
+          StateB.super.this();
+          ()
+        };
+        final override def $tag(): Int = 1029405825;
+        final override def toString(): java.lang.String = &quot;StateB&quot;;
+        final override def productPrefix(): java.lang.String = &quot;StateB&quot;;
+        final override def productArity(): Int = 0;
+        final override def productElement(x$1: Int): Any = x$1 match {
+          case _ =&gt; throw new java.lang.IndexOutOfBoundsException(x$1.toString())
+        };
+        protected def readResolve(): java.lang.Object = Wrapper.this.Main$Wrapper$$StateB()
+      };
+      &lt;synthetic&gt; private[this] var StateB$module: object Wrapper.this.StateB = _;
+      final case &lt;stable&gt; def Main$Wrapper$$StateB(): object Wrapper.this.StateB = {
+        if (Wrapper.this.StateB$module.eq(null))
+          Wrapper.this.StateB$module = new object Wrapper.this.StateB();
+        Wrapper.this.StateB$module
+      };
+      private def f(x: Wrapper.this.State): Unit = x match {
+        case Wrapper.this.Main$Wrapper$$StateA() =&gt; ()
+        case Wrapper.this.Main$Wrapper$$StateB() =&gt; ()
+      }
+    };
+    var Wrapper$module: object Wrapper = null;
+    final &lt;stable&gt; def Wrapper(): object Wrapper = {
+      if (Wrapper$module.eq(null))
+        Wrapper$module = new object Wrapper();
+      Wrapper$module
+    };
+    ()
+  }
+}
+java.lang.Error: no-symbol does not have owner
+	at scala.tools.nsc.symtab.Symbols$NoSymbol$.owner(Symbols.scala:1419)
+	at scala.tools.nsc.symtab.Types$class.rebind(Types.scala:1720)
+	at scala.tools.nsc.symtab.Types$class.singleType(Types.scala:1750)
+	at scala.tools.nsc.symtab.SymbolTable.singleType(SymbolTable.scala:11)
+	at scala.tools.nsc.matching.ParallelMatching$Rep$$anonfun$36.apply(ParallelMatching.scala:970)
+	at scala.tools.nsc.matching.ParallelMatching$Rep$$anonfun$36.apply(ParallelMatching.scala:964)
+	at scala.List.forall(List.scala:887)
+	at scala.tools.nsc.matching.ParallelMatching$Rep.covers$0(ParallelMatching.scala:964)
+	at scala.tools.nsc.matching.ParallelMatching$Rep$$anonfun$37$$anonfun$38.apply(ParallelMatching.scala:981)
+	at scala.tools.nsc.matching.ParallelMatching$Rep$$anonfun$37$$anonfun$38.apply(ParallelMatching.scala:981)
+	at scala.List.exists(List.scala:903)
+	at scala.tools.nsc.matching.ParallelMatching$Rep$$anonfun$37.apply(ParallelMatching.scala:981)
+	at scala.tools.nsc.matching.ParallelMatching$Rep$$anonfun$37.apply(ParallelMatching.scala:981)
+	at scala.List.forall(List.scala:887)
+	at scala.tools.nsc.matching.ParallelMatching$Rep.init(ParallelMatching.scala:981)
+	at scala.tools.nsc.matching.ParallelMatching$Rep$.apply(ParallelMatching.scala:907)
+	at scala.tools.nsc.matching.ParallelMatching$class.initRep(ParallelMatching.scala:1058)
+	at scala.tools.nsc.transform.ExplicitOuter.initRep(ExplicitOuter.scala:19)
+	at scala.tools.nsc.matching.PatternMatchers$PatternMatcher.constructParallel(PatternMatchers.scala:174)
+	at scala.tools.nsc.matching.PatternMatchers$PatternMatcher.construct(PatternMatchers.scala:132)
+	at scala.tools.nsc.matching.TransMatcher$class.handlePattern(TransMatcher.scala:298)
+	at scala.tools.nsc.transform.ExplicitOuter.handlePattern(ExplicitOuter.scala:19)
+	at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer.transform(ExplicitOuter.scala:435)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$24.apply(Trees.scala:1222)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$24.apply(Trees.scala:1221)
+	at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1333)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:33)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:27)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1220)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:46)
+	at scala.tools.nsc.transform.ExplicitOuter$OuterPathTransformer.transform(ExplicitOuter.scala:207)
+	at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer.transform(ExplicitOuter.scala:363)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$33.apply(Trees.scala:1327)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$33.apply(Trees.scala:1325)
+	at scala.List$.loop$0(List.scala:244)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.tools.nsc.ast.Trees$Transformer.transformStats(Trees.scala:1325)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1237)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.scala$tools$nsc$transform$TypingTransformers$TypingTransformer$$super$transform(TypingTransformers.scala:44)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer$$anonfun$0.apply(TypingTransformers.scala:44)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer$$anonfun$0.apply(TypingTransformers.scala:44)
+	at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1333)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:33)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:27)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:44)
+	at scala.tools.nsc.transform.ExplicitOuter$OuterPathTransformer.transform(ExplicitOuter.scala:207)
+	at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer.transform(ExplicitOuter.scala:343)
+	at scala.tools.nsc.ast.Trees$Transformer.transformTemplate(Trees.scala:1311)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$21.apply(Trees.scala:1209)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$21.apply(Trees.scala:1209)
+	at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1333)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:33)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:27)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1208)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:46)
+	at scala.tools.nsc.transform.ExplicitOuter$OuterPathTransformer.transform(ExplicitOuter.scala:207)
+	at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer.transform(ExplicitOuter.scala:456)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$33.apply(Trees.scala:1327)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$33.apply(Trees.scala:1325)
+	at scala.List$.loop$0(List.scala:244)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.tools.nsc.ast.Trees$Transformer.transformStats(Trees.scala:1325)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1239)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:46)
+	at scala.tools.nsc.transform.ExplicitOuter$OuterPathTransformer.transform(ExplicitOuter.scala:207)
+	at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer.transform(ExplicitOuter.scala:456)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$24.apply(Trees.scala:1222)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$24.apply(Trees.scala:1221)
+	at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1333)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:33)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:27)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1220)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:46)
+	at scala.tools.nsc.transform.ExplicitOuter$OuterPathTransformer.transform(ExplicitOuter.scala:207)
+	at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer.transform(ExplicitOuter.scala:363)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$33.apply(Trees.scala:1327)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$33.apply(Trees.scala:1325)
+	at scala.List$.loop$0(List.scala:244)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.tools.nsc.ast.Trees$Transformer.transformStats(Trees.scala:1325)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1237)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.scala$tools$nsc$transform$TypingTransformers$TypingTransformer$$super$transform(TypingTransformers.scala:44)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer$$anonfun$0.apply(TypingTransformers.scala:44)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer$$anonfun$0.apply(TypingTransformers.scala:44)
+	at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1333)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:33)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:27)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:44)
+	at scala.tools.nsc.transform.ExplicitOuter$OuterPathTransformer.transform(ExplicitOuter.scala:207)
+	at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer.transform(ExplicitOuter.scala:343)
+	at scala.tools.nsc.ast.Trees$Transformer.transformTemplate(Trees.scala:1311)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$21.apply(Trees.scala:1209)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$21.apply(Trees.scala:1209)
+	at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1333)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:33)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:27)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1208)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:46)
+	at scala.tools.nsc.transform.ExplicitOuter$OuterPathTransformer.transform(ExplicitOuter.scala:207)
+	at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer.transform(ExplicitOuter.scala:456)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$33.apply(Trees.scala:1327)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$33.apply(Trees.scala:1325)
+	at scala.List$.loop$0(List.scala:244)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.tools.nsc.ast.Trees$Transformer.transformStats(Trees.scala:1325)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$20.apply(Trees.scala:1205)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$20.apply(Trees.scala:1205)
+	at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1333)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:33)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:27)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1204)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:46)
+	at scala.tools.nsc.transform.ExplicitOuter$OuterPathTransformer.transform(ExplicitOuter.scala:207)
+	at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer.transform(ExplicitOuter.scala:456)
+	at scala.tools.nsc.ast.Trees$Transformer.transformUnit(Trees.scala:1328)
+	at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer.scala$tools$nsc$transform$ExplicitOuter$ExplicitOuterTransformer$$super$transformUnit(ExplicitOuter.scala:466)
+	at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer$$anonfun$7.apply(ExplicitOuter.scala:466)
+	at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer$$anonfun$7.apply(ExplicitOuter.scala:466)
+	at scala.tools.nsc.symtab.SymbolTable.atPhase(SymbolTable.scala:85)
+	at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer.transformUnit(ExplicitOuter.scala:466)
+	at scala.tools.nsc.transform.Transform$Phase.apply(Transform.scala:30)
+	at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:258)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$2.apply(Global.scala:247)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$2.apply(Global.scala:247)
+	at scala.Iterator$class.foreach(Iterator.scala:375)
+	at scala.collection.mutable.ListBuffer$$anon$0.foreach(ListBuffer.scala:255)
+	at scala.tools.nsc.Global$GlobalPhase.run(Global.scala:247)
+	at scala.tools.nsc.Global$Run.compileSources(Global.scala:542)
+	at scala.tools.nsc.Global$Run.compile(Global.scala:623)
+	at scala.tools.nsc.StandardCompileServer.session(CompileServer.scala:143)
+	at scala.tools.util.SocketServer$$anonfun$0.apply(SocketServer.scala:69)
+	at scala.tools.util.SocketServer$$anonfun$0.apply(SocketServer.scala:69)
+	at scala.util.DynamicVariable.withValue(DynamicVariable.scala:73)
+	at scala.Console$.withOut(Console.scala:84)
+	at scala.Console$.withOut(Console.scala:102)
+	at scala.tools.util.SocketServer.run(SocketServer.scala:68)
+	at scala.tools.nsc.StandardCompileServer.main(CompileServer.scala:185)
+	at scala.tools.nsc.CompileServer.main(CompileServer.scala)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+	at java.lang.reflect.Method.invoke(Unknown Source)
+	at scala.tools.nsc.ObjectRunner$$anonfun$0.apply(ObjectRunner.scala:75)
+	at scala.tools.nsc.ObjectRunner$.withContextClassLoader(ObjectRunner.scala:49)
+	at scala.tools.nsc.ObjectRunner$.run(ObjectRunner.scala:74)
+	at scala.tools.nsc.MainGenericRunner$.main(MainGenericRunner.scala:154)
+	at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
+error: fatal error (server aborted): no-symbol does not have owner
+one error found
+exception when transforming package &lt;empty&gt; {
+  final class Main extends java.lang.Object with ScalaObject {
+    def this(): object Main = {
+      Main.super.this();
+      ()
+    };
+    def main(argv: Array[java.lang.String]): Unit = {
+      val args: Array[java.lang.String] = argv;
+      final class Wrapper extends java.lang.Object with ScalaObject {
+        def this(): object Wrapper = {
+          Wrapper.super.this();
+          ()
+        };
+        sealed abstract class State extends java.lang.Object with ScalaObject {
+          def this(): Wrapper.this.State = {
+            State.super.this();
+            ()
+          }
+        };
+        @serializable final case class StateA extends Wrapper.this.State with ScalaObject with Product {
+          def this(): object Wrapper.this.StateA = {
+            StateA.super.this();
+            ()
+          };
+          final override def $tag(): Int = 1029405824;
+          final override def toString(): java.lang.String = &quot;StateA&quot;;
+          final override def productPrefix(): java.lang.String = &quot;StateA&quot;;
+          final override def productArity(): Int = 0;
+          final override def productElement(x$1: Int): Any = x$1 match {
+            case _ =&gt; throw new java.lang.IndexOutOfBoundsException(x$1.toString())
+          };
+          protected def readResolve(): java.lang.Object = Wrapper.this.Main$Wrapper$$StateA()
+        };
+        &lt;synthetic&gt; private[this] var StateA$module: object Wrapper.this.StateA = _;
+        final case &lt;stable&gt; def Main$Wrapper$$StateA(): object Wrapper.this.StateA = {
+          if (Wrapper.this.StateA$module.eq(null))
+            Wrapper.this.StateA$module = new object Wrapper.this.StateA();
+          Wrapper.this.StateA$module
+        };
+        @serializable final case class StateB extends Wrapper.this.State with ScalaObject with Product {
+          def this(): object Wrapper.this.StateB = {
+            StateB.super.this();
+            ()
+          };
+          final override def $tag(): Int = 1029405825;
+          final override def toString(): java.lang.String = &quot;StateB&quot;;
+          final override def productPrefix(): java.lang.String = &quot;StateB&quot;;
+          final override def productArity(): Int = 0;
+          final override def productElement(x$1: Int): Any = x$1 match {
+            case _ =&gt; throw new java.lang.IndexOutOfBoundsException(x$1.toString())
+          };
+          protected def readResolve(): java.lang.Object = Wrapper.this.Main$Wrapper$$StateB()
+        };
+        &lt;synthetic&gt; private[this] var StateB$module: object Wrapper.this.StateB = _;
+        final case &lt;stable&gt; def Main$Wrapper$$StateB(): object Wrapper.this.StateB = {
+          if (Wrapper.this.StateB$module.eq(null))
+            Wrapper.this.StateB$module = new object Wrapper.this.StateB();
+          Wrapper.this.StateB$module
+        };
+        private def f(x: Wrapper.this.State): Unit = x match {
+          case Wrapper.this.Main$Wrapper$$StateA() =&gt; ()
+          case Wrapper.this.Main$Wrapper$$StateB() =&gt; ()
+        }
+      };
+      var Wrapper$module: object Wrapper = null;
+      final &lt;stable&gt; def Wrapper(): object Wrapper = {
+        if (Wrapper$module.eq(null))
+          Wrapper$module = new object Wrapper();
+        Wrapper$module
+      };
+      ()
+    }
+  }
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>compiler crash
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >It crashes only in the interpreter. Removing the private modifiers on case classes makes it work.</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Iulian&nbsp; edited on &nbsp;2007-08-08 10:52:30.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

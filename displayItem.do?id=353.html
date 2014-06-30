@@ -1,0 +1,119 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#353]</th>
+		<th><strong>project:</strong> bugtracking</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> missing feature</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Philippe</td>
+	  <td align="center" bgcolor="#FFFFFF">Burak</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2004-07-19 11:23:48.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">missing status</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre></pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >There should be a status like "not a bug" to mark erroneous entries like for example bug 351. These are neither "fixed" bugs nor behaviours that we "won't fix". They are just entries that should not be there, just noise. Hm, maybe "noise" would be the appropriate status. It is more general; it could also be applied to non-bug entries.
+</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2004-07-19 11:53:31.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+if something is not a bug, then we won't fix it, right ?
+<br/>
+If the report is a misreading of the specification, the you additionally mark the category as "feature".
+</td></tr>
+<tr>
+        <td>
+        <strong>Philippe&nbsp; edited on &nbsp;2004-07-19 14:26:16.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+<p>Yes of course, we could mark everything "won't fix", but my point is that I think that there really are two different things, so we should also have two different status.</p>
+
+<p>On one side, there are valid feature requests or modification requests that we don't want to implement or strange behaviours (that look like bugs but aren't) that we don't want to change. All these entries should be marked "won't fix".</p>
+
+<p>On the other side there are entries which are neither a bug nor a valid feature request. The entry is there only because the person misread the language specification or did not understand it's own code, or whatever. All these entries should be marked "not a bug" or maybe "noise".</p>
+
+<p>The difference between the two is that the first one might be resubmited by somebody else. Their presence might avoid this. Somebody might also be interested in why something won't be fixed. These entries have a real value whereas the second one have no value. For example, every once in a while, one might want to go through all the "won't fix" to check if the objections are still valid. For this, only the entries of the first kind are to be considered.</p>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2004-10-11 14:01:59.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+I added this option for the "status" field.
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

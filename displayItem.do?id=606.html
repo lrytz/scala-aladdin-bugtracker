@@ -1,0 +1,141 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#606]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Nikolay</td>
+	  <td align="center" bgcolor="#FFFFFF">Iulian</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2006-05-18 17:54:17.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">[contrib #130] vals inside finally blocks crash the compiler</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>object Test
+{
+        def main(argv : Array[String]) : Unit = {
+                try {
+                        ()
+                } finally {
+                        val x = null
+                        ()
+                }
+        }
+}</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre><pre>
+Exception in thread "main" java.lang.Error: assertion failed: Invalid index for: value x
+        at scala.Predef$.assert(Predef.scala:171)
+        at scala.tools.nsc.backend.jvm.GenJVM$BytecodeGenerator.indexOf(GenJVM.scala:921)
+        at scala.tools.nsc.backend.jvm.GenJVM$BytecodeGenerator$$anonfun$27.apply(GenJVM.scala:494)
+        at scala.tools.nsc.backend.jvm.GenJVM$BytecodeGenerator$$anonfun$27.apply(GenJVM.scala:431)
+        at scala.Iterator$class.foreach(Iterator.scala:285)
+        at scala.runtime.BoxedArray$$anon$0.foreach(BoxedArray.scala:32)
+        at scala.Iterable$class.foreach(Iterable.scala:91)
+        at scala.runtime.BoxedArray.foreach(BoxedArray.scala:14)
+        at scala.tools.nsc.backend.icode.BasicBlocks$BasicBlock.traverse(BasicBlocks.scala:67)
+        at scala.tools.nsc.backend.jvm.GenJVM$BytecodeGenerator.genBlock(GenJVM.scala:431)
+        at scala.tools.nsc.backend.jvm.GenJVM$BytecodeGenerator.genBlocks(GenJVM.scala:357)
+        at scala.tools.nsc.backend.jvm.GenJVM$BytecodeGenerator.genBlocks(GenJVM.scala:357)
+        at scala.tools.nsc.backend.jvm.GenJVM$BytecodeGenerator.genCode(GenJVM.scala:346)
+        at scala.tools.nsc.backend.jvm.GenJVM$BytecodeGenerator.genMethod(GenJVM.scala:249)
+        at scala.tools.nsc.backend.jvm.GenJVM$BytecodeGenerator$$anonfun$11.apply(GenJVM.scala:168)
+        at scala.tools.nsc.backend.jvm.GenJVM$BytecodeGenerator$$anonfun$11.apply(GenJVM.scala:168)
+        at scala.List.foreach(List.scala:681)
+        at scala.tools.nsc.backend.jvm.GenJVM$BytecodeGenerator.genClass(GenJVM.scala:168)
+        at scala.tools.nsc.backend.jvm.GenJVM$JvmPhase$$anonfun$0.apply(GenJVM.scala:41)
+        at scala.tools.nsc.backend.jvm.GenJVM$JvmPhase$$anonfun$0.apply(GenJVM.scala:41)
+        at scala.Iterator$class.foreach(Iterator.scala:285)
+        at scala.collection.Map$$anon$1.foreach(Map.scala:95)
+        at scala.tools.nsc.backend.jvm.GenJVM$JvmPhase.run(GenJVM.scala:41)
+        at scala.tools.nsc.Global$Run.compileSources(Global.scala:432)
+        at scala.tools.nsc.Global$Run.compile(Global.scala:490)
+        at scala.tools.nsc.Main$.process(Main.scala:60)
+        at scala.tools.nsc.Main$.main(Main.scala:82)
+        at scala.tools.nsc.Main.main(Main.scala)
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >No crash.</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Nikolay&nbsp; edited on &nbsp;2006-05-18 17:54:47.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Iulian&nbsp; edited on &nbsp;2006-05-19 16:58:06.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

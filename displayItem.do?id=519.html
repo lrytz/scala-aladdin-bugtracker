@@ -1,0 +1,261 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#519]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> high</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Sean</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2006-01-24 19:13:57.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">Object initialization breaks separate compilation</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre> 
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>Example:
+
+On an already built compiler, add a non-private member to Typers in Typers.scala. Using the IDE, build the proje\
+ct, the following files will be recompiled:
+
+<pre>
+COMPILE: L/scala/src/compiler/scala/tools/nsc/typechecker/Typers.scala
+Signature of L/scala/src/compiler/scala/tools/nsc/typechecker/Typers.scala changed, recompile dependent files
+COMPILE: L/scala/src/compiler/scala/tools/nsc/typechecker/Namers.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/ast/TreeGen.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/transform/TailCalls.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/typechecker/RefChecks.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/typechecker/SuperAccessors.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/typechecker/Analyzer.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/matching/PatternMatchers.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/transform/Constructors.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/matching/TransMatcher.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/typechecker/TreeCheckers.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/transform/Mixin.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/util/Statistics.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/transform/ExplicitOuter.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/typechecker/SyntheticMethods.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/transform/Erasure.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/Global.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/transform/SampleTransform.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/transform/UnCurry.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/transform/LambdaLift.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/typechecker/Infer.scala
+Signature of L/scala/src/compiler/scala/tools/nsc/typechecker/TreeCheckers.scala changed, recompile dependent fi\
+les
+Signature of L/scala/src/compiler/scala/tools/nsc/typechecker/Analyzer.scala changed, recompile dependent files\
+
+Signature of L/scala/src/compiler/scala/tools/nsc/Global.scala changed, recompile dependent files
+Signature of L/scala/src/compiler/scala/tools/nsc/transform/Erasure.scala changed, recompile dependent files
+COMPILE: L/scala/src/compiler/scala/tools/nsc/Main.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/matching/SequenceMatchers.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/backend/jvm/GenJVM.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/backend/ScalaPrimitives.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/matching/RightTracers.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/transform/Erasure.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/typechecker/EtaExpansion.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/MainInterpreter.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/backend/icode/Members.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/symtab/classfile/ClassfileParser.scala
+COMPILE: L/scala/src/compiler/scala/tools/ant/Scalac.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/models/Models.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/backend/icode/TypeKinds.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/typechecker/Contexts.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/transform/OverridingPairs.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/MainTokenMetric.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/typechecker/ConstantFolder.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/CompilationUnits.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/symtab/SymbolLoaders.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/SubComponent.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/ast/parser/SyntaxAnalyzer.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/matching/PatternNodes.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/models/Signatures.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/typechecker/Codification.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/symtab/classfile/MetaParser.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/transform/Mixin.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/symtab/classfile/SymblfileParser.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/ast/parser/TreeBuilder.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/matching/Autom2.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/Global.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/matching/LeftTracers.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/backend/icode/Printers.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/matching/CodeFactory.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/backend/icode/GenICode.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/matching/AlgebraicMatchers.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/ast/parser/Scanners.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/ast/parser/Parsers.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/symtab/classfile/UnPickler.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/ast/parser/SymbolicXMLBuilder.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/matching/WordAutoms.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/backend/icode/Checkers.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/Interpreter.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/symtab/classfile/Pickler.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/matching/MatcherLabels.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/ast/parser/MarkupParsers.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/ast/TreeBrowsers.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/transform/AddInterfaces.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/backend/icode/ICodes.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/transform/Flatten.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/ast/Trees.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/transform/Transform.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/typechecker/Infer.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/ast/TreePrinters.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/backend/icode/BasicBlocks.scala
+Signature of L/scala/src/compiler/scala/tools/nsc/symtab/SymbolLoaders.scala changed, recompile dependent files\
+
+Signature of L/scala/src/compiler/scala/tools/nsc/Global.scala changed, recompile dependent files
+COMPILE: L/scala/src/compiler/scala/tools/nsc/Main.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/typechecker/EtaExpansion.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/backend/icode/Members.scala
+COMPILE: L/scala/src/compiler/scala/tools/ant/Scalac.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/typechecker/Contexts.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/transform/OverridingPairs.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/MainTokenMetric.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/ast/parser/SyntaxAnalyzer.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/typechecker/Codification.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/symtab/classfile/MetaParser.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/ast/parser/TreeBuilder.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/matching/LeftTracers.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/backend/icode/Printers.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/matching/CodeFactory.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/matching/AlgebraicMatchers.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/ast/parser/Parsers.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/ast/parser/SymbolicXMLBuilder.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/matching/WordAutoms.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/ast/parser/MarkupParsers.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/ast/TreeBrowsers.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/transform/AddInterfaces.scala
+COMPILE: L/scala/src/compiler/scala/tools/nsc/ast/Trees.scala
+</pre>
+
+Note that the compiler performs 4 separate runs because it doesn't recompile a class's dependencies until it det\
+ects that the class's signature (composed of non-private members) has changed.
+
+Now execute the resulting compiler and the following initialization will occur:
+
+<pre>
+java.lang.NullPointerException
+	at scala.tools.nsc.typechecker.Typers$class.resetTyper(Typers.scala:33)
+	at scala.tools.nsc.Global$analyzer$.resetTyper(Global.scala:190)
+	at scala.tools.nsc.typechecker.Analyzer$typerFactory$$anon1.<init>(Analyzer.scala:37)
+	at scala.tools.nsc.typechecker.Analyzer$typerFactory$.newPhase(Analyzer.scala:36)
+	at scala.tools.nsc.typechecker.Analyzer$typerFactory$.newPhase(Analyzer.scala:33)
+	at scala.tools.nsc.Global$Run$$anonfun2.apply(Global.scala:309)
+	at scala.tools.nsc.Global$Run$$anonfun2.apply(Global.scala:307)
+	at scala.List.foreach(List.scala:690)
+	at scala.tools.nsc.Global$Run.<init>(Global.scala:307)</pre>
+
+Now we can try the same experiment using the ant build 5cr1p7-haX0R (after a clean build to get the compiler back in a\
+ good state). 
+
+<pre>
+bash-3.00$ ant
+Buildfile: build.xml
+     [echo] Running SABBUS for Scala-core
+
+init:
+     [echo] SABBUS detected a UNIX environnement
+
+setup:
+
+build.locker:
+
+setup.locker:
+
+build:
+   [locker] Compiling source file: scala/tools/nsc/typechecker/Typers.scala to /home/mcdirmid/runtime-workspace/\
+scala/build/quick/compiler
+
+BUILD SUCCESSFUL
+Total time: 17 seconds
+</pre>
+
+The same null pointer exception occurs and a clean build is needed to fix things.
+
+
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >The only way right now to work around this object initialization problem is to fully rebuild the compiler. Instead, object initialization should either be fully compatible with separate compilation, or we should understand when and what should be rebuilt to ensure that null pointer exceptions do not occur. Otherwise, incremental builds cannot be reliably supported. Note that Typers is a mixin, so this may only be a problem with mixins. I've seen this problem before, but only today did I realize what the problem is. </td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Sean&nbsp; edited on &nbsp;2006-01-24 19:14:40.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-01-28 18:53:10.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

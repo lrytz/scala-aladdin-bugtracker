@@ -1,0 +1,151 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#906]</th>
+		<th><strong>project:</strong> documentation</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Nikolay</td>
+	  <td align="center" bgcolor="#FFFFFF">Stephane</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2007-01-19 10:55:09.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">[contrib #280] Invalid code in An Introduction to Scala</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>Some code in &quot;An Introduction to Scala&quot; does not compile
+with current Scala compilers (e.g. 2.3.1).
+
+
+p7 (javac) illegal start of expression
+public String mail() default = &quot;&quot;;
+should be
+public String mail() default &quot;&quot;;
+
+
+p12 Automatic User-Defined Coercions
+
+// error: method coerce is defined twice
+def coerce: Float = numerator.asInstanceOf[Float] / denominator
+def coerce: Double = numerator.asInstanceOf[Double] / denominator
+
+// error: type mismatch;
+//  found   : examples.Frac
+//  required: scala.Double
+Console.println(Math.sqrt(Frac(1,2)) + &quot;, &quot; +
+
+This came up in the newsgroup:-
+http://article.gmane.org/gmane.comp.lang.scala/3238
+http://article.gmane.org/gmane.comp.lang.scala/3239
+http://article.gmane.org/gmane.comp.lang.scala/3240
+
+I suspect that views made coerce obsolete and that the example should use views and thus appear later in the document. Is this correct?
+
+
+p35 Obsolete use of with without extends:
+object GraphTest with Application {
+should be
+object GraphTest extends Application {
+
+
+p37 private class LoopUnlessCond escapes its defining scope
+private class LoopUnlessCond(body: =&gt; Unit) {
+should be
+class LoopUnlessCond(body: =&gt; Unit) {
+(Alternately, the return type of loop should be a public class or trait that LoopUnlessCond extends.)
+
+
+p41 prefix method name with `&amp;'
+set += main // add the main function
+should be
+set += &amp;main // add the main function
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>Compiler errors
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >Successful compiles. I suspect the examples were written for an older version of the language and haven't been updated.</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Nikolay&nbsp; edited on &nbsp;2007-01-19 10:55:37.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+contribution #280
+</td></tr>
+<tr>
+        <td>
+        <strong>Stephane&nbsp; edited on &nbsp;2007-01-22 15:49:51.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+p07  added compilation of Java source code
+p12  removed obsolete page on coercions
+p35  not repro
+p37  not repro
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

@@ -1,0 +1,132 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#812]</th>
+		<th><strong>project:</strong> specification</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Sean</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">won't fix</td>
+          <td align="center" bgcolor="#FFFFFF">2006-11-10 12:21:38.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">import renaming not compatible with super/private/protected qualifiers</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>package test;
+import scala.{Application =&gt; Main};
+class Test extends Main {
+  import test.{Test =&gt; Hello}
+  super[Main].executionStart;
+  private[Hello] def xxx = 10;
+}</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre><pre>Severity and De5cr1p7-haX0Rion	Path	Resource	Location	Creation Time	Id
+Main does not name a parent class of class Test	test33/src/test	Test.scala	line 5	1163146384790	198401
+Hello is not an enclosing class	test33/src/test	Test.scala	line 6	1163146384790	198400</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >I think I must have run into this before (maybe with type aliases?). Anyways import renaming must work ubiquitously and for super/private/protected qualifiers, or the feature should be considered extremely fragile. </td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-11-10 18:31:14.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Well, let's consider it extremely fragile, then. 
+Note that qualifier prefixes are *not* idents so import renaming does not apply to them. Such import renaming would be rather rather hard to specify, IMO.
+ 
+</td></tr>
+<tr>
+        <td>
+        <strong>Sean&nbsp; edited on &nbsp;2006-11-11 13:49:47.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Then maybe we should get rid of renaming if it can't fully be supported? This is similar to the problem that tool-assisted refactoring cannot be supported in Scala.
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-11-11 19:28:17.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+I don't think name qualification has anything to do with
+imports. Here's a thought experiment:
+<pre>
+class C
+  class Inner {
+    type C = int
+    Console.println(C.this.bar)
+  }
+  val bar = 2
+}
+</pre>
+In this case, the C.this will correctly refer to the outer class, even though an *identifier* C would refer to the inner type (I believe Java works the same way). This shows
+that name qualification has nothing to do with identifier resolution! Since imports influence identifier resolution, they should have nothing to do with name qualification either.
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

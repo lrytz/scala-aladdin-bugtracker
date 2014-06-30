@@ -1,0 +1,131 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#195]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> medium</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Matthias</td>
+	  <td align="center" bgcolor="#FFFFFF">Burak</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2003-10-15 11:52:33.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">Sequence matcher can't handle some @ patterns</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>case class Two(xs: List[Any]);
+object Foo with Executable {
+  def test(xs: Any) = xs match {
+    case Two(x@List(_*)) =&gt;
+    	Console.println(&quot;x = &quot; + x);
+    case _ =&gt;
+    	Console.println(&quot;default&quot;);
+  }
+}</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>Crashes the compiler:
+<pre>
+Exception in thread "main" scalac.ApplicationError:
+cannot handle x @ scala.List([x$0 @ ([] | [_, x$0])])
+        at scalac.transformer.matching.AlgebraicMatcher.patternNode(AlgebraicMatcher.java:239)
+        at scalac.transformer.matching.AlgebraicMatcher.enter1(AlgebraicMatcher.java:316)
+        at scalac.transformer.matching.PatternMatcher.enter(PatternMatcher.java:518)
+        at scalac.transformer.matching.AlgebraicMatcher.enter1(AlgebraicMatcher.java:351)
+        at scalac.transformer.matching.AlgebraicMatcher.addCase(AlgebraicMatcher.java:121)
+        at scalac.transformer.matching.AlgebraicMatcher.addCase(AlgebraicMatcher.java:111)
+        at scalac.transformer.matching.AlgebraicMatcher.construct(AlgebraicMatcher.java:56)
+        at scalac.transformer.matching.AlgebraicMatcher.construct(AlgebraicMatcher.java:45)
+        at scalac.transformer.TransMatch.transform(TransMatch.java:97)
+        at scalac.transformer.TransMatch.transform(TransMatch.java:119)
+        at scalac.transformer.OwnerTransformer.transform(OwnerTransformer.java:41)
+        at scalac.transformer.OwnerTransformer.transform(OwnerTransformer.java:116)
+        at scalac.transformer.TransMatch.transform(TransMatch.java:130)
+        at scalac.transformer.OwnerTransformer.transform(OwnerTransformer.java:41)
+        at scalac.transformer.OwnerTransformer.transformTemplateStat(OwnerTransformer.java:87)
+        at scalac.transformer.OwnerTransformer.transformTemplateStats(OwnerTransformer.java:76)
+        at scalac.transformer.OwnerTransformer.transform(OwnerTransformer.java:68)
+        at scalac.transformer.OwnerTransformer.transform(OwnerTransformer.java:100)
+        at scalac.transformer.TransMatch.transform(TransMatch.java:130)
+        at scalac.ast.Transformer.transform(Transformer.java:281)
+        at scalac.transformer.OwnerTransformer.apply(OwnerTransformer.java:35)
+        at scalac.transformer.TransMatch.apply(TransMatch.java:86)
+        at scalac.transformer.TransMatchPhase.apply(TransMatchPhase.java:33)
+        at scalac.Global.compile(Global.java:294)
+        at scalac.Global.compile(Global.java:267)
+        at scalac.Main.main(Main.java:32)
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >Compiles.</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2003-10-30 11:51:18.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Also this problem finally fixed. It appeared because of bad interplay of  AlgebraicMatcher and PatternMatcher when I removed some duplicated code. 
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

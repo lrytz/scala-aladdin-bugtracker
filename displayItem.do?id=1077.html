@@ -1,0 +1,273 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#1077]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Nikolay</td>
+	  <td align="center" bgcolor="#FFFFFF">Iulian</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2007-05-01 12:49:29.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">[contrib #451] scalac: Can't convert from UNIT to REFERENCE</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>I tried to boil this code down even more, but I'm unable to.
+Making it simplier has scalac to compile the code just fine.
+
+import java.lang.StringBuilder
+
+class SVNManager
+{
+}
+
+class ObjectPool[T](ref : T)
+{
+}
+
+class A(opaque_bytes : Array[Byte], parent_a : A)
+{
+}
+
+class B private ()
+{
+  private var path_elements : Array[String] = null
+
+  private def this(new_svn : ObjectPool[SVNManager],
+                   path_info : Pair[String,Array[String]]) = {
+    this()
+    path_elements = path_info._2
+    // Uncomming this will generate a different error
+    // svn = new_svn
+  }
+
+  def this(new_svn : ObjectPool[SVNManager],
+           new_path : String) = {
+    this(new_svn, (new_path, new_path.split(&quot;/&quot;)))
+  }
+
+  private var svn : ObjectPool[SVNManager] = null
+  private var parent_folder_id_opt : Option[A] = null
+
+  def asInstanceOfA() : A = {
+    parent_folder_id_opt = parent_folder_id_opt.orElse {
+      val parent_path_elements =
+        path_elements.slice(0, path_elements.length - 1)
+      val parent_path = parent_path_elements.deepMkString(&quot;/&quot;, &quot;/&quot;, &quot;&quot;)
+      val parent_path_info = (parent_path, parent_path_elements)
+      val parent_exploded_folder_id = new B(svn, parent_path_info)
+      if (0 == parent_path_elements.length) {
+        None
+      }
+      else {
+        Some(parent_exploded_folder_id.asInstanceOfA())
+      }
+    }
+
+    // Get an opaque bytestring for this.
+    val opaque_bytes =
+      new StringBuilder(path_elements.length.toString()).toString()
+                                                        .getBytes(&quot;UTF-8&quot;)
+    new A(opaque_bytes, parent_folder_id_opt.get)
+  }
+}
+
+
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>This generates
+
+
+
+Exception in thread "main" java.lang.AssertionError: assertion failed: Can't convert from UNIT to REFERENCE(B)B.\
+this.B$$path_elements_=(if (path_info._2().$isInstanceOf[scala.runtime.BoxedArray]())
+  scala.runtime.ScalaRunTime.arrayValue(path_info._2().$asInstanceOf[scala.runtime.BoxedArray](), B.this.class$M\
+ethod0())
+else
+  path_info._2().$asInstanceOf[scala.Array[java.lang.String]]()) at: s6.scala22:19
+        at scala.Predef$.assert(Predef.scala:89)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.adapt(GenICode.scala:975)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.scala$tools$nsc$backend$icode$GenICode$ICodePhase$$\
+genLoad(GenICode.scala:961)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.scala$tools$nsc$backend$icode$GenICode$ICodePhase$$\
+genLoad(GenICode.scala:883)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.gen(GenICode.scala:113)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$0.apply(GenICode.scala:71)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$0.apply(GenICode.scala:70)
+        at scala.List.foreach(List.scala:702)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.gen(GenICode.scala:70)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.gen(GenICode.scala:135)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.gen(GenICode.scala:90)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$0.apply(GenICode.scala:71)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$0.apply(GenICode.scala:70)
+        at scala.List.foreach(List.scala:702)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.gen(GenICode.scala:70)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.gen(GenICode.scala:82)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.gen(GenICode.scala:66)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.apply(GenICode.scala:62)
+        at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:231)
+        at scala.tools.nsc.Global$GlobalPhase$$anonfun$2.apply(Global.scala:220)        at scala.tools.nsc.Globa\
+l$GlobalPhase$$anonfun$2.apply(Global.scala:220)        at scala.Iterator$class.foreach(Iterator.scala:380)
+        at scala.collection.mutable.ListBuffer$$anon$0.foreach(ListBuffer.scala:245)
+        at scala.tools.nsc.Global$GlobalPhase.run(Global.scala:220)
+        at scala.tools.nsc.backend.icode.GenICode$ICodePhase.run(GenICode.scala:55)
+        at scala.tools.nsc.Global$Run.compileSources(Global.scala:488)
+        at scala.tools.nsc.Global$Run.compile(Global.scala:562)
+        at scala.tools.nsc.Main$.process(Main.scala:57)
+        at scala.tools.nsc.Main$.main(Main.scala:79)
+        at scala.tools.nsc.Main.main(Main.scala)
+
+
+A couple of things I noticed.
+
+1) If you remove the private from the first "def this", then it
+   compiles fine.
+
+2) The real code generates a different message.  I can't release this
+   code though:
+
+   [scalac] java.lang.AssertionError: assertion failed: I produce UNIT in a context where REFERENCE(ExplodedFold\
+erId) is expected!
+   [scalac]     at scala.Predef$.assert(Predef.scala:89)
+   [scalac]     at scala.tools.nsc.backend.icode.GenICode$ICodePhase.scala$tools$nsc$backend$icode$GenICode$ICod\
+ePhase$$genLoad(GenICode.scala:448)
+   [scalac]     at scala.tools.nsc.backend.icode.GenICode$ICodePhase.scala$tools$nsc$backend$icode$GenICode$ICod\
+ePhase$$genLoad(GenICode.scala:883)
+   [scalac]     at scala.tools.nsc.backend.icode.GenICode$ICodePhase.gen(GenICode.scala:113)
+   [scalac]     at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$0.apply(GenICode.scala:71)
+   [scalac]     at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$0.apply(GenICode.scala:70)
+   [scalac]     at scala.List.foreach(List.scala:702)
+   [scalac]     at scala.tools.nsc.backend.icode.GenICode$ICodePhase.gen(GenICode.scala:70)
+   [scalac]     at scala.tools.nsc.backend.icode.GenICode$ICodePhase.gen(GenICode.scala:135)
+   [scalac]     at scala.tools.nsc.backend.icode.GenICode$ICodePhase.gen(GenICode.scala:90)
+   [scalac]     at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$0.apply(GenICode.scala:71)
+   [scalac]     at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$0.apply(GenICode.scala:70)
+   [scalac]     at scala.List.foreach(List.scala:702)
+   [scalac]     at scala.tools.nsc.backend.icode.GenICode$ICodePhase.gen(GenICode.scala:70)
+   [scalac]     at scala.tools.nsc.backend.icode.GenICode$ICodePhase.gen(GenICode.scala:82)
+   [scalac]     at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$0.apply(GenICode.scala:71)
+   [scalac]     at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$0.apply(GenICode.scala:70)
+   [scalac]     at scala.List.foreach(List.scala:702)
+   [scalac]     at scala.tools.nsc.backend.icode.GenICode$ICodePhase.gen(GenICode.scala:70)
+   [scalac]     at scala.tools.nsc.backend.icode.GenICode$ICodePhase.gen(GenICode.scala:82)
+   [scalac]     at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$0.apply(GenICode.scala:71)
+   [scalac]     at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$0.apply(GenICode.scala:70)
+   [scalac]     at scala.List.foreach(List.scala:702)
+   [scalac]     at scala.tools.nsc.backend.icode.GenICode$ICodePhase.gen(GenICode.scala:70)
+   [scalac]     at scala.tools.nsc.backend.icode.GenICode$ICodePhase.gen(GenICode.scala:82)
+   [scalac]     at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$0.apply(GenICode.scala:71)
+   [scalac]     at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$0.apply(GenICode.scala:70)
+   [scalac]     at scala.List.foreach(List.scala:702)
+   [scalac]     at scala.tools.nsc.backend.icode.GenICode$ICodePhase.gen(GenICode.scala:70)
+   [scalac]     at scala.tools.nsc.backend.icode.GenICode$ICodePhase.gen(GenICode.scala:82)
+   [scalac]     at scala.tools.nsc.backend.icode.GenICode$ICodePhase.gen(GenICode.scala:66)
+   [scalac]     at scala.tools.nsc.backend.icode.GenICode$ICodePhase.apply(GenICode.scala:62)
+   [scalac]     at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:231)
+   [scalac]     at scala.tools.nsc.Global$GlobalPhase$$anonfun$2.apply(Global.scala:220)
+   [scalac]     at scala.tools.nsc.Global$GlobalPhase$$anonfun$2.apply(Global.scala:220)
+   [scalac]     at scala.Iterator$class.foreach(Iterator.scala:380)
+   [scalac]     at scala.collection.mutable.ListBuffer$$anon$0.foreach(ListBuffer.scala:245)
+   [scalac]     at scala.tools.nsc.Global$GlobalPhase.run(Global.scala:220)
+   [scalac]     at scala.tools.nsc.backend.icode.GenICode$ICodePhase.run(GenICode.scala:55)
+   [scalac]     at scala.tools.nsc.Global$Run.compileSources(Global.scala:488)
+   [scalac]     at scala.tools.nsc.Global$Run.compile(Global.scala:562)
+   [scalac]     at scala.tools.ant.Scalac.execute(Scalac.scala:628)
+   [scalac]     at org.apache.tools.ant.UnknownElement.execute(UnknownElement.java:275)
+   [scalac]     at org.apache.tools.ant.Task.perform(Task.java:364)
+   [scalac]     at org.apache.tools.ant.Target.execute(Target.java:341)
+   [scalac]     at org.apache.tools.ant.Target.performTasks(Target.java:369)
+   [scalac]     at org.apache.tools.ant.Project.executeSortedTargets(Project.java:1216)
+   [scalac]     at org.apache.tools.ant.Project.executeTarget(Project.java:1185)   [scalac]     at org.apache.to\
+ols.ant.helper.DefaultExecutor.executeTargets(DefaultExecutor.java:40)
+   [scalac]     at org.apache.tools.ant.Project.executeTargets(Project.java:1068)
+   [scalac]     at org.apache.tools.ant.Main.runBuild(Main.java:668)
+   [scalac]     at org.apache.tools.ant.Main.startAnt(Main.java:187)
+   [scalac]     at org.apache.tools.ant.launch.Launcher.run(Launcher.java:246)
+   [scalac]     at org.apache.tools.ant.launch.Launcher.main(Launcher.java:67)
+
+Regards,
+Blair
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >no crash</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Nikolay&nbsp; edited on &nbsp;2007-05-01 12:55:34.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+contribution #451
+</td></tr>
+<tr>
+        <td>
+        <strong>Iulian&nbsp; edited on &nbsp;2007-05-01 14:16:21.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Fixed it by not mangling names of private constructors, since the JVM treats <init> in a special way (and the backend as well).
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

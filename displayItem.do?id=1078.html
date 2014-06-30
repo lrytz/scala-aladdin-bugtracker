@@ -1,0 +1,184 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#1078]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Nikolay</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">noise</td>
+          <td align="center" bgcolor="#FFFFFF">2007-05-01 13:00:56.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">[contrib #450] this.asInstanceOf[this class].instance_variable uses base class</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>In this thread
+
+http://thread.gmane.org/gmane.comp.lang.scala/4918
+
+with this code
+
+class Base(var base : int)
+{
+   def getBase() = {
+     System.out.println(&quot;Base.getBase &quot; + base)
+     base
+   }
+}
+
+class Derived1(base : int) extends Base(200)
+{
+   override def getBase() = {
+     val s = this.base
+     System.out.println(&quot;Derived1.getBase &quot; + s)
+     s
+   }
+}
+
+class Derived2(base : int) extends Base(200)
+{
+   override def getBase() = {
+     val s = this.asInstanceOf[Base].base
+     System.out.println(&quot;Derived2.getBase &quot; + s)
+     s
+   }
+}
+
+class Derived3(base : int) extends Base(200)
+{
+   override def getBase() = {
+     val s = this.asInstanceOf[Derived3].base
+     System.out.println(&quot;Derived3.getBase &quot; + s)
+     s
+   }
+}
+
+object Test extends Application
+{
+   new Base(100).getBase()
+   new Derived1(100).getBase()
+   new Derived2(100).getBase()
+   new Derived3(100).getBase()
+}
+
+Martin Odersky states that 
+
+http://thread.gmane.org/gmane.comp.lang.scala/4918/focus=4921
+
+&quot;The reason it does not do this is the following: base in Derived1 is a
+private field. As such it does not override the base field in class
+Base. Instead, we have a case of shadowing. So if the static type of
+the receiver is Derived1, you get its field, but if the static type is
+Base, you get the hidden field. Java is not different there, I
+believe.&quot;
+
+This suggests that the output for Derived3 is incorrect, since
+this.asInstanceOf[Derived3] is statically a Derived3, but it's
+returning the base class field.
+
+http://thread.gmane.org/gmane.comp.lang.scala/4918/focus=4922
+
+Regards,
+Blair
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>Output is
+
+Base.getBase 100
+Derived1.getBase 100
+Derived2.getBase 200
+Derived3.getBase 200
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >Expecting 
+
+Base.getBase 100
+Derived1.getBase 100
+Derived2.getBase 200
+Derived3.getBase 100
+</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Nikolay&nbsp; edited on &nbsp;2007-05-01 13:05:06.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+contribution #450
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2007-05-29 19:25:21.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+My previous explanation was incomplete. There are two
+base members: an object-private parameter in each class and the inherited base field. The object-private parameter is accessible only if the prefix is absent or is equal to `this.'. It shadows the inheroited field wheere it is accessible. Since `base' is inaccessible in Derived2/3,
+the inherited base field is picked instead.
+
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

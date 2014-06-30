@@ -1,0 +1,165 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#368]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Nikolay</td>
+	  <td align="center" bgcolor="#FFFFFF">_</td>
+	  <td align="center" bgcolor="#FFFFFF">open</td>
+          <td align="center" bgcolor="#FFFFFF">2004-10-01 14:34:26.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">[contrib #40] regular expression patterns throw an error</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>&gt; val foo : Seq[Char] = &quot;foobar&quot;
+val foo: scala.Seq[scala.Char] = String(f, o, o, b, a, r)
+&gt; foo match { case Seq('f','o', rest @ _ *) =&gt; rest case _ =&gt; false }
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>Exception in thread "main" scala.tools.util.debug.AbortError: unresolved name: iter$2.head()._1 - ()scala.Int <a\
+nd> ()scala.Int
+        at scala.tools.util.debug.Debug.abort(Debug.java:70)
+        at scala.tools.util.debug.Debug.abort(Debug.java:76)
+        at scalac.util.Debug.abort(Debug.java:99)
+        at scalac.ast.TreeGen.Apply(TreeGen.java:443)
+        at scalac.ast.TreeGen.mkApplyTV(TreeGen.java:368)
+        at scalac.ast.TreeGen.mkApply__(TreeGen.java:407)
+        at scalac.ast.TreeGen.mkApply__(TreeGen.java:410)
+        at scalac.transformer.matching.CodeFactory.SeqTrace_headState(CodeFactory.java:137)
+        at scalac.transformer.matching.RightTracerInScala.loadCurrentElem(RightTracerInScala.java:158)
+        at scalac.transformer.matching.Autom2Scala.code_body_NEW(Autom2Scala.java:146)
+        at scalac.transformer.matching.RightTracerInScala.getStms(RightTracerInScala.java:431)
+        at scalac.transformer.matching.SequenceMatcher.addBinderToBody(SequenceMatcher.java:66)
+        at scalac.transformer.matching.SequenceMatcher.construct(SequenceMatcher.java:142)
+        at scalac.transformer.matching.AlgebraicMatcher.callSequenceMatcher(AlgebraicMatcher.java:176)
+        at scalac.transformer.matching.AlgebraicMatcher.toTree(AlgebraicMatcher.java:104)
+        at scalac.transformer.matching.PatternMatcher.toTree(PatternMatcher.java:739)
+        at scalac.transformer.matching.PatternMatcher.toTree(PatternMatcher.java:864)
+        at scalac.transformer.matching.AlgebraicMatcher.toTree(AlgebraicMatcher.java:107)
+        at scalac.transformer.matching.PatternMatcher.toTree(PatternMatcher.java:739)
+        at scalac.transformer.matching.AlgebraicMatcher.toTree(AlgebraicMatcher.java:85)
+        at scalac.transformer.matching.AlgebraicMatcher.construct(AlgebraicMatcher.java:60)
+        at scalac.transformer.matching.AlgebraicMatcher.construct(AlgebraicMatcher.java:45)
+        at scala.tools.scalac.transformer.TransMatch$class.transform(TransMatch.scala:132)
+        at scala.tools.scalac.transformer.TransMatch$class.transform(TransMatch.scala:179)
+        at scalac.ast.Transformer.transform(Transformer.java:284)
+        at scalac.ast.Transformer.transform(Transformer.java:214)
+        at scalac.transformer.OwnerTransformer.transform(OwnerTransformer.java:145)
+        at scala.tools.scalac.transformer.TransMatch$class.transform(TransMatch.scala:191)
+        at scalac.transformer.OwnerTransformer.transform(OwnerTransformer.java:41)
+        at scalac.transformer.OwnerTransformer.transformTemplateStat(OwnerTransformer.java:87)
+        at scalac.transformer.OwnerTransformer.transformTemplateStats(OwnerTransformer.java:76)
+        at scalac.transformer.OwnerTransformer.transform(OwnerTransformer.java:68)
+        at scalac.transformer.OwnerTransformer.transform(OwnerTransformer.java:100)
+        at scala.tools.scalac.transformer.TransMatch$class.transform(TransMatch.scala:191)
+        at scalac.ast.Transformer.transform(Transformer.java:284)
+        at scalac.transformer.OwnerTransformer.apply(OwnerTransformer.java:35)
+        at scala.tools.scalac.transformer.TransMatch$class.apply(TransMatch.scala:41)
+        at scala.tools.scalac.transformer.TransMatchPhase$$anon$0.apply(TransMatchPhase.scala:23)
+        at scala.tools.scalac.transformer.TransMatchPhase$$anon$0.apply(TransMatchPhase.scala:22)
+        at scala.Array.foreach(Array.java:33)
+        at scala.tools.scalac.transformer.TransMatchPhase$class.apply(TransMatchPhase.scala:22)
+        at scalac.Global.compile(Global.java:390)
+        at scalac.Global.compile(Global.java:375)
+        at scala.tools.scalai.Interpreter.interpret(Interpreter.java:73)
+        at scala.tools.scalai.InterpreterShell.eval(InterpreterShell.java:243)
+        at scala.tools.scalai.InterpreterShell.handle(InterpreterShell.java:113)
+        at scala.tools.scalai.InterpreterShell.loop(InterpreterShell.java:105)
+        at scala.tools.scalai.InterpreterShell.main(InterpreterShell.java:98)
+        at scala.tools.scalai.Main.main(Main.java:34)
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >Interpreter should display
+List(o,b,a,r): Scala.any
+</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Nikolay&nbsp; edited on &nbsp;2004-10-01 14:36:40.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Lex&nbsp; edited on &nbsp;2006-02-14 14:03:56.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+This crashes the compiler, too, even when used outside the interpreter.
+</td></tr>
+<tr>
+        <td>
+        <strong>Lex&nbsp; edited on &nbsp;2006-02-14 14:11:10.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Ah, the problem nowadays is different from the one in the "what happened" windowm of the original bug.  The current problem is that this example uses a regular expression patterns, which is completedy disabled right now.
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

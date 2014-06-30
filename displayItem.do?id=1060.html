@@ -1,0 +1,135 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#1060]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> medium</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Nikolay</td>
+	  <td align="center" bgcolor="#FFFFFF">Iulian</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2007-04-20 11:06:22.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">[contrib #437] Exception in thread "main" scala.MatchError: UNIT</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>The following code generates an exception:
+
+object Test extends Application
+{
+  &quot;fff&quot;.asInstanceOf[int]
+}
+
+
+Exception in thread &quot;main&quot; scala.MatchError: UNIT
+        at scala.tools.nsc.backend.jvm.GenJVM$BytecodeGenerator$$anonfun$41.apply(GenJVM.scala:822)
+        at scala.tools.nsc.backend.jvm.GenJVM$BytecodeGenerator$$anonfun$41.apply(GenJVM.scala:655)
+        at scala.Iterator$class.foreach(Iterator.scala:380)
+        at scala.runtime.BoxedArray$$anon$0.foreach(BoxedArray.scala:42)
+        at scala.Iterable$class.foreach(Iterable.scala:197)
+        at scala.runtime.BoxedArray.foreach(BoxedArray.scala:21)
+        at scala.tools.nsc.backend.icode.BasicBlocks$BasicBlock.traverse(BasicBlocks.scala:91)
+        at scala.tools.nsc.backend.jvm.GenJVM$BytecodeGenerator.genBlock(GenJVM.scala:655)
+        at scala.tools.nsc.backend.jvm.GenJVM$BytecodeGenerator.genBlocks(GenJVM.scala:576)
+        at scala.tools.nsc.backend.jvm.GenJVM$BytecodeGenerator.genCode(GenJVM.scala:566)
+        at scala.tools.nsc.backend.jvm.GenJVM$BytecodeGenerator.genMethod(GenJVM.scala:451)
+        at scala.tools.nsc.backend.jvm.GenJVM$BytecodeGenerator$$anonfun$6.apply(GenJVM.scala:198)
+        at scala.tools.nsc.backend.jvm.GenJVM$BytecodeGenerator$$anonfun$6.apply(GenJVM.scala:198)
+        at scala.List.foreach(List.scala:702)
+        at scala.tools.nsc.backend.jvm.GenJVM$BytecodeGenerator.genClass(GenJVM.scala:198)
+        at scala.tools.nsc.backend.jvm.GenJVM$JvmPhase$$anonfun$0.apply(GenJVM.scala:44)
+        at scala.tools.nsc.backend.jvm.GenJVM$JvmPhase$$anonfun$0.apply(GenJVM.scala:44)
+        at scala.Iterator$class.foreach(Iterator.scala:380)
+        at scala.collection.Map$$anon$2.foreach(Map.scala:111)
+        at scala.tools.nsc.backend.jvm.GenJVM$JvmPhase.run(GenJVM.scala:44)
+        at scala.tools.nsc.Global$Run.compileSources(Global.scala:488)
+        at scala.tools.nsc.Global$Run.compile(Global.scala:562)
+        at scala.tools.nsc.Main$.process(Main.scala:57)
+        at scala.tools.nsc.Main$.main(Main.scala:79)
+        at scala.tools.nsc.Main.main(Main.scala)
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" ></td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Nikolay&nbsp; edited on &nbsp;2007-04-20 11:35:42.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+contribution #437. I assigned to Iuli to fix the exception but  I think this should be reported as an error by the compiler because we know statically that it will fail at runtime. Also, isInstanceOf for similar situations should yield a warning. BTW, Erasure generates incorrect code - scala.Int.unbox("fff")!
+</td></tr>
+<tr>
+        <td>
+        <strong>Iulian&nbsp; edited on &nbsp;2007-04-20 16:38:31.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Fixed the code generator so it doesn't crash. The runtime behavior is correct, IMO (ClassCastException with java.lang.String).
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

@@ -1,0 +1,206 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#1229]</th>
+		<th><strong>project:</strong> eclipse-plugin</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Nikolay</td>
+	  <td align="center" bgcolor="#FFFFFF">Sean</td>
+	  <td align="center" bgcolor="#FFFFFF">open</td>
+          <td align="center" bgcolor="#FFFFFF">2007-07-19 14:55:37.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">[contrib #704] Scala plugin unable to initialize compiler</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>!ENTRY ch.epfl.lamp.sdt.core 4 4 2007-07-19 14:33:40.187
+!MESSAGE Compiler initialization error
+!STACK 0
+scala.tools.nsc.FatalError: object scala not found.
+	at scala.tools.nsc.symtab.Definitions$definitions$.getModuleOrClass(Definitions.scala:408)
+	at scala.tools.nsc.symtab.Definitions$definitions$.getModule(Definitions.scala:379)
+	at scala.tools.nsc.symtab.Definitions$definitions$.init(Definitions.scala:740)
+	at scala.tools.nsc.Global$Run.&lt;init&gt;(Global.scala:449)
+	at scala.tools.nsc.Global.&lt;init&gt;(Global.scala:689)
+	at ch.epfl.lamp.sdt.build.ScalaCompilerManager$1MyGlobal.&lt;init&gt;(ScalaCompilerManager.java:106)
+	at ch.epfl.lamp.sdt.build.ScalaCompilerManager.initializeCompiler(ScalaCompilerManager.java:132)
+	at ch.epfl.lamp.sdt.build.ScalaCompilerManager$ScalaCompiler.compiler(ScalaCompilerManager.java:397)
+	at ch.epfl.lamp.sdt.build.ScalaCompilerManager$SemanticCompiler.unitFor(ScalaCompilerManager.java:438)
+	at ch.epfl.lamp.sdt.build.ScalaCompilerManager$SemanticCompiler.tokensFor(ScalaCompilerManager.java:506)
+	at ch.epfl.lamp.sdt.core.ScalaProject.refreshTokens(ScalaProject.java:148)
+	at ch.epfl.lamp.sdt.ui.actions.HighlightAction.run(HighlightAction.java:93)
+	at ch.epfl.lamp.sdt.ui.actions.HighlightAction.run(HighlightAction.java:79)
+	at ch.epfl.lamp.sdt.ui.actions.HighlightAction$1.run(HighlightAction.java:63)
+	at ch.epfl.lamp.sdt.ui.actions.HighlightAction.run(HighlightAction.java:67)
+	at ch.epfl.lamp.sdt.ui.scalaeditor.ScalaEditor$2.focusGained(ScalaEditor.java:229)
+	at org.eclipse.swt.widgets.TypedListener.handleEvent(TypedListener.java:132)
+	at org.eclipse.swt.widgets.EventTable.sendEvent(EventTable.java:66)
+	at org.eclipse.swt.widgets.Widget.sendEvent(Widget.java:938)
+	at org.eclipse.swt.widgets.Widget.sendEvent(Widget.java:962)
+	at org.eclipse.swt.widgets.Widget.sendEvent(Widget.java:943)
+	at org.eclipse.swt.widgets.Control.sendFocusEvent(Control.java:2352)
+	at org.eclipse.swt.widgets.Widget.wmSetFocus(Widget.java:2176)
+	at org.eclipse.swt.widgets.Control.WM_SETFOCUS(Control.java:4282)
+	at org.eclipse.swt.widgets.Canvas.WM_SETFOCUS(Canvas.java:343)
+	at org.eclipse.swt.widgets.Control.windowProc(Control.java:3738)
+	at org.eclipse.swt.widgets.Canvas.windowProc(Canvas.java:291)
+	at org.eclipse.swt.widgets.Display.windowProc(Display.java:4364)
+	at org.eclipse.swt.internal.win32.OS.SetFocus(Native Method)
+	at org.eclipse.swt.widgets.Control.forceFocus(Control.java:963)
+	at org.eclipse.swt.widgets.Control.setSavedFocus(Control.java:2966)
+	at org.eclipse.swt.widgets.Decorations.restoreFocus(Decorations.java:819)
+	at org.eclipse.swt.widgets.Decorations.WM_ACTIVATE(Decorations.java:1625)
+	at org.eclipse.swt.widgets.Shell.WM_ACTIVATE(Shell.java:1833)
+	at org.eclipse.swt.widgets.Control.windowProc(Control.java:3670)
+	at org.eclipse.swt.widgets.Canvas.windowProc(Canvas.java:291)
+	at org.eclipse.swt.widgets.Decorations.windowProc(Decorations.java:1584)
+	at org.eclipse.swt.widgets.Shell.windowProc(Shell.java:1753)
+	at org.eclipse.swt.widgets.Display.windowProc(Display.java:4351)
+	at org.eclipse.swt.internal.win32.OS.DestroyWindow(Native Method)
+	at org.eclipse.swt.widgets.Control.destroyWidget(Control.java:652)
+	at org.eclipse.swt.widgets.Shell.destroyWidget(Shell.java:636)
+	at org.eclipse.swt.widgets.Widget.release(Widget.java:750)
+	at org.eclipse.swt.widgets.Widget.dispose(Widget.java:410)
+	at org.eclipse.swt.widgets.Decorations.dispose(Decorations.java:457)
+	at org.eclipse.swt.widgets.Shell.dispose(Shell.java:653)
+	at org.eclipse.jface.window.Window.close(Window.java:330)
+	at org.eclipse.jface.dialogs.Dialog.close(Dialog.java:971)
+	at org.eclipse.jface.dialogs.ProgressMonitorDialog.close(ProgressMonitorDialog.java:348)
+	at org.eclipse.jface.dialogs.ProgressMonitorDialog.finishedRun(ProgressMonitorDialog.java:582)
+	at org.eclipse.jface.dialogs.ProgressMonitorDialog.run(ProgressMonitorDialog.java:498)
+	at ch.epfl.lamp.sdt.ui.actions.HighlightAction.run(HighlightAction.java:68)
+	at ch.epfl.lamp.sdt.ui.scalaeditor.ScalaEditor$2.focusGained(ScalaEditor.java:229)
+	at org.eclipse.swt.widgets.TypedListener.handleEvent(TypedListener.java:132)
+	at org.eclipse.swt.widgets.EventTable.sendEvent(EventTable.java:66)
+	at org.eclipse.swt.widgets.Widget.sendEvent(Widget.java:938)
+	at org.eclipse.swt.widgets.Widget.sendEvent(Widget.java:962)
+	at org.eclipse.swt.widgets.Widget.sendEvent(Widget.java:943)
+	at org.eclipse.swt.widgets.Control.sendFocusEvent(Control.java:2352)
+	at org.eclipse.swt.widgets.Widget.wmSetFocus(Widget.java:2176)
+	at org.eclipse.swt.widgets.Control.WM_SETFOCUS(Control.java:4282)
+	at org.eclipse.swt.widgets.Canvas.WM_SETFOCUS(Canvas.java:343)
+	at org.eclipse.swt.widgets.Control.windowProc(Control.java:3738)
+	at org.eclipse.swt.widgets.Canvas.windowProc(Canvas.java:291)
+	at org.eclipse.swt.widgets.Display.windowProc(Display.java:4364)
+	at org.eclipse.swt.internal.win32.OS.SetFocus(Native Method)
+	at org.eclipse.swt.widgets.Control.forceFocus(Control.java:963)
+	at org.eclipse.swt.widgets.Control.setSavedFocus(Control.java:2966)
+	at org.eclipse.swt.widgets.Decorations.restoreFocus(Decorations.java:819)
+	at org.eclipse.swt.widgets.Shell.open(Shell.java:1099)
+	at org.eclipse.jface.window.Window.open(Window.java:792)
+	at org.eclipse.ui.internal.WorkbenchWindow.open(WorkbenchWindow.java:754)
+	at org.eclipse.ui.internal.Workbench$61.runWithException(Workbench.java:3379)
+	at org.eclipse.ui.internal.StartupThreading$StartupRunnable.run(StartupThreading.java:31)
+	at org.eclipse.swt.widgets.RunnableLock.run(RunnableLock.java:35)
+	at org.eclipse.swt.widgets.Synchronizer.runAsyncMessages(Synchronizer.java:123)
+	at org.eclipse.swt.widgets.Display.runAsyncMessages(Display.java:3659)
+	at org.eclipse.swt.widgets.Display.readAndDispatch(Display.java:3296)
+	at org.eclipse.ui.application.WorkbenchAdvisor.openWindows(WorkbenchAdvisor.java:797)
+	at org.eclipse.ui.internal.Workbench$25.runWithException(Workbench.java:1342)
+	at org.eclipse.ui.internal.StartupThreading$StartupRunnable.run(StartupThreading.java:31)
+	at org.eclipse.swt.widgets.RunnableLock.run(RunnableLock.java:35)
+	at org.eclipse.swt.widgets.Synchronizer.runAsyncMessages(Synchronizer.java:123)
+	at org.eclipse.swt.widgets.Display.runAsyncMessages(Display.java:3659)
+	at org.eclipse.swt.widgets.Display.readAndDispatch(Display.java:3296)
+	at org.eclipse.ui.internal.Workbench.runUI(Workbench.java:2309)
+	at org.eclipse.ui.internal.Workbench.access$4(Workbench.java:2219)
+	at org.eclipse.ui.internal.Workbench$4.run(Workbench.java:466)
+	at org.eclipse.core.databinding.observable.Realm.runWithDefault(Realm.java:289)
+	at org.eclipse.ui.internal.Workbench.createAndRunWorkbench(Workbench.java:461)
+	at org.eclipse.ui.PlatformUI.createAndRunWorkbench(PlatformUI.java:149)
+	at org.eclipse.ui.internal.ide.application.IDEApplication.start(IDEApplication.java:106)
+	at org.eclipse.equinox.internal.app.EclipseAppHandle.run(EclipseAppHandle.java:153)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.runApplication(EclipseAppLauncher.java:106)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.start(EclipseAppLauncher.java:76)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:363)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:176)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+	at java.lang.reflect.Method.invoke(Unknown Source)
+	at org.eclipse.equinox.launcher.Main.invokeFramework(Main.java:504)
+	at org.eclipse.equinox.launcher.Main.basicRun(Main.java:443)
+	at org.eclipse.equinox.launcher.Main.run(Main.java:1169)
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>Clean installation of Eclipse 3.3 and JDK 1.5 update 12 on Windows XP system
+Installed Scala-plugin via Eclipse update 
+When trying to open *.scala files shows error 
+"An error has occured in Scala Eclipse plugin. Please submit ..."
+Reason: Compiler initialization error
+object scala not found
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >Expected to open editor window with scala source code</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Nikolay&nbsp; edited on &nbsp;2007-07-19 14:56:53.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

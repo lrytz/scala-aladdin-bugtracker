@@ -1,0 +1,665 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#1018]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> high</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">Burak</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2007-03-24 17:43:01.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">pattern matcher breaks the build on windows</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>   [locker] exception when typing if (temp18.==(136))
+   [locker]   {
+   [locker]     &lt;synthetic&gt; var temp155: scala.Int(136) = 136;
+   [locker]     {
+   [locker]       body13403050();
+   [locker]       body13403050(){
+   [locker]         code.emit(new scala.tools.nsc.backend.icode.Opcodes#opcodes#CALL_PRIMITIVE(ICodeReader.this.global.icodes.opcodes, new scala.tools.nsc.backend.icode.Primitives#Conversion(ICodeReader.this.global.icodes, ICodeReader.this.global().icodes().LONG(), ICodeReader.this.global().icodes().INT())))
+   [locker]       }
+   [locker]     }
+   [locker]   }
+   [locker] else
+   [locker]   if (temp18.==(137))
+   [locker]     {
+   [locker]       &lt;synthetic&gt; var temp156: scala.Int(137) = 137;
+   [locker]       {
+   [locker]         body29014997();
+   [locker]         body29014997(){
+   [locker]           code.emit(new scala.tools.nsc.backend.icode.Opcodes#opcodes#CALL_PRIMITIVE(ICodeReader.this.global.icodes.opcodes, new scala.tools.nsc.backend.icode.Primitives#Conversion(ICodeReader.this.global.icodes, ICodeReader.this.global().icodes().LONG(), ICodeReader.this.global().icodes().FLOAT())))
+   [locker]         }
+   [locker]       }
+   [locker]     }
+   [locker]   else
+   [locker]     if (temp18.==(138))
+   [locker]       {
+   [locker]         &lt;synthetic&gt; var temp157: scala.Int(138) = 138;
+   [locker]         {
+   [locker]           body19320915();
+   [locker]           body19320915(){
+   [locker]             code.emit(new scala.tools.nsc.backend.icode.Opcodes#opcodes#CALL_PRIMITIVE(ICodeReader.this.global.icodes.opcodes, new scala.tools.nsc.backend.icode.Primitives#Conversion(ICodeReader.this.global.icodes, ICodeReader.this.global().icodes().LONG(), ICodeReader.this.global().icodes().DOUBLE())))
+   [locker]           }
+   [locker]         }
+   [locker]       }
+   [locker]     else
+   [locker]       if (temp18.==(139))
+   [locker]         {
+   [locker]           &lt;synthetic&gt; var temp158: scala.Int(139) = 139;
+   [locker]           {
+   [locker]             body32752509();
+   [locker]             body32752509(){
+   [locker]               code.emit(new scala.tools.nsc.backend.icode.Opcodes#opcodes#CALL_PRIMITIVE(ICodeReader.this.global.icodes.opcodes, new scala.tools.nsc.backend.icode.Primitives#Conversion(ICodeReader.this.global.icodes, ICodeReader.this.global().icodes().FLOAT(), ICodeReader.this.global().icodes().INT())))
+   [locker]             }
+   [locker]           }
+   [locker]         }
+   [locker]       else
+   [locker]         if (temp18.==(140))
+   [locker]           {
+   [locker]             &lt;synthetic&gt; var temp159: scala.Int(140) = 140;
+   [locker]             {
+   [locker]               body17523428();
+   [locker]               body17523428(){
+   [locker]                 code.emit(new scala.tools.nsc.backend.icode.Opcodes#opcodes#CALL_PRIMITIVE(ICodeReader.this.global.icodes.opcodes, new scala.tools.nsc.backend.icode.Primitives#Conversion(ICodeReader.this.global.icodes, ICodeReader.this.global().icodes().FLOAT(), ICodeReader.this.global().icodes().LONG())))
+   [locker]               }
+   [locker]             }
+   [locker]           }
+   [locker]         else
+   [locker]           if (temp18.==(141))
+   [locker]             {
+   [locker]               &lt;synthetic&gt; var temp160: scala.Int(141) = 141;
+   [locker]               {
+   [locker]                 body11636214();
+   [locker]                 body11636214(){
+   [locker]                   code.emit(new scala.tools.nsc.backend.icode.Opcodes#opcodes#CALL_PRIMITIVE(ICodeReader.this.global.icodes.opcodes, new scala.tools.nsc.backend.icode.Primitives#Conversion(ICodeReader.this.global.icodes, ICodeReader.this.global().icodes().FLOAT(), ICodeReader.this.global().icodes().DOUBLE())))
+   [locker]                 }
+   [locker]               }
+   [locker]             }
+   [locker]           else
+   [locker]             if (temp18.==(142))
+   [locker]               {
+   [locker]                 &lt;synthetic&gt; var temp161: scala.Int(142) = 142;
+   [locker]                 {
+   [locker]                   body24566008();
+   [locker]                   body24566008(){
+   [locker]                     code.emit(new scala.tools.nsc.backend.icode.Opcodes#opcodes#CALL_PRIMITIVE(ICodeReader.this.global.icodes.opcodes, new scala.tools.nsc.backend.icode.Primitives#Conversion(ICodeReader.this.global.icodes, ICodeReader.this.global().icodes().DOUBLE(), ICodeReader.this.global().icodes().INT())))
+   [locker]                   }
+   [locker]                 }
+   [locker]               }
+   [locker]             else
+   [locker]               if (temp18.==(143))
+   [locker]                 {
+   [locker]                   &lt;synthetic&gt; var temp162: scala.Int(143) = 143;
+   [locker]                   {
+   [locker]                     body6473704();
+   [locker]                     body6473704(){
+   [locker]                       code.emit(new scala.tools.nsc.backend.icode.Opcodes#opcodes#CALL_PRIMITIVE(ICodeReader.this.global.icodes.opcodes, new scala.tools.nsc.backend.icode.Primitives#Conversion(ICodeReader.this.global.icodes, ICodeReader.this.global().icodes().DOUBLE(), ICodeReader.this.global().icodes().LONG())))
+   [locker]                     }
+   [locker]                   }
+   [locker]                 }
+   [locker]               else
+   [locker]                 if (temp18.==(144))
+   [locker]                   {
+   [locker]                     &lt;synthetic&gt; var temp163: scala.Int(144) = 144;
+   [locker]                     {
+   [locker]                       body25735716();
+   [locker]                       body25735716(){
+   [locker]                         code.emit(new scala.tools.nsc.backend.icode.Opcodes#opcodes#CALL_PRIMITIVE(ICodeReader.this.global.icodes.opcodes, new scala.tools.nsc.backend.icode.Primitives#Conversion(ICodeReader.this.global.icodes, ICodeReader.this.global().icodes().DOUBLE(), ICodeReader.this.global().icodes().FLOAT())))
+   [locker]                       }
+   [locker]                     }
+   [locker]                   }
+   [locker]                 else
+   [locker]                   if (temp18.==(145))
+   [locker]                     {
+   [locker]                       &lt;synthetic&gt; var temp164: scala.Int(145) = 145;
+   [locker]                       {
+   [locker]                         body18976298();
+   [locker]                         body18976298(){
+   [locker]                           code.emit(new scala.tools.nsc.backend.icode.Opcodes#opcodes#CALL_PRIMITIVE(ICodeReader.this.global.icodes.opcodes, new scala.tools.nsc.backend.icode.Primitives#Conversion(ICodeReader.this.global.icodes, ICodeReader.this.global().icodes().INT(), ICodeReader.this.global().icodes().BYTE())))
+   [locker]                         }
+   [locker]                       }
+   [locker]                     }
+   [locker]                   else
+   [locker]                     if (temp18.==(146))
+   [locker]                       {
+   [locker]                         &lt;synthetic&gt; var temp165: scala.Int(146) = 146;
+   [locker]                         {
+   [locker]                           body28279459();
+   [locker]                           body28279459(){
+   [locker]                             code.emit(new scala.tools.nsc.backend.icode.Opcodes#opcodes#CALL_PRIMITIVE(ICodeReader.this.global.icodes.opcodes, new scala.tools.nsc.backend.icode.Primitives#Conversion(ICodeReader.this.global.icodes, ICodeReader.this.global().icodes().INT(), ICodeReader.this.global().icodes().CHAR())))
+   [locker]                           }
+   [locker]                         }
+   [locker]                       }
+   [locker]                     else
+   [locker]                       if (temp18.==(147))
+   [locker]                         {
+   [locker]                           &lt;synthetic&gt; var temp166: scala.Int(147) = 147;
+   [locker]                           {
+   [locker]                             body16523872();
+   [locker]                             body16523872(){
+   [locker]                               code.emit(new scala.tools.nsc.backend.icode.Opcodes#opcodes#CALL_PRIMITIVE(ICodeReader.this.global.icodes.opcodes, new scala.tools.nsc.backend.icode.Primitives#Conversion(ICodeReader.this.global.icodes, ICodeReader.this.global().icodes().INT(), ICodeReader.this.global().icodes().SHORT())))
+   [locker]                             }
+   [locker]                           }
+   [locker]                         }
+   [locker]                       else
+   [locker]                         if (temp18.==(148))
+   [locker]                           {
+   [locker]                             &lt;synthetic&gt; var temp167: scala.Int(148) = 148;
+   [locker]                             {
+   [locker]                               body20272781();
+   [locker]                               body20272781(){
+   [locker]                                 code.emit(new scala.tools.nsc.backend.icode.Opcodes#opcodes#CALL_PRIMITIVE(ICodeReader.this.global.icodes.opcodes, new scala.tools.nsc.backend.icode.Primitives#Comparison(ICodeReader.this.global.icodes, ICodeReader.this.global().icodes().CMP(), ICodeReader.this.global().icodes().LONG())))
+   [locker]                               }
+   [locker]                             }
+   [locker]                           }
+   [locker]                         else
+   [locker]                           if (temp18.==(149))
+   [locker]                             {
+   [locker]                               &lt;synthetic&gt; var temp168: scala.Int(149) = 149;
+   [locker]                               {
+   [locker]                                 body16835030();
+   [locker]                                 body16835030(){
+   [locker]                                   code.emit(new scala.tools.nsc.backend.icode.Opcodes#opcodes#CALL_PRIMITIVE(ICodeReader.this.global.icodes.opcodes, new scala.tools.nsc.backend.icode.Primitives#Comparison(ICodeReader.this.global.icodes, ICodeReader.this.global().icodes().CMPL(), ICodeReader.this.global().icodes().FLOAT())))
+   [locker]                                 }
+   [locker]                               }
+   [locker]                             }
+   [locker]                           else
+   [locker]                             if (temp18.==(150))
+   [locker]                               {
+   [locker]                                 &lt;synthetic&gt; var temp169: scala.Int(150) = 150;
+   [locker]                                 {
+   [locker]                                   body24994248();
+   [locker]                                   body24994248(){
+   [locker]                                     code.emit(new scala.tools.nsc.backend.icode.Opcodes#opcodes#CALL_PRIMITIVE(ICodeReader.this.global.icodes.opcodes, new scala.tools.nsc.backend.icode.Primitives#Comparison(ICodeReader.this.global.icodes, ICodeReader.this.global().icodes().CMPG(), ICodeReader.this.global().icodes().FLOAT())))
+   [locker]                                   }
+   [locker]                                 }
+   [locker]                               }
+   [locker]                             else
+   [locker]                               if (temp18.==(151))
+   [locker]                                 {
+   [locker]                                   &lt;synthetic&gt; var temp170: scala.Int(151) = 151;
+   [locker]                                   {
+   [locker]                                     body8699296();
+   [locker]                                     body8699296(){
+   [locker]                                       code.emit(new scala.tools.nsc.backend.icode.Opcodes#opcodes#CALL_PRIMITIVE(ICodeReader.this.global.icodes.opcodes, new scala.tools.nsc.backend.icode.Primitives#Comparison(ICodeReader.this.global.icodes, ICodeReader.this.global().icodes().CMPL(), ICodeReader.this.global().icodes().DOUBLE())))
+   [locker]                                     }
+   [locker]                                   }
+   [locker]                                 }
+   [locker]                               else
+   [locker]                                 if (temp18.==(152))
+   [locker]                                   {
+   [locker]                                     &lt;synthetic&gt; var temp171: scala.Int(152) = 152;
+   [locker]                                     {
+   [locker]                                       body50537();
+   [locker]                                       body50537(){
+   [locker]                                         code.emit(new scala.tools.nsc.backend.icode.Opcodes#opcodes#CALL_PRIMITIVE(ICodeReader.this.global.icodes.opcodes, new scala.tools.nsc.backend.icode.Primitives#Comparison(ICodeReader.this.global.icodes, ICodeReader.this.global().icodes().CMPG(), ICodeReader.this.global().icodes().DOUBLE())))
+   [locker]                                       }
+   [locker]                                     }
+   [locker]                                   }
+   [locker]                                 else
+   [locker]                                   if (temp18.==(153))
+   [locker]                                     {
+   [locker]                                       &lt;synthetic&gt; var temp172: scala.Int(153) = 153;
+   [locker]                                       {
+   [locker]                                         body13488471();
+   [locker]                                         body13488471(){
+   [locker]                                           code.emit(new scala.tools.nsc.symtab.classfile.ICodeReader#LinearCode#LCZJUMP(code, parseJumpTarget(), ICodeReader.this.pc().+(size), ICodeReader.this.global().icodes().EQ(), ICodeReader.this.global().icodes().INT()))
+   [locker]                                         }
+   [locker]                                       }
+   [locker]                                     }
+   [locker]                                   else
+   [locker]                                     if (temp18.==(154))
+   [locker]                                       {
+   [locker]                                         &lt;synthetic&gt; var temp173: scala.Int(154) = 154;
+   [locker]                                         {
+   [locker]                                           body2073320();
+   [locker]                                           body2073320(){
+   [locker]                                             code.emit(new scala.tools.nsc.symtab.classfile.ICodeReader#LinearCode#LCZJUMP(code, parseJumpTarget(), ICodeReader.this.pc().+(size), ICodeReader.this.global().icodes().NE(), ICodeReader.this.global().icodes().INT()))
+   [locker]                                           }
+   [locker]                                         }
+   [locker]                                       }
+   [locker]                                     else
+   [locker]                                       if (temp18.==(155))
+   [locker]                                         {
+   [locker]                                           &lt;synthetic&gt; var temp174: scala.Int(155) = 155;
+   [locker]                                           {
+   [locker]                                             body30176196();
+   [locker]                                             body30176196(){
+   [locker]                                               code.emit(new scala.tools.nsc.symtab.classfile.ICodeReader#LinearCode#LCZJUMP(code, parseJumpTarget(), ICodeReader.this.pc().+(size), ICodeReader.this.global().icodes().LT(), ICodeReader.this.global().icodes().INT()))
+   [locker]                                             }
+   [locker]                                           }
+   [locker]                                         }
+   [locker]                                       else
+   [locker]                                         if (temp18.==(156))
+   [locker]                                           {
+   [locker]                                             &lt;synthetic&gt; var temp175: scala.Int(156) = 156;
+   [locker]                                             {
+   [locker]                                               body13078049();
+   [locker]                                               body13078049(){
+   [locker]                                                 code.emit(new scala.tools.nsc.symtab.classfile.ICodeReader#LinearCode#LCZJUMP(code, parseJumpTarget(), ICodeReader.this.pc().+(size), ICodeReader.this.global().icodes().GE(), ICodeReader.this.global().icodes().INT()))
+   [locker]                                               }
+   [locker]                                             }
+   [locker]                                           }
+   [locker]                                         else
+   [locker]                                           if (temp18.==(157))
+   [locker]                                             {
+   [locker]                                               &lt;synthetic&gt; var temp176: scala.Int(157) = 157;
+   [locker]                                               {
+   [locker]                                                 body13442432();
+   [locker]                                                 body13442432(){
+   [locker]                                                   code.emit(new scala.tools.nsc.symtab.classfile.ICodeReader#LinearCode#LCZJUMP(code, parseJumpTarget(), ICodeReader.this.pc().+(size), ICodeReader.this.global().icodes().GT(), ICodeReader.this.global().icodes().INT()))
+   [locker]                                                 }
+   [locker]                                               }
+   [locker]                                             }
+   [locker]                                           else
+   [locker]                                             if (temp18.==(158))
+   [locker]                                               {
+   [locker]                                                 &lt;synthetic&gt; var temp177: scala.Int(158) = 158;
+   [locker]                                                 {
+   [locker]                                                   body27145230();
+   [locker]                                                   body27145230(){
+   [locker]                                                     code.emit(new scala.tools.nsc.symtab.classfile.ICodeReader#LinearCode#LCZJUMP(code, parseJumpTarget(), ICodeReader.this.pc().+(size), ICodeReader.this.global().icodes().LE(), ICodeReader.this.global().icodes().INT()))
+   [locker]                                                   }
+   [locker]                                                 }
+   [locker]                                               }
+   [locker]                                             else
+   [locker]                                               if (temp18.==(159))
+   [locker]                                                 {
+   [locker]                                                   &lt;synthetic&gt; var temp178: scala.Int(159) = 159;
+   [locker]                                                   {
+   [locker]                                                     body4543778();
+   [locker]                                                     body4543778(){
+   [locker]                                                       code.emit(new scala.tools.nsc.symtab.classfile.ICodeReader#LinearCode#LCJUMP(code, parseJumpTarget(), ICodeReader.this.pc().+(size), ICodeReader.this.global().icodes().EQ(), ICodeReader.this.global().icodes().INT()))
+   [locker]                                                     }
+   [locker]                                                   }
+   [locker]                                                 }
+   [locker]                                               else
+   [locker]                                                 if (temp18.==(160))
+   [locker]                                                   {
+   [locker]                                                     &lt;synthetic&gt; var temp179: scala.Int(160) = 160;
+   [locker]                                                     {
+   [locker]                                                       body17888479();
+   [locker]                                                       body17888479(){
+   [locker]                                                         code.emit(new scala.tools.nsc.symtab.classfile.ICodeReader#LinearCode#LCJUMP(code, parseJumpTarget(), ICodeReader.this.pc().+(size), ICodeReader.this.global().icodes().NE(), ICodeReader.this.global().icodes().INT()))
+   [locker]                                                       }
+   [locker]                                                     }
+   [locker]                                                   }
+   [locker]                                                 else
+   [locker]                                                   if (temp18.==(161))
+   [locker]                                                     {
+   [locker]                                                       &lt;synthetic&gt; var temp180: scala.Int(161) = 161;
+   [locker]                                                       {
+   [locker]                                                         body27290775();
+   [locker]                                                         body27290775(){
+   [locker]                                                           code.emit(new scala.tools.nsc.symtab.classfile.ICodeReader#LinearCode#LCJUMP(code, parseJumpTarget(), ICodeReader.this.pc().+(size), ICodeReader.this.global().icodes().LT(), ICodeReader.this.global().icodes().INT()))
+   [locker]                                                         }
+   [locker]                                                       }
+   [locker]                                                     }
+   [locker]                                                   else
+   [locker]                                                     if (temp18.==(162))
+   [locker]                                                       {
+   [locker]                                                         &lt;synthetic&gt; var temp181: scala.Int(162) = 162;
+   [locker]                                                         {
+   [locker]                                                           body26680197();
+   [locker]                                                           body26680197(){
+   [locker]                                                             code.emit(new scala.tools.nsc.symtab.classfile.ICodeReader#LinearCode#LCJUMP(code, parseJumpTarget(), ICodeReader.this.pc().+(size), ICodeReader.this.global().icodes().GE(), ICodeReader.this.global().icodes().INT()))
+   [locker]                                                           }
+   [locker]                                                         }
+   [locker]                                                       }
+   [locker]                                                     else
+   [locker]                                                       if (temp18.==(163))
+   [locker]                                                         {
+   [locker]                                                           &lt;synthetic&gt; var temp182: scala.Int(163) = 163;
+   [locker]                                                           {
+   [locker]                                                             body27003542();
+   [locker]                                                             body27003542(){
+   [locker]                                                               code.emit(new scala.tools.nsc.symtab.classfile.ICodeReader#LinearCode#LCJUMP(code, parseJumpTarget(), ICodeReader.this.pc().+(size), ICodeReader.this.global().icodes().GT(), ICodeReader.this.global().icodes().INT()))
+   [locker]                                                             }
+   [locker]                                                           }
+   [locker]                                                         }
+   [locker]                                                       else
+   [locker]                                                         if (temp18.==(164))
+   [locker]                                                           {
+   [locker]                                                             &lt;synthetic&gt; var temp183: scala.Int(164) = 164;
+   [locker]                                                             {
+   [locker]                                                               body20374211();
+   [locker]                                                               body20374211(){
+   [locker]                                                                 code.emit(new scala.tools.nsc.symtab.classfile.ICodeReader#LinearCode#LCJUMP(code, parseJumpTarget(), ICodeReader.this.pc().+(size), ICodeReader.this.global().icodes().LE(), ICodeReader.this.global().icodes().INT()))
+   [locker]                                                               }
+   [locker]                                                             }
+   [locker]                                                           }
+   [locker]                                                         else
+   [locker]                                                           if (temp18.==(165))
+   [locker]                                                             {
+   [locker]                                                               &lt;synthetic&gt; var temp184: scala.Int(165) = 165;
+   [locker]                                                               {
+   [locker]                                                                 body24765737();
+   [locker]                                                                 body24765737(){
+   [locker]                                                                   code.emit(new scala.tools.nsc.symtab.classfile.ICodeReader#LinearCode#LCJUMP(code, parseJumpTarget(), ICodeReader.this.pc().+(size), ICodeReader.this.global().icodes().EQ(), ICodeReader.this.OBJECT()))
+   [locker]                                                                 }
+   [locker]                                                               }
+   [locker]                                                             }
+   [locker]                                                           else
+   [locker]                                                             if (temp18.==(166))
+   [locker]                                                               {
+   [locker]                                                                 &lt;synthetic&gt; var temp185: scala.Int(166) = 166;
+   [locker]                                                                 {
+   [locker]                                                                   body16433833();
+   [locker]                                                                   body16433833(){
+   [locker]                                                                     code.emit(new scala.tools.nsc.symtab.classfile.ICodeReader#LinearCode#LCJUMP(code, parseJumpTarget(), ICodeReader.this.pc().+(size), ICodeReader.this.global().icodes().NE(), ICodeReader.this.OBJECT()))
+   [locker]                                                                   }
+   [locker]                                                                 }
+   [locker]                                                               }
+   [locker]                                                             else
+   [locker]                                                               if (temp18.==(167))
+   [locker]                                                                 {
+   [locker]                                                                   &lt;synthetic&gt; var temp186: scala.Int(167) = 167;
+   [locker]                                                                   {
+   [locker]                                                                     body21062659();
+   [locker]                                                                     body21062659(){
+   [locker]                                                                       code.emit(new scala.tools.nsc.symtab.classfile.ICodeReader#LinearCode#LJUMP(code, parseJumpTarget()))
+   [locker]                                                                     }
+   [locker]                                                                   }
+   [locker]                                                                 }
+   [locker]                                                               else
+   [locker]                                                                 if (temp18.==(168))
+   [locker]                                                                   {
+   [locker]                                                                     &lt;synthetic&gt; var temp187: scala.Int(168) = 168;
+   [locker]                                                                     {
+   [locker]                                                                       body17529158();
+   [locker]                                                                       body17529158(){
+   [locker]                                                                         Predef.error(&quot;Cannot handle jsr/ret&quot;)
+   [locker]                                                                       }
+   [locker]                                                                     }
+   [locker]                                                                   }
+   [locker]                                                                 else
+   [locker]                                                                   if (temp18.==(169))
+   [locker]                                                                     {
+   [locker]                                                                       &lt;synthetic&gt; var temp188: scala.Int(169) = 169;
+   [locker]                                                                       {
+   [locker]                                                                         body33187302();
+   [locker]                                                                         body33187302(){
+   [locker]                                                                           Predef.error(&quot;Cannot handle jsr/ret&quot;)
+   [locker]                                                                         }
+   [locker]                                                                       }
+   [locker]                                                                     }
+   [locker]                                                                   else
+   [locker]                                                                     if (temp18.==(170))
+   [locker]                                                                       {
+   [locker]                                                                         &lt;synthetic&gt; var temp189: scala.Int(170) = 170;
+   [locker]                                                                         {
+   [locker]                                                                           body8284763();
+   [locker]                                                                           body8284763(){
+   [locker]                                                                             var byte1: scala.Byte = ICodeReader.this.in().nextByte();
+   [locker]                                                                             size = size.+(1);
+   [locker]                                                                             while$0(){
+   [locker]                                                                               if (byte1.==(0))
+   [locker]                                                                                 {
+   [locker]                                                                                   {
+   [locker]                                                                                     byte1 = ICodeReader.this.in().nextByte();
+   [locker]                                                                                     size = size.+(1)
+   [locker]                                                                                   };
+   [locker]                                                                                   while$0()
+   [locker]                                                                                 }
+   [locker]                                                                               else
+   [locker]                                                                                 ()
+   [locker]                                                                             };
+   [locker]                                                                             val default: scala.Int = byte1.&lt;&lt;(24).|(ICodeReader.this.in().nextByte().&lt;&lt;(16)).|(ICodeReader.this.in().nextByte().&lt;&lt;(8)).|(ICodeReader.this.in().nextByte());
+   [locker]                                                                             size = size.+(3);
+   [locker]                                                                             val low: scala.Int = ICodeReader.this.in().nextInt();
+   [locker]                                                                             val high: scala.Int = ICodeReader.this.in().nextInt();
+   [locker]                                                                             size = size.+(8);
+   [locker]                                                                             scala.this.Predef.assert(low.&lt;=(high), &quot;Value low not &lt;= high for tableswitch.&quot;);
+   [locker]                                                                             val tags: scala.List = List.tabulate(high.-(low).+(1), {
+   [locker]                                                                               @scala.serializable final &lt;synthetic&gt; class $anonfun extends java.lang.Object with scala.Function1 with scala.ScalaObject {
+   [locker]                                                                                 def this($outer: scala.tools.nsc.symtab.classfile.ICodeReader): template $anonfun = {
+   [locker]                                                                                   $anonfun.super.this();
+   [locker]                                                                                   $anonfun.this./*Function1$class*/$init$();
+   [locker]                                                                                   ()
+   [locker]                                                                                 };
+   [locker]                                                                                 final def apply(n: scala.Int): scala.List = List.apply(Array[scala.Int]{low.+(n)});
+   [locker]                                                                                 protected &lt;synthetic&gt; &lt;paramaccessor&gt; val $outer: scala.tools.nsc.symtab.classfile.ICodeReader = _;
+   [locker]                                                                                 &lt;synthetic&gt; &lt;stable&gt; def scala$tools$nsc$symtab$classfile$ICodeReader$$anonfun$$$outer(): scala.tools.nsc.symtab.classfile.ICodeReader = $anonfun.this.$outer;
+   [locker]                                                                                 final &lt;bridge&gt; def apply(x$1: java.lang.Object): java.lang.Object = $anonfun.this.apply(x$1)
+   [locker]                                                                               };
+   [locker]                                                                               (new template $anonfun(ICodeReader.this)) : scala.Function1
+   [locker]                                                                             });
+   [locker]                                                                             val targets: scala.List = tags.map({
+   [locker]                                                                               @scala.serializable final &lt;synthetic&gt; class $anonfun extends java.lang.Object with scala.Function1 with scala.ScalaObject {
+   [locker]                                                                                 def this($outer: scala.tools.nsc.symtab.classfile.ICodeReader): template $anonfun = {
+   [locker]                                                                                   $anonfun.super.this();
+   [locker]                                                                                   $anonfun.this./*Function1$class*/$init$();
+   [locker]                                                                                   ()
+   [locker]                                                                                 };
+   [locker]                                                                                 final def apply(_: scala.List): scala.Int = parseJumpTargetW();
+   [locker]                                                                                 protected &lt;synthetic&gt; &lt;paramaccessor&gt; val $outer: scala.tools.nsc.symtab.classfile.ICodeReader = _;
+   [locker]                                                                                 &lt;synthetic&gt; &lt;stable&gt; def scala$tools$nsc$symtab$classfile$ICodeReader$$anonfun$$$outer(): scala.tools.nsc.symtab.classfile.ICodeReader = $anonfun.this.$outer;
+   [locker]                                                                                 final &lt;bridge&gt; def apply(x$1: java.lang.Object): java.lang.Object = $anonfun.this.apply(x$1)
+   [locker]                                                                               };
+   [locker]                                                                               (new template $anonfun(ICodeReader.this)) : scala.Function1
+   [locker]                                                                             });
+   [locker]                                                                             code.emit(new scala.tools.nsc.symtab.classfile.ICodeReader#LinearCode#LSWITCH(code, tags, {
+   [locker]                                                                               &lt;synthetic&gt; val x$2: scala.List = targets;
+   [locker]                                                                               List.apply(Array[scala.Int]{default}).:::(x$2)
+   [locker]                                                                             }))
+   [locker]                                                                           }
+   [locker]                                                                         }
+   [locker]                                                                       }
+   [locker]                                                                     else
+   [locker]                                                                       if (temp18.==(171))
+   [locker]                                                                         {
+   [locker]                                                                           &lt;synthetic&gt; var temp190: scala.Int(171) = 171;
+   [locker]                                                                           {
+   [locker]                                                                             body13726737();
+   [locker]                                                                             body13726737(){
+   [locker]                                                                               val padding: scala.Int = if (ICodeReader.this.pc().+(size).%(4).!=(0))
+   [locker]                                                                                 4.-(ICodeReader.this.pc().+(size).%(4))
+   [locker]                                                                               else
+   [locker]                                                                                 0;
+   [locker]                                                                               size = size.+(padding);
+   [locker]                                                                               ICodeReader.this.in().bp_=(ICodeReader.this.in().bp().+(padding));
+   [locker]                                                                               scala.this.Predef.assert(ICodeReader.this.pc().+(size.%(4)).!=(0));
+   [locker]                                                                               val default: scala.Int = ICodeReader.this.pc().+(ICodeReader.this.in().nextInt());
+   [locker]                                                                               size = size.+(4);
+   [locker]                                                                               val npairs: scala.Int = ICodeReader.this.in().nextInt();
+   [locker]                                                                               size = size.+(4);
+   [locker]                                                                               var tags: scala.List = Nil;
+   [locker]                                                                               var targets: scala.List = Nil;
+   [locker]                                                                               var i: scala.Int = 0;
+   [locker]                                                                               while$1(){
+   [locker]                                                                                 if (i.&lt;(npairs))
+   [locker]                                                                                   {
+   [locker]                                                                                     {
+   [locker]                                                                                       tags = {
+   [locker]                                                                                         &lt;synthetic&gt; val x$3: scala.List = List.apply(Array[scala.Int]{ICodeReader.this.in().nextInt()});
+   [locker]                                                                                         tags.::(x$3)
+   [locker]                                                                                       };
+   [locker]                                                                                       size = size.+(4);
+   [locker]                                                                                       targets = {
+   [locker]                                                                                         &lt;synthetic&gt; val x$4: scala.Int = parseJumpTargetW();
+   [locker]                                                                                         targets.::(x$4)
+   [locker]                                                                                       };
+   [locker]                                                                                       i = i.+(1)
+   [locker]                                                                                     };
+   [locker]                                                                                     while$1()
+   [locker]                                                                                   }
+   [locker]                                                                                 else
+   [locker]                                                                                   ()
+   [locker]                                                                               };
+   [locker]                                                                               targets = {
+   [locker]                                                                                 &lt;synthetic&gt; val x$5: scala.Int = default;
+   [locker]                                                                                 targets.::(x$5)
+   [locker]                                                                               };
+   [locker]                                                                               code.emit(new scala.tools.nsc.symtab.classfile.ICodeReader#LinearCode#LSWITCH(code, tags.reverse(), targets.reverse()))
+   [locker]                                                                             }
+   [locker]                                                                           }
+   [locker]                                                                         }
+   [locker]                                                                       else
+   [locker]                                                                         if (temp18.==(172))
+   [locker]                                                                           {
+   [locker]                                                                             &lt;synthetic&gt; var temp191: scala.Int(172) = 172;
+   [locker]                                                                             {
+   [locker]                                                                               body30124817();
+   [locker]                                                                               body30124817(){
+   [locker]                                                                                 code.emit(new scala.tools.nsc.backend.icode.Opcodes#opcodes#RETURN(ICodeReader.this.global.icodes.opcodes, ICodeReader.this.global().icodes().INT()))
+   [locker]                                                                               }
+   [locker]                                                                             }
+   [locker]                                                                           }
+   [locker]                                                                         else
+   [locker]                                                                           if (temp18.==(173))
+   [locker]                                                                             {
+   [locker]                                                                               &lt;synthetic&gt; var temp192: scala.Int(173) = 173;
+   [locker]                                                                               {
+   [locker]                                                                                 body3336099();
+   [locker]                                                                                 body3336099(){
+   [locker]                                                                                   code.emit(new scala.tools.nsc.backend.icode.Opcodes#opcodes#RETURN(ICodeReader.this.global.icodes.opcodes, ICodeReader.this.global().icodes().LONG()))
+   [locker]                                                                                 }
+   [locker]                                                                               }
+   [locker]                                                                             }
+   [locker]                                                                           else
+   [locker]                                                                             if (temp18.==(174))
+   [locker]                                                                               {
+   [locker]                                                                                 &lt;synthetic&gt; var temp193: scala.Int(174) = 174;
+   [locker]                                                                                 {
+   [locker]                                                                                   body17630179();
+   [locker]                                                                                   body17630179(){
+   [locker]                                                                                     code.emit(new scala.tools.nsc.backend.icode.Opcodes#opcodes#RETURN(ICodeReader.this.global.icodes.opcodes, ICodeReader.this.global().icodes().FLOAT()))
+   [locker]                                                                                   }
+   [locker]                                                                                 }
+   [locker]                                                                               }
+   [locker]                                                                             else
+   [locker]                                                                               if (temp18.==(175))
+   [locker]                                                                                 {
+   [locker]                                                                                   &lt;synthetic&gt; var temp194: scala.Int(175) = 175;
+   [locker]                                                                                   {
+   [locker]                                                                                     body11072163();
+   [locker]                                                                                     body11072163(){
+   [locker]                                                                                       code.emit(new scala.tools.nsc.backend.icode.Opcodes#opcodes#RETURN(ICodeReader.this.global.icodes.opcodes, ICodeReader.this.global().icodes().DOUBLE()))
+   [locker]                                                                                     }
+   [locker]                                                                                   }
+   [locker]                                                                                 }
+   [locker]                                                                               else
+   [locker]                                                                                 if (temp18.==(176))
+   [locker]                                                                                   {
+   [locker]                                                                                     &lt;synthetic&gt; var temp195: scala.Int(176) = 176;
+   [locker]                                                                                     {
+   [locker]                                                                                       body24638312();
+   [locker]                                                                                       body24638312(){
+   [locker]                                                                                         code.emit(new scala.tools.nsc.backend.icode.Opcodes#opcodes#RETURN(ICodeReader.this.global.icodes.opcodes, ICodeReader.this.OBJECT()))
+   [locker]                                                                                       }
+   [locker]                                                                                     }
+   [locker]                                                                                   }
+   [locker]                                                                                 else
+   [locker]                                                                                   if (temp18.==(177))
+   [locker]                                                                                     {
+   [locker]                                                                                       &lt;synthetic&gt; var temp196: scala.Int(177) = 177;
+   [locker]                                                                                       {
+   [locker]                                                                                         body23613640();
+   [locker]                                                                                         body23613640(){
+   [locker]                                                                                           code.emit(new scala.tools.nsc.backend.icode.Opcodes#opcodes#RETURN(ICodeReader.this.global.icodes.opcodes, ICodeReader.this.global().icodes().UNIT()))
+   [locker]                                                                                         }
+   [locker]                                                                                       }
+   [locker]                                                                                     }
+   [locker]                                                                                   else
+   [locker]                                                                                     if (temp18.==(178))
+   [locker]                                                                                       {
+   [locker]                                                                                         &lt;synthetic&gt; var temp197: scala.Int(178) = 178;
+   [locker]                                                                                         {
+   [locker]                                                                                           body6700996();
+   [locker]                                                                                           body6700996(){
+   [locker]                                                                                             val field: scala.tools.nsc.symtab.Symbols#Symbol = ICodeReader.this.pool().getMemberSymbol({
+   [locker]                                                                                               scala.this.Predef.char2int(ICodeReader.this.in().nextChar())
+   [locker]                                                                                             }, true);
+   [locker]                                                                                             size = size.+(2);
+   [locker]                                                                                             if (field.hasFlag(1024L))
+   [locker]                                                                                               code.emit(new scala.tools.nsc.backend.icode.Opcodes#opcodes#LOAD_MODULE(ICodeReader.this.global.icodes.opcodes, field))
+   [locker]                                                                                             else
+   [locker]                                                                                               code.emit(new scala.tools.nsc.backend.icode.Opcodes#opcodes#LOAD_FIELD(ICodeReader.this.global.icodes.opcodes, field, true))
+   [locker]                                                                                           }
+   [locker]                                                                                         }
+   [locker]                                                                                       }
+   [locker]                                                                     </pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>I get a stack overflow when erasure tries to type the above expression on windows. On Linux it compiles which in\
+dicates that the expression is just too complex for Windows smaller stacksize. In any case, the pattern matcher \
+should not generate an expression like that; its grossly inefficient. It needs to generate a switch instead.
+
+Right now this problem blocks me from having a working system at ETAPS, so this is serious for me!
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" ></td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2007-04-17 15:14:11.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

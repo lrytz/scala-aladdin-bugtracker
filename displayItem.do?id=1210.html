@@ -1,0 +1,308 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#1210]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Nikolay</td>
+	  <td align="center" bgcolor="#FFFFFF">Adriaan</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2007-07-12 12:04:22.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">[contrib #687] stack overflow in symtab.Types$TypeRef.normalize</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>object Test
+{
+    def f[T](recurse: T =&gt; List[T]): List[T] =
+    {
+        Nil
+    }
+
+    abstract class M
+    { self =&gt;
+    	type Settings
+    	type selfType = M {type Settings = self.Settings}
+
+        val v: List[selfType] = f[selfType](_.v)
+    }
+
+    abstract class M2
+    { self =&gt;
+    	type Settings
+    	type selfType = M2 {type Settings = self.Settings}
+
+        def g: List[selfType] = Nil
+
+        {
+			f[selfType](_.g)
+        }
+    }
+}
+
+/*
+With 2.5.1-final
+
+Exception in thread &quot;main&quot; java.lang.StackOverflowError
+	at scala.tools.nsc.symtab.Symbols$Symbol.rawInfo(Symbols.scala:457)
+	at scala.tools.nsc.symtab.Symbols$Symbol.info(Symbols.scala:428)
+	at scala.tools.nsc.symtab.Types$TypeRef.normalize(Types.scala:1247)
+	at scala.tools.nsc.symtab.Types$TypeRef.normalize(Types.scala:1250)
+	at scala.tools.nsc.symtab.Types$TypeRef.normalize(Types.scala:1250)
+	at scala.tools.nsc.symtab.Types$TypeRef.normalize(Types.scala:1250)
+
+If we comment out abstract class M, the same stack trace occurs but without the line
+	at scala.tools.nsc.symtab.Types$TypeRef.normalize(Types.scala:1247)
+
+
+
+With  scala-2.5.1.12278.20070712-044543
+
+Exception in thread &quot;main&quot; java.lang.StackOverflowError
+	at scala.tools.nsc.symtab.Types$SubstMap.apply(Types.scala:2153)
+	at scala.tools.nsc.symtab.Types$Type.subst(Types.scala:361)
+	at scala.tools.nsc.symtab.Types$Type.instantiateTypeParams(Types.scala:244)
+	at scala.tools.nsc.symtab.Types$TypeRef.instantiateTypeParams(Types.scala:1271)
+	at scala.tools.nsc.symtab.Types$TypeRef.transform(Types.scala:1200)
+	at scala.tools.nsc.symtab.Types$TypeRef.normalize(Types.scala:1283)
+	at scala.tools.nsc.symtab.Types$TypeRef.normalize(Types.scala:1283)
+	at scala.tools.nsc.symtab.Types$TypeRef.normalize(Types.scala:1283)
+*/
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>stack overflow during compilation
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >simple error message or successful compilation</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Nikolay&nbsp; edited on &nbsp;2007-07-12 12:09:03.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Adriaan&nbsp; edited on &nbsp;2007-07-12 15:11:02.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+well, first off, this looks like an erroneous program, but anyway, I must've made a mistake somewhere in normalize... :-(
+
+Furthermore, it looks like two bugs in one. First, it can be simplified to:
+
+<pre>
+object Test {
+  def id[T](f: T => T): T = error("bla")
+  
+  abstract class M { self =>
+  	type Settings
+  	type selfType = M {type Settings = self.Settings}
+
+    val v: selfType = id[M.this.selfType](_.v)
+  }
+}
+</pre>
+
+Then, if I apply a quick fix to normalize in TypeRef:
+<pre>
+    override def normalize = { 
+      if (sym.isAliasType) {
+        if (sym.info.typeParams.length == args.length) { 
+          var xform=transform(sym.info.resultType)
+          if(xform eq this) this // bug1210 -- why is this necessary?  I thought for tp=TypeRef(_, sym, _) 
+           // sym.isAliasType implies !(sym.info.resultType eq tp)
+          else xform.normalize // cycles have been checked in typeRef (?)
+</pre>
+
+The compiler doesn't crash anymore, but gives the following error 
+
+<pre>
+/Users/adriaan/src/scala/trunk/test/files/neg/bug1210.scala:8: error: type mismatch;
+ found   : x$0.selfType
+ required: M.this.selfType
+    val v: selfType = id[M.this.selfType](_.v)
+                                           ^
+one error found
+</pre>
+
+Note that x$0 seems to escape its scope!
+
+If we rewrite using type parameters instead of type members:
+<pre>
+object Test {
+  def id[T](f: T => T): T = error("bla")
+  
+  abstract class M[Settings] {
+  	type selfType = M[Settings]
+
+    val v: selfType = id[M.this.selfType](_.v)
+  }
+}
+</pre>
+
+the compiler crashes like this:
+
+<pre>
+Exception in thread "main" java.lang.Error: Settings in class M cannot be instantiated from ?*x$0.type
+        at scala.tools.nsc.symtab.Types$AsSeenFromMap.throwError$0(Types.scala:2114)
+        at scala.tools.nsc.symtab.Types$AsSeenFromMap.toInstance$0(Types.scala:2136)
+</pre>
+
+$x0 tries to escape its scope again, but here it crashes asSeenFrom...
+
+
+
+
+
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Adriaan&nbsp; edited on &nbsp;2007-07-20 11:32:28.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+I committed the quick fix mentioned above in r12373, so the error wrt the escaping variable becomes apparent (test file in pending/neg/bug1210.scala)
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2007-07-26 01:04:39.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2007-07-26 11:00:15.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Stephane&nbsp; edited on &nbsp;2007-07-27 13:19:47.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+fixed in rev 12431
+</td></tr>
+<tr>
+        <td>
+        <strong>Adriaan&nbsp; edited on &nbsp;2007-08-20 10:29:31.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+re-opened based on discussion with Martin @ ECOOP (fix is pending)
+</td></tr>
+<tr>
+        <td>
+        <strong>Adriaan&nbsp; edited on &nbsp;2007-08-21 00:06:29.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+proposed fix is in r12604, Martin: please review
+</td></tr>
+<tr>
+        <td>
+        <strong>Adriaan&nbsp; edited on &nbsp;2007-08-21 10:35:05.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+fixed bug in bug fix... see r12605
+
+new implementation of mapOver:
+<pre>
+    /** Map this function over given list of symbols */
+    def mapOver(origSyms: List[Symbol]): List[Symbol] = { 
+      val origInfos = origSyms map (_.info)
+      val newInfos = List.mapConserve(origInfos)(this)
+      if (newInfos eq origInfos) origSyms // fast path in case nothing changes due to map
+      else { // map is not the identity --> do cloning properly
+        val clonedSyms = origSyms map (_.cloneSymbol)
+        val clonedInfos = clonedSyms map (_.info.substSym(origSyms, clonedSyms))
+        val transformedInfos = List.mapConserve(clonedInfos)(this)
+        List.map2(clonedSyms, transformedInfos) { 
+          ((newSym, newInfo) => newSym.setInfo(newInfo)) 
+        }
+        clonedSyms
+      }
+    }
+</pre>
+</td></tr>
+<tr>
+        <td>
+        <strong>Adriaan&nbsp; edited on &nbsp;2007-08-22 15:20:34.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+fixed in r12605
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

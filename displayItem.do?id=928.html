@@ -1,0 +1,328 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#928]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> missing feature</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Burak</td>
+	  <td align="center" bgcolor="#FFFFFF">_</td>
+	  <td align="center" bgcolor="#FFFFFF">_</td>
+          <td align="center" bgcolor="#FFFFFF">2007-01-31 17:19:36.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">[contrib #304] replacement of def into val breaks code</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>====== Test.scala ======
+import scala.util.parsing._
+
+object Test {
+  def main(args: Array[String]) {
+    val args = &quot;-7+-5+1-6+2+3&quot;
+    System.out.println(args)
+    val ps = new ParseString(args) with ListParsers
+    ps.expr(ps.input) match {
+      case Some({list, _}) =&gt; {
+        System.out.println(&quot;parsed: &quot; + list)
+        val ps2 = new ParseTokenSeq(list: Seq[Token]) with MathExp.Parsers
+        ps2.expr(ps2.input) match {
+          case Some({exp, _}) =&gt; System.out.println(&quot;=&gt; parsed: &quot; + exp)
+          case None =&gt; System.out.println(&quot;=&gt; nothing parsed&quot;)
+        }
+      }
+      case None =&gt; System.out.println(&quot;nothing parsed&quot;)
+    }
+  }
+}
+
+====== ParserBase.scala ======
+import scala.util.parsing._
+
+trait CharParsers extends Parsers {
+  val any: Parser[char]
+  def chr(ch: char): Parser[char] =
+    for (val c &amp;lt;- any; c == ch) yield c
+  def chrSuchThat(p: char =&gt; boolean): Parser[char] =
+    for (val c &amp;lt;- any; p(c)) yield c
+}
+
+sealed abstract class Token
+case class Symbol(sym: char) extends Token
+case class Number(num: int) extends Token
+
+trait TokenParsers extends Parsers {
+  val any: Parser[Token]
+  def symbol(sym: char): Parser[Symbol] =
+    for (val t &amp;lt;- any; t.isInstanceOf[Symbol];
+         t.asInstanceOf[Symbol].sym == sym)
+    yield t.asInstanceOf[Symbol]
+  val number: Parser[Number] =
+    for (val t &amp;lt;- any; t.isInstanceOf[Number])
+    yield t.asInstanceOf[Number]
+}
+
+trait ListParsers extends CharParsers {
+
+  val space: Parser[unit] =
+    for {
+      val _   &amp;lt;- rep(chrSuchThat(Character.isWhitespace))
+    } yield ()
+
+  val number: Parser[Token] =
+    for {
+      val d   &amp;lt;- chrSuchThat(Character.isDigit)
+      val ds  &amp;lt;- rep(chrSuchThat(Character.isDigit))
+    } yield Number(((d - '0') /: ds) ((x, digit) =&gt; x * 10 + digit - '0'))
+
+  val symbol: Parser[Token] =
+    for {
+      val sym &amp;lt;- any
+    } yield Symbol(sym)
+
+  val expr: Parser[List[Token]] =
+    for {
+      val _   &amp;lt;- space
+      val res &amp;lt;- number ||| symbol
+      val rest &amp;lt;- expr ||| succeed(List())
+    } yield res :: rest
+}
+
+class ParseString(s: String) extends Parsers {
+  type inputType = int
+  val input = 0 
+  val any = new Parser[char] {
+    def apply(in: inputType): Parser[char]#Result =
+      if (in &amp;lt; s.length()) Some({s charAt in, in+1}) else None
+  }
+}
+
+class ParseTokenSeq(l: Seq[Token]) extends Parsers {
+  type inputType = int
+  val input = 0 
+  val any = new Parser[Token] {
+    def apply(in: inputType): Parser[Token]#Result =
+      if (in &amp;lt; l.length) Some({l(in), in+1}) else None
+  }
+}
+
+====== MathExp.scala ======
+import scala.util.parsing._
+
+object MathExp {
+  sealed abstract class t
+  case class Const(num: int) extends t
+  case class Add(exp1: t, exp2: t) extends t
+  case class Sub(exp1: t, exp2: t) extends t
+  case class Neg(exp: t) extends t
+
+  trait Parsers extends TokenParsers {
+
+    // --- level 1 ----------------------------------------
+
+    val add: Parser[t] =
+      for {
+        val exp1 &amp;lt;- lvl2
+        val _    &amp;lt;- symbol('+')
+        val exp2 &amp;lt;- lvl1 ||| lvl2
+      } yield Add(exp1, exp2)
+
+    val sub: Parser[t] =
+      for {
+        val exp1 &amp;lt;- lvl2
+        val _    &amp;lt;- symbol('-')
+        val exp2 &amp;lt;- lvl1 ||| lvl2
+      } yield Sub(exp1, exp2)
+
+    val lvl1: Parser[t] =
+      add ||| sub
+    // --- level 2 ----------------------------------------
+
+    val const: Parser[t] =
+      for {
+        val num  &amp;lt;- number
+      } yield Const(num.num)
+
+    val brackets: Parser[t] =
+      for {
+        val _    &amp;lt;- symbol('(')
+        val exp  &amp;lt;- expr
+        val _    &amp;lt;- symbol(')')
+      } yield exp
+
+    val neg: Parser[t] =
+      for {
+        val _    &amp;lt;- symbol('-')
+        val exp  &amp;lt;- lvl2
+      } yield Neg(exp)
+
+    val lvl2: Parser[t] =
+      const ||| brackets ||| neg
+
+    // --- dispatch ---------------------------------------
+
+    val expr: Parser[t] =
+      lvl1 ||| lvl2
+  }
+}
+
+====== MathExp2.scala ======
+import scala.util.parsing._
+
+object MathExp {
+  sealed abstract class t
+  case class Const(num: int) extends t
+  case class Add(exp1: t, exp2: t) extends t
+  case class Sub(exp1: t, exp2: t) extends t
+  case class Neg(exp: t) extends t
+
+  trait Parsers extends TokenParsers {
+
+    // --- level 1 ----------------------------------------
+
+    def add: Parser[t] =
+      for {
+        val exp1 &amp;lt;- lvl2
+        val _    &amp;lt;- symbol('+')
+        val exp2 &amp;lt;- lvl1 ||| lvl2
+      } yield Add(exp1, exp2)
+
+    def sub: Parser[t] =
+      for {
+        val exp1 &amp;lt;- lvl2
+        val _    &amp;lt;- symbol('-')
+        val exp2 &amp;lt;- lvl1 ||| lvl2
+      } yield Sub(exp1, exp2)
+
+    def lvl1: Parser[t] =
+      add ||| sub
+
+    // --- level 2 ----------------------------------------
+
+    def const: Parser[t] =
+      for {
+        val num  &amp;lt;- number
+      } yield Const(num.num)
+
+    def brackets: Parser[t] =
+      for {
+        val _    &amp;lt;- symbol('(')
+        val exp  &amp;lt;- expr
+        val _    &amp;lt;- symbol(')')
+      } yield exp
+
+    def neg: Parser[t] =
+      for {
+        val _    &amp;lt;- symbol('-')
+        val exp  &amp;lt;- lvl2
+      } yield Neg(exp)
+
+    def lvl2: Parser[t] =
+      const ||| brackets ||| neg
+
+    // --- dispatch ---------------------------------------
+
+    def expr: Parser[t] =
+      lvl1 ||| lvl2
+  }
+}
+
+===
+P.S. Rather long code, sorry about that.</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>The difference between MathExp.scala &amp; MathExp2.scala is that all redundant defs was replaced with vals (in \
+MathExp.scala).
+
+Following shell session should explain:
+<pre>
+[asbeta@home bug2]$ scalac Test.scala ParserBase.scala MathExp.scala
+[asbeta@home bug2]$ java -cp /opt/scala-2.3.3/share/scala/lib/scala-library.jar:. Test
+-7+-5+1-6+2+3
+parsed: List(Symbol(-),Number(7),Symbol(+),Symbol(-),Number(5),Symbol(+),Number(1),Symbol(-),Number(6),Symbol(+)\
+,Number(2),Symbol(+),Number(3))
+Exception in thread "main" java.lang.NullPointerException
+        at MathExp$Parsers$class.$init$(MathExp.scala:16)
+        at Test$$anon$1.&lt;init>(Test.scala:11)
+        at Test$.main(Test.scala:11)
+        at Test.main(Test.scala)
+[asbeta@home bug2]$ scalac Test.scala ParserBase.scala MathExp2.scala
+[asbeta@home bug2]$ java -cp /opt/scala-2.3.3/share/scala/lib/scala-library.jar:. Test
+-7+-5+1-6+2+3
+parsed: List(Symbol(-),Number(7),Symbol(+),Symbol(-),Number(5),Symbol(+),Number(1),Symbol(-),Number(6),Symbol(+)\
+,Number(2),Symbol(+),Number(3))
+=> parsed: Add(Neg(Const(7)),Add(Neg(Const(5)),Sub(Const(1),Add(Const(6),Add(Const(2),Const(3))))))
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >Equivalence of output from MathExp.scala &amp; MathExp2.scala.</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2007-01-31 17:20:36.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+this is a feature request in disguise: since val's are not lazily initialized, the above fails with nullpointer exceptions. I noticed the same in compiler construction exercises, just added here so doesn't get lost.
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

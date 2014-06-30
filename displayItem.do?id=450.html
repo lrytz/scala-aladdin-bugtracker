@@ -1,0 +1,143 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#450]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> feature</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Nikolay</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">won't fix</td>
+          <td align="center" bgcolor="#FFFFFF">2005-06-29 10:28:15.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">[contrib #61] Lax typechecking of dependant types</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>object pt {
+    abstract class Point {
+	type This &lt;: Point;
+	def x : int;
+	def eq(p: This): Boolean = (x == p.x);
+    }
+}
+object cpt {
+    abstract class ColorPoint extends pt. Point {
+	type This &lt;: ColorPoint;
+	def col: String;
+	override def eq(p: This): Boolean = (x == p.x) &amp;&amp; (col == p.col);
+    }
+}
+object main {
+    val c = new pt.Point { type This = pt.Point; def x = 0; };
+    val d = new cpt.ColorPoint { type This = cpt.ColorPoint; def x = 1; 
+	def col = &quot;blue&quot;; };
+    val b = d.eq(c);
+}</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>the code compiled
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >a type error: d.eq(c) should be an error</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Nikolay&nbsp; edited on &nbsp;2005-06-29 10:44:31.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Transferred from the bug contributions.
+</td></tr>
+<tr>
+        <td>
+        <strong>Nikolay&nbsp; edited on &nbsp;2005-06-29 10:56:44.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+The problem seems to be the name of the 'eq' method. If I change it to 'equ' the compiler catches the error. Maybe the AnyRef.eq method interferes with typechecking. In Definitions it is created as 'final' but this doesn't prevent from overloading it in subclasses, like this example shows:
+<pre>class Foo {
+  def eq(f: Foo): Boolean = true;
+}
+
+object Test {
+  def main(args: Array[String]): Unit = {
+    val f1, f2 = new Foo();
+    System.out.println(f1 eq f2);
+    System.out.println(f1 eq (f2: AnyRef));
+  }
+}
+</pre>
+
+Maybe we should forbid defining methods with names 'eq' or 'ne' and hardcode it in the compiler.
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2005-06-29 17:29:56.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+The problem is indeed the `eq' method which takes AnyRef parameter. Your `eq' definition in class Foo just created a new overloaded version for it. This version does not match, but the original, inherited version does. Hence, all this is a consequence of the static overloading scheme, not an error.
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

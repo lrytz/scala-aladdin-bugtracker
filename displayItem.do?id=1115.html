@@ -1,0 +1,190 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#1115]</th>
+		<th><strong>project:</strong> eclipse-plugin</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Nikolay</td>
+	  <td align="center" bgcolor="#FFFFFF">Burak</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2007-05-20 15:23:45.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">[contrib #482] OOME when parsing expression inside XML</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>Got the following exception when trying to save a file containing this fragment of code:
+
+object test {
+  class Game {
+    var players: List[Player] = _
+    
+    def toXml = &lt;game&gt;&lt;players&gt;{players.map(_.toXml)}&lt;/players&gt;&lt;game&gt;
+  }
+  
+  class Player {
+    def toXml = &lt;player/&gt;
+  }
+}</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre><pre>
+java.lang.OutOfMemoryError: Java heap space
+	at java.util.Arrays.copyOf(Unknown Source)
+	at java.lang.AbstractStringBuilder.expandCapacity(Unknown Source)
+	at java.lang.AbstractStringBuilder.append(Unknown Source)
+	at java.lang.StringBuffer.append(Unknown Source)
+	at scala.compat.StringBuilder.append(StringBuilder.scala:30)
+	at scala.tools.nsc.ast.parser.MarkupParsers$MarkupParser.putChar(MarkupParsers.scala:49)
+	at scala.tools.nsc.ast.parser.MarkupParsers$MarkupParser.xText(MarkupParsers.scala:463)
+	at scala.tools.nsc.ast.parser.MarkupParsers$MarkupParser.content(MarkupParsers.scala:356)
+	at scala.tools.nsc.ast.parser.MarkupParsers$MarkupParser.element(MarkupParsers.scala:381)
+	at scala.tools.nsc.ast.parser.MarkupParsers$MarkupParser.content_LT(MarkupParsers.scala:334)
+	at scala.tools.nsc.ast.parser.MarkupParsers$MarkupParser.xLiteral(MarkupParsers.scala:499)
+	at scala.tools.nsc.ast.parser.Parsers$Parser.simpleExpr(Parsers.scala:1095)
+	at scala.tools.nsc.ast.parser.Parsers$Parser.prefixExpr(Parsers.scala:1071)
+	at scala.tools.nsc.ast.parser.Parsers$Parser.postfixExpr(Parsers.scala:1024)
+	at scala.tools.nsc.ast.parser.Parsers$Parser.expr(Parsers.scala:960)
+	at scala.tools.nsc.ast.parser.Parsers$Parser.expr(Parsers.scala:869)
+	at scala.tools.nsc.ast.parser.Parsers$Parser.equalsExpr(Parsers.scala:825)
+	at scala.tools.nsc.ast.parser.Parsers$Parser.funDefOrDcl(Parsers.scala:1954)
+	at scala.tools.nsc.ast.parser.Parsers$Parser.defOrDcl(Parsers.scala:1850)
+	at scala.tools.nsc.ast.parser.Parsers$Parser$$anonfun$16.apply(Parsers.scala:2264)
+	at scala.tools.nsc.ast.parser.Parsers$Parser$$anonfun$16.apply(Parsers.scala:2264)
+	at scala.tools.nsc.ast.parser.Parsers$Parser.joinComment(Parsers.scala:311)
+	at scala.tools.nsc.ast.parser.Parsers$Parser.templateStatSeq(Parsers.scala:2264)
+	at scala.tools.nsc.ast.parser.Parsers$Parser.templateBody(Parsers.scala:2163)
+	at scala.tools.nsc.ast.parser.Parsers$Parser.templateBodyOpt(Parsers.scala:2171)
+	at scala.tools.nsc.ast.parser.Parsers$Parser.templateOpt(Parsers.scala:2148)
+	at scala.tools.nsc.ast.parser.Parsers$Parser.classDef(Parsers.scala:2062)
+	at scala.tools.nsc.ast.parser.Parsers$Parser.tmplDef(Parsers.scala:2029)
+	at scala.tools.nsc.ast.parser.Parsers$Parser.defOrDcl(Parsers.scala:1856)
+	at scala.tools.nsc.ast.parser.Parsers$Parser$$anonfun$16.apply(Parsers.scala:2264)
+	at scala.tools.nsc.ast.parser.Parsers$Parser$$anonfun$16.apply(Parsers.scala:2264)
+	at scala.tools.nsc.ast.parser.Parsers$Parser.joinComment(Parsers.scala:311)
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >should work</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Nikolay&nbsp; edited on &nbsp;2007-05-20 15:32:28.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Sean&nbsp; edited on &nbsp;2007-05-21 12:46:11.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Have no idea why this was assigned to me.
+</td></tr>
+<tr>
+        <td>
+        <strong>Nikolay&nbsp; edited on &nbsp;2007-05-21 13:14:03.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+The original contribution was for the eclipse plugin. I changed this in the BTS but I left it for Burak. I hope he knows better what's happening
+</td></tr>
+<tr>
+        <td>
+        <strong>Nikolay&nbsp; edited on &nbsp;2007-05-21 14:33:55.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Sean wrote:
+<i>If its a matter of a fix not being propagated into the Plugin yet, that will happen in the next release. It doesn't need to be reported as a bug on the plugin...</i>
+
+But neither 2.5.0-RC2 nor current checkout (r11109) <code>scalac</code> crash on that. Although they report error in XML literal. If the <code>game</code> tag is properly closed they compile it ok. Maybe the author deleted the / when he was substituting &lt; with &amp;lt;
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2007-05-21 14:44:39.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+it's a matter of plug-in not being in sync, this is a dupe of the bug that got fixed last week.
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2007-05-22 17:24:01.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+un-escaped the code
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2007-05-22 17:24:23.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

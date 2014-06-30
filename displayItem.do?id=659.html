@@ -1,0 +1,698 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#659]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> medium</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Sean</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2006-07-15 16:48:37.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">compiler infinite loop</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>package test;
+object test {
+  
+  abstract class BaseList {
+    type Node &lt;: NodeImpl;
+    implicit def convertNode(ni : NodeImpl) = ni.asInstanceOf[Node];
+    abstract class NodeImpl;
+  }
+  object DirX {
+    abstract class Dir;  
+  }
+  import DirX._;
+  
+  abstract class LinkedList extends BaseList {
+    type Node &lt;: NodeImpl;
+
+    trait NodeImpl extends super.NodeImpl {
+      private var next : Node = _;
+      private var prev : Node = _;
+
+      def scan(dir : Dir) : Node;
+      // comment out applies to get failure error
+      def apply[T](input : T, f : (T, Node) =&gt; T) : T = null;
+      def apply[T](input : T, f : (T, Node) =&gt; T, g : Node =&gt; Boolean) : T = null;
+      def applyX(f : Node =&gt; Unit, until : Node) : Unit = {}
+      def apply(f : Node =&gt; Unit, g : Node =&gt; Boolean) : Unit = {}
+
+      def apply(g : Node =&gt; Boolean) : Unit = {}
+      def apply[T](dir : Dir, g : Node =&gt; Option[T]) : T = null;
+    }
+  }
+  trait Matcher extends LinkedList {
+    type Node &lt;: NodeImpl;
+    trait NodeImpl extends super.NodeImpl {
+    }
+
+    type Matchable &lt;: Node with MatchableImpl;
+    type FromInside = Matchable;
+    val notFromInside : FromInside = null;
+
+    trait MatchableImpl extends NodeImpl {
+      type Match &lt;: Matchable with MatchableImpl;
+      def asMatch(node : Node) : Match;
+      protected def tryMatch(dir : Dir, node0 : Node, fromInside : FromInside) : Match;
+      protected def canMatch(dir : Dir) : Boolean;  
+      def tryRematch(dir : Dir, fromInside : FromInside) : Boolean = true;
+      def tryMatch(dir : Dir, fromInside : FromInside) : Boolean = true;
+    }    
+  }
+  trait PairMatcher extends Matcher  {
+    trait PairImpl {
+      type Brace &lt;: Matchable with BraceImpl;  
+      implicit def convertBrace(b : BraceImpl) = b.asInstanceOf[Brace];
+      trait BraceImpl extends MatchableImpl {
+        type Match &lt;: Brace;
+      }
+      type Open &lt;: Brace with OpenImpl;  
+      implicit def convertOpen(b : OpenImpl) = b.asInstanceOf[Open];
+      trait OpenImpl extends BraceImpl {
+        type Match = Close;
+      }
+      type Close &lt;: Brace with CloseImpl;  
+      implicit def convertClose(b : CloseImpl) = b.asInstanceOf[Close];
+      trait CloseImpl extends BraceImpl {
+        type Match = Open;
+      }
+    }  
+  }
+  trait StringMatcher extends Matcher  {
+    type DoubleQuote &lt;: Matchable with DoubleQuoteImpl;
+    implicit def convertDoubleQuote(dq : DoubleQuoteImpl) = dq.asInstanceOf[DoubleQuote];
+
+    trait DoubleQuoteImpl extends MatchableImpl with NodeImpl {
+      type Match = DoubleQuote;
+    }
+    type Node &lt;: NodeImpl;
+    trait NodeImpl extends super[Matcher].NodeImpl;
+  }
+  trait CommentMatcher extends StringMatcher with PairMatcher {
+    trait CommentImpl extends PairImpl;
+    val singleLine : SingleLineImpl;
+    protected final def isComment(node : Node) = false;
+    trait SingleLineImpl extends CommentImpl;
+  }
+  trait ScalaMatcher extends CommentMatcher {
+    trait NodeImpl extends super[CommentMatcher].NodeImpl;
+    type Node &lt;: NodeImpl;
+    trait SingleLineCommentFactory extends SingleLineImpl {
+      type Close = NewLine;
+      // Comment out next two lines to get &quot;failure error&quot;
+      type Brace &lt;: Matchable with BraceImpl;
+      trait BraceImpl extends super.BraceImpl with MatchableImpl;
+      type NewLine &lt;: Brace with NewLineImpl;
+      trait CloseImpl extends super.CloseImpl with BraceImpl;
+      trait NewLineImpl extends singleCommentFactory.CloseImpl;
+      //trait NewLineImpl extends CloseImpl;
+    }
+    val singleCommentFactory : SingleLineCommentFactory;
+    val singleLine = singleCommentFactory;
+  }
+}
+
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>Compiler infinite loops, or it might be just exponential in the time it takes to compute the type error.
+
+More info, here is a sample of the stack at one point where it is hung:
+
+<pre>
+Thread [main] (Suspended)	
+	Types$class.scala$tools$nsc$symtab$Types$$specializesSym(SymbolTable, Types$Type, Symbols$Symbol, Types$Type, S\
+ymbols$Symbol) line: 1760	
+	Types$$anonfun$33.apply(Symbols$Symbol) line: 1754	
+	Types$$anonfun$33.apply(Object) line: 1754	
+	$colon$colon(List).exists(Function1) line: 839	
+	Types$class.specializesSym(SymbolTable, Types$Type, Symbols$Symbol) line: 1753	
+	Main$compiler$2$(SymbolTable).specializesSym(Types$Type, Symbols$Symbol) line: 10	
+	Types$$anon$0(Types$Type).specializes(Symbols$Symbol) line: 265	
+	Types$$anonfun$83$$anonfun$84.apply(Symbols$Symbol) line: 2070	
+	Types$$anonfun$83$$anonfun$84.apply(Object) line: 2069	
+	$colon$colon(List).foreach(Function1) line: 681	
+	Types$$anonfun$83.apply(Types$Type) line: 2069	
+	Types$$anonfun$83.apply(Object) line: 2069	
+	$colon$colon(List).foreach(Function1) line: 681	
+	Types$class.glb0$0(SymbolTable, List) line: 2069	
+	Types$$anonfun$86.apply(List) line: 2088	
+	Types$$anonfun$86.apply(Object) line: 2088	
+	Types$class.limitRecursion(SymbolTable, List, String, Function1) line: 1821	
+	Types$class.glb(SymbolTable, List) line: 2088	
+	Main$compiler$2$(SymbolTable).glb(List) line: 10	
+	Types$$anon$6(Types$CompoundType).computeClosure$0() line: 682	
+	Types$$anon$6(Types$CompoundType).closure() line: 700	
+	Types$$anon$6(Types$Type).closurePos(Symbols$Symbol) line: 304	
+	Types$$anon$6(Types$CompoundType).baseType(Symbols$Symbol) line: 750	
+	Types$$anon$5(Types$TypeRef).baseType(Symbols$Symbol) line: 869	
+	Types$$anon$0(Types$SubType).baseType(Symbols$Symbol) line: 469	
+	Types$AsSeenFromMap.toPrefix$0(Types$Type, Symbols$Symbol, Types$Type, Symbols$Symbol) line: 1311	
+	Types$AsSeenFromMap.apply(Types$Type) line: 1312	
+	Types$AsSeenFromMap.apply(Object) line: 1303	
+	Types$AsSeenFromMap(Types$TypeMap).mapOver(Types$Type) line: 1222	
+	Types$AsSeenFromMap.apply(Types$Type) line: 1343	
+	Types$AsSeenFromMap.apply(Object) line: 1303	
+	Types$AsSeenFromMap(Types$TypeMap).mapOver(Types$Type) line: 1227	
+	Types$AsSeenFromMap.apply(Types$Type) line: 1343	
+	Types$AsSeenFromMap.apply(Object) line: 1303	
+	List$.loop$0(List, List, Function1) line: 232	
+	List$.mapConserve(List, Function1) line: 249	
+	Types$AsSeenFromMap(Types$TypeMap).mapOver(List) line: 1287	
+	Types$AsSeenFromMap(Types$TypeMap).mapOver(Types$Type) line: 1255	
+	Types$AsSeenFromMap.apply(Types$Type) line: 1343	
+	Types$PolyType(Types$Type).asSeenFrom(Types$Type, Symbols$Symbol) line: 194	
+	Types$$anon$0(Types$Type).memberInfo(Symbols$Symbol) line: 199	
+	Types$class.scala$tools$nsc$symtab$Types$$specializesSym(SymbolTable, Types$Type, Symbols$Symbol, Types$Type, S\
+ymbols$Symbol) line: 1760	
+	Types$$anonfun$33.apply(Symbols$Symbol) line: 1754	
+	Types$$anonfun$33.apply(Object) line: 1754	
+	$colon$colon(List).exists(Function1) line: 839	
+	Types$class.specializesSym(SymbolTable, Types$Type, Symbols$Symbol) line: 1753	
+	Main$compiler$2$(SymbolTable).specializesSym(Types$Type, Symbols$Symbol) line: 10	
+	Types$$anon$0(Types$Type).specializes(Symbols$Symbol) line: 265	
+	Types$$anonfun$83$$anonfun$84.apply(Symbols$Symbol) line: 2070	
+	Types$$anonfun$83$$anonfun$84.apply(Object) line: 2069	
+	$colon$colon(List).foreach(Function1) line: 681	
+	Types$$anonfun$83.apply(Types$Type) line: 2069	
+	Types$$anonfun$83.apply(Object) line: 2069	
+	$colon$colon(List).foreach(Function1) line: 681	
+	Types$class.glb0$0(SymbolTable, List) line: 2069	
+	Types$$anonfun$86.apply(List) line: 2088	
+	Types$$anonfun$86.apply(Object) line: 2088	
+	Types$class.limitRecursion(SymbolTable, List, String, Function1) line: 1821	
+	Types$class.glb(SymbolTable, List) line: 2088	
+	Main$compiler$2$(SymbolTable).glb(List) line: 10	
+	Types$$anon$6(Types$CompoundType).computeClosure$0() line: 682	
+	Types$$anon$6(Types$CompoundType).closure() line: 700	
+	Symbols$ClassSymbol(Symbols$Symbol).closureLength$0(Symbols$Symbol) line: 470	
+	Symbols$ClassSymbol(Symbols$Symbol).isLess(Symbols$Symbol) line: 473	
+	Types$$anon$6(Types$Type).closurePos(Symbols$Symbol) line: 311	
+	Types$$anon$6(Types$CompoundType).baseType(Symbols$Symbol) line: 750	
+	Types$$anon$5(Types$TypeRef).baseType(Symbols$Symbol) line: 869	
+	Types$$anon$0(Types$SubType).baseType(Symbols$Symbol) line: 469	
+	Types$AsSeenFromMap.toPrefix$0(Types$Type, Symbols$Symbol, Types$Type, Symbols$Symbol) line: 1311	
+	Types$AsSeenFromMap.apply(Types$Type) line: 1312	
+	Types$AsSeenFromMap.apply(Object) line: 1303	
+	Types$AsSeenFromMap(Types$TypeMap).mapOver(Types$Type) line: 1212	
+	Types$AsSeenFromMap.apply(Types$Type) line: 1343	
+	Types$AsSeenFromMap.apply(Object) line: 1303	
+	Types$AsSeenFromMap(Types$TypeMap).mapOver(Types$Type) line: 1222	
+	Types$AsSeenFromMap.apply(Types$Type) line: 1343	
+	Types$AsSeenFromMap.apply(Object) line: 1303	
+	List$.loop$0(List, List, Function1) line: 232	
+	List$.mapConserve(List, Function1) line: 249	
+	Types$AsSeenFromMap(Types$TypeMap).mapOver(Types$Type) line: 1248	
+	Types$AsSeenFromMap.apply(Types$Type) line: 1343	
+	Types$MethodType(Types$Type).asSeenFrom(Types$Type, Symbols$Symbol) line: 194	
+	Types$$anon$0(Types$Type).memberInfo(Symbols$Symbol) line: 199	
+	Types$class.scala$tools$nsc$symtab$Types$$specializesSym(SymbolTable, Types$Type, Symbols$Symbol, Types$Type, S\
+ymbols$Symbol) line: 1760	
+	Types$$anonfun$33.apply(Symbols$Symbol) line: 1754	
+	Types$$anonfun$33.apply(Object) line: 1754	
+	$colon$colon(List).exists(Function1) line: 839	
+	Types$class.specializesSym(SymbolTable, Types$Type, Symbols$Symbol) line: 1753	
+	Main$compiler$2$(SymbolTable).specializesSym(Types$Type, Symbols$Symbol) line: 10	
+	Types$$anon$0(Types$Type).specializes(Symbols$Symbol) line: 265	
+	Types$$anonfun$83$$anonfun$84.apply(Symbols$Symbol) line: 2070	
+	Types$$anonfun$83$$anonfun$84.apply(Object) line: 2069	
+	$colon$colon(List).foreach(Function1) line: 681	
+	Types$$anonfun$83.apply(Types$Type) line: 2069	
+	Types$$anonfun$83.apply(Object) line: 2069	
+	$colon$colon(List).foreach(Function1) line: 681	
+	Types$class.glb0$0(SymbolTable, List) line: 2069	
+	Types$$anonfun$86.apply(List) line: 2088	
+	Types$$anonfun$86.apply(Object) line: 2088	
+	Types$class.limitRecursion(SymbolTable, List, String, Function1) line: 1821	
+	Types$class.glb(SymbolTable, List) line: 2088	
+	Main$compiler$2$(SymbolTable).glb(List) line: 10	
+	Types$$anon$6(Types$CompoundType).computeClosure$0() line: 682	
+	Types$$anon$6(Types$CompoundType).closure() line: 700	
+	Types$$anon$6(Types$Type).closurePos(Symbols$Symbol) line: 304	
+	Types$$anon$6(Types$CompoundType).baseType(Symbols$Symbol) line: 750	
+	Types$$anon$5(Types$TypeRef).baseType(Symbols$Symbol) line: 869	
+	Types$$anon$0(Types$SubType).baseType(Symbols$Symbol) line: 469	
+	Types$AsSeenFromMap.toPrefix$0(Types$Type, Symbols$Symbol, Types$Type, Symbols$Symbol) line: 1311	
+	Types$AsSeenFromMap.apply(Types$Type) line: 1312	
+	Types$AsSeenFromMap.apply(Object) line: 1303	
+	Types$AsSeenFromMap(Types$TypeMap).mapOver(Types$Type) line: 1222	
+	Types$AsSeenFromMap.apply(Types$Type) line: 1343	
+	Types$AsSeenFromMap.apply(Object) line: 1303	
+	Types$AsSeenFromMap(Types$TypeMap).mapOver(Types$Type) line: 1227	
+	Types$AsSeenFromMap.apply(Types$Type) line: 1343	
+	Types$AsSeenFromMap.apply(Object) line: 1303	
+	List$.loop$0(List, List, Function1) line: 232	
+	List$.mapConserve(List, Function1) line: 249	
+	Types$AsSeenFromMap(Types$TypeMap).mapOver(List) line: 1287	
+	Types$AsSeenFromMap(Types$TypeMap).mapOver(Types$Type) line: 1255	
+	Types$AsSeenFromMap.apply(Types$Type) line: 1343	
+	Types$PolyType(Types$Type).asSeenFrom(Types$Type, Symbols$Symbol) line: 194	
+	Types$$anon$0(Types$Type).memberInfo(Symbols$Symbol) line: 199	
+	Types$class.scala$tools$nsc$symtab$Types$$specializesSym(SymbolTable, Types$Type, Symbols$Symbol, Types$Type, S\
+ymbols$Symbol) line: 1760	
+	Types$$anonfun$33.apply(Symbols$Symbol) line: 1754	
+	Types$$anonfun$33.apply(Object) line: 1754	
+	$colon$colon(List).exists(Function1) line: 839	
+	Types$class.specializesSym(SymbolTable, Types$Type, Symbols$Symbol) line: 1753	
+	Main$compiler$2$(SymbolTable).specializesSym(Types$Type, Symbols$Symbol) line: 10	
+	Types$$anon$0(Types$Type).specializes(Symbols$Symbol) line: 265	
+	Types$$anonfun$83$$anonfun$84.apply(Symbols$Symbol) line: 2070	
+	Types$$anonfun$83$$anonfun$84.apply(Object) line: 2069	
+	$colon$colon(List).foreach(Function1) line: 681	
+	Types$$anonfun$83.apply(Types$Type) line: 2069	
+	Types$$anonfun$83.apply(Object) line: 2069	
+	$colon$colon(List).foreach(Function1) line: 681	
+	Types$class.glb0$0(SymbolTable, List) line: 2069	
+	Types$$anonfun$86.apply(List) line: 2088	
+	Types$$anonfun$86.apply(Object) line: 2088	
+	Types$class.limitRecursion(SymbolTable, List, String, Function1) line: 1821	
+	Types$class.glb(SymbolTable, List) line: 2088	
+	Main$compiler$2$(SymbolTable).glb(List) line: 10	
+	Types$$anon$6(Types$CompoundType).computeClosure$0() line: 682	
+	Types$$anon$6(Types$CompoundType).closure() line: 700	
+	Symbols$ClassSymbol(Symbols$Symbol).closureLength$0(Symbols$Symbol) line: 470	
+	Symbols$ClassSymbol(Symbols$Symbol).isLess(Symbols$Symbol) line: 473	
+	Types$$anon$6(Types$Type).closurePos(Symbols$Symbol) line: 311	
+	Types$$anon$6(Types$CompoundType).baseType(Symbols$Symbol) line: 750	
+	Types$$anon$5(Types$TypeRef).baseType(Symbols$Symbol) line: 869	
+	Types$$anon$0(Types$SubType).baseType(Symbols$Symbol) line: 469	
+	Types$AsSeenFromMap.toPrefix$0(Types$Type, Symbols$Symbol, Types$Type, Symbols$Symbol) line: 1311	
+	Types$AsSeenFromMap.apply(Types$Type) line: 1312	
+	Types$AsSeenFromMap.apply(Object) line: 1303	
+	Types$AsSeenFromMap(Types$TypeMap).mapOver(Types$Type) line: 1212	
+	Types$AsSeenFromMap.apply(Types$Type) line: 1343	
+	Types$AsSeenFromMap.apply(Object) line: 1303	
+	Types$AsSeenFromMap(Types$TypeMap).mapOver(Types$Type) line: 1222	
+	Types$AsSeenFromMap.apply(Types$Type) line: 1343	
+	Types$AsSeenFromMap.apply(Object) line: 1303	
+	List$.loop$0(List, List, Function1) line: 232	
+	List$.mapConserve(List, Function1) line: 249	
+	Types$AsSeenFromMap(Types$TypeMap).mapOver(Types$Type) line: 1248	
+	Types$AsSeenFromMap.apply(Types$Type) line: 1343	
+	Types$MethodType(Types$Type).asSeenFrom(Types$Type, Symbols$Symbol) line: 194	
+	Types$$anon$0(Types$Type).memberInfo(Symbols$Symbol) line: 199	
+	Types$class.scala$tools$nsc$symtab$Types$$specializesSym(SymbolTable, Types$Type, Symbols$Symbol, Types$Type, S\
+ymbols$Symbol) line: 1760	
+	Types$$anonfun$33.apply(Symbols$Symbol) line: 1754	
+	Types$$anonfun$33.apply(Object) line: 1754	
+	$colon$colon(List).exists(Function1) line: 839	
+	Types$class.specializesSym(SymbolTable, Types$Type, Symbols$Symbol) line: 1753	
+	Main$compiler$2$(SymbolTable).specializesSym(Types$Type, Symbols$Symbol) line: 10	
+	Types$$anon$0(Types$Type).specializes(Symbols$Symbol) line: 265	
+	Types$$anonfun$83$$anonfun$84.apply(Symbols$Symbol) line: 2070	
+	Types$$anonfun$83$$anonfun$84.apply(Object) line: 2069	
+	$colon$colon(List).foreach(Function1) line: 681	
+	Types$$anonfun$83.apply(Types$Type) line: 2069	
+	Types$$anonfun$83.apply(Object) line: 2069	
+	$colon$colon(List).foreach(Function1) line: 681	
+	Types$class.glb0$0(SymbolTable, List) line: 2069	
+	Types$$anonfun$86.apply(List) line: 2088	
+	Types$$anonfun$86.apply(Object) line: 2088	
+	Types$class.limitRecursion(SymbolTable, List, String, Function1) line: 1821	
+	Types$class.glb(SymbolTable, List) line: 2088	
+	Main$compiler$2$(SymbolTable).glb(List) line: 10	
+	Types$$anon$6(Types$CompoundType).computeClosure$0() line: 682	
+	Types$$anon$6(Types$CompoundType).closure() line: 700	
+	Symbols$ClassSymbol(Symbols$Symbol).closureLength$0(Symbols$Symbol) line: 470	
+	Symbols$ClassSymbol(Symbols$Symbol).isLess(Symbols$Symbol) line: 473	
+	Types$$anon$6(Types$Type).closurePos(Symbols$Symbol) line: 311	
+	Types$$anon$6(Types$CompoundType).baseType(Symbols$Symbol) line: 750	
+	Types$$anon$5(Types$TypeRef).baseType(Symbols$Symbol) line: 869	
+	Types$$anon$0(Types$SubType).baseType(Symbols$Symbol) line: 469	
+	Types$AsSeenFromMap.toPrefix$0(Types$Type, Symbols$Symbol, Types$Type, Symbols$Symbol) line: 1311	
+	Types$AsSeenFromMap.apply(Types$Type) line: 1312	
+	Types$AsSeenFromMap.apply(Object) line: 1303	
+	Types$AsSeenFromMap(Types$TypeMap).mapOver(Types$Type) line: 1212	
+	Types$AsSeenFromMap.apply(Types$Type) line: 1343	
+	Types$AsSeenFromMap.apply(Object) line: 1303	
+	Types$AsSeenFromMap(Types$TypeMap).mapOver(Types$Type) line: 1222	
+	Types$AsSeenFromMap.apply(Types$Type) line: 1343	
+	Types$AsSeenFromMap.apply(Object) line: 1303	
+	List$.loop$0(List, List, Function1) line: 232	
+	List$.mapConserve(List, Function1) line: 249	
+	Types$AsSeenFromMap(Types$TypeMap).mapOver(Types$Type) line: 1248	
+	Types$AsSeenFromMap.apply(Types$Type) line: 1343	
+	Types$MethodType(Types$Type).asSeenFrom(Types$Type, Symbols$Symbol) line: 194	
+	Types$$anon$0(Types$Type).memberInfo(Symbols$Symbol) line: 199	
+	Types$class.scala$tools$nsc$symtab$Types$$specializesSym(SymbolTable, Types$Type, Symbols$Symbol, Types$Type, S\
+ymbols$Symbol) line: 1760	
+	Types$$anonfun$33.apply(Symbols$Symbol) line: 1754	
+	Types$$anonfun$33.apply(Object) line: 1754	
+	$colon$colon(List).exists(Function1) line: 839	
+	Types$class.specializesSym(SymbolTable, Types$Type, Symbols$Symbol) line: 1753	
+	Main$compiler$2$(SymbolTable).specializesSym(Types$Type, Symbols$Symbol) line: 10	
+	Types$$anon$0(Types$Type).specializes(Symbols$Symbol) line: 265	
+	Types$$anonfun$83$$anonfun$84.apply(Symbols$Symbol) line: 2070	
+	Types$$anonfun$83$$anonfun$84.apply(Object) line: 2069	
+	$colon$colon(List).foreach(Function1) line: 681	
+	Types$$anonfun$83.apply(Types$Type) line: 2069	
+	Types$$anonfun$83.apply(Object) line: 2069	
+	$colon$colon(List).foreach(Function1) line: 681	
+	Types$class.glb0$0(SymbolTable, List) line: 2069	
+	Types$$anonfun$86.apply(List) line: 2088	
+	Types$$anonfun$86.apply(Object) line: 2088	
+	Types$class.limitRecursion(SymbolTable, List, String, Function1) line: 1821	
+	Types$class.glb(SymbolTable, List) line: 2088	
+	Main$compiler$2$(SymbolTable).glb(List) line: 10	
+	Types$$anon$6(Types$CompoundType).computeClosure$0() line: 682	
+	Types$$anon$6(Types$CompoundType).closure() line: 700	
+	Types$$anon$6(Types$Type).closurePos(Symbols$Symbol) line: 304	
+	Types$$anon$6(Types$CompoundType).baseType(Symbols$Symbol) line: 750	
+	Types$$anon$5(Types$TypeRef).baseType(Symbols$Symbol) line: 869	
+	Types$$anon$0(Types$SubType).baseType(Symbols$Symbol) line: 469	
+	Types$AsSeenFromMap.toPrefix$0(Types$Type, Symbols$Symbol, Types$Type, Symbols$Symbol) line: 1311	
+	Types$AsSeenFromMap.apply(Types$Type) line: 1312	
+	Types$AsSeenFromMap.apply(Object) line: 1303	
+	Types$AsSeenFromMap(Types$TypeMap).mapOver(Types$Type) line: 1222	
+	Types$AsSeenFromMap.apply(Types$Type) line: 1343	
+	Types$AsSeenFromMap.apply(Object) line: 1303	
+	Types$AsSeenFromMap(Types$TypeMap).mapOver(Types$Type) line: 1227	
+	Types$AsSeenFromMap.apply(Types$Type) line: 1343	
+	Types$AsSeenFromMap.apply(Object) line: 1303	
+	List$.loop$0(List, List, Function1) line: 232	
+	List$.mapConserve(List, Function1) line: 249	
+	Types$AsSeenFromMap(Types$TypeMap).mapOver(List) line: 1287	
+	Types$AsSeenFromMap(Types$TypeMap).mapOver(Types$Type) line: 1255	
+	Types$AsSeenFromMap.apply(Types$Type) line: 1343	
+	Types$PolyType(Types$Type).asSeenFrom(Types$Type, Symbols$Symbol) line: 194	
+	Types$$anon$0(Types$Type).memberInfo(Symbols$Symbol) line: 199	
+	Types$class.scala$tools$nsc$symtab$Types$$specializesSym(SymbolTable, Types$Type, Symbols$Symbol, Types$Type, S\
+ymbols$Symbol) line: 1760	
+	Types$$anonfun$33.apply(Symbols$Symbol) line: 1754	
+	Types$$anonfun$33.apply(Object) line: 1754	
+	$colon$colon(List).exists(Function1) line: 839	
+	Types$class.specializesSym(SymbolTable, Types$Type, Symbols$Symbol) line: 1753	
+	Main$compiler$2$(SymbolTable).specializesSym(Types$Type, Symbols$Symbol) line: 10	
+	Types$$anon$0(Types$Type).specializes(Symbols$Symbol) line: 265	
+	Types$$anonfun$83$$anonfun$84.apply(Symbols$Symbol) line: 2070	
+	Types$$anonfun$83$$anonfun$84.apply(Object) line: 2069	
+	$colon$colon(List).foreach(Function1) line: 681	
+	Types$$anonfun$83.apply(Types$Type) line: 2069	
+	Types$$anonfun$83.apply(Object) line: 2069	
+	$colon$colon(List).foreach(Function1) line: 681	
+	Types$class.glb0$0(SymbolTable, List) line: 2069	
+	Types$$anonfun$86.apply(List) line: 2088	
+	Types$$anonfun$86.apply(Object) line: 2088	
+	Types$class.limitRecursion(SymbolTable, List, String, Function1) line: 1821	
+	Types$class.glb(SymbolTable, List) line: 2088	
+	Main$compiler$2$(SymbolTable).glb(List) line: 10	
+	Types$$anon$6(Types$CompoundType).computeClosure$0() line: 682	
+	Types$$anon$6(Types$CompoundType).closure() line: 700	
+	Types$$anon$6(Types$Type).closurePos(Symbols$Symbol) line: 304	
+	Types$$anon$6(Types$CompoundType).baseType(Symbols$Symbol) line: 750	
+	Types$$anon$5(Types$TypeRef).baseType(Symbols$Symbol) line: 869	
+	Types$$anon$0(Types$SubType).baseType(Symbols$Symbol) line: 469	
+	Types$AsSeenFromMap.toPrefix$0(Types$Type, Symbols$Symbol, Types$Type, Symbols$Symbol) line: 1311	
+	Types$AsSeenFromMap.apply(Types$Type) line: 1312	
+	Types$AsSeenFromMap.apply(Object) line: 1303	
+	Types$AsSeenFromMap(Types$TypeMap).mapOver(Types$Type) line: 1222	
+	Types$AsSeenFromMap.apply(Types$Type) line: 1343	
+	Types$AsSeenFromMap.apply(Object) line: 1303	
+	Types$AsSeenFromMap(Types$TypeMap).mapOver(Types$Type) line: 1227	
+	Types$AsSeenFromMap.apply(Types$Type) line: 1343	
+	Types$AsSeenFromMap.apply(Object) line: 1303	
+	List$.loop$0(List, List, Function1) line: 232	
+	List$.mapConserve(List, Function1) line: 249	
+	Types$AsSeenFromMap(Types$TypeMap).mapOver(List) line: 1287	
+	Types$AsSeenFromMap(Types$TypeMap).mapOver(Types$Type) line: 1255	
+	Types$AsSeenFromMap.apply(Types$Type) line: 1343	
+	Types$PolyType(Types$Type).asSeenFrom(Types$Type, Symbols$Symbol) line: 194	
+	Types$$anon$0(Types$Type).memberInfo(Symbols$Symbol) line: 199	
+	Types$class.scala$tools$nsc$symtab$Types$$specializesSym(SymbolTable, Types$Type, Symbols$Symbol, Types$Type, S\
+ymbols$Symbol) line: 1760	
+	Types$$anonfun$33.apply(Symbols$Symbol) line: 1754	
+	Types$$anonfun$33.apply(Object) line: 1754	
+	$colon$colon(List).exists(Function1) line: 839	
+	Types$class.specializesSym(SymbolTable, Types$Type, Symbols$Symbol) line: 1753	
+	Main$compiler$2$(SymbolTable).specializesSym(Types$Type, Symbols$Symbol) line: 10	
+	Types$$anon$0(Types$Type).specializes(Symbols$Symbol) line: 265	
+	Types$$anonfun$83$$anonfun$84.apply(Symbols$Symbol) line: 2070	
+	Types$$anonfun$83$$anonfun$84.apply(Object) line: 2069	
+	$colon$colon(List).foreach(Function1) line: 681	
+	Types$$anonfun$83.apply(Types$Type) line: 2069	
+	Types$$anonfun$83.apply(Object) line: 2069	
+	$colon$colon(List).foreach(Function1) line: 681	
+	Types$class.glb0$0(SymbolTable, List) line: 2069	
+	Types$$anonfun$86.apply(List) line: 2088	
+	Types$$anonfun$86.apply(Object) line: 2088	
+	Types$class.limitRecursion(SymbolTable, List, String, Function1) line: 1821	
+	Types$class.glb(SymbolTable, List) line: 2088	
+	Main$compiler$2$(SymbolTable).glb(List) line: 10	
+	Types$$anon$6(Types$CompoundType).computeClosure$0() line: 682	
+	Types$$anon$6(Types$CompoundType).closure() line: 700	
+	Types$$anon$6(Types$Type).closurePos(Symbols$Symbol) line: 304	
+	Types$$anon$6(Types$CompoundType).baseType(Symbols$Symbol) line: 750	
+	Types$$anon$5(Types$TypeRef).baseType(Symbols$Symbol) line: 869	
+	Types$$anon$0(Types$SubType).baseType(Symbols$Symbol) line: 469	
+	Types$AsSeenFromMap.toPrefix$0(Types$Type, Symbols$Symbol, Types$Type, Symbols$Symbol) line: 1311	
+	Types$AsSeenFromMap.apply(Types$Type) line: 1312	
+	Types$AsSeenFromMap.apply(Object) line: 1303	
+	Types$AsSeenFromMap(Types$TypeMap).mapOver(Types$Type) line: 1222	
+	Types$AsSeenFromMap.apply(Types$Type) line: 1343	
+	Types$AsSeenFromMap.apply(Object) line: 1303	
+	Types$AsSeenFromMap(Types$TypeMap).mapOver(Types$Type) line: 1227	
+	Types$AsSeenFromMap.apply(Types$Type) line: 1343	
+	Types$AsSeenFromMap.apply(Object) line: 1303	
+	List$.loop$0(List, List, Function1) line: 232	
+	List$.mapConserve(List, Function1) line: 249	
+	Types$AsSeenFromMap(Types$TypeMap).mapOver(List) line: 1287	
+	Types$AsSeenFromMap(Types$TypeMap).mapOver(Types$Type) line: 1255	
+	Types$AsSeenFromMap.apply(Types$Type) line: 1343	
+	Types$PolyType(Types$Type).asSeenFrom(Types$Type, Symbols$Symbol) line: 194	
+	Types$$anon$0(Types$Type).memberInfo(Symbols$Symbol) line: 199	
+	Types$class.scala$tools$nsc$symtab$Types$$specializesSym(SymbolTable, Types$Type, Symbols$Symbol, Types$Type, S\
+ymbols$Symbol) line: 1760	
+	Types$$anonfun$33.apply(Symbols$Symbol) line: 1754	
+	Types$$anonfun$33.apply(Object) line: 1754	
+	$colon$colon(List).exists(Function1) line: 839	
+	Types$class.specializesSym(SymbolTable, Types$Type, Symbols$Symbol) line: 1753	
+	Main$compiler$2$(SymbolTable).specializesSym(Types$Type, Symbols$Symbol) line: 10	
+	Types$$anon$0(Types$Type).specializes(Symbols$Symbol) line: 265	
+	Types$$anonfun$83$$anonfun$84.apply(Symbols$Symbol) line: 2070	
+	Types$$anonfun$83$$anonfun$84.apply(Object) line: 2069	
+	$colon$colon(List).foreach(Function1) line: 681	
+	Types$$anonfun$83.apply(Types$Type) line: 2069	
+	Types$$anonfun$83.apply(Object) line: 2069	
+	$colon$colon(List).foreach(Function1) line: 681	
+	Types$class.glb0$0(SymbolTable, List) line: 2069	
+	Types$$anonfun$86.apply(List) line: 2088	
+	Types$$anonfun$86.apply(Object) line: 2088	
+	Types$class.limitRecursion(SymbolTable, List, String, Function1) line: 1821	
+	Types$class.glb(SymbolTable, List) line: 2088	
+	Main$compiler$2$(SymbolTable).glb(List) line: 10	
+	Types$$anon$6(Types$CompoundType).computeClosure$0() line: 682	
+	Types$$anon$6(Types$CompoundType).closure() line: 700	
+	Types$$anon$6(Types$Type).closurePos(Symbols$Symbol) line: 304	
+	Types$$anon$6(Types$CompoundType).baseType(Symbols$Symbol) line: 750	
+	Types$$anon$4(Types$SubType).baseType(Symbols$Symbol) line: 469	
+	Types$$anon$5(Types$TypeRef).baseType(Symbols$Symbol) line: 870	
+	Types$class.isSubType0(SymbolTable, Types$Type, Types$Type) line: 1684	
+	Main$compiler$2$(SymbolTable).isSubType0(Types$Type, Types$Type) line: 10	
+	Types$class.isSubType(SymbolTable, Types$Type, Types$Type) line: 1640	
+	Main$compiler$2$(SymbolTable).isSubType(Types$Type, Types$Type) line: 10	
+	Types$$anon$5(Types$Type).$less$colon$less(Types$Type) line: 251	
+	Types$$anonfun$28.apply(Types$Type) line: 1713	
+	Types$$anonfun$28.apply(Object) line: 1713	
+	$colon$colon(List).forall(Function1) line: 823	
+	Types$class.isSubType0(SymbolTable, Types$Type, Types$Type) line: 1713	
+	Main$compiler$2$(SymbolTable).isSubType0(Types$Type, Types$Type) line: 10	
+	Types$class.isSubType(SymbolTable, Types$Type, Types$Type) line: 1640	
+	Main$compiler$2$(SymbolTable).isSubType(Types$Type, Types$Type) line: 10	
+	Types$$anon$5(Types$Type).$less$colon$less(Types$Type) line: 251	
+	Types$$anon$4(Types$TypeBounds).containsType(Types$Type) line: 615	
+	RefChecks$RefCheckTransformer.checkOverride$0(Symbols$Symbol, Symbols$Symbol, Symbols$Symbol, Symbols$Symbol, T\
+ypes$Type) line: 188	
+	RefChecks$RefCheckTransformer.checkAllOverrides(Symbols$Symbol) line: 201	
+	RefChecks$RefCheckTransformer.transform(Trees$Tree) line: 549	
+	RefChecks$RefCheckTransformer(Trees$Transformer).transformTemplate(Trees$Template) line: 1044	
+	Trees$Transformer$$anonfun$13.apply() line: 950	
+	Trees$Transformer$$anonfun$13.apply() line: 949	
+	RefChecks$RefCheckTransformer(Trees$Transformer).atOwner(Symbols$Symbol, Function0) line: 1064	
+	RefChecks$RefCheckTransformer(Trees$Transformer).transform(Trees$Tree) line: 948	
+	RefChecks$RefCheckTransformer.transform(Trees$Tree) line: 629	
+	RefChecks$RefCheckTransformer.transformStat(Trees$Tree, int) line: 484	
+	RefChecks$RefCheckTransformer$$anonfun$12.apply(Trees$Tree) line: 439	
+	RefChecks$RefCheckTransformer$$anonfun$12.apply(Object) line: 439	
+	$colon$colon(List).flatMap(Function1) line: 921	
+	RefChecks$RefCheckTransformer.transformStats(List, Symbols$Symbol) line: 439	
+	RefChecks$RefCheckTransformer(Trees$Transformer).transform(Trees$Tree) line: 982	
+	RefChecks$RefCheckTransformer.transform(Trees$Tree) line: 629	
+	RefChecks$RefCheckTransformer(Trees$Transformer).transformTemplate(Trees$Template) line: 1044	
+	Trees$Transformer$$anonfun$13.apply() line: 950	
+	Trees$Transformer$$anonfun$13.apply() line: 949	
+	RefChecks$RefCheckTransformer(Trees$Transformer).atOwner(Symbols$Symbol, Function0) line: 1064	
+	RefChecks$RefCheckTransformer(Trees$Transformer).transform(Trees$Tree) line: 948	
+	RefChecks$RefCheckTransformer.transform(Trees$Tree) line: 629	
+	RefChecks$RefCheckTransformer.transformStat(Trees$Tree, int) line: 484	
+	RefChecks$RefCheckTransformer$$anonfun$12.apply(Trees$Tree) line: 439	
+	RefChecks$RefCheckTransformer$$anonfun$12.apply(Object) line: 439	
+	$colon$colon(List).flatMap(Function1) line: 921	
+	RefChecks$RefCheckTransformer.transformStats(List, Symbols$Symbol) line: 439	
+	RefChecks$RefCheckTransformer(Trees$Transformer).transform(Trees$Tree) line: 982	
+	RefChecks$RefCheckTransformer.transform(Trees$Tree) line: 629	
+	RefChecks$RefCheckTransformer(Trees$Transformer).transformTemplate(Trees$Template) line: 1044	
+	Trees$Transformer$$anonfun$13.apply() line: 950	
+	Trees$Transformer$$anonfun$13.apply() line: 949	
+	RefChecks$RefCheckTransformer(Trees$Transformer).atOwner(Symbols$Symbol, Function0) line: 1064	
+	RefChecks$RefCheckTransformer(Trees$Transformer).transform(Trees$Tree) line: 948	
+	RefChecks$RefCheckTransformer.transform(Trees$Tree) line: 629	
+	RefChecks$RefCheckTransformer.transformStat(Trees$Tree, int) line: 451	
+	RefChecks$RefCheckTransformer$$anonfun$12.apply(Trees$Tree) line: 439	
+	RefChecks$RefCheckTransformer$$anonfun$12.apply(Object) line: 439	
+	$colon$colon(List).flatMap(Function1) line: 921	
+	RefChecks$RefCheckTransformer.transformStats(List, Symbols$Symbol) line: 439	
+	Trees$Transformer$$anonfun$12.apply() line: 945	
+	Trees$Transformer$$anonfun$12.apply() line: 945	
+	RefChecks$RefCheckTransformer(Trees$Transformer).atOwner(Symbols$Symbol, Function0) line: 1064	
+	RefChecks$RefCheckTransformer(Trees$Transformer).transform(Trees$Tree) line: 944	
+	RefChecks$RefCheckTransformer.transform(Trees$Tree) line: 629	
+	RefChecks$RefCheckTransformer(Trees$Transformer).transformUnit(CompilationUnits$CompilationUnit) line: 1059	
+	InfoTransform$Phase(Transform$Phase).apply(CompilationUnits$CompilationUnit) line: 22	
+	InfoTransform$Phase(Global$GlobalPhase).applyPhase(CompilationUnits$CompilationUnit) line: 216	
+	Global$GlobalPhase$$anonfun$1.apply(CompilationUnits$CompilationUnit) line: 205	
+	Global$GlobalPhase$$anonfun$1.apply(Object) line: 205	
+	Iterator$class.foreach(Iterator, Function1) line: 304	
+	ListBuffer$$anon$0.foreach(Function1) line: 216	
+	InfoTransform$Phase(Global$GlobalPhase).run() line: 205	
+	Global$Run.compileSources(List) line: 467	
+	Global$Run.compile(List) line: 531	
+	Main$.process(String[]) line: 76	
+	Main$.main(String[]) line: 98	
+	Main.main(String[]) line: not available	
+</pre>
+
+I also uncommented out the debug print @ Types.scala:1759 in specializesSym, here is the start of the output (wh\
+ich repeats):
+
+<pre>
+specializes this.type.method wait Object.this.type.method wait
+specializes this.type.method != Any.this.type.method !=
+specializes this.type.method == Any.this.type.method ==
+// repeat begins here.
+specializes this.type.method tryMatch MatchableImpl.this.type.method tryMatch
+specializes this.type.method apply NodeImpl.this.type.method apply
+specializes this.type.method apply NodeImpl.this.type.method apply
+specializes this.type.method apply NodeImpl.this.type.method apply
+specializes this.type.method apply NodeImpl.this.type.method apply
+specializes this.type.method apply NodeImpl.this.type.method apply
+specializes this.type.method apply NodeImpl.this.type.method apply
+specializes this.type.method apply NodeImpl.this.type.method apply
+specializes this.type.method apply NodeImpl.this.type.method apply
+specializes this.type.method apply NodeImpl.this.type.method apply
+specializes this.type.method wait Object.this.type.method wait
+specializes this.type.method wait Object.this.type.method wait
+specializes this.type.method wait Object.this.type.method wait
+specializes this.type.method != Any.this.type.method !=
+specializes this.type.method == Any.this.type.method ==
+specializes this.type.method tryMatch MatchableImpl.this.type.method tryMatch
+...
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" ><pre>
+Severity and Description	Path	Resource	Location	Creation Time	Id
+failure to compute greatest lower bound of types ScalaMatcher.this.singleCommentFactory.BraceImpl and SingleLineCommentFactory.this.BraceImpl;
+an approximation is: ScalaMatcher.this.singleCommentFactory.BraceImpl with SingleLineCommentFactory.this.BraceImpl;
+additional type annotations are needed	test3/src/lampion/scalax	ScalaMatcher.scala	line 11	1152970810416	11320
+</pre>
+
+Happens if various lines are commented out (e.g., the type Brace, trait BraceImpl lines in the last class).
+</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Sean&nbsp; edited on &nbsp;2006-07-21 07:39:48.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Sean&nbsp; edited on &nbsp;2006-07-27 12:26:18.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Sean&nbsp; edited on &nbsp;2006-07-27 12:27:24.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-08-16 15:05:42.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

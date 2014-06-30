@@ -1,0 +1,190 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#1167]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Sean</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2007-06-04 12:20:43.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">back quoted pattern variable reference crash</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>package test;
+trait Foo {
+  val x : Option[String]
+  (x,x) match {
+  case (Some(y),Some(`y`)) =&gt; 
+  }
+}</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>java.lang.Error: no-symbol does not have owner
+	at scala.tools.nsc.symtab.Symbols$NoSymbol$.owner(Symbols.scala:1340)
+	at scala.tools.nsc.transform.LambdaLift$LambdaLifter.outer(LambdaLift.scala:75)
+	at scala.tools.nsc.transform.LambdaLift$LambdaLifter.scala$tools$nsc$transform$LambdaLift$LambdaLifter$$enclMet\
+hOrClass(LambdaLift.scala:106)
+	at scala.tools.nsc.transform.LambdaLift$LambdaLifter.scala$tools$nsc$transform$LambdaLift$LambdaLifter$$markFre\
+e(LambdaLift.scala:144)
+	at scala.tools.nsc.transform.LambdaLift$LambdaLifter$$anon$1.traverse(LambdaLift.scala:210)
+	at scala.tools.nsc.ast.Trees$Traverser$$anonfun$46.apply(Trees.scala:1445)
+	at scala.tools.nsc.ast.Trees$Traverser$$anonfun$46.apply(Trees.scala:1445)
+	at scala.List.foreach(List.scala:699)
+	at scala.tools.nsc.ast.Trees$Traverser.traverseTrees(Trees.scala:1445)
+	at scala.tools.nsc.ast.Trees$Traverser.traverse(Trees.scala:1417)
+	at scala.tools.nsc.transform.LambdaLift$LambdaLifter$$anon$1.traverse(LambdaLift.scala:221)
+	at scala.tools.nsc.ast.Trees$Traverser.traverse(Trees.scala:1425)
+	at scala.tools.nsc.transform.LambdaLift$LambdaLifter$$anon$1.traverse(LambdaLift.scala:221)
+	at scala.tools.nsc.ast.Trees$Traverser.traverse(Trees.scala:1417)
+	at scala.tools.nsc.transform.LambdaLift$LambdaLifter$$anon$1.traverse(LambdaLift.scala:221)
+	at scala.tools.nsc.ast.Trees$Traverser$$anonfun$46.apply(Trees.scala:1445)
+	at scala.tools.nsc.ast.Trees$Traverser$$anonfun$46.apply(Trees.scala:1445)
+	at scala.List.foreach(List.scala:699)
+	at scala.tools.nsc.ast.Trees$Traverser.traverseTrees(Trees.scala:1445)
+	at scala.tools.nsc.ast.Trees$Traverser.traverse(Trees.scala:1417)
+	at scala.tools.nsc.transform.LambdaLift$LambdaLifter$$anon$1.traverse(LambdaLift.scala:221)
+	at scala.tools.nsc.ast.Trees$Traverser$$anonfun$46.apply(Trees.scala:1445)
+	at scala.tools.nsc.ast.Trees$Traverser$$anonfun$46.apply(Trees.scala:1445)
+	at scala.List.foreach(List.scala:699)
+	at scala.tools.nsc.ast.Trees$Traverser.traverseTrees(Trees.scala:1445)
+	at scala.tools.nsc.ast.Trees$Traverser.traverse(Trees.scala:1417)
+	at scala.tools.nsc.transform.LambdaLift$LambdaLifter$$anon$1.traverse(LambdaLift.scala:221)
+	at scala.tools.nsc.ast.Trees$Traverser.traverse(Trees.scala:1379)
+	at scala.tools.nsc.transform.LambdaLift$LambdaLifter$$anon$1.traverse(LambdaLift.scala:221)
+	at scala.tools.nsc.ast.Trees$Traverser$$anonfun$46.apply(Trees.scala:1445)
+	at scala.tools.nsc.ast.Trees$Traverser$$anonfun$46.apply(Trees.scala:1445)
+	at scala.List.foreach(List.scala:699)
+	at scala.tools.nsc.ast.Trees$Traverser.traverseTrees(Trees.scala:1445)
+	at scala.tools.nsc.ast.Trees$Traverser.traverse(Trees.scala:1417)
+	at scala.tools.nsc.transform.LambdaLift$LambdaLifter$$anon$1.traverse(LambdaLift.scala:221)
+	at scala.tools.nsc.ast.Trees$Traverser$$anonfun$46.apply(Trees.scala:1445)
+	at scala.tools.nsc.ast.Trees$Traverser$$anonfun$46.apply(Trees.scala:1445)
+	at scala.List.foreach(List.scala:699)
+	at scala.tools.nsc.ast.Trees$Traverser.traverseTrees(Trees.scala:1445)
+	at scala.tools.nsc.ast.Trees$Traverser.traverse(Trees.scala:1379)
+	at scala.tools.nsc.transform.LambdaLift$LambdaLifter$$anon$1.traverse(LambdaLift.scala:221)
+	at scala.tools.nsc.ast.Trees$Traverser$$anonfun$48$$anonfun$49.apply(Trees.scala:1450)
+	at scala.tools.nsc.ast.Trees$Traverser$$anonfun$48$$anonfun$49.apply(Trees.scala:1450)
+	at scala.tools.nsc.ast.Trees$Traverser.atOwner(Trees.scala:1457)
+	at scala.tools.nsc.ast.Trees$Traverser$$anonfun$48.apply(Trees.scala:1450)
+	at scala.tools.nsc.ast.Trees$Traverser$$anonfun$48.apply(Trees.scala:1449)
+	at scala.List.foreach(List.scala:699)
+	at scala.tools.nsc.ast.Trees$Traverser.traverseStats(Trees.scala:1449)
+	at scala.tools.nsc.ast.Trees$Traverser.traverse(Trees.scala:1377)
+	at scala.tools.nsc.transform.LambdaLift$LambdaLifter$$anon$1.traverse(LambdaLift.scala:221)
+	at scala.tools.nsc.ast.Trees$Traverser$$anonfun$39.apply(Trees.scala:1342)
+	at scala.tools.nsc.ast.Trees$Traverser$$anonfun$39.apply(Trees.scala:1341)
+	at scala.tools.nsc.ast.Trees$Traverser.atOwner(Trees.scala:1457)
+	at scala.tools.nsc.ast.Trees$Traverser.traverse(Trees.scala:1341)
+	at scala.tools.nsc.transform.LambdaLift$LambdaLifter$$anon$1.traverse(LambdaLift.scala:221)
+	at scala.tools.nsc.ast.Trees$Traverser$$anonfun$46.apply(Trees.scala:1445)
+	at scala.tools.nsc.ast.Trees$Traverser$$anonfun$46.apply(Trees.scala:1445)
+	at scala.List.foreach(List.scala:699)
+	at scala.tools.nsc.ast.Trees$Traverser.traverseTrees(Trees.scala:1445)
+	at scala.tools.nsc.ast.Trees$Traverser$$anonfun$38.apply(Trees.scala:1338)
+	at scala.tools.nsc.ast.Trees$Traverser$$anonfun$38.apply(Trees.scala:1338)
+	at scala.tools.nsc.ast.Trees$Traverser.atOwner(Trees.scala:1457)
+	at scala.tools.nsc.ast.Trees$Traverser.traverse(Trees.scala:1337)
+	at scala.tools.nsc.transform.LambdaLift$LambdaLifter$$anon$1.traverse(LambdaLift.scala:221)
+	at scala.tools.nsc.transform.LambdaLift$LambdaLifter.computeFreeVars(LambdaLift.scala:236)
+	at scala.tools.nsc.transform.LambdaLift$LambdaLifter.transformUnit(LambdaLift.scala:415)
+	at scala.tools.nsc.transform.Transform$Phase.apply(Transform.scala:30)
+	at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:241)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$2.apply(Global.scala:230)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$2.apply(Global.scala:230)
+	at scala.Iterator$class.foreach(Iterator.scala:369)
+	at scala.collection.mutable.ListBuffer$$anon$0.foreach(ListBuffer.scala:245)
+	at scala.tools.nsc.Global$GlobalPhase.run(Global.scala:230)
+	at scala.tools.nsc.Global$Run.compileSources(Global.scala:498)
+	at scala.tools.nsc.Global$Run.compile(Global.scala:572)
+	at ch.epfl.lamp.sdt.build.ScalaCompilerManager$ScalaCompiler.compile(ScalaCompilerManager.java:267)
+	at ch.epfl.lamp.sdt.build.ScalaProjectBuilder.build(ScalaProjectBuilder.java:153)
+	at org.eclipse.core.internal.events.BuildManager$2.run(BuildManager.java:624)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:37)
+	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:166)
+	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:197)
+	at org.eclipse.core.internal.events.BuildManager$1.run(BuildManager.java:246)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:37)
+	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:249)
+	at org.eclipse.core.internal.events.BuildManager.basicBuildLoop(BuildManager.java:302)
+	at org.eclipse.core.internal.events.BuildManager.build(BuildManager.java:334)
+	at org.eclipse.core.internal.events.AutoBuildJob.doBuild(AutoBuildJob.java:137)
+	at org.eclipse.core.internal.events.AutoBuildJob.run(AutoBuildJob.java:235)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:55)
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" ></td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2007-07-14 19:24:04.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

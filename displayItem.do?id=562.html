@@ -1,0 +1,192 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#562]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Sean</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">won't fix</td>
+          <td align="center" bgcolor="#FFFFFF">2006-03-31 14:50:00.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">mixin override val crash</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>package test;
+
+abstract class XXX;
+
+trait YYY extends XXX {
+  val y = 10;
+}
+
+class Foo extends XXX with YYY {
+  override val y = super.y;
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre><pre>
+scala.tools.nsc.symtab.Types$TypeError: wrong number of arguments for value y: ()scala.Int
+	at scala.tools.nsc.typechecker.Contexts$Context.error(Contexts.scala:178)
+	at scala.tools.nsc.typechecker.Typers$Typer.reportTypeError(Typers.scala:139)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1595)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1613)
+	at scala.tools.nsc.transform.Mixin$MixinTransformer.staticCall$0(Mixin.scala:348)
+	at scala.tools.nsc.transform.Mixin$MixinTransformer.scala$tools$nsc$transform$Mixin$MixinTransformer$$postTrans\
+form(Mixin.scala:369)
+	at scala.tools.nsc.transform.Mixin$MixinTransformer$$anonfun$31.apply(Mixin.scala:407)
+	at scala.tools.nsc.transform.Mixin$MixinTransformer$$anonfun$31.apply(Mixin.scala:407)
+	at scala.tools.nsc.symtab.SymbolTable.atPhase(SymbolTable.scala:38)
+	at scala.tools.nsc.transform.Mixin$MixinTransformer.transform(Mixin.scala:407)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:980)
+	at scala.tools.nsc.transform.Mixin$MixinTransformer.transform(Mixin.scala:406)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$25.apply(Trees.scala:1038)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$25.apply(Trees.scala:1036)
+	at scala.List$.loop$0(List.scala:232)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.List$.loop$0(List.scala:236)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.tools.nsc.ast.Trees$Transformer.transformStats(Trees.scala:1036)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:964)
+	at scala.tools.nsc.transform.Mixin$MixinTransformer.transform(Mixin.scala:406)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$16.apply(Trees.scala:943)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$16.apply(Trees.scala:942)
+	at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1044)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:941)
+	at scala.tools.nsc.transform.Mixin$MixinTransformer.transform(Mixin.scala:406)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$25.apply(Trees.scala:1038)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$25.apply(Trees.scala:1036)
+	at scala.List$.loop$0(List.scala:232)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.tools.nsc.ast.Trees$Transformer.transformStats(Trees.scala:1036)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:962)
+	at scala.tools.nsc.transform.Mixin$MixinTransformer.transform(Mixin.scala:406)
+	at scala.tools.nsc.ast.Trees$Transformer.transformTemplate(Trees.scala:1024)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$13.apply(Trees.scala:930)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$13.apply(Trees.scala:930)
+	at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1044)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:929)
+	at scala.tools.nsc.transform.Mixin$MixinTransformer.transform(Mixin.scala:406)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$25.apply(Trees.scala:1038)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$25.apply(Trees.scala:1036)
+	at scala.List$.loop$0(List.scala:232)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.List$.loop$0(List.scala:236)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.List$.loop$0(List.scala:236)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.tools.nsc.ast.Trees$Transformer.transformStats(Trees.scala:1036)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$12.apply(Trees.scala:926)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$12.apply(Trees.scala:926)
+	at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1044)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:925)
+	at scala.tools.nsc.transform.Mixin$MixinTransformer.transform(Mixin.scala:406)
+	at scala.tools.nsc.ast.Trees$Transformer.transformUnit(Trees.scala:1039)
+	at scala.tools.nsc.transform.Transform$Phase.apply(Transform.scala:22)
+	at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:213)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$1.apply(Global.scala:202)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$1.apply(Global.scala:202)
+	at scala.Iterator$class.foreach(Iterator.scala:285)
+	at scala.collection.mutable.ListBuffer$$anon$0.foreach(ListBuffer.scala:216)
+	at scala.tools.nsc.Global$GlobalPhase.run(Global.scala:202)
+	at scala.tools.nsc.Global$Run.compileSources(Global.scala:432)
+	at scala.tools.nsc.Global$Run.compile(Global.scala:490)
+	at ch.epfl.lamp.sdt.build.ScalaCompilerManager$ScalaCompiler.compile(ScalaCompilerManager.java:186)
+	at ch.epfl.lamp.sdt.build.ScalaProjectBuilder.build(ScalaProjectBuilder.java:76)
+	at org.eclipse.core.internal.events.BuildManager$2.run(BuildManager.java:593)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:37)
+	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:168)
+	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:202)
+	at org.eclipse.core.internal.events.BuildManager$1.run(BuildManager.java:231)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:37)
+	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:234)
+	at org.eclipse.core.internal.events.BuildManager.basicBuildLoop(BuildManager.java:253)
+	at org.eclipse.core.internal.events.BuildManager.build(BuildManager.java:282)
+	at org.eclipse.core.internal.events.AutoBuildJob.doBuild(AutoBuildJob.java:143)
+	at org.eclipse.core.internal.events.AutoBuildJob.run(AutoBuildJob.java:204)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:58)
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" ></td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-04-05 15:51:11.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+This is a nasty one. Our modular scheme for mixin composition does not allow to override a value definition in a mixin by another one in the inheriting class (you would get a name clash). The only thing I could do is to outlaw this case. Now you get this behavior:
+
+bug562.scala:10 error: error overriding value y in trait YYY of type => scala.Int;
+ value y cannot override a value or variable definition in a trait 
+ (this is an implementation restriction)
+  override val y = super.y;
+               ^
+one error found
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

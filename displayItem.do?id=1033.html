@@ -1,0 +1,330 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#1033]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Sean</td>
+	  <td align="center" bgcolor="#FFFFFF">Burak</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2007-03-31 13:03:45.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">pattern matching backend crash</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>package test;
+
+object Crash {
+   case class Token(val text : String);
+   class KeywordToken(override val text : String) extends Token(text);
+   def factoryFor(tok : Token) = tok match {
+   case Token(&quot;hello&quot;) =&gt; &quot;world&quot;;
+   case t : KeywordToken =&gt; t.text;
+   }
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre><pre>sean-mcdirmid:~/workspace/test11/src mcdirmid$ ../../scala/build/ 
+quick/bin/scalac -d ../bin/ test/Crash.scala
+Exception in thread "main" def factoryFor(tok: test.Crash$Token  
+(REFERENCE(test.Crash$Token))): java.lang.String {
+locals: value tok, value temp3, value temp4, variable eqEqTemp$,  
+value temp5, value temp6, value t
+startBlock: 1
+blocks: [1,2,3,4,5,6,8,9,10,11,14]
+
+1:
+   SCOPE_ENTER value temp3
+   LOAD_LOCAL value tok
+   STORE_LOCAL value temp3
+   LOAD_LOCAL value temp3
+   CZJUMP (REFERENCE(java.lang.Object))EQ ? 3 : 2
+
+2:
+   SCOPE_ENTER value temp3
+   LOAD_LOCAL value temp3
+   STORE_LOCAL value temp3
+   SCOPE_ENTER value temp4
+   LOAD_LOCAL value temp3
+   CALL_METHOD test.Crash$Tokentest.Crash$Token.text (dynamic)
+   STORE_LOCAL value temp4
+   LOAD_LOCAL value temp4
+   CONSTANT (Constant(hello))
+   STORE_LOCAL variable eqEqTemp$
+   DUP
+   CZJUMP (REFERENCE(java.lang.Object))EQ ? 8 : 9
+
+3:
+   NEW REFERENCE(scala.MatchError)
+   DUP
+   LOAD_LOCAL value temp3
+   CALL_METHOD scala.MatchErrorscala.MatchError.<init> (static-instance)
+   THROW
+
+4:
+   RETURN (REFERENCE(java.lang.String))
+
+5:
+   SCOPE_ENTER value temp5
+   CONSTANT (Constant(hello))
+   STORE_LOCAL value temp5
+   CONSTANT (Constant(world))
+   DROP REFERENCE(java.lang.String)
+   CONSTANT (Constant(world))
+   SCOPE_EXIT value temp5
+   JUMP 4
+
+6:
+   LOAD_LOCAL value temp3
+   IS_INSTANCE REFERENCE(test.Crash$KeywordToken)
+   CZJUMP (BOOL)NE ? 10 : 11
+
+8:
+   DROP REFERENCE(java.lang.Object)
+   LOAD_LOCAL variable eqEqTemp$
+   CZJUMP (REFERENCE(java.lang.Object))EQ ? 5 : 6
+
+9:
+   LOAD_LOCAL variable eqEqTemp$
+   CALL_METHOD java.lang.Objectjava.lang.Object.equals (dynamic)
+   CZJUMP (BOOL)NE ? 5 : 6
+
+10:
+   SCOPE_ENTER value temp6
+   LOAD_LOCAL value temp3
+   CHECK_CAST REFERENCE(test.Crash$KeywordToken)
+   STORE_LOCAL value temp6
+   SCOPE_ENTER value t
+   LOAD_LOCAL value temp3
+   CHECK_CAST REFERENCE(test.Crash$KeywordToken)
+   STORE_LOCAL value t
+   SCOPE_ENTER value t
+   LOAD_LOCAL value temp6
+   STORE_LOCAL value t
+   LOAD_LOCAL value t
+   LOAD_LOCAL value t
+   STORE_LOCAL value t
+   STORE_LOCAL value t
+   JUMP 14
+
+11:
+   NEW REFERENCE(scala.MatchError)
+   DUP
+   LOAD_LOCAL value temp3
+   CALL_METHOD scala.MatchErrorscala.MatchError.<init> (static-instance)
+   THROW
+
+14:
+   LOAD_LOCAL value t
+   CALL_METHOD test.Crash$KeywordTokentest.Crash$KeywordToken.text  
+(dynamic)
+   SCOPE_EXIT value t
+   SCOPE_EXIT value t
+   SCOPE_EXIT value temp6
+   JUMP 4
+
+}
+Exception handlers:
+
+Illegal local var nesting: test.Crash.factoryFor
+Current method: test.Crash.factoryFor
+Current block: 14
+Current instruction: SCOPE_EXIT value t
+---------------------()
+	at scala.tools.nsc.backend.jvm.GenJVM$BytecodeGenerator$$anonfun 
+$41.assert$0(GenJVM.scala:661)
+	at scala.tools.nsc.backend.jvm.GenJVM$BytecodeGenerator$$anonfun 
+$41.apply(GenJVM.scala:995)
+	at scala.tools.nsc.backend.jvm.GenJVM$BytecodeGenerator$$anonfun 
+$41.apply(GenJVM.scala:650)
+	at scala.Iterator$class.foreach(Iterator.scala:380)
+	at scala.runtime.BoxedArray$$anon$0.foreach(BoxedArray.scala:46)
+	at scala.Iterable$class.foreach(Iterable.scala:197)
+	at scala.runtime.BoxedArray.foreach(BoxedArray.scala:25)
+	at scala.tools.nsc.backend.icode.BasicBlocks$BasicBlock.traverse 
+(BasicBlocks.scala:102)
+	at scala.tools.nsc.backend.jvm.GenJVM$BytecodeGenerator.genBlock 
+(GenJVM.scala:650)
+	at scala.tools.nsc.backend.jvm.GenJVM$BytecodeGenerator.genBlocks 
+(GenJVM.scala:571)
+	at scala.tools.nsc.backend.jvm.GenJVM$BytecodeGenerator.genBlocks 
+(GenJVM.scala:571)
+	at scala.tools.nsc.backend.jvm.GenJVM$BytecodeGenerator.genBlocks 
+(GenJVM.scala:571)
+	at scala.tools.nsc.backend.jvm.GenJVM$BytecodeGenerator.genBlocks 
+(GenJVM.scala:571)
+	at scala.tools.nsc.backend.jvm.GenJVM$BytecodeGenerator.genBlocks 
+(GenJVM.scala:571)
+	at scala.tools.nsc.backend.jvm.GenJVM$BytecodeGenerator.genBlocks 
+(GenJVM.scala:571)
+	at scala.tools.nsc.backend.jvm.GenJVM$BytecodeGenerator.genBlocks 
+(GenJVM.scala:571)
+	at scala.tools.nsc.backend.jvm.GenJVM$BytecodeGenerator.genBlocks 
+(GenJVM.scala:571)
+	at scala.tools.nsc.backend.jvm.GenJVM$BytecodeGenerator.genCode 
+(GenJVM.scala:560)
+	at scala.tools.nsc.backend.jvm.GenJVM$BytecodeGenerator.genMethod 
+(GenJVM.scala:445)
+	at scala.tools.nsc.backend.jvm.GenJVM$BytecodeGenerator$$anonfun 
+$6.apply(GenJVM.scala:195)
+	at scala.tools.nsc.backend.jvm.GenJVM$BytecodeGenerator$$anonfun 
+$6.apply(GenJVM.scala:195)
+	at scala.List.foreach(List.scala:699)
+	at scala.tools.nsc.backend.jvm.GenJVM$BytecodeGenerator.genClass 
+(GenJVM.scala:195)
+	at scala.tools.nsc.backend.jvm.GenJVM$JvmPhase$$anonfun$0.apply 
+(GenJVM.scala:44)
+	at scala.tools.nsc.backend.jvm.GenJVM$JvmPhase$$anonfun$0.apply 
+(GenJVM.scala:44)
+	at scala.Iterator$class.foreach(Iterator.scala:380)
+	at scala.collection.Map$$anon$2.foreach(Map.scala:119)
+	at scala.tools.nsc.backend.jvm.GenJVM$JvmPhase.run(GenJVM.scala:44)
+	at scala.tools.nsc.Global$Run.compileSources(Global.scala:491)
+	at scala.tools.nsc.Global$Run.compile(Global.scala:565)
+	at scala.tools.nsc.Main$.process(Main.scala:57)
+	at scala.tools.nsc.Main$.main(Main.scala:79)
+	at scala.tools.nsc.Main.main(Main.scala)</pre>
+
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" ></td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2007-04-01 15:11:23.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+There is a trouble with the pattern-matcher output (which I will take care of soon), since it generates the wrong symbol. Still, Iulian you might want to make the backend more robust against such mistakes.
+<pre>
+ <synthetic> var temp3#3909: Crash#11.this.Token#3651 = tok#3866;
+      if (temp3#3909.ne#2565(null))
+        {
+          <synthetic> var temp3#3909: Crash#11.this.Token#3651 = temp3#3909.asInstanceOf#2543[Crash#11.this.Token#3651]();
+          <synthetic> var temp4#3910: java.lang.String#790 = temp3#3909.text#3772();
+          if (temp4#3910.==#2549("hello"))
+            {
+              <synthetic> var temp5#3911: java.lang.String#790("hello") = "hello";
+              {
+                "world";
+                "world"
+              }
+            }
+          else
+            if (temp3#3909.isInstanceOf#2541[Crash#11.this.KeywordToken#3652]())
+              {
+                <synthetic> var temp6#3915: Crash#11.this.KeywordToken#3652 = temp3#3909.asInstanceOf#2543[Crash#11.this.KeywordToken#3652]();
+                {
+                  val t#3868: Crash#11.this.KeywordToken#3652 = temp3#3909.asInstanceOf#2543[Crash#11.this.KeywordToken#3652]();
+                  val t#3868: Crash#11.this.KeywordToken#3652 = temp6#3915;
+                  body10533743#3916(t#3868, t#3868);
+                  body10533743#3916(t#3868,t#3868){
+                    t#3868.text#3861()
+                  }
+                }
+              }
+            else
+              throw new scala.MatchError#357(temp3#3909)
+        }
+      else
+        throw new scala.MatchError#357(temp3#3909)
+
+</pre>
+</td></tr>
+<tr>
+        <td>
+        <strong>Iulian&nbsp; edited on &nbsp;2007-04-02 10:44:04.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Indeed, the backend could continue, since this is definitly something we can recover from (maybe local variable scope is not as exact as it should be). However, this most likely denotes a bug in the compiler, and silently continuing will make it easy to forget, and come back to bite us later. What should I do? A warning doesn't seem fit (it's a compiler bug, not a user mistake) and crashing only when -debug is set seems useless, since we never run with -debug unless we know already there's something fishy.
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2007-04-02 13:25:28.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+In fact, I thought more along the lines of crashing with a better error message... If it can be done with little effort, a good error msg would be very useful to better locate our errors (and since nobody is pursueing the ideal solution of writing and maintaining a tree checker, one will always have backend crashes of this sort due to illegal symbol uses etc).
+just a suggestion...
+</td></tr>
+<tr>
+        <td>
+        <strong>Iulian&nbsp; edited on &nbsp;2007-05-01 09:56:40.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+I reassigned this to Burak since it's a pattern matcher bug.
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2007-07-06 15:15:03.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+fixed (at least when new algo is used... it's another timebomb :/ old algo should eventually be phased out)
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

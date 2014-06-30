@@ -1,0 +1,114 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#482]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> feature</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Burak</td>
+	  <td align="center" bgcolor="#FFFFFF">_</td>
+	  <td align="center" bgcolor="#FFFFFF">_</td>
+          <td align="center" bgcolor="#FFFFFF">2005-11-10 10:26:26.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">better interaction of views+inference</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>object foo {
+  case class Bar[A](i:A);
+  def view[a](i:a):Bar[a] = Bar(i);
+  def fu[A](b1:Bar[A],b2:Bar[A]):Seq[Bar[A]] = List(b1,b2);
+  fu(1,&quot;zwei&quot;); // error, sequence treated as Bar[int],Bar[String],Bar[int]
+  def fa[A](b1:A,b2:A):Seq[A] = List(b1,b2);
+  fa(1,&quot;zwei&quot;); // ok, sequence treated as Any, Any, Any
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre><pre>
+simp.scala:5: no type parameters for method fu of type [A](foo.Bar[A],foo.Bar[A])scala.Seq[foo.Bar[A]] exist so \
+that it can be applied to arguments (foo.Bar[scala.Int],foo.Bar[java.lang.String])
+ --- because ---
+argument expression's type is not compatible with formal parameter type;
+ found   : foo.Bar[java.lang.String]
+ required: foo.Bar[scala.Int]
+  fu(1,"zwei"); // error, sequence treated as Bar[int],Bar[String],Bar[int]
+    ^
+one error found
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >It would be nice if inference and views could interact better in order to allow more well-typed programs. This might require inferring less precise patterns, and is somewhat similar to the constraint solving that has to happen for GADTs. The reasoning might go somehow like
+<ul>
+  <li>fu[A] expects Bar[A],Bar[A]</li>
+  <li>infer argument 1 yields Bar[A], A in {int, Any}</li>
+  <li>infer argument 2 yields Bar[A], A in {String, Any}</li>
+  <li>A in arg1 has to be == to A in arg2</li>
+  <li>most precise type in intersection is any</li>
+  <li>give arg1 and arg2 the types Bar[Any]</li>
+</ul>
+
+The sets {int,Any} and {String,Any} are in fact the supertype closure of a given type. Given that this closure can be an infinite set, it needs to be restricted somehow. </td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

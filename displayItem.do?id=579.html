@@ -1,0 +1,168 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#579]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Burak</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2006-04-27 15:26:48.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">BeanProperty does not change signature (was: [creates repetitive...])</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>package my.webapp.bean.stuff;
+
+import scala.reflect.BeanProperty
+
+class MyBean {
+  [BeanProperty]
+  var frombulizer: String = _;
+}
+
+object Test extends Application {
+  
+  val x = new MyBean;
+
+  x.frombulizer = &quot;hello&quot; // ok 
+  x.setFrombulizer (&quot;hola&quot;) 
+  val z:String = x.frombulizer // ok
+  val zz:String = x.getFrombulizer  
+  
+}</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre><pre>
+test/pending/pos/bug579.scala:15 error: value setFrombulizer is not a member of my.webapp.bean.stuff.MyBean
+  x.setFrombulizer ("hola")
+   ^
+test/pending/pos/bug579.scala:19 error: value getFrombulizer is not a member of my.webapp.bean.stuff.MyBean
+  val zz:String = x.getFrombulizer
+                   ^
+two errors found
+</pre>
+
+compile, then run
+<pre>
+[emir@lamppc31 /tmp]$ scala -cp classes my.webapp.bean.stuff.Test
+Exception in thread "main" java.lang.ClassFormatError: Repetitive method name/signature in class file my/webapp/\
+bean/stuff/MyBean
+</pre>
+javap gives what is below. indeed "setFrombulizer" is double, and additionally we have "setfrombulizer" and "get\
+frombulizer" methods that are useless IMHO.
+<pre>
+[emir@lamppc31 /tmp]$ javap -classpath classes my.webapp.bean.stuff.MyBean
+Compiled from "beanTest.scala"
+public class my.webapp.bean.stuff.MyBean extends java.lang.Object implements scala.ScalaObject{
+    public my.webapp.bean.stuff.MyBean();
+    public void setFrombulizer(java.lang.String);
+    public java.lang.String getFrombulizer();
+    public void setFrombulizer(java.lang.String);
+    public java.lang.String getFrombulizer();
+    public void setfrombulizer(java.lang.String);
+    public java.lang.String getfrombulizer();
+    public int $tag();
+}
+</pre> 
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" ><p>
+no type error
+</p>
+</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-04-27 18:34:09.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2006-10-09 14:57:51.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+This bug report use to be related to repetitive signature.
+<br/>
+I change it, because the new bug is clearly related to the implementation of the BeanProperty feature.
+<br/>
+More precisely, the "SyntethicMethods" phase seems to add implementations but the signature is not changed early enough.
+<br/>
+This bug will therefore only affect Scala programs, the Java frameworks depend on the setter/getter methods do work fine.
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2007-03-08 11:35:58.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+I changed the spec of beanProperty so that this behavior is now the expected case.
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

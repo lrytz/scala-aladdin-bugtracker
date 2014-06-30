@@ -1,0 +1,221 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#2]</th>
+		<th><strong>project:</strong> bugtracking</th>
+		<th><strong>priority:</strong> medium</th>
+		<th><strong>category:</strong> missing feature</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Burak</td>
+	  <td align="center" bgcolor="#FFFFFF">Burak</td>
+	  <td align="center" bgcolor="#FFFFFF">won't fix</td>
+          <td align="center" bgcolor="#FFFFFF">2003-06-27 16:06:22.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">even better bugtracking ?</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>// this database is nice to show at any given 
+// time some bugs, but one needs more help
+// to really keep track of things, record 
+// discussions etc...
+
+// waiting for suggestions.
+
+---- Matthias ------------------------------------
+Here's what I am missing in the system:
+
+* In the status field, we should also have an option &quot;no bug&quot;
+[DONE]
+* There should be a field for specifying how severe a bug is
+  and how urgent a fix is needed
+* There should be a field identifying the location of the bug
+  (possible options are: parser, type checker, phase X,
+  library, etc.)
+* We should have a field for commenting on the resolution
+  of the bug (e.g. explaining why someone set &quot;won't fix&quot;)
+[DONE (comments)]
+* We should log all activities with the name of the user that
+  did changes and the date (and make this log somehow
+  available to the user of the bug tracking system)
+[more or less DONE (comments)]
+* There should be a date field for specifying when a bug
+  was submitted. Probably there should also be a field for
+  specifying a version number (of the compiler) where this
+  bug appeared.
+[date DONE, version number TODO]
+* It should be possible to sort the bug list (according to a
+  specific entry); this allows a user to quickly find all bugs
+  that are assigned to him/her (just for Burak).
+
+---- Erik ------------------------------------
+* There should be a product field. 
+  (with entries like scala-compiler, bugtracker,
+  scala-language).
+[DONE]
+* As Matthias suggested there should be a field
+  for the position of the bug. The entries in
+  this field should depend on the project.
+* The status field should be divided into Status
+  (fixed, open, won't fix, etc) and Category
+  (bug, feature, Inquiry)
+[DONE]
+* The possible choices for each field should be
+  configurable by the user. I.E., they should
+  also be tables in the database. (So you can
+  add a new status type or a new category type.) </pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>a quick hack to solve an urgent need.
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >a decent bug tracking system that reflects our needs
+best.</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2003-06-25 17:38:39.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+a test of the "comment" feature.
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2003-06-25 18:20:41.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+another test of the comment feature, and the revised
+email notification.
+</td></tr>
+<tr>
+        <td>
+        <strong>Erik&nbsp; edited on &nbsp;2003-06-25 18:30:42.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Great!
+
+Now it would be nice if we could sort the buglist.
+
+The email notifications might become a bit annoying if there is a lot of activity in the bugtracking system.
+I would like to get an email only when a bug is assigned to me or when a bug which I have marked as "monitor" (or something) is changed.
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Michel&nbsp; edited on &nbsp;2003-06-27 16:06:22.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+I'd personally like to have a way to tag a bug as a duplicate of another one, and when looking at the bug, see links to all its duplicates.
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2003-07-01 19:02:01.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+updating a bug report changed its date.
+this is a test whether it is fixed.
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2003-07-07 17:56:22.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Some more changes went into the program, I will publish
+the changelog instead of writing them here.
+
+Philippe would like to have the list sortable by one click.
+
+I will look into that. Changed status to "won't fix" because I am sure we will never stop thinking of new features : )
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2004-09-30 14:06:27.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+test.
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2004-10-24 09:57:08.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+I annotated the text with some changes.
+<br/>
+I edit this feature request to test the rewritten "Aladdin" software.
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2004-10-24 10:05:26.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+2nd test.
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

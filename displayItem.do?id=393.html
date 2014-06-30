@@ -1,0 +1,132 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#393]</th>
+		<th><strong>project:</strong> specification</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> feature</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Michel</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">won't fix</td>
+          <td align="center" bgcolor="#FFFFFF">2005-01-18 11:15:56.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">Classes for nested objects are not in the members of their owner</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>class C {
+  object O;
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>The members of <code>C</code> contain only the <b>value</b> for <code>O</code>, not the class for <code>O</code>\
+. This breaks the run-time types phase (I currently have a work-around for this problem, but it's a hack that I'\
+d like to remove).
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >The members of <code>C</code> should contain both the class and the instance for the object (as well as the accessor method, but it's already there).</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Michel&nbsp; edited on &nbsp;2005-01-27 15:34:28.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+<p>(Background: Martin told me orally that he is not sure this is a bug, because the class should in fact be invisible from outside, hence not part of the members).</p>
+
+<p>I have found out that in one situation, the class is in fact part of the members: this happens for objects nested inside of functions, which are later lifted by LambdaLift. So the current behaviour is at least inconsistent, and either LambdaLift or the Analyzer should be changed.</p>
+
+<p>To clarify what I mean, here are two examples. In this one, class <code>Nested</code> <b>does not</b> appear in the members of class <code>Outer</code> (that precisely what the original bug report was about):</p>
+<pre>
+class Outer {
+  object Nested;
+}
+</pre>
+<p>On the other hand, in this example class <code>Nested</code> <b>does</b> appear in the members of class <code>Outer</code> (to be precise, it's class <code>Nested$0</code> lifted by LambdaLift which appears there):</p>
+<pre>
+class Outer {
+  def f = {
+    object Nested; ()
+  }
+}
+</pre>
+<p>It seems to me that if we want to be really consistent, then classes lifted by LambdaLift should not appear in the members of their host class. But this would cause a number of problems, as some classes would suddenly become invisible to a lot of phases. Maybe all these "invisible" classes should be made private, and renamed to unique names.</p>
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-03-30 18:33:06.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Changed priority to low because it is not a problem right now for Scala 2. I am still now sure what is the correct way of doing this. 
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-05-28 21:59:03.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+I think this would be a major change of the spec. Right now I don'ty see sufficient reasons to undertake such changes. So I close the bug.
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

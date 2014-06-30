@@ -1,0 +1,131 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#1177]</th>
+		<th><strong>project:</strong> interpreter</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Nikolay</td>
+	  <td align="center" bgcolor="#FFFFFF">Lex</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2007-06-17 18:51:25.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">[contrib #660] Does not set context class loader</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>===
+println(classOf[org.apache.juli.ClassLoaderLogManager].getClassLoader())
+println(this.getClass().getClassLoader())
+println(Thread.currentThread().getContextClassLoader())
+===
+
+Must be executed as scala -classpath tomcat-juli.jar ./hello.scala
+
+org.apache.juli.ClassLoaderLogManager is class availabe from jar specified in -classpath. You can use any class loaded from any jar instead of ClassLoaderLogManager.
+
+This prints that context classloader is loader of scala itself, but not loader of -classpath classes.
+
+However, context classloader is used by java.util.logging.LogManager (and many others) to load custom LogManager. But org.apache.juli.ClassLoaderLogManager is not available to loader of scala, so not available to LogManager.
+
+As workaround I can execute
+
+===
+Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader())
+===
+
+at the begin of execution. I think Scala should do this itself.</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>java.net.URLClassLoader@e1eea8
+java.net.URLClassLoader@e1eea8
+sun.misc.Launcher$AppClassLoader@a9c85c
+
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >java.net.URLClassLoader@e1eea8
+java.net.URLClassLoader@e1eea8
+java.net.URLClassLoader@e1eea8
+
+</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Nikolay&nbsp; edited on &nbsp;2007-06-17 18:56:18.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Lex&nbsp; edited on &nbsp;2007-07-13 21:29:01.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+<p>This seems reasonable.  I have changed InterpreterLoop and ObjectRunner to set the context class loader.  ScriptRunner, as shown in the bug report, also gets this behavior because it uses ObjectRunner.</p>
+
+<p>I did NOT change Interpreter, though it is a close call.  My thought is that the above three entry points are top-level ways to access Scala, while Interpreter has internal uses within programs.  Thus, any code that uses Interpreter directly must set up the context class loader as they desire.</p>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

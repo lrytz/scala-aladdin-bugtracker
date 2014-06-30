@@ -1,0 +1,138 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#648]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> medium</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Stephane</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2006-06-30 19:28:04.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">compiler crash in lambda lift</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>import scala.tools.nsc.symtab.Flags
+import scala.tools.nsc.transform.Transform
+
+abstract class Detach extends Transform {
+  import global._
+  class DetachTransformer extends Transformer {
+    def foo(clazz: Symbol): Scope =
+      new Scope(
+        clazz.tpe.members map { sym =&gt;
+          val newAcc = sym.cloneSymbol
+          newAcc.setFlag(Flags.SYNTHETIC)
+        }
+     )
+  }
+}</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre><pre>exception when transforming sym.cloneSymbol
+exception when transforming sym.cloneSymbol()
+exception when transforming val newAcc$0: scala.tools.nsc.symtab.Symbols#Symbol = sym.cloneSymbol()
+exception when transforming {
+  val newAcc$0: scala.tools.nsc.symtab.Symbols#Symbol = sym.cloneSymbol();
+  newAcc$0.setFlag(2097152L)
+}
+exception when transforming final def apply(sym: scala.tools.nsc.symtab.Symbols#Symbol): scala.tools.nsc.symtab.\
+Symbols#Symbol = {  val newAcc$0: scala.tools.nsc.symtab.Symbols#Symbol = sym.cloneSymbol();
+  newAcc$0.setFlag(2097152L)
+}
+[...]
+Exception in thread "main" java.lang.Error
+        at scala.tools.nsc.symtab.Symbols$NoSymbol$.owner(Symbols.scala:1079)
+        at scala.tools.nsc.transform.LambdaLift$LambdaLifter.outer(LambdaLift.scala:74)
+        at scala.tools.nsc.transform.LambdaLift$LambdaLifter.scala$tools$nsc$transform$LambdaLift$LambdaLifter$$\
+enclMethOrClass(LambdaLift.scala:105)
+        at scala.tools.nsc.transform.LambdaLift$LambdaLifter.searchIn$0(LambdaLift.scala:270)
+        at scala.tools.nsc.transform.LambdaLift$LambdaLifter.proxy(LambdaLift.scala:283)
+        at scala.tools.nsc.transform.LambdaLift$LambdaLifter.proxyRef(LambdaLift.scala:301)
+        at scala.tools.nsc.transform.LambdaLift$LambdaLifter.postTransform(LambdaLift.scala:377)
+        at scala.tools.nsc.transform.LambdaLift$LambdaLifter.transform(LambdaLift.scala:393)
+        at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1016)
+[...]</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >no crash</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Stephane&nbsp; edited on &nbsp;2006-06-30 19:28:59.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Stephane&nbsp; edited on &nbsp;2006-07-04 15:10:05.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+added retyping test in function <pre>typedBlock</pre> 
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

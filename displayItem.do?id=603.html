@@ -1,0 +1,150 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#603]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Nikolay</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2006-05-18 17:34:46.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">[contrib #139] incorrect code for lambda expression of type () => Any</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>object lazy {
+  class Susp[+A](lazyValue: =&gt; A) extends Function0[A] {
+    private var func: () =&gt; Any = () =&gt; lazyValue /* : A */
+    private var value: Any = null
+
+    override def apply() = {
+      if (func != null) {
+        value = func().asInstanceOf[A]
+        func = null
+      }
+      value.asInstanceOf[A]
+    }
+
+    override def toString() =
+      if (func == null) &quot;Susp(&quot; + value + &quot;)&quot;
+      else &quot;Susp(?)&quot;
+  }
+
+  def delay[A](value: =&gt; A) = new Susp[A](value)
+  implicit def force[A](s: Susp[A]): A = s()
+}
+
+object lazy_test {
+  import lazy._
+  
+  def main(args: Array[String]) = {
+    val s: Susp[Int] = delay { Console.println(&quot;evaluating...&quot;); 3 }
+    Console.println(&quot;s = &quot; + s)
+    Console.println(&quot;s() = &quot; + s())
+    Console.println(&quot;s = &quot; + s)
+    Console.println(&quot;2 + s = &quot; + (2 + s))
+  }
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>I get this output when I run lazy_test:
+
+s = Susp(?)
+s() = <function>
+s = Susp(<function>)
+Exception in thread "main" java.lang.ClassCastException: lazy_test$$anonfun$1
+        at lazy_test$$anonfun$2.apply(lazy.scala:52)
+        at lazy_test$$anonfun$2.apply(lazy.scala:52)
+        at lazy_test$.main(lazy.scala:52)
+        at lazy_test.main(lazy.scala)
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >This is the correct output.  It works when the type annotation in the comment on line 3 is added.
+
+s = Susp(?)
+evaluating...
+s() = 3
+s = Susp(3)
+2 + s = 5
+</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Nikolay&nbsp; edited on &nbsp;2006-05-18 17:35:39.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-05-19 15:24:30.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

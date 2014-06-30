@@ -1,0 +1,133 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#81]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> medium</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Matthias</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2003-07-25 23:52:46.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">LazyTreeCopier cannot handle type selections from types</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>class A {
+    val b: A#B = new B;
+    class B {}
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>When type members are used as non-dependent types via the # operator, the LazyTreeCopier crashes with a ClassCas\
+tException:
+<pre>
+Exception in thread "main" java.lang.ClassCastException
+        at scalac.ast.LazyTreeCopier.Select(LazyTreeCopier.java:377)
+        at scalac.typechecker.Analyzer.transformSelect(Analyzer.java:1408)
+        at scalac.typechecker.Analyzer.transform(Analyzer.java:2233)
+        at scalac.typechecker.Analyzer.transform(Analyzer.java:1661)
+        at scalac.typechecker.Analyzer.defineSym(Analyzer.java:973)
+        at scalac.typechecker.Analyzer$LazyTreeType.complete(Analyzer.java:631)
+        at scalac.symtab.Symbol.info(Symbol.java:581)
+        at scalac.symtab.Symbol.initialize(Symbol.java:549)
+        at scalac.typechecker.Analyzer.transform(Analyzer.java:1690)
+        at scalac.typechecker.Analyzer.transform(Analyzer.java:1661)
+        at scalac.typechecker.Analyzer.transformStatSeq(Analyzer.java:1465)
+        at scalac.typechecker.Analyzer.transformTemplate(Analyzer.java:1518)
+        at scalac.typechecker.Analyzer.transform(Analyzer.java:1725)
+        at scalac.typechecker.Analyzer.transform(Analyzer.java:1661)
+        at scalac.typechecker.Analyzer.transformStatSeq(Analyzer.java:1465)
+        at scalac.typechecker.Analyzer.apply(Analyzer.java:113)
+        at scalac.ast.Transformer.apply(Transformer.java:66)
+        at scalac.ast.Transformer.apply(Transformer.java:62)
+        at scalac.typechecker.Analyzer.apply(Analyzer.java:57)
+        at scalac.typechecker.AnalyzerPhase.apply(AnalyzerPhase.java:118)
+        at scalac.Global.compile(Global.java:276)
+        at scalac.Global.compile(Global.java:252)
+        at scalac.Main.main(Main.java:32)
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >No compile-time error, no crash.</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Philippe&nbsp; edited on &nbsp;2003-07-28 12:56:16.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+- Reassigned to Martin. The problem is that Analyzer.transformSelect is invoked with a tree that is not a Select but a SelectFromType.
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2003-07-31 12:02:22.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

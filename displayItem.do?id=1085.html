@@ -1,0 +1,204 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#1085]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> high</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Adriaan</td>
+	  <td align="center" bgcolor="#FFFFFF">Adriaan</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2007-05-03 11:41:58.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">asSeenFrom problem with refinements that include type constructor members</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>trait Functor[a] {
+  type MyType[a]
+}
+
+object Test {
+  def listFunctor[a]: Functor[a]{type MyType[x]=List[x]} = new Functor[a] {
+    type MyType[t]=List[t]
+  }
+}
+// pending/pos/bug1085.scala</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>Compiler (trunk r10946 ) crashes
+<pre>
+Exception in thread "main" java.lang.Error: x in <refinement> cannot be instantiated from Functor[a]{type MyType\
+[x] = List[x]}
+        at scala.tools.nsc.symtab.Types$AsSeenFromMap.throwError$0(Types.scala:1882)
+        at scala.tools.nsc.symtab.Types$AsSeenFromMap.instParam$0(Types.scala:1885)
+        at scala.tools.nsc.symtab.Types$AsSeenFromMap.toInstance$0(Types.scala:1899)
+        at scala.tools.nsc.symtab.Types$AsSeenFromMap.apply(Types.scala:1905)
+        at scala.tools.nsc.symtab.Types$AsSeenFromMap.apply(Types.scala:1840)
+        at scala.tools.nsc.symtab.Types$TypeMap$$anonfun$28.apply(Types.scala:1807)
+        at scala.tools.nsc.symtab.Types$TypeMap$$anonfun$28.apply(Types.scala:1803)
+        at scala.tools.nsc.symtab.Types$class.map2Conserve(Types.scala:2556)
+        at scala.tools.nsc.symtab.SymbolTable.map2Conserve(SymbolTable.scala:10)
+        at scala.tools.nsc.symtab.Types$TypeMap.mapOverArgs(Types.scala:1803)
+        at scala.tools.nsc.symtab.Types$TypeMap.mapOver(Types.scala:1733)
+        at scala.tools.nsc.symtab.Types$AsSeenFromMap.apply(Types.scala:1907)
+        at scala.tools.nsc.symtab.Types$Type.asSeenFrom(Types.scala:282)
+        at scala.tools.nsc.symtab.Types$class.transform$0(Types.scala:1547)
+        at scala.tools.nsc.symtab.Types$class.typeRef(Types.scala:1555)
+        at scala.tools.nsc.symtab.SymbolTable.typeRef(SymbolTable.scala:10)
+        at scala.tools.nsc.symtab.Types$class.typeRef(Types.scala:1540)
+        at scala.tools.nsc.symtab.SymbolTable.typeRef(SymbolTable.scala:10)
+        at scala.tools.nsc.symtab.Symbols$TypeSymbol.tpe(Symbols.scala:1160)
+        at scala.tools.nsc.symtab.classfile.Pickler$Pickle.putSymbol(Pickler.scala:108)
+...
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >succesful compilation
+
+Martin, I already had a look, as it's related to my extension, but it seems like a problem with asSeenFrom that I don't fully understand. I'll keep looking, though.
+
+My first intuition was that the transform methods in TypeRef (transform, transformInfo, relativeInfo) and in the typeRef method (transform), should not start looking in sym.owner when using asSeenFrom to instantiate the type params. They should start in sym -- the type member --  as the type member itself declares the type parameters -- but changing these sym.owner's to sym breaks other things. For example, the assumption in asSeenFrom that the symbol in which the search must start is a class (?).
+
+On the other hand, why should x be instantiated at all? Maybe toInstance in asSeenFrom should check whether it's a higher-order type param that can't be instantiated, and don't throw an error in that case?</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2007-07-17 18:40:04.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+I am not convinced that asSeenFrom is to blame. If you turn -debug on you will find that the owner of x is <refinement>, 
+i.e. the Functor[a] { type ... } type. Should it not rather be
+`MyType'? 
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Adriaan&nbsp; edited on &nbsp;2007-07-17 18:52:48.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+ok, I'll try to track down where the owner gets messed up
+</td></tr>
+<tr>
+        <td>
+        <strong>Adriaan&nbsp; edited on &nbsp;2007-07-17 20:46:26.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Well, it seems the culprit was pickling:
+<pre>
+    def putSymbol(sym: Symbol) {
+      if (putEntry(sym)) {
+        if (isLocal(sym)) {
+  // <snip>
+          if (sym.thisSym.tpeHK != sym.tpeHK) // was: sym.thisSym.tpe != sym.tpe
+            putType(sym.typeOfThis);
+</pre>
+before, the .tpe call on the symbol produced dummy type arguments, which were then instantiated apparently. Now, no type arguments are produced, which seems ok as it's just an equality check, but I don't see the whole picture wrt Pickling here, so maybe this is not the right fix (I still don't know why the owner was wrong, so maybe this is just a stopgap).
+
+Anyway, I've committed it (r12347),  but Martin: please review and close the report if the solution is ok.
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Adriaan&nbsp; edited on &nbsp;2007-07-18 11:55:23.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+cf Martin's mail on 18 July 2007 11:45
+</td></tr>
+<tr>
+        <td>
+        <strong>Adriaan&nbsp; edited on &nbsp;2007-07-24 18:36:23.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+I re-opened this bug, because I encountered it in a different context. I tracked down why the higher-order type param symbols have the wrong owner: 
+
+<pre>
+// in PolyType
+ override def cloneInfo(owner: Symbol) = {
+      val tparams = cloneSymbols(typeParams, owner) // @M: cloneSymbols sets *all* cloned symbols' owner to `owner'... should only do that for top-level symbols, not their children
+      PolyType(tparams, resultType.substSym(typeParams, tparams))
+    }
+</pre>
+
+I have to take a closer look at cloning before changing this though. (Just changing the first line to
+<pre>
+      val tparams = cloneSymbols(typeParams)
+</pre>
+
+does the trick in my particular case... that's probably too easy a fix though ;-))
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Adriaan&nbsp; edited on &nbsp;2007-08-22 15:52:10.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+probably related to 1210, fixed now
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

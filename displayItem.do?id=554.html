@@ -1,0 +1,142 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#554]</th>
+		<th><strong>project:</strong> scala-doc</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Francois</td>
+	  <td align="center" bgcolor="#FFFFFF">Francois</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2006-03-21 17:11:13.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">error in ScalaReference : Example 6.11.1</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>Example 6.11.1, p. 67 of ScalaReference.pdf, aka circa l. 3325 of ~scala-documentation/trunk/src/reference/ReferencePart.tex
+***
+\example The following method returns the $n$'th column of a given
+list of row-lists $xss$, using methods \lstinline@map@,
+\lstinline@drop@ and \lstinline@head@ defined in class
+\lstinline@scala.List@.
+\begin{lstlisting}
+def column[T](xss: List[List[T]], n: int): List[T] = 
+  xss.map(.drop(i)).map(.head)
+\end{lstlisting}
+***
+Compiling the example :
+
+scalatest.scala:22 error: not found: value i
+  xss.map(.drop(i)).map(.head)
+                ^
+one error found
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>Erroneous example (probably due to a typing error).
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >The argument of drop should be (n-1) or n in order to match the example's description, provided that the first element of the list is numbered as the Oth or 1st element, respectively.</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Francois&nbsp; edited on &nbsp;2006-03-21 17:12:07.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Francois&nbsp; edited on &nbsp;2006-03-21 17:13:07.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Francois&nbsp; edited on &nbsp;2006-03-21 17:23:56.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Francois&nbsp; edited on &nbsp;2006-03-23 14:22:04.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Will change soon, taking the editorial choice that the "nth column" expression makes sens provided n>=1 (i.e. change will be 's/i/n-1/').
+</td></tr>
+<tr>
+        <td>
+        <strong>Francois&nbsp; edited on &nbsp;2006-03-23 18:43:19.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+fixed at revision 6883.
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

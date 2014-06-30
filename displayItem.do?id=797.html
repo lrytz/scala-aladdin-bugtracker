@@ -1,0 +1,228 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#797]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Sean</td>
+	  <td align="center" bgcolor="#FFFFFF">Iulian</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2006-11-04 13:56:35.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">multi-package/nested/protected super accessor crash</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>// NECESSARY: two files, two packages
+// pkg0/HighlighterXXX.scala
+package pkg0;
+trait HighlighterXXX {
+  type Node;
+  protected def highlight(node : Node) : Unit;
+}
+// pkg1/ScalaAutoEditXXX.scala
+package pkg1;
+import pkg0._;
+trait ScalaAutoEditXXX extends HighlighterXXX {
+  trait NodeImpl { 
+    def self : Node;
+    highlight(self);
+  }
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre><pre>sean-mcdirmids-computer:~/workspace/test24/src mcdirmid$ ../../scala/build/quick/bin/scalac -log:super -d .\
+./bin/ -sourcepath . pkg1/ScalaAutoEditXXX.scala
+TREE = pkg1/ScalaAutoEditXXX.scala8:5
+Exception in thread "main" scala.tools.nsc.symtab.Types$TypeError: type mismatch;
+found   : HighlighterXXX.this.Node
+required: scala.Nothing
+	at scala.tools.nsc.typechecker.Contexts$Context.error(Contexts.scala:252)
+	at scala.tools.nsc.typechecker.Infer$Inferencer.error(Infer.scala:245)
+	at scala.tools.nsc.typechecker.Infer$Inferencer.typeError(Infer.scala:254)
+	at scala.tools.nsc.typechecker.Infer$Inferencer.typeErrorTree(Infer.scala:263)
+	at scala.tools.nsc.typechecker.Typers$Typer.adapt(Typers.scala:633)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2110)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedArg(Typers.scala:1226)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$52.apply(Typers.scala:1243)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$52.apply(Typers.scala:1243)
+	at scala.List$.map2(List.scala:271)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedArgs(Typers.scala:1243)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedApply(Typers.scala:1270)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1971)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2108)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2151)
+	at scala.tools.nsc.typechecker.Typers$Typer.transformedOrTyped(Typers.scala:2190)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedDefDef(Typers.scala:1016)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1748)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2108)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2140)
+	at scala.tools.nsc.typechecker.SuperAccessors$SuperAccTransformer.makeAccessor(SuperAccessors.scala:197)
+	at scala.tools.nsc.typechecker.SuperAccessors$SuperAccTransformer.transform(SuperAccessors.scala:86)
+	at scala.tools.nsc.typechecker.SuperAccessors$SuperAccTransformer.transform(SuperAccessors.scala:140)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$30$$anonfun$31.apply(Trees.scala:1131)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$30$$anonfun$31.apply(Trees.scala:1131)
+	at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1138)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:32)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:26)
+	at scala.tools.nsc.typechecker.SuperAccessors$SuperAccTransformer.atOwner(SuperAccessors.scala:158)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$30.apply(Trees.scala:1131)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$30.apply(Trees.scala:1130)
+	at scala.List$.loop$0(List.scala:238)
+	at scala.List$.mapConserve(List.scala:255)
+	at scala.tools.nsc.ast.Trees$Transformer.transformStats(Trees.scala:1130)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1050)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.scala$tools$nsc$transform$TypingTransformers$\
+TypingTransformer$$super$transform(TypingTransformers.scala:43)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer$$anonfun$0.apply(TypingTransformers.scala:43)\
+
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer$$anonfun$0.apply(TypingTransformers.scala:43)\
+
+	at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1138)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:32)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:26)
+	at scala.tools.nsc.typechecker.SuperAccessors$SuperAccTransformer.atOwner(SuperAccessors.scala:158)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:43)
+	at scala.tools.nsc.typechecker.SuperAccessors$SuperAccTransformer.transform(SuperAccessors.scala:68)
+	at scala.tools.nsc.ast.Trees$Transformer.transformTemplate(Trees.scala:1118)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$17.apply(Trees.scala:1018)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$17.apply(Trees.scala:1017)
+	at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1138)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:32)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:26)
+	at scala.tools.nsc.typechecker.SuperAccessors$SuperAccTransformer.atOwner(SuperAccessors.scala:158)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1016)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:45)
+	at scala.tools.nsc.typechecker.SuperAccessors$SuperAccTransformer.transform(SuperAccessors.scala:63)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$30.apply(Trees.scala:1132)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$30.apply(Trees.scala:1130)
+	at scala.List$.loop$0(List.scala:238)
+	at scala.List$.mapConserve(List.scala:255)
+	at scala.tools.nsc.ast.Trees$Transformer.transformStats(Trees.scala:1130)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1050)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.scala$tools$nsc$transform$TypingTransformers$\
+TypingTransformer$$super$transform(TypingTransformers.scala:43)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer$$anonfun$0.apply(TypingTransformers.scala:43)\
+
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer$$anonfun$0.apply(TypingTransformers.scala:43)\
+
+	at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1138)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:32)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:26)
+	at scala.tools.nsc.typechecker.SuperAccessors$SuperAccTransformer.atOwner(SuperAccessors.scala:158)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:43)
+	at scala.tools.nsc.typechecker.SuperAccessors$SuperAccTransformer.transform(SuperAccessors.scala:68)
+	at scala.tools.nsc.ast.Trees$Transformer.transformTemplate(Trees.scala:1118)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$17.apply(Trees.scala:1018)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$17.apply(Trees.scala:1017)
+	at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1138)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:32)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:26)
+	at scala.tools.nsc.typechecker.SuperAccessors$SuperAccTransformer.atOwner(SuperAccessors.scala:158)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1016)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:45)
+	at scala.tools.nsc.typechecker.SuperAccessors$SuperAccTransformer.transform(SuperAccessors.scala:63)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$30.apply(Trees.scala:1132)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$30.apply(Trees.scala:1130)
+	at scala.List$.loop$0(List.scala:238)
+	at scala.List$.mapConserve(List.scala:255)
+	at scala.tools.nsc.ast.Trees$Transformer.transformStats(Trees.scala:1130)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$16.apply(Trees.scala:1013)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$16.apply(Trees.scala:1013)
+	at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1138)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:32)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:26)
+	at scala.tools.nsc.typechecker.SuperAccessors$SuperAccTransformer.atOwner(SuperAccessors.scala:158)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1012)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:45)
+	at scala.tools.nsc.typechecker.SuperAccessors$SuperAccTransformer.transform(SuperAccessors.scala:147)
+	at scala.tools.nsc.ast.Trees$Transformer.transformUnit(Trees.scala:1133)
+	at scala.tools.nsc.transform.Transform$Phase.apply(Transform.scala:30)
+	at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:219)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$1.apply(Global.scala:208)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$1.apply(Global.scala:208)
+	at scala.Iterator$class.foreach(Iterator.scala:316)
+	at scala.collection.mutable.ListBuffer$$anon$0.foreach(ListBuffer.scala:244)
+	at scala.tools.nsc.Global$GlobalPhase.run(Global.scala:208)
+	at scala.tools.nsc.Global$Run.compileSources(Global.scala:473)
+	at scala.tools.nsc.Global$Run.compile(Global.scala:542)
+	at scala.tools.nsc.Main$.process(Main.scala:74)
+	at scala.tools.nsc.Main$.main(Main.scala:96)
+	at scala.tools.nsc.Main.main(Main.scala):</pre>
+
+
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" ></td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Iulian&nbsp; edited on &nbsp;2006-11-09 17:07:16.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

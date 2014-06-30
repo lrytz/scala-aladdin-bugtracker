@@ -1,0 +1,266 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#743]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> high</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Sean</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2006-09-20 07:50:42.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">resident compiler crash</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>// two files follow
+// FILE test/ParserXXX.scala
+package test;
+trait ParserXXX {
+  val foo = null; 
+  trait NodeImpl { 
+    trait Link extends ParserXXX.this.Link {
+      val from = null; 
+    }
+  }
+  trait Link {
+    val to0 = null;
+  }
+  trait IsLinked extends NodeImpl {
+    trait Link extends super.Link;
+  }
+}
+// FILE test/BracesXXX.scala
+package test;
+trait BracesXXX extends ParserXXX {
+  trait Matchable extends IsLinked { 
+    def foo : NodeImpl = null;
+  }
+}</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>Have no real intuition why this particular code combination crashes the resident compiler, I just worked my way \
+backwards. 
+
+<pre>tsf-wpa-2-067:~/workspace/test18/src mcdirmid$ ../../scala/build/quick/bin/scalac -d ../bin/ -resident
+
+nsc> test/ParserXXX.scala
+
+nsc> test/BracesXXX.scala
+exception when typing abstract trait Matchable$class extends java.lang.Object with test.ParserXXX#IsLinked$class\
+ with scala.ScalaObject$class with test.BracesXXX#Matchable {
+  def /*Matchable$class*/$init$(): scala.Unit = {
+    ()
+  };
+  def foo(): test.ParserXXX#NodeImpl = null
+}
+exception when typing abstract trait BracesXXX extends java.lang.Object with test.ParserXXX with scala.ScalaObje\
+ct {
+  abstract trait Matchable extends java.lang.Object with test.ParserXXX#IsLinked with scala.ScalaObject {
+    def foo(): test.ParserXXX#NodeImpl;
+    <stable> def test$BracesXXX$Matchable$$$outer(): test.BracesXXX
+  };
+  abstract trait Matchable$class extends java.lang.Object with test.ParserXXX#IsLinked$class with scala.ScalaObj\
+ect$class with test.BracesXXX#Matchable {
+    def /*Matchable$class*/$init$(): scala.Unit = {
+      ()
+    };
+    def foo(): test.ParserXXX#NodeImpl = null
+  }
+}
+exception when typing package test {
+  abstract trait BracesXXX extends java.lang.Object with test.ParserXXX with scala.ScalaObject {
+    abstract trait Matchable extends java.lang.Object with test.ParserXXX#IsLinked with scala.ScalaObject {
+      def foo(): test.ParserXXX#NodeImpl;
+      <stable> def test$BracesXXX$Matchable$$$outer(): test.BracesXXX
+    };
+    abstract trait Matchable$class extends java.lang.Object with test.ParserXXX#IsLinked$class with scala.ScalaO\
+bject$class with test.BracesXXX#Matchable {
+      def /*Matchable$class*/$init$(): scala.Unit = {
+        ()
+      };
+      def foo(): test.ParserXXX#NodeImpl = null
+    }
+  };
+  abstract trait BracesXXX$class extends java.lang.Object with test.ParserXXX$class with scala.ScalaObject$class\
+ with test.BracesXXX {
+    def /*BracesXXX$class*/$init$(): scala.Unit = {
+      ()
+    }
+  }
+}
+Exception in thread "main" java.lang.AssertionError: assertion failed: ParserXXX.this.type.trait Link$class does\
+ no longer exist, phase = erasure
+	at scala.Predef$.assert(Predef.scala:95)
+	at scala.tools.nsc.symtab.Types$adaptToNewRunMap$.adaptToNewRun(Types.scala:1522)
+	at scala.tools.nsc.symtab.Types$adaptToNewRunMap$.apply(Types.scala:1555)
+	at scala.tools.nsc.symtab.Types$adaptToNewRunMap$.apply(Types.scala:1511)
+	at scala.List$.loop$0(List.scala:239)
+	at scala.List$.mapConserve(List.scala:256)
+	at scala.tools.nsc.symtab.Types$adaptToNewRunMap$.apply(Types.scala:1564)
+	at scala.tools.nsc.symtab.Types$Type.complete(Types.scala:358)
+	at scala.tools.nsc.symtab.Symbols$Symbol.info(Symbols.scala:385)
+	at scala.tools.nsc.transform.AddInterfaces.scala$tools$nsc$transform$AddInterfaces$$isInterfaceMember(AddInterf\
+aces.scala:45)
+	at scala.tools.nsc.transform.AddInterfaces$LazyImplClassType$$anonfun$2.apply(AddInterfaces.scala:109)
+	at scala.tools.nsc.transform.AddInterfaces$LazyImplClassType$$anonfun$2.apply(AddInterfaces.scala:108)
+	at scala.Iterator$class.foreach(Iterator.scala:316)
+	at scala.List$$anon$0.foreach(List.scala:471)
+	at scala.tools.nsc.transform.AddInterfaces$LazyImplClassType.implDecls(AddInterfaces.scala:108)
+	at scala.tools.nsc.transform.AddInterfaces$LazyImplClassType.implType$0(AddInterfaces.scala:133)
+	at scala.tools.nsc.transform.AddInterfaces$LazyImplClassType$$anonfun$4.apply(AddInterfaces.scala:138)
+	at scala.tools.nsc.transform.AddInterfaces$LazyImplClassType$$anonfun$4.apply(AddInterfaces.scala:138)
+	at scala.tools.nsc.symtab.SymbolTable.atPhase(SymbolTable.scala:71)
+	at scala.tools.nsc.transform.AddInterfaces$LazyImplClassType.complete(AddInterfaces.scala:138)
+	at scala.tools.nsc.symtab.Symbols$Symbol.info(Symbols.scala:385)
+	at scala.tools.nsc.symtab.Types$TypeRef.closure(Types.scala:894)
+	at scala.tools.nsc.symtab.Types$CompoundType$$anonfun$3.apply(Types.scala:654)
+	at scala.tools.nsc.symtab.Types$CompoundType$$anonfun$3.apply(Types.scala:653)
+	at scala.List.foreach(List.scala:688)
+	at scala.tools.nsc.symtab.Types$CompoundType.computeClosure$0(Types.scala:653)
+	at scala.tools.nsc.symtab.Types$CompoundType.closure(Types.scala:712)
+	at scala.tools.nsc.symtab.Types$TypeRef.closure(Types.scala:894)
+	at scala.tools.nsc.symtab.Types$CompoundType$$anonfun$3.apply(Types.scala:654)
+	at scala.tools.nsc.symtab.Types$CompoundType$$anonfun$3.apply(Types.scala:653)
+	at scala.List.foreach(List.scala:688)
+	at scala.tools.nsc.symtab.Types$CompoundType.computeClosure$0(Types.scala:653)
+	at scala.tools.nsc.symtab.Types$CompoundType.closure(Types.scala:712)
+	at scala.tools.nsc.symtab.Types$Type.closurePos(Types.scala:312)
+	at scala.tools.nsc.symtab.Types$CompoundType.baseType(Types.scala:762)
+	at scala.tools.nsc.symtab.Types$TypeRef.baseType(Types.scala:883)
+	at scala.tools.nsc.symtab.Types$class.isSubType0(Types.scala:1733)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType0(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$class.isSubType(Types.scala:1687)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$Type.$less$colon$less(Types.scala:257)
+	at scala.tools.nsc.typechecker.Typers$Typer.validateParentClass$0(Typers.scala:618)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$16.apply(Typers.scala:633)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$16.apply(Typers.scala:633)
+	at scala.List.foreach(List.scala:688)
+	at scala.tools.nsc.typechecker.Typers$Typer.validateParentClasses(Typers.scala:633)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedTemplate(Typers.scala:705)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedClassDef(Typers.scala:643)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1472)
+	at scala.tools.nsc.transform.Erasure$Eraser.typed1(Erasure.scala:367)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1807)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1834)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedStat$0(Typers.scala:1016)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$47.apply(Typers.scala:1037)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$47.apply(Typers.scala:1037)
+	at scala.List$.loop$0(List.scala:239)
+	at scala.List$.mapConserve(List.scala:256)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:1037)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedTemplate(Typers.scala:708)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedClassDef(Typers.scala:643)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1472)
+	at scala.tools.nsc.transform.Erasure$Eraser.typed1(Erasure.scala:367)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1807)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1834)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedStat$0(Typers.scala:1016)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$47.apply(Typers.scala:1037)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$47.apply(Typers.scala:1037)
+	at scala.List$.loop$0(List.scala:239)
+	at scala.List$.mapConserve(List.scala:256)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:1037)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1468)
+	at scala.tools.nsc.transform.Erasure$Eraser.typed1(Erasure.scala:367)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1807)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1834)
+	at scala.tools.nsc.transform.Erasure$ErasureTransformer$$anonfun$22.apply(Erasure.scala:655)
+	at scala.tools.nsc.transform.Erasure$ErasureTransformer$$anonfun$22.apply(Erasure.scala:652)
+	at scala.tools.nsc.symtab.SymbolTable.atPhase(SymbolTable.scala:71)
+	at scala.tools.nsc.transform.Erasure$ErasureTransformer.transform(Erasure.scala:652)
+	at scala.tools.nsc.ast.Trees$Transformer.transformUnit(Trees.scala:1068)
+	at scala.tools.nsc.transform.Transform$Phase.apply(Transform.scala:26)
+	at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:218)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$1.apply(Global.scala:207)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$1.apply(Global.scala:207)
+	at scala.Iterator$class.foreach(Iterator.scala:316)
+	at scala.collection.mutable.ListBuffer$$anon$0.foreach(ListBuffer.scala:216)
+	at scala.tools.nsc.Global$GlobalPhase.run(Global.scala:207)
+	at scala.tools.nsc.Global$Run.compileSources(Global.scala:471)
+	at scala.tools.nsc.Global$Run.compile(Global.scala:537)
+	at scala.tools.nsc.Main$$anonfun$0.apply(Main.scala:39)
+	at scala.tools.nsc.Main$$anonfun$0.apply(Main.scala:36)
+	at scala.tools.nsc.EvalLoop$class.loop(EvalLoop.scala:17)
+	at scala.tools.nsc.Main$.loop(Main.scala:16)
+	at scala.tools.nsc.EvalLoop$class.loop(EvalLoop.scala:18)
+	at scala.tools.nsc.Main$.loop(Main.scala:16)
+	at scala.tools.nsc.Main$.resident(Main.scala:36)
+	at scala.tools.nsc.Main$.process(Main.scala:71)
+	at scala.tools.nsc.Main$.main(Main.scala:98)
+	at scala.tools.nsc.Main.main(Main.scala)</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" ></td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-09-20 17:27:17.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

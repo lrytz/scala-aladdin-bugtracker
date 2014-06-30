@@ -1,0 +1,131 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#62]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> medium</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">Michel</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2003-07-08 18:05:29.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">non-primary constructors</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>object m {
+  class C(x: int) {
+    def y = x;
+  }
+  constr C1(): C = C(1);
+  System.out.println(new C1().y);
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>Exception in thread "main" java.lang.AssertionError: m.C1 is not a class (kind 5)
+	at scalac.transformer.AddInterfacesPhase.needInterface(AddInterfacesPhase.java:183)
+	at scalac.transformer.AddInterfaces.transform(AddInterfaces.java:180)
+	at scalac.ast.Transformer.transform(Transformer.java:190)
+	at scalac.transformer.AddInterfaces.transform(AddInterfaces.java:242)
+	at scalac.transformer.AddInterfaces.transform(AddInterfaces.java:67)
+	at scalac.ast.Transformer.transform(Transformer.java:140)
+	at scalac.transformer.AddInterfaces.transform(AddInterfaces.java:238)
+	at scalac.ast.Transformer.transform(Transformer.java:244)
+	at scalac.ast.Transformer.transform(Transformer.java:181)
+	at scalac.transformer.AddInterfaces.transform(AddInterfaces.java:209)
+	at scalac.ast.Transformer.transform(Transformer.java:200)
+	at scalac.transformer.AddInterfaces.transform(AddInterfaces.java:186)
+	at scalac.ast.Transformer.transform(Transformer.java:190)
+	at scalac.transformer.AddInterfaces.transform(AddInterfaces.java:242)
+	at scalac.transformer.AddInterfaces.transform(AddInterfaces.java:67)
+	at scalac.ast.Transformer.transform(Transformer.java:190)
+	at scalac.transformer.AddInterfaces.transform(AddInterfaces.java:242)
+	at scalac.transformer.AddInterfaces.transform(AddInterfaces.java:67)
+	at scalac.ast.Transformer.transform(Transformer.java:140)
+	at scalac.transformer.AddInterfaces.transform(AddInterfaces.java:234)
+	at scalac.ast.Transformer.transform(Transformer.java:244)
+	at scalac.ast.Transformer.transform(Transformer.java:89)
+	at scalac.transformer.AddInterfaces.transform(AddInterfaces.java:117)
+	at scalac.transformer.AddInterfaces.transform(AddInterfaces.java:67)
+	at scalac.ast.Transformer.apply(Transformer.java:71)
+	at scalac.ast.Transformer.apply(Transformer.java:66)
+	at scalac.ast.Transformer.apply(Transformer.java:62)
+	at scalac.transformer.AddInterfacesPhase.apply(AddInterfacesPhase.java:35)
+	at scalac.Global.compile(Global.java:268)
+	at scalac.Global.compile(Global.java:244)
+	at scalac.Main.main(Main.java:32)
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >auxiliary constructors should compile correctly. </td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Michel&nbsp; edited on &nbsp;2003-08-28 09:50:59.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Non-primary constructors now appear to work (thanks to Nikolay).
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

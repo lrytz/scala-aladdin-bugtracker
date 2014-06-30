@@ -1,0 +1,316 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#703]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Sean</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2006-08-16 07:56:44.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">super accessor crash</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>object Go {
+  trait A {
+    def f : Unit; // = Console.println(&quot;A&quot;);
+  }
+  trait B extends A {
+    override def f = {
+      super.f;
+      Console.println(&quot;B&quot;);
+    }
+  }
+  trait C extends A {
+    override def f = {
+      super.f;
+      Console.println(&quot;C&quot;);
+    }
+  }
+  trait D extends B with C {
+    override def f = {
+      super.f;
+    }
+  }
+  def main(args : Array[String]) : Unit = {
+    object d extends D;
+    d.f;
+  }
+}</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre><pre>
+exception when traversing java.lang.Object with test.D$class with scala.ScalaObject$class {
+  def this(): object d$1 = {
+    {
+      d$1.super.this();
+      ()
+    };
+    d$1.this./*B$class*/$init$();
+    d$1.this./*C$class*/$init$();
+    d$1.this./*D$class*/$init$();
+    ()
+  }
+}
+exception when traversing final class d$1 extends java.lang.Object with test.D$class with scala.ScalaObject$clas\
+s {
+  def this(): object d$1 = {
+    {
+      d$1.super.this();
+      ()
+    };
+    d$1.this./*B$class*/$init$();
+    d$1.this./*C$class*/$init$();
+    d$1.this./*D$class*/$init$();
+    ()
+  }
+}
+exception when traversing package test {
+  final class Go extends java.lang.Object with scala.ScalaObject {
+    def main(args: scala.Array[java.lang.String]): scala.Unit = {
+      var d$module$0: scala.runtime.ObjectRef = new scala.runtime.ObjectRef.this(null);
+      Go.this.d$0(d$module$0).f()
+    };
+    final private <local> <stable> def d$0(d$module$0: scala.runtime.ObjectRef): object d$1 = {
+      if (d$module$0.elem.$asInstanceOf[object test.d$1]().eq(null))
+        d$module$0.elem = new object test.d$1.this();
+      d$module$0.elem.$asInstanceOf[object test.d$1]()
+    };
+    def this(): object test.Go = {
+      {
+        Go.super.this();
+        ()
+      };
+      ()
+    }
+  };
+  abstract trait A extends java.lang.Object with scala.ScalaObject {
+    def f(): scala.Unit
+  };
+  abstract trait B extends java.lang.Object with test.A with scala.ScalaObject {
+    private <superaccessor> def test$Go$B$$super$f(): scala.Unit;
+    override def f(): scala.Unit
+  };
+  abstract trait C extends java.lang.Object with test.A with scala.ScalaObject {
+    private <superaccessor> def test$Go$C$$super$f(): scala.Unit;
+    override def f(): scala.Unit
+  };
+  abstract trait D extends java.lang.Object with test.B with test.C with scala.ScalaObject {
+    private <superaccessor> def test$Go$D$$super$f(): scala.Unit;
+    override def f(): scala.Unit
+  };
+  abstract trait B$class extends java.lang.Object with test.A with scala.ScalaObject with test.B {
+    override def f(): scala.Unit = {
+      B$class.this.test$Go$B$$super$f();
+      scala.Console.println("B")
+    };
+    def /*B$class*/$init$(): scala.Unit = {
+      ()
+    }
+  };
+  abstract trait C$class extends java.lang.Object with test.A with scala.ScalaObject with test.C {
+    override def f(): scala.Unit = {
+      C$class.this.test$Go$C$$super$f();
+      scala.Console.println("C")
+    };
+    def /*C$class*/$init$(): scala.Unit = {
+      ()
+    }
+  };
+  abstract trait D$class extends java.lang.Object with test.B with test.C with scala.ScalaObject with test.D {
+    override def f(): scala.Unit = D$class.this.test$Go$D$$super$f();
+    def /*D$class*/$init$(): scala.Unit = {
+      ()
+    }
+  };
+  final class d$1 extends java.lang.Object with test.D$class with scala.ScalaObject$class {
+    def this(): object d$1 = {
+      {
+        d$1.super.this();
+        ()
+      };
+      d$1.this./*B$class*/$init$();
+      d$1.this./*C$class*/$init$();
+      d$1.this./*D$class*/$init$();
+      ()
+    }
+  }
+}
+Exception in thread "main" java.lang.AssertionError: assertion failed: method f
+	at scala.Predef$.assert(Predef.scala:182)
+	at scala.tools.nsc.transform.Mixin$$anonfun$2.apply(Mixin.scala:56)
+	at scala.tools.nsc.transform.Mixin$$anonfun$2.apply(Mixin.scala:43)
+	at scala.tools.nsc.symtab.SymbolTable.atPhase(SymbolTable.scala:71)
+	at scala.tools.nsc.transform.Mixin.scala$tools$nsc$transform$Mixin$$rebindSuper(Mixin.scala:43)
+	at scala.tools.nsc.transform.Mixin$$anonfun$9.apply(Mixin.scala:179)
+	at scala.tools.nsc.transform.Mixin$$anonfun$9.apply(Mixin.scala:159)
+	at scala.List.foreach(List.scala:680)
+	at scala.tools.nsc.transform.Mixin.mixinMembers$0(Mixin.scala:159)
+	at scala.tools.nsc.transform.Mixin$$anonfun$10.apply(Mixin.scala:190)
+	at scala.tools.nsc.transform.Mixin$$anonfun$10.apply(Mixin.scala:190)
+	at scala.List.foreach(List.scala:680)
+	at scala.tools.nsc.transform.Mixin.addMixedinMembers(Mixin.scala:190)
+	at scala.tools.nsc.transform.Mixin$MixinTransformer.preTransform(Mixin.scala:249)
+	at scala.tools.nsc.transform.Mixin$MixinTransformer.transform(Mixin.scala:438)
+	at scala.tools.nsc.ast.Trees$Transformer.transformTemplate(Trees.scala:1044)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$13.apply(Trees.scala:950)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$13.apply(Trees.scala:949)
+	at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1064)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:948)
+	at scala.tools.nsc.transform.Mixin$MixinTransformer.transform(Mixin.scala:438)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$25.apply(Trees.scala:1058)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$25.apply(Trees.scala:1056)
+	at scala.List$.loop$0(List.scala:232)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.List$.loop$0(List.scala:236)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.List$.loop$0(List.scala:236)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.List$.loop$0(List.scala:236)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.List$.loop$0(List.scala:236)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.List$.loop$0(List.scala:236)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.List$.loop$0(List.scala:236)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.List$.loop$0(List.scala:236)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.List$.loop$0(List.scala:236)
+	at scala.List$.mapConserve(List.scala:249)
+	at scala.tools.nsc.ast.Trees$Transformer.transformStats(Trees.scala:1056)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$12.apply(Trees.scala:945)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$12.apply(Trees.scala:945)
+	at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1064)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:944)
+	at scala.tools.nsc.transform.Mixin$MixinTransformer.transform(Mixin.scala:438)
+	at scala.tools.nsc.ast.Trees$Transformer.transformUnit(Trees.scala:1059)
+	at scala.tools.nsc.transform.Transform$Phase.apply(Transform.scala:22)
+	at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:216)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$1.apply(Global.scala:205)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$1.apply(Global.scala:205)
+	at scala.Iterator$class.foreach(Iterator.scala:304)
+	at scala.collection.mutable.ListBuffer$$anon$0.foreach(ListBuffer.scala:216)
+	at scala.tools.nsc.Global$GlobalPhase.run(Global.scala:205)
+	at scala.tools.nsc.Global$Run.compileSources(Global.scala:467)
+	at scala.tools.nsc.Global$Run.compile(Global.scala:531)
+	at scala.tools.nsc.Main$.process(Main.scala:76)
+	at scala.tools.nsc.Main$.main(Main.scala:98)
+	at scala.tools.nsc.Main.main(Main.scala)
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" ></td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-08-20 12:52:06.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+The code as given does not compile anymore. We get:
+<pre>
+bug703.scala:7 error: method f in trait B is accessed from super. It may not be abstract unless it is overridden by a member declared `abstract' and `override'
+      super.f;
+           ^
+bug703.scala:13 error: method f in trait C is accessed from super. It may not be abstract unless it is overridden by a member declared `abstract' and `override'
+      super.f;
+           ^
+</pre>
+The following modified example compiles and runs fine.
+<pre>
+object Go {
+  trait A {
+    def f : Unit; // = Console.println("A");
+  }
+  trait B extends A {
+    abstract override def f = {
+      super.f;
+      Console.println("B");
+    }
+  }
+  trait C extends A {
+    abstract override def f = {
+      super.f;
+      Console.println("C");
+    }
+  }
+  trait D extends B with C {
+    abstract override def f = {
+      super.f;
+    }
+  }
+  class Super {
+    def f: Unit = Console.println("A")
+  }
+  def main(args : Array[String]) : Unit = {
+    object d extends Super with D
+    d.f;
+  }
+}
+</pre>
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

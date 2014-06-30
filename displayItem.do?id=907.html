@@ -1,0 +1,139 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#907]</th>
+		<th><strong>project:</strong> interpreter</th>
+		<th><strong>priority:</strong> high</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">Lex</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2007-01-19 14:42:15.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">Multi-line input on first line crashes the interpreter</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>/home/odersky/scala&gt; scala
+This is an interpreter for Scala.
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala&gt; def foo = {
+     |   1+2
+     | }
+line0: scala.Int = 0
+foo: =&gt; scala.Int
+
+scala&gt; def bar = {
+     | foo + foo
+     | }
+bar: =&gt; scala.Int
+
+scala&gt; def baz = {
+     | bar + bar
+     | }
+baz: =&gt; scala.Int
+
+scala&gt; baz</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>java.lang.NoSuchMethodError: line0$object$.foo()I
+	at line1$object$.bar(<console>:6)
+	at line2$object$.baz(<console>:6)
+	at line3$object$.<init>(<console>:5)
+	at line3$object$.<clinit>(<console>)
+	at RequestResult$line3$object$.<init>(<console>:3)
+	at RequestResult$line3$object$.<clinit>(<console>)
+	at RequestResult$line3$object.result(<console>)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:585)
+	at scala.tools.nsc.Interpreter$Request.loadAndRun(Interpreter.scala:565)
+	at scala.tools.nsc.Interpreter.interpret(Interpreter.scala:287)
+	at scala.tools.nsc.InterpreterLoop.interpretStartingWith(InterpreterLoop.scala:219)
+	at scala.tools.nsc.InterpreterLoop.command(InterpreterLoop.scala:206)
+	at scala.tools.nsc.InterpreterLoop.repl(InterpreterLoop.scala:112)
+	at scala.tools.nsc.InterpreterLoop.main(InterpreterLoop.scala:255)
+	at scala.tools.nsc.MainGenericRunner$.main(MainGenericRunner.scala:90)
+	at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
+
+scala> 
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >The first line looks funny. This bug needs to be fixed before a release, I think.
+</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Lex&nbsp; edited on &nbsp;2007-01-19 14:57:23.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+<p>Stephane reported this problem informally already.  I believe this bug is fixed, but if you see it again please re-open the bug.</p>
+
+<p>The problem was that the interpreter now primes itself by doing an evaluation of "0".  Erroneously, it used to reuse the "line0" object wrapper.  Now it should use "line_neg1" and thus avoid the conflict.</p>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

@@ -1,0 +1,458 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#855]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> medium</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Sean</td>
+	  <td align="center" bgcolor="#FFFFFF">Burak</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2006-11-30 12:16:23.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">Another weird type mismatch crash</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>// only one file needed
+// test/ScalaScanner.scala
+package core;
+trait HasNode {
+  type Node &lt;: NodeImpl;
+  trait NodeImpl 
+}
+trait HasTree extends HasNode {
+  type Node &lt;: NodeImpl;
+  trait NodeImpl extends super.NodeImpl 
+  
+  type TreeNode &lt;: Node with TreeNodeImpl;
+  trait TreeNodeImpl extends NodeImpl
+  type NonRootNode &lt;: TreeNode with NonRootNodeImpl;
+  trait NonRootNodeImpl extends TreeNodeImpl
+}
+trait MyAddRemove extends HasTree {
+  type Node &lt;: NodeImpl;
+  trait NodeImpl extends super.NodeImpl 
+}
+trait MyLinked extends MyAddRemove {
+  type Node &lt;: NodeImpl;
+  trait NodeImpl extends super.NodeImpl 
+}
+trait NodeScanner extends MyLinked {
+  type Node &lt;: NodeImpl;
+  trait NodeImpl extends super.NodeImpl 
+}
+trait ScalaScanner extends core.NodeScanner  {
+  type Node &lt;: NodeImpl;
+  trait NodeImpl extends super.NodeImpl
+  type Unfixed &lt;: Node with UnfixedImpl;
+  trait UnfixedImpl extends NodeImpl 
+  type Expression &lt;: Unfixed with NonRootNode;
+  trait ExpressionImpl extends NonRootNodeImpl with UnfixedImpl
+  type Preamble &lt;: Expression with PreambleImpl;
+  trait PreambleImpl extends ExpressionImpl
+  type Package &lt;: Preamble with PackageImpl;
+  trait PackageImpl extends PreambleImpl
+  type Import &lt;: Preamble with ImportImpl;
+  trait ImportImpl extends PreambleImpl 
+
+  case class TokenX(text : String);
+  def node(text : String) = (null:TokenX) match {
+  case TokenX(&quot;import&quot;) =&gt; newImport;
+  case TokenX(&quot;package&quot;) =&gt; newPackage;
+  }
+  def newImport : Import;
+  def newPackage : Package;
+}</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>First the crash seems to depend on the number of Node refinements in the type hierarchy, I'm guessing this is an\
+other magic number bug. Also, the fact that the type bound for the Expression type member neglects to mention Ex\
+pressionImpl is very important for this crash to occur (ExpressionImpl should have been there and usually is, ot\
+herwise I wouldn't have run into this crash). 
+
+<BR></BR><BR></BR>
+
+<pre>sean-mcdirmid:~/workspace/test40/src mcdirmid$ ../../scala/build/quick/bin/scalac -sourcepath . -d ../bin/ \
+core/ScalaScanner.scala
+exception when transforming def node(text: java.lang.String): ScalaScanner.this.Preamble with ScalaScanner.this.\
+TreeNode with ScalaScanner.this.NonRootNodeImpl with ScalaScanner.this.UnfixedImpl with ScalaScanner.this.TreeNo\
+de = (null) : ScalaScanner.this.TokenX match {
+  case (java.lang.String)ScalaScanner.this.TokenX("import") => ScalaScanner.this.newImport()
+  case (java.lang.String)ScalaScanner.this.TokenX("package") => ScalaScanner.this.newPackage()
+}
+exception when transforming java.lang.Object with core.NodeScanner with scala.ScalaObject {
+  type Node >: scala.Nothing <: ScalaScanner.this.NodeImpl;
+  abstract trait NodeImpl extends java.lang.Object with ScalaScanner.this.NodeImpl with scala.ScalaObject;
+  type Unfixed >: scala.Nothing <: ScalaScanner.this.Node with ScalaScanner.this.UnfixedImpl;
+  abstract trait UnfixedImpl extends java.lang.Object with ScalaScanner.this.NodeImpl with scala.ScalaObject;
+  type Expression >: scala.Nothing <: ScalaScanner.this.Unfixed with ScalaScanner.this.NonRootNode;
+  abstract trait ExpressionImpl extends java.lang.Object with ScalaScanner.this.NonRootNodeImpl with ScalaScanne\
+r.this.UnfixedImpl with scala.ScalaObject;
+  type Preamble >: scala.Nothing <: ScalaScanner.this.Expression with ScalaScanner.this.PreambleImpl;
+  abstract trait PreambleImpl extends java.lang.Object with ScalaScanner.this.ExpressionImpl with scala.ScalaObj\
+ect;
+  type Package >: scala.Nothing <: ScalaScanner.this.Preamble with ScalaScanner.this.PackageImpl;
+  abstract trait PackageImpl extends java.lang.Object with ScalaScanner.this.PreambleImpl with scala.ScalaObject\
+;
+  type Import >: scala.Nothing <: ScalaScanner.this.Preamble with ScalaScanner.this.ImportImpl;
+  abstract trait ImportImpl extends java.lang.Object with ScalaScanner.this.PreambleImpl with scala.ScalaObject;\
+
+  [scala.serializable]case class TokenX extends java.lang.Object with scala.ScalaObject with scala.Product1[java\
+.lang.String] {
+    private <local> <caseaccessor> <paramaccessor> val text: java.lang.String = _;
+    <stable> <caseaccessor> <accessor> <paramaccessor> def text(): java.lang.String = TokenX.this.text;
+    def this(text: java.lang.String): ScalaScanner.this.TokenX = {
+      TokenX.super.this();
+      ()
+    };
+    final override def $tag(): scala.Int = -1010228858;
+    override def hashCode(): scala.Int = ScalaRunTime.this._hashCode(TokenX.this);
+    override def toString(): java.lang.String = ScalaRunTime.this._toString(TokenX.this);
+    override def equals(x$1: scala.Any): scala.Boolean = x$1.eq(TokenX.this).||(x$1.isInstanceOf[ScalaScanner.th\
+is.TokenX]().&&(ScalaRunTime.this._equals(TokenX.this, x$1)));
+    final override def productPrefix(): java.lang.String = "TokenX";
+    final override def _1(): java.lang.String = TokenX.this.text()
+  };
+  def node(text: java.lang.String): ScalaScanner.this.Preamble with ScalaScanner.this.TreeNode with ScalaScanner\
+.this.NonRootNodeImpl with ScalaScanner.this.UnfixedImpl with ScalaScanner.this.TreeNode = (null) : ScalaScanner\
+.this.TokenX match {
+    case (java.lang.String)ScalaScanner.this.TokenX("import") => ScalaScanner.this.newImport()
+    case (java.lang.String)ScalaScanner.this.TokenX("package") => ScalaScanner.this.newPackage()
+  };
+  def newImport(): ScalaScanner.this.Import;
+  def newPackage(): ScalaScanner.this.Package
+}
+exception when transforming abstract trait ScalaScanner extends java.lang.Object with core.NodeScanner with scal\
+a.ScalaObject {
+  type Node >: scala.Nothing <: ScalaScanner.this.NodeImpl;
+  abstract trait NodeImpl extends java.lang.Object with ScalaScanner.this.NodeImpl with scala.ScalaObject;
+  type Unfixed >: scala.Nothing <: ScalaScanner.this.Node with ScalaScanner.this.UnfixedImpl;
+  abstract trait UnfixedImpl extends java.lang.Object with ScalaScanner.this.NodeImpl with scala.ScalaObject;
+  type Expression >: scala.Nothing <: ScalaScanner.this.Unfixed with ScalaScanner.this.NonRootNode;
+  abstract trait ExpressionImpl extends java.lang.Object with ScalaScanner.this.NonRootNodeImpl with ScalaScanne\
+r.this.UnfixedImpl with scala.ScalaObject;
+  type Preamble >: scala.Nothing <: ScalaScanner.this.Expression with ScalaScanner.this.PreambleImpl;
+  abstract trait PreambleImpl extends java.lang.Object with ScalaScanner.this.ExpressionImpl with scala.ScalaObj\
+ect;
+  type Package >: scala.Nothing <: ScalaScanner.this.Preamble with ScalaScanner.this.PackageImpl;
+  abstract trait PackageImpl extends java.lang.Object with ScalaScanner.this.PreambleImpl with scala.ScalaObject\
+;
+  type Import >: scala.Nothing <: ScalaScanner.this.Preamble with ScalaScanner.this.ImportImpl;
+  abstract trait ImportImpl extends java.lang.Object with ScalaScanner.this.PreambleImpl with scala.ScalaObject;\
+
+  [scala.serializable]case class TokenX extends java.lang.Object with scala.ScalaObject with scala.Product1[java\
+.lang.String] {
+    private <local> <caseaccessor> <paramaccessor> val text: java.lang.String = _;
+    <stable> <caseaccessor> <accessor> <paramaccessor> def text(): java.lang.String = TokenX.this.text;
+    def this(text: java.lang.String): ScalaScanner.this.TokenX = {
+      TokenX.super.this();
+      ()
+    };
+    final override def $tag(): scala.Int = -1010228858;
+    override def hashCode(): scala.Int = ScalaRunTime.this._hashCode(TokenX.this);
+    override def toString(): java.lang.String = ScalaRunTime.this._toString(TokenX.this);
+    override def equals(x$1: scala.Any): scala.Boolean = x$1.eq(TokenX.this).||(x$1.isInstanceOf[ScalaScanner.th\
+is.TokenX]().&&(ScalaRunTime.this._equals(TokenX.this, x$1)));
+    final override def productPrefix(): java.lang.String = "TokenX";
+    final override def _1(): java.lang.String = TokenX.this.text()
+  };
+  def node(text: java.lang.String): ScalaScanner.this.Preamble with ScalaScanner.this.TreeNode with ScalaScanner\
+.this.NonRootNodeImpl with ScalaScanner.this.UnfixedImpl with ScalaScanner.this.TreeNode = (null) : ScalaScanner\
+.this.TokenX match {
+    case (java.lang.String)ScalaScanner.this.TokenX("import") => ScalaScanner.this.newImport()
+    case (java.lang.String)ScalaScanner.this.TokenX("package") => ScalaScanner.this.newPackage()
+  };
+  def newImport(): ScalaScanner.this.Import;
+  def newPackage(): ScalaScanner.this.Package
+}
+exception when transforming package core {
+  abstract trait HasNode extends java.lang.Object with scala.ScalaObject {
+    type Node >: scala.Nothing <: HasNode.this.NodeImpl;
+    abstract trait NodeImpl extends java.lang.Object with scala.ScalaObject
+  };
+  abstract trait HasTree extends java.lang.Object with core.HasNode with scala.ScalaObject {
+    type Node >: scala.Nothing <: HasTree.this.NodeImpl;
+    abstract trait NodeImpl extends java.lang.Object with HasTree.this.NodeImpl with scala.ScalaObject;
+    type TreeNode >: scala.Nothing <: HasTree.this.Node with HasTree.this.TreeNodeImpl;
+    abstract trait TreeNodeImpl extends java.lang.Object with HasTree.this.NodeImpl with scala.ScalaObject;
+    type NonRootNode >: scala.Nothing <: HasTree.this.TreeNode with HasTree.this.NonRootNodeImpl;
+    abstract trait NonRootNodeImpl extends java.lang.Object with HasTree.this.TreeNodeImpl with scala.ScalaObjec\
+t
+  };
+  abstract trait MyAddRemove extends java.lang.Object with core.HasTree with scala.ScalaObject {
+    type Node >: scala.Nothing <: MyAddRemove.this.NodeImpl;
+    abstract trait NodeImpl extends java.lang.Object with MyAddRemove.this.NodeImpl with scala.ScalaObject
+  };
+  abstract trait MyLinked extends java.lang.Object with core.MyAddRemove with scala.ScalaObject {
+    type Node >: scala.Nothing <: MyLinked.this.NodeImpl;
+    abstract trait NodeImpl extends java.lang.Object with MyLinked.this.NodeImpl with scala.ScalaObject
+  };
+  abstract trait NodeScanner extends java.lang.Object with core.MyLinked with scala.ScalaObject {
+    type Node >: scala.Nothing <: NodeScanner.this.NodeImpl;
+    abstract trait NodeImpl extends java.lang.Object with NodeScanner.this.NodeImpl with scala.ScalaObject
+  };
+  abstract trait ScalaScanner extends java.lang.Object with core.NodeScanner with scala.ScalaObject {
+    type Node >: scala.Nothing <: ScalaScanner.this.NodeImpl;
+    abstract trait NodeImpl extends java.lang.Object with ScalaScanner.this.NodeImpl with scala.ScalaObject;
+    type Unfixed >: scala.Nothing <: ScalaScanner.this.Node with ScalaScanner.this.UnfixedImpl;
+    abstract trait UnfixedImpl extends java.lang.Object with ScalaScanner.this.NodeImpl with scala.ScalaObject;\
+
+    type Expression >: scala.Nothing <: ScalaScanner.this.Unfixed with ScalaScanner.this.NonRootNode;
+    abstract trait ExpressionImpl extends java.lang.Object with ScalaScanner.this.NonRootNodeImpl with ScalaScan\
+ner.this.UnfixedImpl with scala.ScalaObject;
+    type Preamble >: scala.Nothing <: ScalaScanner.this.Expression with ScalaScanner.this.PreambleImpl;
+    abstract trait PreambleImpl extends java.lang.Object with ScalaScanner.this.ExpressionImpl with scala.ScalaO\
+bject;
+    type Package >: scala.Nothing <: ScalaScanner.this.Preamble with ScalaScanner.this.PackageImpl;
+    abstract trait PackageImpl extends java.lang.Object with ScalaScanner.this.PreambleImpl with scala.ScalaObje\
+ct;
+    type Import >: scala.Nothing <: ScalaScanner.this.Preamble with ScalaScanner.this.ImportImpl;
+    abstract trait ImportImpl extends java.lang.Object with ScalaScanner.this.PreambleImpl with scala.ScalaObjec\
+t;
+    [scala.serializable]case class TokenX extends java.lang.Object with scala.ScalaObject with scala.Product1[ja\
+va.lang.String] {
+      private <local> <caseaccessor> <paramaccessor> val text: java.lang.String = _;
+      <stable> <caseaccessor> <accessor> <paramaccessor> def text(): java.lang.String = TokenX.this.text;
+      def this(text: java.lang.String): ScalaScanner.this.TokenX = {
+        TokenX.super.this();
+        ()
+      };
+      final override def $tag(): scala.Int = -1010228858;
+      override def hashCode(): scala.Int = ScalaRunTime.this._hashCode(TokenX.this);
+      override def toString(): java.lang.String = ScalaRunTime.this._toString(TokenX.this);
+      override def equals(x$1: scala.Any): scala.Boolean = x$1.eq(TokenX.this).||(x$1.isInstanceOf[ScalaScanner.\
+this.TokenX]().&&(ScalaRunTime.this._equals(TokenX.this, x$1)));
+      final override def productPrefix(): java.lang.String = "TokenX";
+      final override def _1(): java.lang.String = TokenX.this.text()
+    };
+    def node(text: java.lang.String): ScalaScanner.this.Preamble with ScalaScanner.this.TreeNode with ScalaScann\
+er.this.NonRootNodeImpl with ScalaScanner.this.UnfixedImpl with ScalaScanner.this.TreeNode = (null) : ScalaScann\
+er.this.TokenX match {
+      case (java.lang.String)ScalaScanner.this.TokenX("import") => ScalaScanner.this.newImport()
+      case (java.lang.String)ScalaScanner.this.TokenX("package") => ScalaScanner.this.newPackage()
+    };
+    def newImport(): ScalaScanner.this.Import;
+    def newPackage(): ScalaScanner.this.Package
+  }
+}
+Exception in thread "main" scala.tools.nsc.symtab.Types$TypeError: type mismatch;
+found   : ScalaScanner.this.Import
+required: ScalaScanner.this.Preamble with ScalaScanner.this.TreeNode with ScalaScanner.this.NonRootNodeImpl with\
+ ScalaScanner.this.UnfixedImpl with ScalaScanner.this.TreeNode
+	at scala.tools.nsc.typechecker.Contexts$Context.error(Contexts.scala:252)
+	at scala.tools.nsc.typechecker.Infer$Inferencer.error(Infer.scala:245)
+	at scala.tools.nsc.typechecker.Infer$Inferencer.typeError(Infer.scala:254)
+	at scala.tools.nsc.typechecker.Infer$Inferencer.typeErrorTree(Infer.scala:263)
+	at scala.tools.nsc.typechecker.Typers$Typer.adapt(Typers.scala:653)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2227)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedArg(Typers.scala:1291)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$52.apply(Typers.scala:1308)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$52.apply(Typers.scala:1308)
+	at scala.List$.map2(List.scala:277)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedArgs(Typers.scala:1308)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedApply(Typers.scala:1343)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:2080)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2225)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2257)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedStat$0(Typers.scala:1264)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$48.apply(Typers.scala:1285)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$48.apply(Typers.scala:1285)
+	at scala.List$.loop$0(List.scala:244)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:1285)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedBlock(Typers.scala:1128)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1881)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2225)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedArg(Typers.scala:1291)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$52.apply(Typers.scala:1308)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$52.apply(Typers.scala:1308)
+	at scala.List$.map2(List.scala:277)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedArgs(Typers.scala:1308)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedApply(Typers.scala:1343)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:2080)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2225)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedQualifier(Typers.scala:2277)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:2138)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2225)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:2069)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2225)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedBlock(Typers.scala:1129)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1881)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2225)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedArg(Typers.scala:1291)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$52.apply(Typers.scala:1308)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$52.apply(Typers.scala:1308)
+	at scala.List$.map2(List.scala:277)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedArgs(Typers.scala:1308)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedApply(Typers.scala:1343)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:2080)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2225)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2257)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedStat$0(Typers.scala:1264)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$48.apply(Typers.scala:1285)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$48.apply(Typers.scala:1285)
+	at scala.List$.loop$0(List.scala:244)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:1285)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedBlock(Typers.scala:1128)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1881)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2225)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:2268)
+	at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer.transform(ExplicitOuter.scala:412)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$20.apply(Trees.scala:1095)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$20.apply(Trees.scala:1094)
+	at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1202)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:33)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:27)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1093)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:46)
+	at scala.tools.nsc.transform.ExplicitOuter$OuterPathTransformer.transform(ExplicitOuter.scala:191)
+	at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer.transform(ExplicitOuter.scala:354)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$30.apply(Trees.scala:1196)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$30.apply(Trees.scala:1194)
+	at scala.List$.loop$0(List.scala:244)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.List$.loop$0(List.scala:248)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.tools.nsc.ast.Trees$Transformer.transformStats(Trees.scala:1194)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1114)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.scala$tools$nsc$transform$TypingTransformers$\
+TypingTransformer$$super$transform(TypingTransformers.scala:44)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer$$anonfun$0.apply(TypingTransformers.scala:44)\
+
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer$$anonfun$0.apply(TypingTransformers.scala:44)\
+
+	at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1202)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:33)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:27)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:44)
+	at scala.tools.nsc.transform.ExplicitOuter$OuterPathTransformer.transform(ExplicitOuter.scala:191)
+	at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer.transform(ExplicitOuter.scala:331)
+	at scala.tools.nsc.ast.Trees$Transformer.transformTemplate(Trees.scala:1182)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$17.apply(Trees.scala:1082)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$17.apply(Trees.scala:1081)
+	at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1202)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:33)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:27)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1080)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:46)
+	at scala.tools.nsc.transform.ExplicitOuter$OuterPathTransformer.transform(ExplicitOuter.scala:191)
+	at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer.transform(ExplicitOuter.scala:423)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$30.apply(Trees.scala:1196)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$30.apply(Trees.scala:1194)
+	at scala.List$.loop$0(List.scala:244)
+	at scala.List$.mapConserve(List.scala:261)
+	at scala.tools.nsc.ast.Trees$Transformer.transformStats(Trees.scala:1194)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$16.apply(Trees.scala:1077)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$16.apply(Trees.scala:1077)
+	at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1202)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:33)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.atOwner(TypingTransformers.scala:27)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1076)
+	at scala.tools.nsc.transform.TypingTransformers$TypingTransformer.transform(TypingTransformers.scala:46)
+	at scala.tools.nsc.transform.ExplicitOuter$OuterPathTransformer.transform(ExplicitOuter.scala:191)
+	at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer.transform(ExplicitOuter.scala:423)
+	at scala.tools.nsc.ast.Trees$Transformer.transformUnit(Trees.scala:1197)
+	at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer.scala$tools$nsc$transform$ExplicitOuter$Exp\
+licitOuterTransformer$$super$transformUnit(ExplicitOuter.scala:430)
+	at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer$$anonfun$7.apply(ExplicitOuter.scala:430)
+	at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer$$anonfun$7.apply(ExplicitOuter.scala:430)
+	at scala.tools.nsc.symtab.SymbolTable.atPhase(SymbolTable.scala:77)
+	at scala.tools.nsc.transform.ExplicitOuter$ExplicitOuterTransformer.transformUnit(ExplicitOuter.scala:430)
+	at scala.tools.nsc.transform.Transform$Phase.apply(Transform.scala:30)
+	at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:220)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$1.apply(Global.scala:209)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$1.apply(Global.scala:209)
+	at scala.Iterator$class.foreach(Iterator.scala:341)
+	at scala.collection.mutable.ListBuffer$$anon$0.foreach(ListBuffer.scala:244)
+	at scala.tools.nsc.Global$GlobalPhase.run(Global.scala:209)
+	at scala.tools.nsc.Global$Run.compileSources(Global.scala:475)
+	at scala.tools.nsc.Global$Run.compile(Global.scala:547)
+	at scala.tools.nsc.Main$.process(Main.scala:74)
+	at scala.tools.nsc.Main$.main(Main.scala:96)
+	at scala.tools.nsc.Main.main(Main.scala)
+sean-mcdirmid:~/workspace/test40/src mcdirmid$</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >As another note, I wish compound types didn't mention subtypes that are already subsumed by mentioned types. E.g., ScalaScanner.this.Preamble with ScalaScanner.this.TreeNode with ScalaScanner.this.NonRootNodeImpl with ScalaScanner.this.UnfixedImpl with ScalaScanner.this.TreeNode is just a fancy way of saying ScalaScanner.this.Preamble according to Preamble's declared type bound. 
+</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-12-01 18:50:25.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+I verified that lub recursion bounds have nothing to do with this -- I made them larger and the error still happens. I reassigned to Burak since it involves pattern matching code.
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2006-12-11 17:19:01.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+indeed the pattern matcher assigned the variable resultType (which is the lub) instead of body.tpe (which was import). I don't understand why this would be incorrect, but it is fixed now.
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

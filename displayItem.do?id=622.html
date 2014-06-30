@@ -1,0 +1,149 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#622]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> medium</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">Iulian</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2006-06-04 19:37:47.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">Cannot divide floats by longs</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>object Test {
+  val x: long = 1L
+  val y: float = 0.5F
+  if ((y / x) &gt; 0.5) Console.println(&quot;OK&quot;)
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>Exception in thread "main" java.lang.Error: Uncomparbale type kinds: FLOAT with LONG
+	at scala.tools.nsc.Global.abort(Global.scala:133)
+	at scala.tools.nsc.backend.icode.TypeKinds$FLOAT$.maxType(TypeKinds.scala:191)
+	at scala.tools.nsc.backend.icode.GenICode$ICodePhase.maxType$0(GenICode.scala:1400)
+	at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$32.apply(GenICode.scala:1403)
+	at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$32.apply(GenICode.scala:1403)
+	at scala.List.foldLeft(List.scala:881)
+	at scala.List.reduceLeft(List.scala:901)
+	at scala.tools.nsc.backend.icode.GenICode$ICodePhase.getMaxType(GenICode.scala:1403)
+	at scala.tools.nsc.backend.icode.GenICode$ICodePhase.genArithmeticOp$0(GenICode.scala:213)
+	at scala.tools.nsc.backend.icode.GenICode$ICodePhase.scala$tools$nsc$backend$icode$GenICode$ICodePhase$$genLoad\
+(GenICode.scala:630)
+	at scala.tools.nsc.backend.icode.GenICode$ICodePhase.genComparisonOp$0(GenICode.scala:1172)
+	at scala.tools.nsc.backend.icode.GenICode$ICodePhase.genCond(GenICode.scala:1204)
+	at scala.tools.nsc.backend.icode.GenICode$ICodePhase.scala$tools$nsc$backend$icode$GenICode$ICodePhase$$genLoad\
+(GenICode.scala:389)
+	at scala.tools.nsc.backend.icode.GenICode$ICodePhase.scala$tools$nsc$backend$icode$GenICode$ICodePhase$$genStat\
+(GenICode.scala:170)
+	at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$1.apply(GenICode.scala:133)
+	at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$1.apply(GenICode.scala:132)
+	at scala.List.foreach(List.scala:681)
+	at scala.tools.nsc.backend.icode.GenICode$ICodePhase.genStat(GenICode.scala:132)
+	at scala.tools.nsc.backend.icode.GenICode$ICodePhase.scala$tools$nsc$backend$icode$GenICode$ICodePhase$$genLoad\
+(GenICode.scala:785)
+	at scala.tools.nsc.backend.icode.GenICode$ICodePhase.gen(GenICode.scala:103)
+	at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$0.apply(GenICode.scala:64)
+	at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$0.apply(GenICode.scala:63)
+	at scala.List.foreach(List.scala:681)
+	at scala.tools.nsc.backend.icode.GenICode$ICodePhase.gen(GenICode.scala:63)
+	at scala.tools.nsc.backend.icode.GenICode$ICodePhase.gen(GenICode.scala:123)
+	at scala.tools.nsc.backend.icode.GenICode$ICodePhase.gen(GenICode.scala:81)
+	at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$0.apply(GenICode.scala:64)
+	at scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$0.apply(GenICode.scala:63)
+	at scala.List.foreach(List.scala:681)
+	at scala.tools.nsc.backend.icode.GenICode$ICodePhase.gen(GenICode.scala:63)
+	at scala.tools.nsc.backend.icode.GenICode$ICodePhase.gen(GenICode.scala:74)
+	at scala.tools.nsc.backend.icode.GenICode$ICodePhase.gen(GenICode.scala:59)
+	at scala.tools.nsc.backend.icode.GenICode$ICodePhase.apply(GenICode.scala:55)
+	at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:216)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$1.apply(Global.scala:205)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$1.apply(Global.scala:205)
+	at scala.Iterator$class.foreach(Iterator.scala:304)
+	at scala.collection.mutable.ListBuffer$$anon$0.foreach(ListBuffer.scala:216)
+	at scala.tools.nsc.Global$GlobalPhase.run(Global.scala:205)
+	at scala.tools.nsc.backend.icode.GenICode$ICodePhase.run(GenICode.scala:49)
+	at scala.tools.nsc.Global$Run.compileSources(Global.scala:466)
+	at scala.tools.nsc.Global$Run.compile(Global.scala:527)
+	at scala.tools.nsc.Main$.process(Main.scala:72)
+	at scala.tools.nsc.Main$.main(Main.scala:94)
+	at scala.tools.nsc.Main.main(Main.scala)
+
+C:\scala\test\pending\pos>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" ></td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Iulian&nbsp; edited on &nbsp;2006-06-06 10:19:37.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

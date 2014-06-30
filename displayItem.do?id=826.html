@@ -1,0 +1,160 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#826]</th>
+		<th><strong>project:</strong> api</th>
+		<th><strong>priority:</strong> medium</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Nikolay</td>
+	  <td align="center" bgcolor="#FFFFFF">Burak</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2006-11-16 16:25:16.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">[contrib #252] ambiguous reference to overloaded definition</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>package bug.contrib252
+
+object Test {
+  def main(args: Array[String]): Unit = {
+    Console.println(args.indexOf((s: String) =&gt; s == &quot;xxx&quot;))
+  }
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre><pre>contrib_252.scala:5 error: erroneous reference to overloaded definition,
+most specific definition is: method indexOf in trait Iterable of type ((java.lang.String) => scala.Boolean)scala\
+.Int,
+yet alternative definition   method indexOf in trait Seq of type [B >: java.lang.String](B)scala.Int
+is defined in a subclass
+    Console.println(args.indexOf((s: String) => { Console.println(s); s == "xxx"}))
+                        ^one error found
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >Successful compilation</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Nikolay&nbsp; edited on &nbsp;2006-11-16 16:30:26.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+The strange thing is this compiles with scala-2.2.0 but calls the wrong (wrt to the signature) method - the one in Seq instead of the one in Iterable. Or maybe the current commpiler correctly identifies some error, which would be unfortunate because it would mean method <code>indexOf</code> is unusable for sequences
+</td></tr>
+<tr>
+        <td>
+        <strong>Nikolay&nbsp; edited on &nbsp;2006-11-16 16:31:54.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+fixed "the what happened" mesage
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-11-17 18:24:46.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+In fact, the new version of nsc is right, and it is a problem of too aggressive overloading in the libraries. The point to note is that the method in Seq *is* applicable to the argument. Here's the method:
+<pre>
+def indexOf[B >: A](elem: B): Int = ...
+</pre>
+To apply this to an argument of type <code>String => boolean</code>, simply instantiate B to AnyRef!
+<p>
+
+The new compiler correctly recognizes that both versions are applicable, and that the best one is shadowed by another one in a subclass. So it is correct in complaining.
+<p>
+
+What to do? I think we need to redesign this part of the library. Maybe rename the version in Itarable to
+<code>indexSuchThat</code>?
+<p>
+I rassigned to Burak, since he's the ucrrent keeper of the collection libraries.
+
+
+
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-11-17 18:25:48.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2006-11-20 17:19:36.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+In <code>Iterable,</code> I renamed <code>indexOf(fun)</code> to <code>findIndexOf(fun)</code>, because there is already <code>find(fun)</code>.
+<br/>
+Then, I moved the <code>indexOf(elem)</code> method up in the hierarchy from Seq to Iterable, since it does not need the length method. 
+<br/>
+Consequently, the code above should now use <code>findIndexOf</code>.
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

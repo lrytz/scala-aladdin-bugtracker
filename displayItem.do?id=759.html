@@ -1,0 +1,245 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#759]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Nikolay</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2006-09-24 16:48:32.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">[contrib #212] Compiler crash with CBN arrays</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>def f[A](x : =&gt; A) = x
+f(Array(42))(0)
+
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>exception when typing line0$object.f({
+  [scala.serializable]final <synthetic> class $anonfun extends java.lang.Object with scala.Function0$class with \
+scala.ScalaObject$class {
+    def this(): template $anonfun = {
+      $anonfun.super.this();
+      $anonfun.this./*Function0$class*/$init$();
+      ()
+    };
+    final def apply(): scala.Array[scala.Int] = scala.Array.apply(Array[scala.Int]{42});
+    final <bridge> def apply(): java.lang.Object = $anonfun.this.apply()
+  };
+  (new template $anonfun.this()) : scala.Function0
+}).apply
+exception when typing line0$object.f({
+  [scala.serializable]final <synthetic> class $anonfun extends java.lang.Object with scala.Function0$class with \
+scala.ScalaObject$class {
+    def this(): template $anonfun = {
+      $anonfun.super.this();
+      $anonfun.this./*Function0$class*/$init$();
+      ()
+    };
+    final def apply(): scala.Array[scala.Int] = scala.Array.apply(Array[scala.Int]{42});
+    final <bridge> def apply(): java.lang.Object = $anonfun.this.apply()
+  };
+  (new template $anonfun.this()) : scala.Function0
+}).apply(0)
+exception when typing private <local> val line1: scala.Int = line0$object.f({
+  [scala.serializable]final <synthetic> class $anonfun extends java.lang.Object with scala.Function0$class with \
+scala.ScalaObject$class {
+    def this(): template $anonfun = {
+      $anonfun.super.this();
+      $anonfun.this./*Function0$class*/$init$();
+      ()
+    };
+    final def apply(): scala.Array[scala.Int] = scala.Array.apply(Array[scala.Int]{42});
+    final <bridge> def apply(): java.lang.Object = $anonfun.this.apply()
+  };
+  (new template $anonfun.this()) : scala.Function0
+}).apply(0)
+exception when typing final class line1$object extends java.lang.Object with scala.ScalaObject$class {
+  def this(): object line1$object = {
+    line1$object.super.this();
+    ()
+  };
+  private <local> val line1: scala.Int = line0$object.f({
+    [scala.serializable]final <synthetic> class $anonfun extends java.lang.Object with scala.Function0$class wit\
+h scala.ScalaObject$class {
+      def this(): template $anonfun = {
+        $anonfun.super.this();
+        $anonfun.this./*Function0$class*/$init$();
+        ()
+      };
+      final def apply(): scala.Array[scala.Int] = scala.Array.apply(Array[scala.Int]{42});
+      final <bridge> def apply(): java.lang.Object = $anonfun.this.apply()
+    };
+    (new template $anonfun.this()) : scala.Function0
+  }).apply(0);
+  <stable> <accessor> def line1(): scala.Int = line1$object.this.line1
+}
+exception when typing package <empty> {
+  final class line1$object extends java.lang.Object with scala.ScalaObject$class {
+    def this(): object line1$object = {
+      line1$object.super.this();
+      ()
+    };
+    private <local> val line1: scala.Int = line0$object.f({
+      [scala.serializable]final <synthetic> class $anonfun extends java.lang.Object with scala.Function0$class w\
+ith scala.ScalaObject$class {
+        def this(): template $anonfun = {
+          $anonfun.super.this();
+          $anonfun.this./*Function0$class*/$init$();
+          ()
+        };
+        final def apply(): scala.Array[scala.Int] = scala.Array.apply(Array[scala.Int]{42});
+        final <bridge> def apply(): java.lang.Object = $anonfun.this.apply()
+      };
+      (new template $anonfun.this()) : scala.Function0
+    }).apply(0);
+    <stable> <accessor> def line1(): scala.Int = line1$object.this.line1
+  }
+}
+Exception in thread "main" scala.tools.nsc.symtab.Types$TypeError: value apply is not a member of java.lang.Obje\
+ct
+	at scala.tools.nsc.typechecker.Contexts$Context.error(Contexts.scala:205)
+	at scala.tools.nsc.typechecker.Infer$Inferencer.error(Infer.scala:227)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedSelect$0(Typers.scala:1321)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1738)
+	at scala.tools.nsc.transform.Erasure$Eraser.typed1(Erasure.scala:367)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1807)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1668)
+	at scala.tools.nsc.transform.Erasure$Eraser.typed1(Erasure.scala:367)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1807)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1840)
+	at scala.tools.nsc.typechecker.Typers$Typer.transformedOrTyped(Typers.scala:1874)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedValDef(Typers.scala:726)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1478)
+	at scala.tools.nsc.transform.Erasure$Eraser.typed1(Erasure.scala:367)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1807)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1834)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedStat$0(Typers.scala:1016)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$47.apply(Typers.scala:1037)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$47.apply(Typers.scala:1037)
+	at scala.List$.loop$0(List.scala:239)
+	at scala.List$.mapConserve(List.scala:256)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:1037)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedTemplate(Typers.scala:708)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedClassDef(Typers.scala:643)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1472)
+	at scala.tools.nsc.transform.Erasure$Eraser.typed1(Erasure.scala:367)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1807)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1834)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedStat$0(Typers.scala:1016)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$47.apply(Typers.scala:1037)
+	at scala.tools.nsc.typechecker.Typers$Typer$$anonfun$47.apply(Typers.scala:1037)
+	at scala.List$.loop$0(List.scala:239)
+	at scala.List$.mapConserve(List.scala:256)
+	at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:1037)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1468)
+	at scala.tools.nsc.transform.Erasure$Eraser.typed1(Erasure.scala:367)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1807)
+	at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1834)
+	at scala.tools.nsc.transform.Erasure$ErasureTransformer$$anonfun$22.apply(Erasure.scala:655)
+	at scala.tools.nsc.transform.Erasure$ErasureTransformer$$anonfun$22.apply(Erasure.scala:652)
+	at scala.tools.nsc.symtab.SymbolTable.atPhase(SymbolTable.scala:71)
+	at scala.tools.nsc.transform.Erasure$ErasureTransformer.transform(Erasure.scala:652)
+	at scala.tools.nsc.ast.Trees$Transformer.transformUnit(Trees.scala:1068)
+	at scala.tools.nsc.transform.Transform$Phase.apply(Transform.scala:26)
+	at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:218)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$1.apply(Global.scala:207)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$1.apply(Global.scala:207)
+	at scala.Iterator$class.foreach(Iterator.scala:316)
+	at scala.collection.mutable.ListBuffer$$anon$0.foreach(ListBuffer.scala:216)
+	at scala.tools.nsc.Global$GlobalPhase.run(Global.scala:207)
+	at scala.tools.nsc.Global$Run.compileSources(Global.scala:469)
+	at scala.tools.nsc.Interpreter$Request.compile(Interpreter.scala:501)
+	at scala.tools.nsc.Interpreter.interpret(Interpreter.scala:269)
+	at scala.tools.nsc.InterpreterLoop.command(InterpreterLoop.scala:168)
+	at scala.tools.nsc.InterpreterLoop.repl(InterpreterLoop.scala:81)
+	at scala.tools.nsc.InterpreterLoop.main(InterpreterLoop.scala:187)
+	at scala.tools.nsc.MainGenericRunner$.main(MainGenericRunner.scala:82)
+	at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
+
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >Should work. If the final application is separated via a val-binding, it works ok.</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Nikolay&nbsp; edited on &nbsp;2006-09-24 16:49:10.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Transferred from the contributions and assigned to Martin
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-10-05 18:30:51.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

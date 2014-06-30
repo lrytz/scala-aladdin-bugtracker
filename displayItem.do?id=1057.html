@@ -1,0 +1,140 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#1057]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Nikolay</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">won't fix</td>
+          <td align="center" bgcolor="#FFFFFF">2007-04-18 13:42:12.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">[contrib #431] initialization order problem</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>class Bar extends Ordered[Bar] {
+  val id = Bar.add(this) // yields bug; maybe compiler should forbid to use &quot;this&quot; as long as it is not initialized??
+  // this works: val id = Bar.nextId; Bar.collec += this
+  override def compare(that: Bar) = this.id - that.id
+  override def toString() = &quot;&quot; + id
+}
+
+object Bar {
+  val collec = new scala.collection.jcl.TreeSet[Bar]
+  var id = 0
+  def nextId: Int = {id = id + 1; id}
+  def add(bar: Bar): Int = {collec += bar; nextId}
+}
+
+object Foo {
+  def main(args: Array[String]) {
+    val bars = List(1,2,3,4,5).map(a =&gt; new Bar())
+    Bar.collec -= bars(2)
+    Console.println(&quot;&quot; + Bar.collec)
+  }
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>Set(5, 4, 3, 2, 1)
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >Set(1, 2, 4, 5)</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Nikolay&nbsp; edited on &nbsp;2007-04-18 13:46:25.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+I don't quite understand this contribution #431. When I use ListBuffer it prints in the expected order. Maybe jcl.TreeSet prints in reverse order or sth like that. Currently, jcl.TreeSet.toString yields "<function>" so I assign to Sean to clean this mess and decide whether this is really a bug or not.
+</td></tr>
+<tr>
+        <td>
+        <strong>Sean&nbsp; edited on &nbsp;2007-04-22 03:20:22.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Somebody added a toString method in <function> (or was it always there?) and given linearization...it supercedes the one in most of the JCL classes. 
+
+So is the fragility of linearization. I'll try to ensure that JCL classes inherit mixins in the right order (if this is possible).
+</td></tr>
+<tr>
+        <td>
+        <strong>Sean&nbsp; edited on &nbsp;2007-04-22 04:10:01.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+There was a linearization problem in the JCL that caused Set's toString method to be used (which is just <function>). Fixed that. The initialization bug that the contributor really cares about still stands. Re-assigning to martin. 
+</td></tr>
+<tr>
+        <td>
+        <strong>Sean&nbsp; edited on &nbsp;2007-04-22 04:48:38.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+On second thought, I think this is a non-issue for Scala at least. Initialization that occurs here is no more fragile than in Java. Safe initialization is pretty much impossible to achieve in an imperative language. 
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

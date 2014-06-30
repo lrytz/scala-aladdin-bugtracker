@@ -1,0 +1,187 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#351]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> high</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Burak</td>
+	  <td align="center" bgcolor="#FFFFFF">Philippe</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2004-07-16 19:13:35.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">VerifyError on Array[A] where A abstract type member</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>abstract class Foo {
+  type A = bar.A;
+  val bar:Bar;
+
+  bar.handleBaz(  new Array[A](0) );
+}
+
+abstract class Bar {
+  type A;
+  def handleBaz(arr:Array[A]) = 0;
+}
+object Test  with Application {
+  new Foo {
+    val bar = new Bar {
+      type A = Int; // using some AnyRef also yields error
+    }
+  }
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre><pre>
+/tmp> /local/buraq/scala.fallback/scala/bin/scala Test
+Exception in thread "main" java.lang.ExceptionInInitializerError
+	at Test.main(foo.scala:45)
+Caused by: java.lang.NullPointerException
+	at Foo$class.<init>(foo.scala:5)
+	at Test$$anon$0.<init>(foo.scala:14)
+	at Test$.<init>(foo.scala:14)
+	at Test$.<clinit>(foo.scala)
+	... 1 more
+</pre>
+
+This is the bytecode:
+<pre>
+/tmp> javap -c Foo\$class
+Compiled from "foo.scala"
+public abstract class Foo$class extends java.lang.Object implements Foo{
+public static {};
+  Code:
+   0:	return
+
+public Foo$class();
+  Code:
+   0:	aload_0
+   1:	invokespecial	#11; //Method java/lang/Object."<init>":()V
+   4:	aload_0
+   5:	invokeinterface	#17,  1; //InterfaceMethod Foo.bar:()LBar;
+   10:	iconst_0
+   11:	anewarray	#9; //class Object
+   14:	checkcast	#19; //class Object;"
+   17:	invokestatic	#25; //Method scala/runtime/RunTime.box_oarray:([Ljava/lang/Object;)Lscala/Array;
+   20:	invokeinterface	#31,  2; //InterfaceMethod Bar.handleBaz:(Lscala/Array;)I
+   25:	pop
+   26:	return
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >hm, erase <code>Array[A]</code> to <code>Array[Object]</code> in call to Bar::handleBaz ?
+<br/></td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2004-07-16 19:14:20.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+In absence of Michel, I assign this one to Philippe, maybe you can help, I am depending on this to work... 
+</td></tr>
+<tr>
+        <td>
+        <strong>Philippe&nbsp; edited on &nbsp;2004-07-19 11:08:20.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+I don't see any VerifyError. There is only a <code>NullPointerException</code> because <code>bar</code> is access from <code>Foo</code> before it is initialized in the anonymous subclass. If you add to class <Foo> an argument for the initial value of <code>bar</code> then everything is ok.
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2004-07-19 12:03:46.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+I can reproduce this error, with the latest CVS as well as with the /home/linuxsoft version.
+</td></tr>
+<tr>
+        <td>
+        <strong>Philippe&nbsp; edited on &nbsp;2004-07-19 13:39:38.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Indeed, the error can be reproduced, but as I explained that's the correct behaviour. The problem is that you access a non-initialized value in class <code>Foo</code>. Here is a shorter example which exhibits the same error.
+
+<pre>
+abstract class Foo {
+  val v: Any;
+  System.out.println(v.toString());
+}
+
+object Test  with Application {
+  new Foo {
+    val v: Any = "initial-value-that-comes-to-late";
+  }
+}
+</pre>
+
+When <code>System.out.println(v.toString());</code> is executed, <code>v</code> is not yet initialized.
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

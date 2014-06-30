@@ -1,0 +1,122 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#1139]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Sean</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">open</td>
+          <td align="center" bgcolor="#FFFFFF">2007-05-24 22:19:02.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">bridge not generated in trait/case class construction</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>// test/Test.scala, derived from my own code
+package test;
+trait Extension { 
+  trait SpanNode
+  trait LinkedNode  { 
+    trait ParseNode extends SpanNode;
+    def ParseNode : SpanNode
+  }
+  def f(node : LinkedNode) : SpanNode = node.ParseNode
+}
+object Test extends Extension {
+  trait LinkedNode extends super.LinkedNode {
+    case class ParseNode extends super.ParseNode;
+  }
+  class LinkedNode0 extends Test.LinkedNode
+  def main(args : Array[String]) : Unit = {
+    val n = new LinkedNode0
+    n.ParseNode // OK
+    f(n)        // throws AME
+  }
+}</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>Exception in thread "main" java.lang.AbstractMethodError: test.Test$LinkedNode0.ParseNode()Ltest/Test$LinkedNode\
+$ParseNode;
+	at test.Test$LinkedNode0.ParseNode(Test.scala:15)
+	at test.Extension$class.f(Test.scala:9)
+	at test.Test$.f(Test.scala:11)
+	at test.Test$.main(Test.scala:19)
+	at test.Test.main(Test.scala)
+
+Seems like a bridge method in LinkedNode with the signature ParseNode.SpanNode is expected by Extension, but not\
+ generated given that the case class is defined in a trait. 
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" ></td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2007-06-01 18:00:05.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+This might go away once we change case factory methods to objects. Deferred
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

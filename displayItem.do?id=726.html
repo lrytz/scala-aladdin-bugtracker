@@ -1,0 +1,236 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#726]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Sean</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2006-09-04 20:18:25.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">Can no longer resident compile NSC</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>NSC code base (SVN: scala/src/compiler)</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre><pre>
+sean-mcdirmids-computer:~/workspace/scala/src/compiler mcdirmid$ ../../../scala/build/quick/bin/scalac -d ../../\
+build/quick/lib/compiler/ -resident
+
+nsc: scala/tools/nsc/Global.scala
+
+nsc: scala/tools/nsc/typechecker/Analyzer.scala
+
+nsc: scala/tools/nsc/Global.scala
+scala/tools/nsc/Global.scala:340 error: type mismatch;
+found   : Global.this.analyzer.namerFactory.type (with underlying type object Global.this.analyzer.namerFactory)\
+
+required: scala.tools.nsc.SubComponent{def newPhase(scala.tools.nsc.Phase): scala.tools.nsc.SubComponent#global.\
+GlobalPhase; def global: Global.this.type}
+    analyzer.namerFactory,
+            ^
+scala/tools/nsc/Global.scala:341 error: type mismatch;
+found   : Global.this.analyzer.typerFactory.type (with underlying type object Global.this.analyzer.typerFactory)\
+
+required: scala.tools.nsc.SubComponent{def newPhase(scala.tools.nsc.Phase): scala.tools.nsc.SubComponent#global.\
+GlobalPhase; def global: Global.this.type}
+    analyzer.typerFactory,
+            ^
+scala/tools/nsc/Global.scala:342 error: type mismatch;
+found   : Global.this.superAccessors.type (with underlying type object Global.this.superAccessors)
+required: scala.tools.nsc.SubComponent{def newPhase(scala.tools.nsc.Phase): scala.tools.nsc.SubComponent#global.\
+GlobalPhase; def global: Global.this.type}
+    superAccessors,
+    ^
+scala/tools/nsc/Global.scala:343 error: type mismatch;
+found   : Global.this.pickler.type (with underlying type object Global.this.pickler)
+required: scala.tools.nsc.SubComponent{def newPhase(scala.tools.nsc.Phase): scala.tools.nsc.SubComponent#global.\
+GlobalPhase; def global: Global.this.type}
+    pickler,
+    ^
+scala/tools/nsc/Global.scala:344 error: type mismatch;
+found   : Global.this.refchecks.type (with underlying type object Global.this.refchecks)
+required: scala.tools.nsc.SubComponent{def newPhase(scala.tools.nsc.Phase): scala.tools.nsc.SubComponent#global.\
+GlobalPhase; def global: Global.this.type}
+    refchecks,
+    ^
+scala/tools/nsc/Global.scala:345 error: type mismatch;
+found   : Global.this.liftcode.type (with underlying type object Global.this.liftcode)
+required: scala.tools.nsc.SubComponent{def newPhase(scala.tools.nsc.Phase): scala.tools.nsc.SubComponent#global.\
+GlobalPhase; def global: Global.this.type}
+    liftcode,
+    ^
+scala/tools/nsc/Global.scala:346 error: type mismatch;
+found   : Global.this.uncurry.type (with underlying type object Global.this.uncurry)
+required: scala.tools.nsc.SubComponent{def newPhase(scala.tools.nsc.Phase): scala.tools.nsc.SubComponent#global.\
+GlobalPhase; def global: Global.this.type}
+    uncurry,
+    ^
+scala/tools/nsc/Global.scala:347 error: type mismatch;
+found   : Global.this.tailCalls.type (with underlying type object Global.this.tailCalls)
+required: scala.tools.nsc.SubComponent{def newPhase(scala.tools.nsc.Phase): scala.tools.nsc.SubComponent#global.\
+GlobalPhase; def global: Global.this.type}
+    tailCalls,
+    ^
+scala/tools/nsc/Global.scala:348 error: type mismatch;
+found   : Global.this.explicitOuter.type (with underlying type object Global.this.explicitOuter)
+required: scala.tools.nsc.SubComponent{def newPhase(scala.tools.nsc.Phase): scala.tools.nsc.SubComponent#global.\
+GlobalPhase; def global: Global.this.type}
+    explicitOuter,
+    ^
+scala/tools/nsc/Global.scala:349 error: type mismatch;
+found   : Global.this.transMatcher.type (with underlying type object Global.this.transMatcher)
+required: scala.tools.nsc.SubComponent{def newPhase(scala.tools.nsc.Phase): scala.tools.nsc.SubComponent#global.\
+GlobalPhase; def global: Global.this.type}
+    transMatcher,
+    ^
+scala/tools/nsc/Global.scala:351 error: type mismatch;
+found   : Global.this.erasure.type (with underlying type object Global.this.erasure)
+required: scala.tools.nsc.SubComponent{def newPhase(scala.tools.nsc.Phase): scala.tools.nsc.SubComponent#global.\
+GlobalPhase; def global: Global.this.type}
+    erasure,
+    ^
+scala/tools/nsc/Global.scala:352 error: type mismatch;
+found   : Global.this.lambdaLift.type (with underlying type object Global.this.lambdaLift)
+required: scala.tools.nsc.SubComponent{def newPhase(scala.tools.nsc.Phase): scala.tools.nsc.SubComponent#global.\
+GlobalPhase; def global: Global.this.type}
+    lambdaLift,
+    ^
+scala/tools/nsc/Global.scala:354 error: type mismatch;
+found   : Global.this.constructors.type (with underlying type object Global.this.constructors)
+required: scala.tools.nsc.SubComponent{def newPhase(scala.tools.nsc.Phase): scala.tools.nsc.SubComponent#global.\
+GlobalPhase; def global: Global.this.type}
+    constructors,
+    ^
+scala/tools/nsc/Global.scala:355 error: type mismatch;
+found   : Global.this.flatten.type (with underlying type object Global.this.flatten)
+required: scala.tools.nsc.SubComponent{def newPhase(scala.tools.nsc.Phase): scala.tools.nsc.SubComponent#global.\
+GlobalPhase; def global: Global.this.type}
+    flatten,
+    ^
+scala/tools/nsc/Global.scala:356 error: type mismatch;
+found   : Global.this.mixer.type (with underlying type object Global.this.mixer)
+required: scala.tools.nsc.SubComponent{def newPhase(scala.tools.nsc.Phase): scala.tools.nsc.SubComponent#global.\
+GlobalPhase; def global: Global.this.type}
+    mixer,
+    ^
+scala/tools/nsc/Global.scala:357 error: type mismatch;
+found   : Global.this.cleanup.type (with underlying type object Global.this.cleanup)
+required: scala.tools.nsc.SubComponent{def newPhase(scala.tools.nsc.Phase): scala.tools.nsc.SubComponent#global.\
+GlobalPhase; def global: Global.this.type}
+    cleanup,
+    ^
+scala/tools/nsc/Global.scala:358 error: type mismatch;
+found   : Global.this.genicode.type (with underlying type object Global.this.genicode)
+required: scala.tools.nsc.SubComponent{def newPhase(scala.tools.nsc.Phase): scala.tools.nsc.SubComponent#global.\
+GlobalPhase; def global: Global.this.type}
+    genicode,
+    ^
+scala/tools/nsc/Global.scala:359 error: type mismatch;
+found   : Global.this.inliner.type (with underlying type object Global.this.inliner)
+required: scala.tools.nsc.SubComponent{def newPhase(scala.tools.nsc.Phase): scala.tools.nsc.SubComponent#global.\
+GlobalPhase; def global: Global.this.type}
+    inliner,
+    ^
+scala/tools/nsc/Global.scala:360 error: type mismatch;
+found   : Global.this.closureElimination.type (with underlying type object Global.this.closureElimination)
+required: scala.tools.nsc.SubComponent{def newPhase(scala.tools.nsc.Phase): scala.tools.nsc.SubComponent#global.\
+GlobalPhase; def global: Global.this.type}
+    closureElimination,
+    ^
+scala/tools/nsc/Global.scala:361 error: type mismatch;
+found   : Global.this.deadCode.type (with underlying type object Global.this.deadCode)
+required: scala.tools.nsc.SubComponent{def newPhase(scala.tools.nsc.Phase): scala.tools.nsc.SubComponent#global.\
+GlobalPhase; def global: Global.this.type}
+    deadCode,
+    ^
+scala/tools/nsc/Global.scala:362 error: type mismatch;
+found   : Global.this.genJVM.type (with underlying type object Global.this.genJVM)
+required: scala.tools.nsc.SubComponent{def newPhase(scala.tools.nsc.Phase): scala.tools.nsc.SubComponent#global.\
+GlobalPhase; def global: Global.this.type}
+    genJVM,
+    ^
+scala/tools/nsc/Global.scala:363 error: type mismatch;
+found   : Global.this.sampleTransform.type (with underlying type object Global.this.sampleTransform)
+required: scala.tools.nsc.SubComponent{def newPhase(scala.tools.nsc.Phase): scala.tools.nsc.SubComponent#global.\
+GlobalPhase; def global: Global.this.type}
+    sampleTransform)
+    ^
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" ></td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-09-05 13:08:27.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

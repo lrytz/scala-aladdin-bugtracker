@@ -1,0 +1,118 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#1132]</th>
+		<th><strong>project:</strong> distribution</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Nikolay</td>
+	  <td align="center" bgcolor="#FFFFFF">Lex</td>
+	  <td align="center" bgcolor="#FFFFFF">won't fix</td>
+          <td align="center" bgcolor="#FFFFFF">2007-05-22 08:47:14.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">[contrib #546] Scala debian package should not depend on java-gcj-compat-dev</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>Scala debian package should not depend on java-gcj-compat-dev. AFAIU scala requires nothing more then java-virtual-machine to run.
+
+Dependency on java-gcj-compat-dev makes not possible to install Scala 2.4 into Sarge, because java-gcj-compat-dev is absent in Sarge and it depends on many important packages from unstable.
+
+Also, please upload Scala 2.5 into Debian repository.</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" ></td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Nikolay&nbsp; edited on &nbsp;2007-05-22 08:47:56.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Lex&nbsp; edited on &nbsp;2007-05-22 09:59:21.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+<p>I do not know a better answer.  Leaving it out completely does not work, because the gij package provides java-virtual-machine but does not provide a standard Java library as a jar file.   To get the jar file, you need to use java-gcj-compat.</p>
+
+<p>Is java-gcj-compat, i.e. not the -dev version, available on Sarge?  If so, maybe that would work.  I'll test that out soon on sid, though of course that is not a perfect test for you.</p>
+
+<p>For some history on this issue, see Debian bug <a href="http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=421619">421619</a> .  For that matter, go see the list of  <a href="http://bugs.debian.org/cgi-bin/pkgreport.cgi?which=pkg&data=scala&archive=no&version=&dist=unstable">all Scala bugs on the Debian bug tracker</a>.  They are almost all to do with dependencies.</p>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Lex&nbsp; edited on &nbsp;2007-06-04 11:34:17.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+I do not know any better settings for the dependencies.  Depending on java-virtual-machine is not enough, because you need to also have rt.jar or an equivalent.  Further, while the dependency apparently does not work in Sarge, it does work for the current stable and unstable distributions.
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

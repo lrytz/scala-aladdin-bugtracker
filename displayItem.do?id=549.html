@@ -1,0 +1,118 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#549]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> high</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">Iulian</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2006-03-16 18:27:05.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">resident compiler does not survive class->object change</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>class foo {}</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>Compile class above with nsc -resident. Then change `class' in file above to `object'. Compile again with same r\
+esident compiler. You get:
+<pre>
+Exception in thread "main" java.lang.Error: assertion failed: List((object foo,scala.tools.nsc.symtab.classfile.\
+Pickler$Pickle@d6b059))
+	at scala.Predef$.assert(Predef.scala:171)
+	at scala.tools.nsc.Global$Run.compileSources(Global.scala:442)
+	at scala.tools.nsc.Global$Run.compile(Global.scala:480)
+	at scala.tools.nsc.Main$$anonfun$0.apply(Main.scala:39)
+	at scala.tools.nsc.Main$$anonfun$0.apply(Main.scala:36)
+	at scala.tools.nsc.EvalLoop$class.loop(EvalLoop.scala:11)
+	at scala.tools.nsc.Main$.loop(Main.scala:16)
+	at scala.tools.nsc.EvalLoop$class.loop(EvalLoop.scala:12)
+	at scala.tools.nsc.Main$.loop(Main.scala:16)
+	at scala.tools.nsc.Main$.resident(Main.scala:36)
+	at scala.tools.nsc.Main$.process(Main.scala:55)
+	at scala.tools.nsc.Main$.main(Main.scala:80)
+	at scala.tools.nsc.Main.main(Main.scala)
+</pre>
+Digging further, the assertion violation is caused because no class file is generated for the object, even thoug\
+h at the end of phase mixin, a tree is passed to the backend. 
+
+
+
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >Successful compilation</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Iulian&nbsp; edited on &nbsp;2006-03-17 15:57:21.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+The bug appears because of the weird interactions with the (surprise!) classpath. In fact, having the output directory in the classpath seems to cause some trouble. The second run, the compiler will think the 'class foo' is in the classpath, and link it with the now 'object foo'. The backend will not generate a mirror class, because it will clash with the already existing class 'foo' (which we cannot really tell that just changed identity and is now an object...).
+
+Right now I decided to actually overwrite such a class if it is not being compiled in the current run. It's probably not the cleanest solution. Maybe better would be to actually erase all files that resulted from the same source files as those being compiled in the current run, before even starting the new compiler run.
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

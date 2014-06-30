@@ -1,0 +1,207 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#885]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> medium</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Lex</td>
+	  <td align="center" bgcolor="#FFFFFF">Stephane</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2007-01-11 23:13:06.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">Steven Harris cannot start compile server</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>From: &quot;Steven E. Harris&quot; &lt;seh@panix.com&gt;
+Subject: Re: Java closures vs. Scala closures
+Newsgroups: gmane.comp.lang.scala
+Date: Wed, 10 Jan 2007 10:40:49 -0800
+Organization: SEH Labs
+
+Lex Spoon &lt;lex@cc.gatech.edu&gt; writes:
+
+&gt; // save this as okbutton.scash, and then
+&gt; // type &quot;scala okbutton.scash&quot;
+
+,----
+| $ scala okbutton.scalash
+| cannot start server.
+| tried command: scala.bat scala.tools.nsc.CompileServer
+`----
+
+Is there some necessary preparation I missed?
+
+-- 
+Steven E. Harris
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" ></td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Lex&nbsp; edited on &nbsp;2007-01-11 23:14:00.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+I don't know what is happening; I have emailed him to try and get more information.
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Lex&nbsp; edited on &nbsp;2007-01-12 12:50:01.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Here's what he sent me about his setup:
+
+> But regarding the bug, can you tell me a little about your setup?
+> What OS are you running?
+
+Microsoft Windows XP, running Scala from within an almost up-to-date
+Cygwin system. My JDK is fresh too -- if that's even being used by
+Scala:
+
+,----
+| $ java -version
+| java version "1.6.0"
+| Java(TM) SE Runtime Environment (build 1.6.0-b105)
+| Java HotSpot(TM) Client VM (build 1.6.0-b105, mixed mode, sharing)
+`----
+
+> Can you email me what "sbaz installed" tells you?
+
+,----
+| $ sbaz installed
+| base/1.9
+| sbaz/1.18
+| sbaz-setup/1.0
+| scala/2.3.1
+| scala-devel/2.3.1
+| scala-documentation/2.3.1
+| scala-library/2.3.1
+| scala-tool-support/2.3.1
+| scalap/2.3.1
+| 9 packages installed
+`----
+
+> If you are a Unix, what does "uname -a" say ?
+
+Cygwin is sort of a Unix:
+
+,----
+| $ uname -a
+| CYGWIN_NT-5.1 torus 1.5.23(0.156/4/2) 2006-12-19 10:52 i686 Cygwin
+`----
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Lex&nbsp; edited on &nbsp;2007-01-12 12:51:01.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Lex&nbsp; edited on &nbsp;2007-01-12 12:51:16.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+For what it's worth, this stuff works fine for me on Cygwin on XP, albeit using Java 1.5 instead of 1.6.
+</td></tr>
+<tr>
+        <td>
+        <strong>Lex&nbsp; edited on &nbsp;2007-01-12 14:14:40.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+And now I have tried with 1.6.  At this point, I have a very similar setup to Steven's but still cannot replicate the error.
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Lex&nbsp; edited on &nbsp;2007-01-15 14:30:23.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+The situation is that Steven installed the Unix distribution.  This one does not include .bat files, even in share\scala which is otherwise just like an sbaz working directory.
+
+I propose that we include the .bat files under share\scala\bin in the Unix distros.  This fixes the immediate problem, plus makes share\scala be the same as if it were installed via sbaz.
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Stephane&nbsp; edited on &nbsp;2007-02-15 14:16:54.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+directory bin/ now also contains batch files 
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

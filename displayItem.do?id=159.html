@@ -1,0 +1,200 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#159]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> high</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Burak</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2003-09-30 11:57:32.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">backend crash on val _ = ...</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>object foo {
+
+  // the problem seems to appear only 
+  // if &quot;val _&quot; is in the body of a case 
+  def cooked( ckd:StringBuffer ):Unit = 
+    'a'.match {
+      case '-' =&gt;
+        val _ = ckd.append( '_' );
+      case 'v' =&gt;
+        val _ = ckd.append( '_' );
+    }
+  
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre><pre>
+Exception in thread "main" scalac.ApplicationError: unknown node: scalac.ast.Tree$ExtValDef(val _: java.lang.Str\
+ingBuffer = ckd.append('_'))
+	at scalac.Global.fail(Global.java:543)
+	at scalac.backend.jvm.GenJVM.genLoad(GenJVM.java:547)
+	at scalac.backend.jvm.GenJVM.genLoad(GenJVM.java:228)
+	at scalac.backend.jvm.GenJVM.gen(GenJVM.java:191)
+	at scalac.backend.jvm.GenJVM.genLoad(GenJVM.java:224)
+	at scalac.backend.jvm.GenJVM.genLoad(GenJVM.java:448)
+	at scalac.backend.jvm.GenJVM.gen(GenJVM.java:191)
+	at scalac.backend.jvm.GenJVM.genLoad(GenJVM.java:224)
+	at scalac.backend.jvm.GenJVM.genLoad(GenJVM.java:458)
+	at scalac.backend.jvm.GenJVM.genCond(GenJVM.java:700)
+	at scalac.backend.jvm.GenJVM.genLoad(GenJVM.java:457)
+	at scalac.backend.jvm.GenJVM.genLoad(GenJVM.java:228)
+	at scalac.backend.jvm.GenJVM.gen(GenJVM.java:165)
+	at scalac.backend.jvm.GenJVM.gen(GenJVM.java:199)
+	at scalac.backend.jvm.GenJVM.gen(GenJVM.java:143)
+	at scalac.backend.jvm.GenJVM.gen(GenJVM.java:138)
+	at scalac.backend.jvm.GenJVM.translate(GenJVM.java:110)
+	at scalac.backend.jvm.GenJVMPhase.apply(GenJVMPhase.java:45)
+	at scalac.Global.compile(Global.java:293)
+	at scalac.Global.compile(Global.java:266)
+	at scalac.Main.main(Main.java:32)
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >silent run.</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2003-09-30 11:58:35.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2003-09-30 11:59:05.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Michel&nbsp; edited on &nbsp;2003-09-30 13:39:57.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+This is not a bug in the backend, but in the parser IMO, because it doesn't add an empty block in one of the two cases. Here is a slightly modified example:
+<pre>
+object foo {
+  def f():Unit = {
+    1.match {
+      case 2 => val _ = 1;
+      case 3 => val _ = 2;
+      case 4 => val _ = 2;
+    }
+  }
+}
+</pre>
+and here is how it looks after parsing:
+<pre>
+[[Trees after phase parse]]
+// Scala source: bug_159.scala
+object foo extends scala.Object() {
+  def f(): Unit = 1.match({
+      case 2 => {
+        val _ = 1
+      }
+      case 3 => {
+        val _ = 2
+      }
+      case 4 => {
+        val _ = 2;
+        {
+          
+        }
+      }
+    })
+};
+</pre>
+As you can see, only the last case is correct, because the implicit empty block representing "unit" has indeed been added. This implicit unit is, however, missing in the two other cases. If you feed this code again in the compiler, it complains.
+
+<p> For now, a work-around is to explicitely put "unit" values in the code, like that:
+<pre>
+object foo {
+  def f():Unit = {
+    1.match {
+      case 2 => val _ = 1; ()
+      case 3 => val _ = 2; ()
+      case 4 => val _ = 2; ()
+    }
+  }
+}
+</pre>
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2003-10-06 12:23:31.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

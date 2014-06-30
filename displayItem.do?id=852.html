@@ -1,0 +1,319 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#852]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> medium</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Sean</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2006-11-30 12:11:46.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">new isSubType magic number is too small</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>package lampion.scalax;
+
+trait HasTreeXXX {
+  type Node &lt;: NodeImpl;
+  trait NodeImpl { def self : Node; }
+  type TreeNode &lt;: Node with TreeNodeImpl;
+  trait TreeNodeImpl extends NodeImpl { def self : TreeNode; }
+  type NonRootNode &lt;: TreeNode with NonRootNodeImpl;
+  trait NonRootNodeImpl extends TreeNodeImpl { def self : NonRootNode; }
+}
+trait ScalaScannerXXX extends HasTreeXXX {
+  type Expression &lt;: Node with NonRootNode;
+  trait ExpressionImpl extends NonRootNodeImpl  { def self : Expression; }
+  type BeginsStatement &lt;: Expression with BeginsStatementImpl;       
+  trait BeginsStatementImpl extends ExpressionImpl { def self : BeginsStatement; }
+  type AbstractDef &lt;: BeginsStatement with AbstractDefImpl;
+  trait AbstractDefImpl extends BeginsStatementImpl { def self : AbstractDef; }
+  type DefValVar &lt;: AbstractDef with DefValVarImpl;
+  trait DefValVarImpl extends AbstractDefImpl { def self : DefValVar; }
+  type ValVar &lt;: DefValVar with ValVarImpl;
+  trait ValVarImpl extends DefValVarImpl { def self : ValVar; }
+  type Val &lt;: ValVar with ValImpl;
+  trait ValImpl extends ValVarImpl { def self : Val; }
+}</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre><pre>sean-mcdirmid:~/workspace/test38/src mcdirmid$ ../../scala/build/quick/bin/scalac -d ../bin/ -sourcepath . \
+test/ScalaTyperXXX.scala
+Exception in thread "main" java.lang.Error: recursive <:<
+	at scala.tools.nsc.symtab.Types$class.isSubType(Types.scala:1869)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$Type.$less$colon$less(Types.scala:266)
+	at scala.tools.nsc.symtab.Types$class.isSubType0(Types.scala:1914)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType0(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$class.isSubType(Types.scala:1870)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$Type.$less$colon$less(Types.scala:266)
+	at scala.tools.nsc.symtab.Types$$anonfun$35.apply(Types.scala:1956)
+	at scala.tools.nsc.symtab.Types$$anonfun$35.apply(Types.scala:1956)
+	at scala.List.exists(List.scala:872)
+	at scala.tools.nsc.symtab.Types$class.isSubType0(Types.scala:1956)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType0(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$class.isSubType(Types.scala:1870)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$Type.$less$colon$less(Types.scala:266)
+	at scala.tools.nsc.symtab.Types$class.isSubType0(Types.scala:1914)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType0(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$class.isSubType(Types.scala:1870)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$Type.$less$colon$less(Types.scala:266)
+	at scala.tools.nsc.symtab.Types$$anonfun$35.apply(Types.scala:1956)
+	at scala.tools.nsc.symtab.Types$$anonfun$35.apply(Types.scala:1956)
+	at scala.List.exists(List.scala:872)
+	at scala.tools.nsc.symtab.Types$class.isSubType0(Types.scala:1956)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType0(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$class.isSubType(Types.scala:1870)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$Type.$less$colon$less(Types.scala:266)
+	at scala.tools.nsc.symtab.Types$class.isSubType0(Types.scala:1914)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType0(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$class.isSubType(Types.scala:1870)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$Type.$less$colon$less(Types.scala:266)
+	at scala.tools.nsc.symtab.Types$$anonfun$35.apply(Types.scala:1956)
+	at scala.tools.nsc.symtab.Types$$anonfun$35.apply(Types.scala:1956)
+	at scala.List.exists(List.scala:872)
+	at scala.tools.nsc.symtab.Types$class.isSubType0(Types.scala:1956)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType0(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$class.isSubType(Types.scala:1870)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$Type.$less$colon$less(Types.scala:266)
+	at scala.tools.nsc.symtab.Types$class.isSubType0(Types.scala:1914)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType0(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$class.isSubType(Types.scala:1870)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$Type.$less$colon$less(Types.scala:266)
+	at scala.tools.nsc.symtab.Types$$anonfun$35.apply(Types.scala:1956)
+	at scala.tools.nsc.symtab.Types$$anonfun$35.apply(Types.scala:1956)
+	at scala.List.exists(List.scala:872)
+	at scala.tools.nsc.symtab.Types$class.isSubType0(Types.scala:1956)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType0(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$class.isSubType(Types.scala:1870)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$Type.$less$colon$less(Types.scala:266)
+	at scala.tools.nsc.symtab.Types$class.isSubType0(Types.scala:1914)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType0(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$class.isSubType(Types.scala:1870)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$Type.$less$colon$less(Types.scala:266)
+	at scala.tools.nsc.symtab.Types$$anonfun$35.apply(Types.scala:1956)
+	at scala.tools.nsc.symtab.Types$$anonfun$35.apply(Types.scala:1956)
+	at scala.List.exists(List.scala:872)
+	at scala.tools.nsc.symtab.Types$class.isSubType0(Types.scala:1956)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType0(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$class.isSubType(Types.scala:1870)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$Type.$less$colon$less(Types.scala:266)
+	at scala.tools.nsc.symtab.Types$class.isSubType0(Types.scala:1914)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType0(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$class.isSubType(Types.scala:1870)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$Type.$less$colon$less(Types.scala:266)
+	at scala.tools.nsc.symtab.Types$$anonfun$35.apply(Types.scala:1956)
+	at scala.tools.nsc.symtab.Types$$anonfun$35.apply(Types.scala:1956)
+	at scala.List.exists(List.scala:872)
+	at scala.tools.nsc.symtab.Types$class.isSubType0(Types.scala:1956)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType0(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$class.isSubType(Types.scala:1870)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$Type.$less$colon$less(Types.scala:266)
+	at scala.tools.nsc.symtab.Types$class.isSubType0(Types.scala:1914)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType0(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$class.isSubType(Types.scala:1870)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$Type.$less$colon$less(Types.scala:266)
+	at scala.tools.nsc.symtab.Types$$anonfun$35.apply(Types.scala:1956)
+	at scala.tools.nsc.symtab.Types$$anonfun$35.apply(Types.scala:1956)
+	at scala.List.exists(List.scala:872)
+	at scala.tools.nsc.symtab.Types$class.isSubType0(Types.scala:1956)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType0(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$class.isSubType(Types.scala:1870)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$Type.$less$colon$less(Types.scala:266)
+	at scala.tools.nsc.symtab.Types$class.isSubType0(Types.scala:1914)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType0(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$class.isSubType(Types.scala:1870)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$Type.$less$colon$less(Types.scala:266)
+	at scala.tools.nsc.symtab.Types$$anonfun$35.apply(Types.scala:1956)
+	at scala.tools.nsc.symtab.Types$$anonfun$35.apply(Types.scala:1956)
+	at scala.List.exists(List.scala:872)
+	at scala.tools.nsc.symtab.Types$class.isSubType0(Types.scala:1956)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType0(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$class.isSubType(Types.scala:1870)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$Type.$less$colon$less(Types.scala:266)
+	at scala.tools.nsc.symtab.Types$class.isSubType0(Types.scala:1950)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType0(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$class.isSubType(Types.scala:1870)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$Type.$less$colon$less(Types.scala:266)
+	at scala.tools.nsc.symtab.Types$class.isSubType0(Types.scala:1914)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType0(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$class.isSubType(Types.scala:1870)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$Type.$less$colon$less(Types.scala:266)
+	at scala.tools.nsc.symtab.Types$class.isSubType0(Types.scala:1936)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType0(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$class.isSubType(Types.scala:1870)
+	at scala.tools.nsc.symtab.SymbolTable.isSubType(SymbolTable.scala:10)
+	at scala.tools.nsc.symtab.Types$Type.$less$colon$less(Types.scala:266)
+	at scala.tools.nsc.typechecker.RefChecks$RefCheckTransformer.overridesType$0(RefChecks.scala:111)
+	at scala.tools.nsc.typechecker.RefChecks$RefCheckTransformer.checkOverride$0(RefChecks.scala:201)
+	at scala.tools.nsc.typechecker.RefChecks$RefCheckTransformer.checkAllOverrides(RefChecks.scala:211)
+	at scala.tools.nsc.typechecker.RefChecks$RefCheckTransformer.transform(RefChecks.scala:547)
+	at scala.tools.nsc.ast.Trees$Transformer.transformTemplate(Trees.scala:1182)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$17.apply(Trees.scala:1082)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$17.apply(Trees.scala:1081)
+	at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1202)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1080)
+	at scala.tools.nsc.typechecker.RefChecks$RefCheckTransformer.transform(RefChecks.scala:601)
+	at scala.tools.nsc.typechecker.RefChecks$RefCheckTransformer.transformStat(RefChecks.scala:482)
+	at scala.tools.nsc.typechecker.RefChecks$RefCheckTransformer$$anonfun$9.apply(RefChecks.scala:437)
+	at scala.tools.nsc.typechecker.RefChecks$RefCheckTransformer$$anonfun$9.apply(RefChecks.scala:437)
+	at scala.List.flatMap(List.scala:970)
+	at scala.tools.nsc.typechecker.RefChecks$RefCheckTransformer.transformStats(RefChecks.scala:437)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1114)
+	at scala.tools.nsc.typechecker.RefChecks$RefCheckTransformer.transform(RefChecks.scala:601)
+	at scala.tools.nsc.ast.Trees$Transformer.transformTemplate(Trees.scala:1182)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$17.apply(Trees.scala:1082)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$17.apply(Trees.scala:1081)
+	at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1202)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1080)
+	at scala.tools.nsc.typechecker.RefChecks$RefCheckTransformer.transform(RefChecks.scala:601)
+	at scala.tools.nsc.typechecker.RefChecks$RefCheckTransformer.transformStat(RefChecks.scala:482)
+	at scala.tools.nsc.typechecker.RefChecks$RefCheckTransformer$$anonfun$9.apply(RefChecks.scala:437)
+	at scala.tools.nsc.typechecker.RefChecks$RefCheckTransformer$$anonfun$9.apply(RefChecks.scala:437)
+	at scala.List.flatMap(List.scala:970)
+	at scala.tools.nsc.typechecker.RefChecks$RefCheckTransformer.transformStats(RefChecks.scala:437)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$16.apply(Trees.scala:1077)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$16.apply(Trees.scala:1077)
+	at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1202)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1076)
+	at scala.tools.nsc.typechecker.RefChecks$RefCheckTransformer.transform(RefChecks.scala:601)
+	at scala.tools.nsc.typechecker.RefChecks$RefCheckTransformer.transformStat(RefChecks.scala:482)
+	at scala.tools.nsc.typechecker.RefChecks$RefCheckTransformer$$anonfun$9.apply(RefChecks.scala:437)
+	at scala.tools.nsc.typechecker.RefChecks$RefCheckTransformer$$anonfun$9.apply(RefChecks.scala:437)
+	at scala.List.flatMap(List.scala:970)
+	at scala.tools.nsc.typechecker.RefChecks$RefCheckTransformer.transformStats(RefChecks.scala:437)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$16.apply(Trees.scala:1077)
+	at scala.tools.nsc.ast.Trees$Transformer$$anonfun$16.apply(Trees.scala:1077)
+	at scala.tools.nsc.ast.Trees$Transformer.atOwner(Trees.scala:1202)
+	at scala.tools.nsc.ast.Trees$Transformer.transform(Trees.scala:1076)
+	at scala.tools.nsc.typechecker.RefChecks$RefCheckTransformer.transform(RefChecks.scala:601)
+	at scala.tools.nsc.ast.Trees$Transformer.transformUnit(Trees.scala:1197)
+	at scala.tools.nsc.transform.Transform$Phase.apply(Transform.scala:30)
+	at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:220)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$1.apply(Global.scala:209)
+	at scala.tools.nsc.Global$GlobalPhase$$anonfun$1.apply(Global.scala:209)
+	at scala.Iterator$class.foreach(Iterator.scala:341)
+	at scala.collection.mutable.ListBuffer$$anon$0.foreach(ListBuffer.scala:244)
+	at scala.tools.nsc.Global$GlobalPhase.run(Global.scala:209)
+	at scala.tools.nsc.Global$Run.compileSources(Global.scala:475)
+	at scala.tools.nsc.Global$Run.compile(Global.scala:547)
+	at scala.tools.nsc.Main$.process(Main.scala:74)
+	at scala.tools.nsc.Main$.main(Main.scala:96)
+	at scala.tools.nsc.Main.main(Main.scala)</pre>
+
+The culprit is Type.isSubType (Types.scala:1866):
+
+<pre>
+  def isSubType(tp1: Type, tp2: Type): boolean =
+    try {
+      stc = stc + 1
+      if (stc == 20) throw new Error("recursive <:<")
+      isSubType0(tp1, tp2)
+    } finally {
+      stc = stc - 1
+</pre>    
+
+If I bump the magical 20 number up to something like 42 (a real magical number), my code will actually compile a\
+gain.
+<BR></BR>
+I have no idea what the other implications of this change will be, however. I guess we are limited to some numbe\
+r of <: relationships, and of course in Lampion <: is used a lot to do virtual classes...
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >All these hardcoded number limits in NSC are really annoying. It took me forever (which is about 3 hours, but I'm ranting right now so...) to track down this crash because the compiler was crashing on random pieces of code. Everywhere in NSC where we have hardcoded limits, things are bound to break. And how would we ever specify this (type hierarchies can only be 20 levels deep?)? Ugh.
+<BR></BR>
+There has to be a more robust way of detecting recursive relationships. Why not use a set and detect cycles directly?
+
+</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-12-01 09:45:18.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Bumped up to 100. It's a crutch anyway, to guard against non-termination of <:<. We should put in Andrews techniques to rule it out from the start.
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

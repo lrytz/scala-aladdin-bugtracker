@@ -1,0 +1,159 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#643]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> medium</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Burak</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2006-06-27 12:37:55.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">UnCurry messes with Seq in pattern match</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>object foo {
+  val d = &lt;D&gt;Somevalue&lt;/D&gt;
+  d match {
+    case &lt;D&gt;{ v }&lt;/D&gt; =&gt;
+      Console println v
+  }
+}</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre><pre>
+package <empty> {
+  final class foo extends java.lang.Object with scala.ScalaObject {
+    def this(): object foo = {
+      foo.super.this();
+      ()
+    };
+    private <local> val d : scala.xml.Elem = {
+      {
+        new scala.xml.Elem.this(null, "D", scala.xml.Null, scala.this.Predef.$scope(), new scala.xml.NodeBuffer.\
+this().&+(new scala.xml.Text.this("Somevalue")).toList())
+      }
+    };
+    <stable> <accessor> def d(): scala.xml.Elem = foo.this.d ;
+    foo.this.d() match {
+      case (scala.Seq[scala.xml.Node])scala.xml.Elem(Array[scala.xml.Node]{
+(java.lang.String,java.lang.String,scala.xml.MetaData,scala.xml.NamespaceBinding,scala.Seq[scala.xml.Node])scala\
+.xml.Elem(_, "D", _, _, Array[scala.xml.Node]{(v @ _)})}
+      ) => scala.Console.println(v)
+    }
+  }
+}
+
+</pre>
+<br/>
+With the present behavior, the pattern an invalid Scala tree, which TransMatch translates to an always failing p\
+attern match.
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >UnCurry should not transform the constructor pattern <code>Seq</code> to the constructor patterm <code>Elem</code>. It would be fair to either leave it as it is, or use <code>NodeSeq</code>.
+</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2006-06-27 12:38:54.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+I tracked it down to UnCurry::postTransform
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2006-06-27 14:15:41.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+seems to be same as bug #401
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-06-29 00:23:01.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Fixed (and yes, it is the same as bug 401). We now follow Burak's suggestion. However xmlstuff breaks in the test suite. Burak, can you have a look to find out why? 
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2006-06-29 00:23:43.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Burak&nbsp; edited on &nbsp;2006-06-29 11:21:17.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+The problematic lines appear isolated in the new 
+<a href="displayItem.do%3Fid=646.html">#646</a>
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

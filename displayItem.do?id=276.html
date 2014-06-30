@@ -1,0 +1,160 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#276]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Philippe</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2004-01-19 17:45:56.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">Inferred type of method contains local variable.</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>package test;
+
+object Foo {
+
+  trait Tic {
+    type T;
+    def t: T;
+  }
+
+  trait Tac {
+    def fun(tics: List[Tic]) = tics map { tic =&gt; tic.t };
+  }
+
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre><p> The inferred type of method <code>Foo.Tac.fun</code> is <code>scala.List[tic.C]</code> which illegally refer\
+s to the local variable <code>t</code>. The problem shows up when one tries to compile a file containing the fol\
+lowing code: </p>
+
+<pre>
+import test.Foo._;
+</pre>
+
+<p> This generates the following exception: </p>
+
+<pre>
+Exception in thread "main" java.lang.AssertionError: <template>
+	at scalac.symtab.Symbol.rawFirstInfoStartPhase(Symbol.java:939)
+	at scalac.symtab.Symbol.info(Symbol.java:803)
+	at scalac.symtab.classfile.UnPickle.enterSymbol(UnPickle.java:153)
+	at scalac.symtab.classfile.UnPickle.getSymbol(UnPickle.java:285)
+	at scalac.symtab.classfile.UnPickle.readSymbolRef(UnPickle.java:294)
+	at scalac.symtab.classfile.UnPickle.getSymbol(UnPickle.java:217)
+	at scalac.symtab.classfile.UnPickle.readSymbolRef(UnPickle.java:294)
+	at scalac.symtab.classfile.UnPickle.getType(UnPickle.java:337)
+	at scalac.symtab.classfile.UnPickle.readTypeRef(UnPickle.java:400)
+	at scalac.symtab.classfile.UnPickle.getType(UnPickle.java:345)
+	at scalac.symtab.classfile.UnPickle.readTypeRefs(UnPickle.java:415)
+	at scalac.symtab.classfile.UnPickle.readTypeRefs(UnPickle.java:416)
+	at scalac.symtab.classfile.UnPickle.readTypeRefs(UnPickle.java:404)
+	at scalac.symtab.classfile.UnPickle.getType(UnPickle.java:345)
+	at scalac.symtab.classfile.UnPickle.readTypeRefs(UnPickle.java:415)
+	at scalac.symtab.classfile.UnPickle.readTypeRefs(UnPickle.java:416)
+	at scalac.symtab.classfile.UnPickle.readTypeRefs(UnPickle.java:404)
+	at scalac.symtab.classfile.UnPickle.getType(UnPickle.java:351)
+	at scalac.symtab.classfile.UnPickle.getSymbol(UnPickle.java:246)
+	at scalac.symtab.classfile.UnPickle.readSymbolRef(UnPickle.java:294)
+	at scalac.symtab.classfile.UnPickle.getSymbol(UnPickle.java:217)
+	at scalac.symtab.classfile.UnPickle.readSymbolRef(UnPickle.java:294)
+	at scalac.symtab.classfile.UnPickle.getSymbol(UnPickle.java:217)
+	at scalac.symtab.classfile.UnPickle.readSymbolRef(UnPickle.java:294)
+	at scalac.symtab.classfile.UnPickle.getType(UnPickle.java:337)
+	at scalac.symtab.classfile.UnPickle.readTypeRef(UnPickle.java:400)
+	at scalac.symtab.classfile.UnPickle.getType(UnPickle.java:345)
+	at scalac.symtab.classfile.UnPickle.readTypeRefs(UnPickle.java:415)
+	at scalac.symtab.classfile.UnPickle.readTypeRefs(UnPickle.java:404)
+	at scalac.symtab.classfile.UnPickle.getType(UnPickle.java:345)
+	at scalac.symtab.classfile.UnPickle.readTypeRef(UnPickle.java:400)
+...
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >A type error
+</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Philippe&nbsp; edited on &nbsp;2004-01-19 17:46:52.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+Assigned to Martin and set status.
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2004-04-18 11:38:41.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

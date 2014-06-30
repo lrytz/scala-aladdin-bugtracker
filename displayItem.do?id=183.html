@@ -1,0 +1,169 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#183]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> low</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Philippe</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2003-10-07 10:12:57.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">Crash in RefCheck due to late parsing</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>object Test {
+  new Foo(0);
+  class Foo(x: Int);
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre><pre>
+Exception in thread "main" java.lang.AssertionError: cannot create instance of Throw after phase analyzer, curre\
+nt phase is refcheck
+	at scalac.checkers.CheckTreeNodes.check(CheckTreeNodes.java:555)
+	at scalac.checkers.CheckTreeNodes.checkNode(CheckTreeNodes.java:815)
+	at scalac.ast.Tree$Throw.<init>(Tree.java:319)
+	at scalac.ast.DefaultTreeFactory.Throw(DefaultTreeFactory.java:221)
+	at scalac.ast.parser.Parser.expr(Parser.java:882)
+	at scalac.ast.parser.Parser.expr(Parser.java:806)
+	at scalac.ast.parser.Parser.equalsExpr(Parser.java:774)
+	at scalac.ast.parser.Parser.funDefOrDcl(Parser.java:1769)
+	at scalac.ast.parser.Parser.defOrDcl(Parser.java:1664)
+	at scalac.ast.parser.Parser.templateStatSeq(Parser.java:1984)
+	at scalac.ast.parser.Parser.templateBody(Parser.java:1911)
+	at scalac.ast.parser.Parser.classTemplate(Parser.java:1866)
+	at scalac.ast.parser.Parser.objectDef(Parser.java:1849)
+	at scalac.ast.parser.Parser.clsDef(Parser.java:1699)
+	at scalac.ast.parser.Parser.topStatSeq(Parser.java:1960)
+	at scalac.ast.parser.Parser.compilationUnit(Parser.java:2056)
+	at scalac.ast.parser.Parser.parse(Parser.java:54)
+	at scalac.ast.parser.ParserPhase.apply(ParserPhase.java:33)
+	at scalac.symtab.SourceCompleter.complete(SourceCompleter.java:42)
+	at scalac.symtab.Symbol.info(Symbol.java:762)
+	at scalac.symtab.Symbol.type(Symbol.java:886)
+	at scalac.typechecker.ImportList.importType(ImportList.java:45)
+	at scalac.typechecker.ImportList.importedSymbol(ImportList.java:53)
+	at scalac.typechecker.Analyzer.transformIdent(Analyzer.java:1387)
+	at scalac.typechecker.Analyzer.transform(Analyzer.java:2427)
+	at scalac.typechecker.Analyzer.transform(Analyzer.java:1749)
+	at scalac.typechecker.Analyzer.defineSym(Analyzer.java:1038)
+	at scalac.typechecker.Analyzer$LazyTreeType.complete(Analyzer.java:629)
+	at scalac.symtab.Symbol.info(Symbol.java:762)
+	at scalac.symtab.Type$Map.map(Type.java:862)
+	at scalac.symtab.Type$Map.map(Type.java:904)
+	at scalac.symtab.Type$Map.map(Type.java:898)
+	at scalac.symtab.Type$Map.map(Type.java:835)
+	at scalac.symtab.Type$AsSeenFromMap.apply(Type.java:1078)
+	at scalac.symtab.Type.asSeenFrom(Type.java:1125)
+	at scalac.symtab.Type.memberType(Type.java:1143)
+	at scalac.ast.TreeGen.Select(TreeGen.java:281)
+	at scalac.ast.TreeGen.mkRef(TreeGen.java:220)
+	at scalac.typechecker.Analyzer.transform(Analyzer.java:2209)
+	at scalac.typechecker.Analyzer.transform(Analyzer.java:1730)
+	at scalac.typechecker.Analyzer.transform(Analyzer.java:2053)
+	at scalac.typechecker.Analyzer.transform(Analyzer.java:1730)
+	at scalac.typechecker.Analyzer.transform(Analyzer.java:1745)
+	at scalac.typechecker.Analyzer.transformStatSeq(Analyzer.java:1549)
+	at scalac.typechecker.Analyzer.transformTemplate(Analyzer.java:1611)
+	at scalac.typechecker.Analyzer.transform(Analyzer.java:1825)
+	at scalac.typechecker.Analyzer.transform(Analyzer.java:1749)
+	at scalac.typechecker.Analyzer.transformStatSeq(Analyzer.java:1552)
+	at scalac.typechecker.Analyzer.apply(Analyzer.java:111)
+	at scalac.ast.Transformer.apply(Transformer.java:62)
+	at scalac.typechecker.Analyzer.apply(Analyzer.java:59)
+	at scalac.typechecker.AnalyzerPhase.apply(AnalyzerPhase.java:107)
+	at scalac.Global.compile(Global.java:294)
+	at scalac.Global.compile(Global.java:266)
+	at scalai.Interpreter.interpret(Interpreter.java:73)
+	at scalai.InterpreterShell.load(InterpreterShell.java:237)
+	at scalai.InterpreterShell.main(InterpreterShell.java:91)
+	at scalai.Main.main(Main.java:34)
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" ><p> no error </p>
+</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Philippe&nbsp; edited on &nbsp;2003-10-07 10:16:08.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+<p> Fixed by adding <code>global.currentPhase</code> changes in <code>SourceCompleter</code>. </p>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Philippe&nbsp; edited on &nbsp;2003-10-07 10:16:18.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+<p> Fixed by adding <code>global.currentPhase</code> changes in <code>SourceCompleter</code>. </p>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

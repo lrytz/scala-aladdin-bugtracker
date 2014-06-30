@@ -1,0 +1,139 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#89]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> medium</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Matthias</td>
+	  <td align="center" bgcolor="#FFFFFF">Martin</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2003-08-15 13:55:41.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">Hash type compiler crash</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>class S {
+  class T {}
+  S#T t = new T;
+}</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>As a Java programmer I thought the program above would be correct.
+But it obviously isn't even Scala syntax. Anyway, the compiler crashes:
+<pre>
+Exception in thread "main" java.lang.AssertionError:
+field selector of class SelectFromType is not of kind Type, found: scalac.util.Name(T)
+        at scalac.checkers.CheckTreeNodes.check(CheckTreeNodes.java:653)
+        at scalac.checkers.CheckTreeNodes.checkNode(CheckTreeNodes.java:758)
+        at scalac.ast.Tree$SelectFromType.<init>(Tree.java:418)
+        at scalac.ast.Tree$ExtSelectFromType.<init>(Tree.java:1080)
+        at scalac.ast.DefaultTreeFactory.SelectFromType(DefaultTreeFactory.java:290)
+        at scalac.ast.parser.Parser.simpleExpr(Parser.java:1005)
+        at scalac.ast.parser.Parser.prefixExpr(Parser.java:929)
+        at scalac.ast.parser.Parser.postfixExpr(Parser.java:898)
+        at scalac.ast.parser.Parser.expr(Parser.java:872)
+        at scalac.ast.parser.Parser.templateStatSeq(Parser.java:1918)
+        at scalac.ast.parser.Parser.templateBody(Parser.java:1847)
+        at scalac.ast.parser.Parser.classTemplate(Parser.java:1802)
+        at scalac.ast.parser.Parser.classDef(Parser.java:1778)
+        at scalac.ast.parser.Parser.clsDef(Parser.java:1651)
+        at scalac.ast.parser.Parser.topStatSeq(Parser.java:1896)
+        at scalac.ast.parser.Parser.compilationUnit(Parser.java:2006)
+        at scalac.ast.parser.Parser.parse(Parser.java:54)
+        at scalac.ast.parser.ParserPhase.apply(ParserPhase.java:35)
+        at scalac.ast.parser.ParserPhase.apply(ParserPhase.java:30)
+        at scalac.Global.compile(Global.java:297)
+        at scalac.Global.compile(Global.java:273)
+        at scalac.Main.main(Main.java:32)
+</pre>
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >Some sort of error message... maybe a syntax error?</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Matthias&nbsp; edited on &nbsp;2003-08-15 13:58:25.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Matthias&nbsp; edited on &nbsp;2003-08-15 13:58:43.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2003-08-15 14:39:55.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

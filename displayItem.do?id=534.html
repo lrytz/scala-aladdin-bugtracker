@@ -1,0 +1,1440 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#534]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> high</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Sean</td>
+	  <td align="center" bgcolor="#FFFFFF">_</td>
+	  <td align="center" bgcolor="#FFFFFF">not repro</td>
+          <td align="center" bgcolor="#FFFFFF">2006-02-22 17:42:12.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">crashes in compiler.</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>package scala.tools.nsc.doc;
+
+import scala.tools.nsc._;
+import java.io.File;
+import scala.tools.nsc.models._;
+import scala.collection.immutable._;
+import scala.xml._;
+  
+
+  
+abstract class DocGenerator extends Models {
+  import global._;
+  
+  def dquote(str : String) = Text(&quot;\&quot;&quot; + str + &quot;\&quot;&quot;);
+  
+  val header = &lt;meta http-equiv=&quot;content-type&quot; content=&quot;text/html; charset=iso-8859-1&quot;/&gt;
+               &lt;meta name=&quot;generator&quot; content=&quot;scaladoc (1.4.0.4)&quot;/&gt;
+               &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;style.css&quot;/&gt;
+               &lt;script type=&quot;text/javascript&quot; src=&quot;script.js&quot;&gt;&lt;/script&gt;;
+  
+  val emptyMap = ListMap.Empty[Kind,TreeSet[HasTree]];
+  def process(units : Iterator[CompilationUnit], outdir : String) : Unit = {
+    val outdir0 = new File(outdir);
+    if (!outdir0.exists()) outdir0.mkdir();
+    var members = emptyMap;
+    var topLevel = ListMap.Empty[ModuleSymbol,ListMap[Kind,TreeSet[HasTree]]];
+    for (val unit &lt;- units) {
+      val sourceMod = new SourceMod(unit);
+      for (val mmbr &lt;- sourceMod.members) mmbr.tree match {
+      case cdef:  ImplDef =&gt; 
+        assert(cdef.symbol.owner != NoSymbol);
+        val sym = cdef.symbol.owner.asInstanceOf[ModuleSymbol];
+        if (!topLevel.contains(sym)) topLevel = topLevel.update(sym, emptyMap);
+        topLevel = topLevel.update(sym, organize0(mmbr, topLevel(sym))); 
+      case _ =&gt; throw new Error(&quot;unknown: &quot; + mmbr.tree + &quot; &quot; + mmbr.tree.getClass());
+      }
+    }
+    var packages = new TreeMap[String,ModuleSymbol];
+    for (val top &lt;- topLevel.elements) 
+      packages = packages.insert(nameFor(top._1), top._1);
+    
+    
+    val packageFrame = &lt;HTML&gt;
+      &lt;HEAD&gt;&lt;TITLE&gt;List of modules&lt;/TITLE&gt;
+            {header}
+      &lt;/HEAD&gt;
+      &lt;body&gt;
+      &lt;div class=&quot;doctitle-larger&quot;&gt;
+        Scala&lt;br/&gt;1.4.0.4
+      &lt;/div&gt;
+      &lt;a href=&quot;module-page.html&quot; target=&quot;classesFrame&quot;&gt;All objects and classes&lt;/a&gt;&lt;p/&gt;
+      &lt;b&gt;Modules&lt;/b&gt;
+      &lt;table class=&quot;list&quot;&gt;
+      &lt;tr&gt;
+      &lt;td style=&quot;white-space:nowrap;&quot;&gt;
+      { {
+       for (val top &lt;- packages.elements) {
+         val sym = top._2;
+       } 
+      } }
+      &lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/body&gt;&lt;/HTML&gt;;
+    
+   
+    
+      
+      // output HTML for each package. 
+      for (val top &lt;- topLevel.elements) {
+        val sym = top._1;
+        val members = top._2;
+        val index = &lt;HTML&gt;{ {
+          process(members, sym);
+        } }&lt;/HTML&gt;;
+        
+        
+        System.out.println(&quot;SAVE-TO: &quot; + sym);
+        System.out.println(index);
+        // save...
+      }
+      
+  }
+  
+  def nameFor(sym : ModuleSymbol) : String = sym.fullNameString;
+  
+  def process(members : ListMap[Kind,TreeSet[HasTree]], sym : Symbol) : NodeSeq = {
+    for (val kind &lt;- KINDS; members.contains(kind)) yield process(kind, members(kind), sym);
+  };
+
+  def organize(c : Composite, map0 : ListMap[Kind,TreeSet[HasTree]]) = {
+    var map = map0;
+    for (val mmbr &lt;- c.members.toList) map = organize0(mmbr, map);
+    map;
+  }
+	def organize0(mmbr : HasTree, map0 : ListMap[Kind,TreeSet[HasTree]]) = {
+    var map = map0;
+    if (!map.contains(mmbr.kind))
+      map = map.update(mmbr.kind, new TreeSet[HasTree]);
+    map = map.update(mmbr.kind, map(mmbr.kind) + mmbr);
+		map;    
+  }
+  
+  
+  def process(kind : Kind, set : TreeSet[HasTree], sym : Symbol) : Node = {
+    val ret = 
+    &lt;table cellpadding=&quot;3&quot; class=&quot;member&quot;&gt;
+    &lt;tr&gt;
+      &lt;td colspan=&quot;2&quot; class=&quot;title&quot;&gt;
+      { { labelFor(kind) + &quot; Summary&quot;; } }
+      &lt;/td&gt;
+    &lt;/tr&gt;
+    { { for (val mmbr &lt;- set.toList) yield process(mmbr, sym); } }
+    &lt;/table&gt;;
+    ret;
+  }
+  def stringsFor(mods : Modifiers) = {
+    var modString : List[String] = Nil;
+    if (mods . isPrivate  ) modString = &quot;private&quot;   :: modString;
+    if (mods . isProtected) modString = &quot;protected&quot; :: modString;
+    if (mods . isOverride ) modString = &quot;override&quot;  :: modString;
+    if (mods . isAbstract ) modString = &quot;abstract&quot;  :: modString;
+    if (mods . isCase     ) modString = &quot;case&quot;      :: modString;
+    if (mods . isSealed   ) modString = &quot;sealed&quot;    :: modString;
+    if (mods . isFinal    ) modString = &quot;final&quot;    :: modString;
+    if (mods . isMixin    ) modString = &quot;mixin&quot;    :: modString;
+    modString;
+  }
+  
+  
+  def targetFor(ht : HasTree) : String = {
+    // compute a URL.
+    &quot;Foo&quot;;
+  }
+  def forSymbol(symbol : Symbol, tpe : Type) : NodeSeq =
+    Text(symbol.nameString);
+  
+  
+  def ifT (cond : Boolean, nodes : NodeSeq) = if (cond) nodes else NodeSeq.Empty;
+  def ifT (tree : Tree, nodes : NodeSeq, before : Boolean) =
+    if (tree != EmptyTree) {
+      if (before) nodes.concat(forTree(tree));
+      else forTree(tree).concat(nodes);
+    } else NodeSeq.Empty;
+  
+  def forTree(tree : Tree) : NodeSeq = tree match {
+    case vdef : ValDef =&gt; 
+      Text(vdef.symbol.name.toString()).concat(Text(&quot; : &quot;)).concat(forTree(vdef.tpt));
+    case id  : Ident  =&gt; forSymbol(id.symbol, id.tpe);
+    case sel : Select =&gt; forTree(sel.qualifier).concat(forSymbol(sel.symbol, sel.tpe));
+    case tree : AbsTypeDef =&gt; 
+      ifT(tree.lo, Text(&quot; &lt;: &quot;), true).
+        concat(forSymbol(tree.symbol, tree.tpe)).concat(ifT(tree.hi, Text(&quot; &lt;: &quot;), false));
+    case EmptyTree =&gt; NodeSeq.Empty;    
+    case _ =&gt; Text(&quot;XX=&quot; + tree.toString());
+  }
+  def forTrees(trees : List[Tree]) : NodeSeq = {
+    if (trees.isEmpty) NodeSeq.Empty;
+    else {
+      val head = forTree(trees.head);
+      head.concat(if (trees.tail.isEmpty) NodeSeq.Empty else Text(&quot;, &quot;)).concat(forTrees(trees.tail));
+    }
+  }
+  
+  def surround(open : String, close : String, node : NodeSeq) : NodeSeq = 
+    Text(open).concat(node).concat(Text(close));
+  
+  def typesFor(ht : HasTree) : NodeSeq = {
+    val tparams = ht.tree match {
+      case cdef : ClassDef =&gt; cdef.tparams;
+      case ddef : DefDef   =&gt; ddef.tparams;
+      case adef : AliasTypeDef =&gt; adef.tparams;
+      case _ =&gt; Nil;
+    }
+    if (tparams.isEmpty) Text(&quot;&quot;);
+    else surround(&quot;[&quot;, &quot;]&quot;, forTrees(tparams));
+  }
+  def  argsFor(ht : HasTree) : NodeSeq = ht.tree match {
+    case ddef : DefDef =&gt;
+      val nodes = for (val vparams &lt;- ddef.vparamss) 
+        yield surround(&quot;(&quot;, &quot;)&quot;, forTrees(vparams));
+      nodes.flatMap(x =&gt; x.asList);
+    case _ =&gt; NodeSeq.Empty;
+  }
+  def urlFor(ht : HasTree) : String =
+    &quot;\&quot;unknown\&quot;&quot;;
+  
+  def  nameFor(ht : HasTree) : NodeSeq =
+    &lt;A href={ urlFor(ht) } target=&quot;_self&quot;&gt; { forSymbol(ht.tree.symbol, null) } &lt;/A&gt;;
+
+  def resultFor(ht : HasTree) : NodeSeq = ht.tree match {
+    case vdef : ValOrDefDef =&gt;
+      Text(&quot; : &quot;).concat(forTree(vdef.tpt));
+    case cdef : ImplDef =&gt;
+      if (cdef.impl.parents.isEmpty) NodeSeq.Empty;
+      else Text(&quot;extends &quot;).concat(forTrees(cdef.impl.parents));
+    case _ =&gt; NodeSeq.Empty;
+  } 
+  
+  def comment(comment : String, isShort : Boolean) : NodeSeq = {
+    var ret : List[Node] = Nil;
+    if (comment != null) {
+      // strip out any stars.
+      var comment0 = comment.trim();
+      assert(comment0.startsWith(JDOC_START));
+      comment0 = comment0.substring(JDOC_START.length());
+      assert(comment0.endsWith(JDOC_END));
+      comment0 = comment0.substring(0, comment0.length() - JDOC_END.length());
+      var idx = 0;
+      while (idx != -1) {
+        idx = comment0.indexOf('*', idx);
+        if (idx != -1) 
+          comment0 = comment0.substring(0, idx) +
+            comment0.substring(idx + 1, comment0.length());
+      }
+      val tokenizer = new java.util.StringTokenizer(comment0, &quot;@&quot;);
+      val body = tokenizer.nextToken();
+
+      var attributes : List[String] = Nil;
+      if (!isShort) while (tokenizer.hasMoreElements()) 
+        attributes = attributes ::: (tokenizer.nextToken() :: Nil);
+      val node = &lt;BR&gt; { Text(comment) } &lt;/BR&gt;;
+      val nodes = { { for (val a &lt;- attributes) yield &lt;BR&gt; { Text(a) } &lt;/BR&gt;; } };
+      val nodes0 : NodeSeq = node :: nodes;
+      nodes0;
+    } else NodeSeq.Empty;
+  };
+  
+  
+  def process(ht : HasTree, sym : Symbol) : scala.xml.Node = {
+    val comment0 = if (comments.contains(ht.tree.symbol)) 
+      comments(ht.tree.symbol) else null;
+
+    
+    val index =     
+    &lt;tr&gt;
+      &lt;td valign=&quot;top&quot; class=&quot;modifiers&quot;&gt;
+        &amp;nbsp;
+        &lt;code&gt;{ {
+          (for (val mod &lt;- stringsFor(ht.mods)) yield Text(mod + &quot; &quot;));
+        } }&lt;/code&gt;
+      &lt;/td&gt;
+      &lt;td class=&quot;signature&quot;&gt;
+        &lt;code&gt;
+        { labelFor(ht.kind).toLowerCase() }
+        { nameFor(ht) }
+        { typesFor(ht) }
+        {  argsFor(ht) }
+        {resultFor(ht) }
+        &lt;/code&gt;
+        { comment(comment0, true) }
+      &lt;/td&gt;
+    &lt;/tr&gt;;
+  
+    val body = &lt;X&gt;&lt;/X&gt;;
+    
+    
+    
+    
+  
+  
+    index;
+  }
+  
+  
+/*
+  val index0 = &lt;HTML&gt;
+  &lt;HEAD&gt;&lt;TITLE&gt;API Documentation&lt;/TITLE&gt;&lt;/HEAD&gt;
+  &lt;FRAMESET cols=&quot;20%,80%&quot; title=&quot;&quot; onLoad=&quot;top.loadFrames()&quot;&gt;
+  &lt;FRAMESET rows=&quot;30%,70%&quot; title=&quot;&quot; onLoad=&quot;top.loadFrames()&quot;&gt;
+  &lt;FRAME src=&quot;overview-frame.html&quot; name=&quot;packageListFrame&quot; title=&quot;All Packages&quot;&gt;
+  &lt;FRAME src=&quot;allclasses-frame.html&quot; name=&quot;packageFrame&quot; title=&quot;All classes and interfaces (except non-static nested types)&quot;&gt;
+  &lt;/FRAMESET&gt;
+  &lt;FRAME src=&quot;overview-summary.html&quot; name=&quot;classFrame&quot; title=&quot;Package, class and interface descriptions&quot; scrolling=&quot;yes&quot;&gt;
+  &lt;/FRAMESET&gt;
+  &lt;/HTML&gt;;
+*/
+ 
+  def index = { 
+    val index0 = &lt;HTML&gt;&lt;/HTML&gt;;
+  }
+
+  private val JDOC_START = &quot;/**&quot;;
+  private val JDOC_END   = &quot;*/&quot;;
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre><pre>
+build:
+   [locker] Compiling source files: scala/tools/nsc/Global.scala, scala/tools/nsc/doc/DocGenerator.scala to /hom\
+e/mcdirmid/runtime-workspace/scala/build/quick/compiler
+   [locker] /home/mcdirmid/runtime-workspace/scala/src/compiler/scala/tools/nsc/Global.scala:395 error: not foun\
+d: type CompilationUnit
+   [locker]     def units: Iterator[CompilationUnit] = unitbuf.elements;
+   [locker]                         ^
+   [locker] /home/mcdirmid/runtime-workspace/scala/src/compiler/scala/tools/nsc/Global.scala:203 error: not foun\
+d: type CompilationUnit
+   [locker]     final def applyPhase(unit: CompilationUnit): unit = {
+   [locker]                                ^
+   [locker] /home/mcdirmid/runtime-workspace/scala/src/compiler/scala/tools/nsc/Global.scala:198 error: not foun\
+d: type CompilationUnit
+   [locker]     def apply(unit: CompilationUnit): unit;
+   [locker]                     ^
+   [locker] /home/mcdirmid/runtime-workspace/scala/src/compiler/scala/tools/nsc/Global.scala:330 error: not foun\
+d: type CompilationUnit
+   [locker]     var currentUnit : CompilationUnit = _;
+   [locker]                       ^
+   [locker] java.lang.RuntimeException: malformed Scala signature of Contexts at 670; reference type Compilation\
+Unit of class CompilationUnits refers to nonexisting symbol.
+   [locker]     at scala.tools.nsc.symtab.classfile.UnPickler$UnPickle.errorBadSignature(UnPickler.scala:256)
+   [locker]     at scala.tools.nsc.symtab.classfile.UnPickler$UnPickle.scala$tools$nsc$symtab$classfile$UnPickle\
+r$UnPickle$$readSymbol(UnPickler.scala:124)
+   [locker]     at scala.tools.nsc.symtab.classfile.UnPickler$UnPickle$$anonfun12.apply(UnPickler.scala:251)
+   [locker]     at scala.tools.nsc.symtab.classfile.UnPickler$UnPickle$$anonfun12.apply(UnPickler.scala:251)
+   [locker]     at scala.tools.nsc.symtab.classfile.UnPickler$UnPickle.scala$tools$nsc$symtab$classfile$UnPickle\
+r$UnPickle$$at(UnPickler.scala:92)
+   [locker]     at scala.tools.nsc.symtab.classfile.UnPickler$UnPickle.scala$tools$nsc$symtab$classfile$UnPickle\
+r$UnPickle$$readSymbolRef(UnPickler.scala:251)
+   [locker]     at scala.tools.nsc.symtab.classfile.UnPickler$UnPickle.scala$tools$nsc$symtab$classfile$UnPickle\
+r$UnPickle$$readType(UnPickler.scala:201)
+   [locker]     at scala.tools.nsc.symtab.classfile.UnPickler$UnPickle$$anonfun13.apply(UnPickler.scala:252)
+   [locker]     at scala.tools.nsc.symtab.classfile.UnPickler$UnPickle$$anonfun13.apply(UnPickler.scala:252)
+   [locker]     at scala.tools.nsc.symtab.classfile.UnPickler$UnPickle.scala$tools$nsc$symtab$classfile$UnPickle\
+r$UnPickle$$at(UnPickler.scala:92)
+   [locker]     at scala.tools.nsc.symtab.classfile.UnPickler$UnPickle.scala$tools$nsc$symtab$classfile$UnPickle\
+r$UnPickle$$readTypeRef(UnPickler.scala:252)
+   [locker]     at scala.tools.nsc.symtab.classfile.UnPickler$UnPickle$$anonfun8.apply(UnPickler.scala:217)
+   [locker]     at scala.tools.nsc.symtab.classfile.UnPickler$UnPickle$$anonfun8.apply(UnPickler.scala:217)
+   [locker]     at scala.tools.nsc.symtab.classfile.PickleBuffer.until(PickleBuffer.scala:106)
+   [locker]     at scala.tools.nsc.symtab.classfile.UnPickler$UnPickle.scala$tools$nsc$symtab$classfile$UnPickle\
+r$UnPickle$$readType(UnPickler.scala:217)
+   [locker]     at scala.tools.nsc.symtab.classfile.UnPickler$UnPickle$LazyTypeRef$$anonfun15.apply(UnPickler.sc\
+ala:261)
+   [locker]     at scala.tools.nsc.symtab.classfile.UnPickler$UnPickle$LazyTypeRef$$anonfun15.apply(UnPickler.sc\
+ala:261)
+   [locker]     at scala.tools.nsc.symtab.classfile.UnPickler$UnPickle.scala$tools$nsc$symtab$classfile$UnPickle\
+r$UnPickle$$at(UnPickler.scala:92)
+   [locker]     at scala.tools.nsc.symtab.classfile.UnPickler$UnPickle$LazyTypeRef.complete(UnPickler.scala:261)\
+
+   [locker]     at scala.tools.nsc.symtab.Symbols$Symbol.info(Symbols.scala:342)
+   [locker]     at scala.tools.nsc.symtab.Symbols$Symbol.tpe(Symbols.scala:318)
+   [locker]     at scala.tools.nsc.symtab.Types$Type.memberType(Types.scala:195)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer$$anonfun62.apply(Typers.scala:1352)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer$$anonfun62.apply(Typers.scala:1351)
+   [locker]     at scala.List.filter(List.scala:716)
+   [locker]     at scala.tools.nsc.symtab.Symbols$Symbol.filter(Symbols.scala:497)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1351)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1472)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typedArg0(Typers.scala:936)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer$$anonfun45.apply(Typers.scala:954)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer$$anonfun45.apply(Typers.scala:954)
+   [locker]     at scala.List$.map2(List.scala:274)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typedApply0(Typers.scala:954)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1357)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1472)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typedSuperCall(Typers.scala:726)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typedDefDef(Typers.scala:760)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1160)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1472)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1497)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer$$anonfun41.apply(Typers.scala:905)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer$$anonfun41.apply(Typers.scala:895)
+   [locker]     at scala.List$.loop0(List.scala:241)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:895)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typedTemplate(Typers.scala:652)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typedModuleDef(Typers.scala:600)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1154)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1472)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1497)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer$$anonfun41.apply(Typers.scala:905)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer$$anonfun41.apply(Typers.scala:895)
+   [locker]     at scala.List$.loop0(List.scala:241)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:895)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typedTemplate(Typers.scala:652)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typedClassDef(Typers.scala:589)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1151)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1472)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1497)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer$$anonfun41.apply(Typers.scala:905)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer$$anonfun41.apply(Typers.scala:895)
+   [locker]     at scala.List$.loop0(List.scala:241)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:895)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1147)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1472)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1497)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer$$anonfun41.apply(Typers.scala:905)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer$$anonfun41.apply(Typers.scala:895)
+   [locker]     at scala.List$.loop0(List.scala:241)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:895)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1147)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1472)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1497)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer$$anonfun41.apply(Typers.scala:905)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer$$anonfun41.apply(Typers.scala:895)
+   [locker]     at scala.List$.loop0(List.scala:241)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:895)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1147)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1472)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1497)
+   [locker]     at scala.tools.nsc.typechecker.Analyzer$typerFactory$$anon1.apply(Analyzer.scala:39)
+   [locker]     at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:209)
+   [locker]     at scala.tools.nsc.Global$GlobalPhase$$anonfun1.apply(Global.scala:198)
+   [locker]     at scala.tools.nsc.Global$GlobalPhase$$anonfun1.apply(Global.scala:198)
+   [locker]     at scala.Iterator$class.foreach(Iterator.scala:262)
+   [locker]     at scala.collection.mutable.ListBuffer$$anon0.foreach(ListBuffer.scala:218)
+   [locker]     at scala.tools.nsc.Global$GlobalPhase.run(Global.scala:198)
+   [locker]     at scala.tools.nsc.Global$Run.compileSources(Global.scala:423)
+   [locker]     at scala.tools.nsc.Global$Run.compile(Global.scala:481)
+   [locker]     at scala.tools.ant.Scalac.execute(Scalac.scala:469)
+   [locker]     at org.apache.tools.ant.UnknownElement.execute(UnknownElement.java:275)
+   [locker]     at org.apache.tools.ant.Task.perform(Task.java:364)
+   [locker]     at org.apache.tools.ant.Target.execute(Target.java:341)
+   [locker]     at org.apache.tools.ant.Target.performTasks(Target.java:369)
+   [locker]     at org.apache.tools.ant.Project.executeSortedTargets(Project.java:1216)
+   [locker]     at org.apache.tools.ant.Project.executeTarget(Project.java:1185)
+   [locker]     at org.apache.tools.ant.helper.DefaultExecutor.executeTargets(DefaultExecutor.java:40)
+   [locker]     at org.apache.tools.ant.Project.executeTargets(Project.java:1068)
+   [locker]     at org.apache.tools.ant.Main.runBuild(Main.java:668)
+   [locker]     at org.apache.tools.ant.Main.startAnt(Main.java:187)
+   [locker]     at org.apache.tools.ant.launch.Launcher.run(Launcher.java:246)
+   [locker]     at org.apache.tools.ant.launch.Launcher.main(Launcher.java:67)
+
+BUILD FAILED
+/home/mcdirmid/runtime-workspace/scala/build.xml:451: Compile failed because of an internal compiler error (malf\
+ormed Scala signature of Contexts at 670; reference type CompilationUnit of class CompilationUnits refers to non\
+existing symbol.); see the error output for details.</pre>
+
+If we remove scala/tools/nsc classes first, we get a different error:
+
+<pre>   [locker] java.lang.Error: head of empty list
+   [locker]     at scala.Predef$.error(Predef.scala:137)
+   [locker]     at scala.Nil$.head(List.scala:1091)
+   [locker]     at scala.Nil$.head(List.scala:1089)
+   [locker]     at scala.tools.nsc.symtab.Types$SubstMap.subst0(Types.scala:1257)
+   [locker]     at scala.tools.nsc.symtab.Types$SubstMap.apply(Types.scala:1261)
+   [locker]     at scala.tools.nsc.symtab.Types$SubstMap.apply(Types.scala:1246)
+   [locker]     at scala.List$.loop0(List.scala:241)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.tools.nsc.symtab.Types$TypeMap$class.mapOver(Types.scala:1130)
+   [locker]     at scala.tools.nsc.symtab.Types$SubstMap.mapOver(Types.scala:1246)
+   [locker]     at scala.tools.nsc.symtab.Types$SubstMap.apply(Types.scala:1268)
+   [locker]     at scala.tools.nsc.symtab.Types$Type.subst(Types.scala:203)
+   [locker]     at scala.tools.nsc.symtab.Types$TypeRef.transform(Types.scala:765)
+   [locker]     at scala.tools.nsc.symtab.Types$TypeRef.transform(Types.scala:770)
+   [locker]     at scala.tools.nsc.symtab.Types$TypeRef.closure(Types.scala:824)
+   [locker]     at scala.tools.nsc.symtab.Types$Type.closurePos(Types.scala:279)
+   [locker]     at scala.tools.nsc.symtab.Types$CompoundType.isNew0(Types.scala:664)
+   [locker]     at scala.tools.nsc.symtab.Types$CompoundType.addMixinBaseClasses0(Types.scala:673)
+   [locker]     at scala.tools.nsc.symtab.Types$CompoundType.computeBaseClasses0(Types.scala:675)
+   [locker]     at scala.tools.nsc.symtab.Types$CompoundType.baseClasses(Types.scala:685)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.implicitsOfType0(Typers.scala:1626)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.inferImplicit(Typers.scala:1635)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.scala$tools$nsc$typechecker$Typers$Typer$$inferView(\
+Typers.scala:55)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer$$anon0.isCoercible(Typers.scala:44)
+   [locker]     at scala.tools.nsc.typechecker.Infer$Inferencer.isCompatible(Infer.scala:258)
+   [locker]     at scala.tools.nsc.typechecker.Infer$Inferencer$$anonfun14.apply(Infer.scala:267)
+   [locker]     at scala.tools.nsc.typechecker.Infer$Inferencer$$anonfun14.apply(Infer.scala:267)
+   [locker]     at scala.List$.map2(List.scala:274)
+   [locker]     at scala.tools.nsc.typechecker.Infer$Inferencer.isCompatible(Infer.scala:267)
+   [locker]     at scala.tools.nsc.typechecker.Infer$Inferencer.isApplicable(Infer.scala:383)
+   [locker]     at scala.tools.nsc.typechecker.Infer$Inferencer$$anonfun45$$anonfun47.apply(Infer.scala:602)
+   [locker]     at scala.tools.nsc.typechecker.Infer$Inferencer$$anonfun45$$anonfun47.apply(Infer.scala:602)
+   [locker]     at scala.List.filter(List.scala:704)
+   [locker]     at scala.tools.nsc.typechecker.Infer$Inferencer$$anonfun45.apply(Infer.scala:602)
+   [locker]     at scala.tools.nsc.typechecker.Infer$Inferencer$$anonfun45.apply(Infer.scala:600)
+   [locker]     at scala.tools.nsc.typechecker.Infer$Inferencer.tryTwice(Infer.scala:640)
+   [locker]     at scala.tools.nsc.typechecker.Infer$Inferencer.inferMethodAlternative(Infer.scala:600)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typedApply0(Typers.scala:943)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1357)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1472)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1501)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1267)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1472)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1497)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer$$anonfun41.apply(Typers.scala:905)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer$$anonfun41.apply(Typers.scala:895)
+   [locker]     at scala.List$.loop0(List.scala:241)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:895)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typedBlock(Typers.scala:805)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1203)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1472)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1497)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer$$anonfun41.apply(Typers.scala:905)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer$$anonfun41.apply(Typers.scala:895)
+   [locker]     at scala.List$.loop0(List.scala:241)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:895)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typedBlock(Typers.scala:805)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1203)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1472)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1501)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1270)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1472)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1501)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typedLabelDef(Typers.scala:797)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1175)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1472)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1497)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer$$anonfun41.apply(Typers.scala:905)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer$$anonfun41.apply(Typers.scala:895)
+   [locker]     at scala.List$.loop0(List.scala:241)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:895)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typedBlock(Typers.scala:805)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1203)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1472)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1501)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.transformedOrTyped(Typers.scala:1535)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typedDefDef(Typers.scala:765)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1160)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1472)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1497)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer$$anonfun41.apply(Typers.scala:905)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer$$anonfun41.apply(Typers.scala:895)
+   [locker]     at scala.List$.loop0(List.scala:241)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:895)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typedTemplate(Typers.scala:652)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typedClassDef(Typers.scala:589)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1151)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1472)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1497)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer$$anonfun41.apply(Typers.scala:905)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer$$anonfun41.apply(Typers.scala:895)
+   [locker]     at scala.List$.loop0(List.scala:241)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:895)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typedTemplate(Typers.scala:652)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typedClassDef(Typers.scala:589)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1151)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1472)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1497)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer$$anonfun41.apply(Typers.scala:905)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer$$anonfun41.apply(Typers.scala:895)
+   [locker]     at scala.List$.loop0(List.scala:241)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.List$.loop0(List.scala:245)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:895)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1147)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1472)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1497)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer$$anonfun41.apply(Typers.scala:905)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer$$anonfun41.apply(Typers.scala:895)
+   [locker]     at scala.List$.loop0(List.scala:241)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:895)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1147)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1472)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1497)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer$$anonfun41.apply(Typers.scala:905)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer$$anonfun41.apply(Typers.scala:895)
+   [locker]     at scala.List$.loop0(List.scala:241)
+   [locker]     at scala.List$.mapConserve(List.scala:258)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typedStats(Typers.scala:895)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed1(Typers.scala:1147)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1472)
+   [locker]     at scala.tools.nsc.typechecker.Typers$Typer.typed(Typers.scala:1497)
+   [locker]     at scala.tools.nsc.typechecker.Analyzer$typerFactory$$anon1.apply(Analyzer.scala:39)
+   [locker]     at scala.tools.nsc.Global$GlobalPhase.applyPhase(Global.scala:209)
+   [locker]     at scala.tools.nsc.Global$GlobalPhase$$anonfun1.apply(Global.scala:198)
+   [locker]     at scala.tools.nsc.Global$GlobalPhase$$anonfun1.apply(Global.scala:198)
+   [locker]     at scala.Iterator$class.foreach(Iterator.scala:262)
+   [locker]     at scala.collection.mutable.ListBuffer$$anon0.foreach(ListBuffer.scala:218)
+   [locker]     at scala.tools.nsc.Global$GlobalPhase.run(Global.scala:198)
+   [locker]     at scala.tools.nsc.Global$Run.compileSources(Global.scala:423)
+   [locker]     at scala.tools.nsc.Global$Run.compile(Global.scala:481)
+   [locker]     at scala.tools.ant.Scalac.execute(Scalac.scala:469)
+   [locker]     at org.apache.tools.ant.UnknownElement.execute(UnknownElement.java:275)
+   [locker]     at org.apache.tools.ant.Task.perform(Task.java:364)
+   [locker]     at org.apache.tools.ant.Target.execute(Target.java:341)
+   [locker]     at org.apache.tools.ant.Target.performTasks(Target.java:369)
+   [locker]     at org.apache.tools.ant.Project.executeSortedTargets(Project.java:1216)
+   [locker]     at org.apache.tools.ant.Project.executeTarget(Project.java:1185)
+   [locker]     at org.apache.tools.ant.helper.DefaultExecutor.executeTargets(DefaultExecutor.java:40)
+   [locker]     at org.apache.tools.ant.Project.executeTargets(Project.java:1068)
+   [locker]     at org.apache.tools.ant.Main.runBuild(Main.java:668)
+   [locker]     at org.apache.tools.ant.Main.startAnt(Main.java:187)
+   [locker]     at org.apache.tools.ant.launch.Launcher.run(Launcher.java:246)
+   [locker]     at org.apache.tools.ant.launch.Launcher.main(Launcher.java:67)
+</pre>
+
+If we do a clean:
+<pre>
+bash-3.00$ ant clean && ant
+Buildfile: build.xml
+     [echo] Running SABBUS for Scala-core
+
+clean:
+   [delete] Deleting directory /home/mcdirmid/runtime-workspace/scala/build
+
+BUILD SUCCESSFUL
+Total time: 19 seconds
+Buildfile: build.xml
+     [echo] Running SABBUS for Scala-core
+
+init:
+     [echo] OS type:  UNIX
+     [echo] OS name:  Linux i386 2.6.12-1.1380_FC3smp
+     [echo] Java:     1.5.0_05 ('/home/mcdirmid/programs/java/jre')
+     [echo] Java VM:  Java HotSpot(TM) Client VM 1.5.0_05-b05
+     [echo] Ant:      Apache Ant version 1.6.5 compiled on June 2 2005
+
+setup:
+
+build.locker:
+    [mkdir] Created dir: /home/mcdirmid/runtime-workspace/scala/build/locker/library
+     [pico] Compiling 37 source files to /home/mcdirmid/runtime-workspace/scala/build/locker/library
+    [starr] Compiling 2 source files to /home/mcdirmid/runtime-workspace/scala/build/locker/library
+    [starr] Compiling 255 source files to /home/mcdirmid/runtime-workspace/scala/build/locker/library
+    [mkdir] Created dir: /home/mcdirmid/runtime-workspace/scala/build/locker/compiler
+     [pico] Compiling 23 source files to /home/mcdirmid/runtime-workspace/scala/build/locker/compiler
+    [starr] Compiling 134 source files to /home/mcdirmid/runtime-workspace/scala/build/locker/compiler
+    [starr] exception when transforming private <local> val global : scala.tools.nsc.Main#compiler2 = compiler1(\
+)    [starr] exception when transforming scala.tools.nsc.doc.DocGenerator with scala.ScalaObject$class {
+    [starr]   def <init>(): scala.tools.nsc.Main#generator1 = {
+    [starr]     {
+    [starr]       generator1.super.<init>();
+    [starr]       ()
+    [starr]     };
+    [starr]     ()
+    [starr]   };
+    [starr]   private <local> val global : scala.tools.nsc.Main#compiler2 = compiler1();
+    [starr]   <stable> <accessor> def global(): scala.tools.nsc.Main#compiler2 = generator1.this.global ;
+    [starr]   <stable> <bridge> def global(): scala.tools.nsc.Global = generator1.this.global()
+    [starr] }
+    [starr] exception when transforming final class generator1 extends scala.tools.nsc.doc.DocGenerator with sca\
+la.ScalaObject$class {
+    [starr]   def <init>(): scala.tools.nsc.Main#generator1 = {
+    [starr]     {
+    [starr]       generator1.super.<init>();
+    [starr]       ()
+    [starr]     };
+    [starr]     ()
+    [starr]   };
+    [starr]   private <local> val global : scala.tools.nsc.Main#compiler2 = compiler1();
+    [starr]   <stable> <accessor> def global(): scala.tools.nsc.Main#compiler2 = generator1.this.global ;
+    [starr]   <stable> <bridge> def global(): scala.tools.nsc.Global = generator1.this.global()
+    [starr] }
+    [starr] exception when transforming {
+    [starr]   final class generator1 extends scala.tools.nsc.doc.DocGenerator with scala.ScalaObject$class {
+    [starr]     def <init>(): scala.tools.nsc.Main#generator1 = {
+    [starr]       {
+    [starr]         generator1.super.<init>();
+    [starr]         ()
+    [starr]       };
+    [starr]       ()
+    [starr]     };
+    [starr]     private <local> val global : scala.tools.nsc.Main#compiler2 = compiler1();
+    [starr]     <stable> <accessor> def global(): scala.tools.nsc.Main#compiler2 = generator1.this.global ;
+    [starr]     <stable> <bridge> def global(): scala.tools.nsc.Global = generator1.this.global()
+    [starr]   };
+    [starr]   var generator$module0: generator1 = null;
+    [starr]   final private <local> <stable> def generator0(): scala.tools.nsc.Main#generator1 = {
+    [starr]     if (generator$module0.eq(null))
+    [starr]       generator$module0 = new generator1.<init>();
+    [starr]     generator$module0
+    [starr]   };
+    [starr]   generator0().process(run.units(), command0.settings().outdir().value())
+    [starr] }
+    [starr] exception when transforming if (command0.settings().doc().value())
+    [starr]   {
+    [starr]     final class generator1 extends scala.tools.nsc.doc.DocGenerator with scala.ScalaObject$class {
+    [starr]       def <init>(): scala.tools.nsc.Main#generator1 = {
+    [starr]         {
+    [starr]           generator1.super.<init>();
+    [starr]           ()
+    [starr]         };
+    [starr]         ()
+    [starr]       };
+    [starr]       private <local> val global : scala.tools.nsc.Main#compiler2 = compiler1();
+    [starr]       <stable> <accessor> def global(): scala.tools.nsc.Main#compiler2 = generator1.this.global ;
+    [starr]       <stable> <bridge> def global(): scala.tools.nsc.Global = generator1.this.global()
+    [starr]     };
+    [starr]     var generator$module0: generator1 = null;
+    [starr]     final private <local> <stable> def generator0(): scala.tools.nsc.Main#generator1 = {
+    [starr]       if (generator$module0.eq(null))
+    [starr]         generator$module0 = new generator1.<init>();
+    [starr]       generator$module0
+    [starr]     };
+    [starr]     generator0().process(run.units(), command0.settings().outdir().value())
+    [starr]   }
+    [starr] exception when transforming {
+    [starr]   val run: scala.tools.nsc.Main#compiler2#Run = new scala.tools.nsc.Main#compiler2#Run.<init>(compil\
+er1()).$asInstanceOf[scala.tools.nsc.Main#compiler2#Run]();
+    [starr]   run.compile(command0.files());
+    [starr]   if (command0.settings().doc().value())
+    [starr]     {
+    [starr]       final class generator1 extends scala.tools.nsc.doc.DocGenerator with scala.ScalaObject$class {\
+
+    [starr]         def <init>(): scala.tools.nsc.Main#generator1 = {
+    [starr]           {
+    [starr]             generator1.super.<init>();
+    [starr]             ()
+    [starr]           };
+    [starr]           ()
+    [starr]         };
+    [starr]         private <local> val global : scala.tools.nsc.Main#compiler2 = compiler1();
+    [starr]         <stable> <accessor> def global(): scala.tools.nsc.Main#compiler2 = generator1.this.global ;\
+
+    [starr]         <stable> <bridge> def global(): scala.tools.nsc.Global = generator1.this.global()
+    [starr]       };
+    [starr]       var generator$module0: generator1 = null;
+    [starr]       final private <local> <stable> def generator0(): scala.tools.nsc.Main#generator1 = {
+    [starr]         if (generator$module0.eq(null))
+    [starr]           generator$module0 = new generator1.<init>();
+    [starr]         generator$module0
+    [starr]       };
+    [starr]       generator0().process(run.units(), command0.settings().outdir().value())
+    [starr]     }
+    [starr] }
+    [starr] exception when transforming if (command0.files().isEmpty())
+    [starr]   Main.this.scala$tools$nsc$Main$$reporter().info(null, command0.usageMsg(), true)
+    [starr] else
+    [starr]   {
+    [starr]     val run: scala.tools.nsc.Main#compiler2#Run = new scala.tools.nsc.Main#compiler2#Run.<init>(comp\
+iler1()).$asInstanceOf[scala.tools.nsc.Main#compiler2#Run]();
+    [starr]     run.compile(command0.files());
+    [starr]     if (command0.settings().doc().value())
+    [starr]       {
+    [starr]         final class generator1 extends scala.tools.nsc.doc.DocGenerator with scala.ScalaObject$class\
+ {
+    [starr]           def <init>(): scala.tools.nsc.Main#generator1 = {
+    [starr]             {
+    [starr]               generator1.super.<init>();
+    [starr]               ()
+    [starr]             };
+    [starr]             ()
+    [starr]           };
+    [starr]           private <local> val global : scala.tools.nsc.Main#compiler2 = compiler1();
+    [starr]           <stable> <accessor> def global(): scala.tools.nsc.Main#compiler2 = generator1.this.global \
+;    [starr]           <stable> <bridge> def global(): scala.tools.nsc.Global = generator1.this.global()
+    [starr]         };
+    [starr]         var generator$module0: generator1 = null;
+    [starr]         final private <local> <stable> def generator0(): scala.tools.nsc.Main#generator1 = {
+    [starr]           if (generator$module0.eq(null))
+    [starr]             generator$module0 = new generator1.<init>();
+    [starr]           generator$module0
+    [starr]         };
+    [starr]         generator0().process(run.units(), command0.settings().outdir().value())
+    [starr]       }
+    [starr]   }
+    [starr] exception when transforming if (command0.settings().resident().value())
+    [starr]   Main.this.resident(compiler1())
+    [starr] else
+    [starr]   if (command0.files().isEmpty())
+    [starr]     Main.this.scala$tools$nsc$Main$$reporter().info(null, command0.usageMsg(), true)
+    [starr]   else
+    [starr]     {
+    [starr]       val run: scala.tools.nsc.Main#compiler2#Run = new scala.tools.nsc.Main#compiler2#Run.<init>(co\
+mpiler1()).$asInstanceOf[scala.tools.nsc.Main#compiler2#Run]();
+    [starr]       run.compile(command0.files());
+    [starr]       if (command0.settings().doc().value())
+    [starr]         {
+    [starr]           final class generator1 extends scala.tools.nsc.doc.DocGenerator with scala.ScalaObject$cla\
+ss {
+    [starr]             def <init>(): scala.tools.nsc.Main#generator1 = {
+    [starr]               {
+    [starr]                 generator1.super.<init>();
+    [starr]                 ()
+    [starr]               };
+    [starr]               ()
+    [starr]             };
+    [starr]             private <local> val global : scala.tools.nsc.Main#compiler2 = compiler1();
+    [starr]             <stable> <accessor> def global(): scala.tools.nsc.Main#compiler2 = generator1.this.globa\
+l ;
+    [starr]             <stable> <bridge> def global(): scala.tools.nsc.Global = generator1.this.global()
+    [starr]           };
+    [starr]           var generator$module0: generator1 = null;
+    [starr]           final private <local> <stable> def generator0(): scala.tools.nsc.Main#generator1 = {
+    [starr]             if (generator$module0.eq(null))
+    [starr]               generator$module0 = new generator1.<init>();
+    [starr]             generator$module0
+    [starr]           };
+    [starr]           generator0().process(run.units(), command0.settings().outdir().value())
+    [starr]         }
+    [starr]     }
+    [starr] exception when transforming {
+    [starr]   final class compiler2 extends scala.tools.nsc.Global with scala.ScalaObject$class {
+    [starr]     def <init>(): scala.tools.nsc.Main#compiler2 = {
+    [starr]       {
+    [starr]         compiler2.super.<init>(command0.settings(), Main.this.scala$tools$nsc$Main$$reporter());
+    [starr]         ()
+    [starr]       };
+    [starr]       ()
+    [starr]     }
+    [starr]   };
+    [starr]   var compiler$module0: scala.tools.nsc.Main#compiler2 = null;
+    [starr]   final <stable> def compiler1(): scala.tools.nsc.Main#compiler2 = {
+    [starr]     if (compiler$module0.eq(null))
+    [starr]       compiler$module0 = new scala.tools.nsc.Main#compiler2.<init>();
+    [starr]     compiler$module0
+    [starr]   };
+    [starr]   if (command0.settings().resident().value())
+    [starr]     Main.this.resident(compiler1())
+    [starr]   else
+    [starr]     if (command0.files().isEmpty())
+    [starr]       Main.this.scala$tools$nsc$Main$$reporter().info(null, command0.usageMsg(), true)
+    [starr]     else
+    [starr]       {
+    [starr]         val run: scala.tools.nsc.Main#compiler2#Run = new scala.tools.nsc.Main#compiler2#Run.<init>(\
+compiler1()).$asInstanceOf[scala.tools.nsc.Main#compiler2#Run]();
+    [starr]         run.compile(command0.files());
+    [starr]         if (command0.settings().doc().value())
+    [starr]           {
+    [starr]             final class generator1 extends scala.tools.nsc.doc.DocGenerator with scala.ScalaObject$c\
+lass {
+    [starr]               def <init>(): scala.tools.nsc.Main#generator1 = {
+    [starr]                 {
+    [starr]                   generator1.super.<init>();
+    [starr]                   ()
+    [starr]                 };
+    [starr]                 ()
+    [starr]               };
+    [starr]               private <local> val global : scala.tools.nsc.Main#compiler2 = compiler1();
+    [starr]               <stable> <accessor> def global(): scala.tools.nsc.Main#compiler2 = generator1.this.glo\
+bal ;
+    [starr]               <stable> <bridge> def global(): scala.tools.nsc.Global = generator1.this.global()
+    [starr]             };
+    [starr]             var generator$module0: generator1 = null;
+    [starr]             final private <local> <stable> def generator0(): scala.tools.nsc.Main#generator1 = {
+    [starr]               if (generator$module0.eq(null))
+    [starr]                 generator$module0 = new generator1.<init>();
+    [starr]               generator$module0
+    [starr]             };
+    [starr]             generator0().process(run.units(), command0.settings().outdir().value())
+    [starr]           }
+    [starr]       }
+    [starr] }
+    [starr] exception when transforming try {
+    [starr]   final class compiler2 extends scala.tools.nsc.Global with scala.ScalaObject$class {
+    [starr]     def <init>(): scala.tools.nsc.Main#compiler2 = {
+    [starr]       {
+    [starr]         compiler2.super.<init>(command0.settings(), Main.this.scala$tools$nsc$Main$$reporter());
+    [starr]         ()
+    [starr]       };
+    [starr]       ()
+    [starr]     }
+    [starr]   };
+    [starr]   var compiler$module0: scala.tools.nsc.Main#compiler2 = null;
+    [starr]   final <stable> def compiler1(): scala.tools.nsc.Main#compiler2 = {
+    [starr]     if (compiler$module0.eq(null))
+    [starr]       compiler$module0 = new scala.tools.nsc.Main#compiler2.<init>();
+    [starr]     compiler$module0
+    [starr]   };
+    [starr]   if (command0.settings().resident().value())
+    [starr]     Main.this.resident(compiler1())
+    [starr]   else
+    [starr]     if (command0.files().isEmpty())
+    [starr]       Main.this.scala$tools$nsc$Main$$reporter().info(null, command0.usageMsg(), true)
+    [starr]     else
+    [starr]       {
+    [starr]         val run: scala.tools.nsc.Main#compiler2#Run = new scala.tools.nsc.Main#compiler2#Run.<init>(\
+compiler1()).$asInstanceOf[scala.tools.nsc.Main#compiler2#Run]();
+    [starr]         run.compile(command0.files());
+    [starr]         if (command0.settings().doc().value())
+    [starr]           {
+    [starr]             final class generator1 extends scala.tools.nsc.doc.DocGenerator with scala.ScalaObject$c\
+lass {
+    [starr]               def <init>(): scala.tools.nsc.Main#generator1 = {
+    [starr]                 {
+    [starr]                   generator1.super.<init>();
+    [starr]                   ()
+    [starr]                 };
+    [starr]                 ()
+    [starr]               };
+    [starr]               private <local> val global : scala.tools.nsc.Main#compiler2 = compiler1();
+    [starr]               <stable> <accessor> def global(): scala.tools.nsc.Main#compiler2 = generator1.this.glo\
+bal ;
+    [starr]               <stable> <bridge> def global(): scala.tools.nsc.Global = generator1.this.global()
+    [starr]             };
+    [starr]             var generator$module0: generator1 = null;
+    [starr]             final private <local> <stable> def generator0(): scala.tools.nsc.Main#generator1 = {
+    [starr]               if (generator$module0.eq(null))
+    [starr]                 generator$module0 = new generator1.<init>();
+    [starr]               generator$module0
+    [starr]             };
+    [starr]             generator0().process(run.units(), command0.settings().outdir().value())
+    [starr]           }
+    [starr]       }
+    [starr] } catch {
+    [starr]   case (ex$0 @ _) => {
+    [starr]     var temp0: java.lang.Throwable = ex$0;
+    [starr]     if (temp0.$isInstanceOf[scala.tools.nsc.FatalError]())
+    [starr]       {
+    [starr]         var temp1: scala.tools.nsc.FatalError = temp0.$asInstanceOf[scala.tools.nsc.FatalError]();
+    [starr]         {
+    [starr]           val ex: scala.tools.nsc.FatalError = temp1;
+    [starr]           val msg: java.lang.String = temp1.msg();
+    [starr]           {
+    [starr]             <synthetic> val r$0: scala.runtime.BoxedUnit = {
+    [starr]               if (command0.settings().debug().value())
+    [starr]                 ex.printStackTrace();
+    [starr]               {
+    [starr]                 Main.this.scala$tools$nsc$Main$$reporter().error(null, "fatal error: ".+(msg));
+    [starr]                 scala.runtime.BoxedUnit.UNIT
+    [starr]               }
+    [starr]             };
+    [starr]             exit(r$0);
+    [starr]             true
+    [starr]           }
+    [starr]         }
+    [starr]       }
+    [starr]     else
+    [starr]       false.||({
+    [starr]       {
+    [starr]         <synthetic> val r$1: scala.runtime.BoxedUnit = throw ex$0;
+    [starr]         exit(r$1);
+    [starr]         true
+    [starr]       }
+    [starr]     });
+    [starr]     throw new scala.MatchError.<init>("Main.scala", 52);
+    [starr]     exit(result){
+    [starr]       ()
+    [starr]     }
+    [starr]   }
+    [starr] }
+    [starr] exception when transforming {
+    [starr]   try {
+    [starr]     final class compiler2 extends scala.tools.nsc.Global with scala.ScalaObject$class {
+    [starr]       def <init>(): scala.tools.nsc.Main#compiler2 = {
+    [starr]         {
+    [starr]           compiler2.super.<init>(command0.settings(), Main.this.scala$tools$nsc$Main$$reporter());
+    [starr]           ()
+    [starr]         };
+    [starr]         ()
+    [starr]       }
+    [starr]     };
+    [starr]     var compiler$module0: scala.tools.nsc.Main#compiler2 = null;
+    [starr]     final <stable> def com
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >shouldn't crash</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Sean&nbsp; edited on &nbsp;2006-02-22 18:16:17.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+My library was probably out of synch again. 
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>

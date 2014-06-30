@@ -1,0 +1,165 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <p><a id="logo" href="http://scala-lang.org/"><img src="/sites/default/files/icons/Scala_Logo2008.png" alt="scala-lang.org" border=0/></a></p>
+    <title id="Title">Aladdin - Scala Bugtracking</title>
+        <style type="text/css">
+        table {
+            font-size: 10pt;
+            background-color: #ebb85c;
+        }
+        tr.impair        { background-color: #f0be64 }
+        tr.impairContrib { background-color: #f0be64 }
+
+#buraq-content {
+	float: none;
+	color: black;
+	background-color: white;
+	font-size: 1.25em;
+	margin-left: 9.6em;
+}
+        </style>
+      </head>
+  <body><!--DisplayBugsBlock_Start-->
+
+
+
+
+<table WIDTH="100%" cellspacing="4" cellpadding="2">
+
+	<tr><td></td>
+		<th>[#160]</th>
+		<th><strong>project:</strong> compiler</th>
+		<th><strong>priority:</strong> high</th>
+		<th><strong>category:</strong> bug</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <th align="center">submitter</th>
+	  <th align="center">assigned to</th>
+	  <th align="center">status</th>
+	  <th align="center">date submitted</th>
+        </tr>
+
+        <tr>
+          <td></td>
+	  <td align="center" bgcolor="#FFFFFF">Burak</td>
+	  <td align="center" bgcolor="#FFFFFF">Philippe</td>
+	  <td align="center" bgcolor="#FFFFFF">fixed</td>
+          <td align="center" bgcolor="#FFFFFF">2003-09-30 12:25:52.0</td>
+
+	</tr>
+
+        <tr>
+		<th align="right">subject</th>
+		<td colspan="4" bgcolor="#FFFFFF">backend handling of constructors</td>
+	</tr>
+	<tr>	
+		<th align="right">code</th>
+		<td colspan="4" bgcolor="#FFFFFF">
+	<font size="-1"><pre>class Foo(s:String) {
+
+  def this() = { this(&quot;DEFAULT&quot;) }
+
+  // not sure whether an earlier phase should have done something
+}
+</pre></font></td>
+	</tr>
+	<tr>
+		<th style="text-align:right;">what happened</th>
+		<td colspan="4" style="background-color:#FFFFFF;" ><pre>Exception in thread "main" java.lang.AssertionError: void -> java.lang.Object
+	at scalac.backend.jvm.GenJVM.genWidenConversion(GenJVM.java:927)
+	at scalac.backend.jvm.GenJVM.genLoad(GenJVM.java:559)
+	at scalac.backend.jvm.GenJVM.genLoad(GenJVM.java:228)
+	at scalac.backend.jvm.GenJVM.genLoadQualifier(GenJVM.java:593)
+	at scalac.backend.jvm.GenJVM.genLoad(GenJVM.java:249)
+	at scalac.backend.jvm.GenJVM.gen(GenJVM.java:165)
+	at scalac.backend.jvm.GenJVM.gen(GenJVM.java:199)
+	at scalac.backend.jvm.GenJVM.gen(GenJVM.java:143)
+	at scalac.backend.jvm.GenJVM.gen(GenJVM.java:138)
+	at scalac.backend.jvm.GenJVM.translate(GenJVM.java:110)
+	at scalac.backend.jvm.GenJVMPhase.apply(GenJVMPhase.java:45)
+	at scalac.Global.compile(Global.java:293)
+	at scalac.Global.compile(Global.java:266)
+	at scalac.Main.main(Main.java:32)
+</pre></td>
+	</tr>
+	<tr>
+		<th align="right">what expected</th>
+		<td colspan="4" bgcolor="#FFFFFF" >silent run.</td>
+	</tr>
+	<tr>
+	
+  <td colspan="4" align="right">
+      
+      <a href="displayBugs.do.html">
+        [back to overview]</a></td></tr>
+
+</table>
+
+  <tr>
+          <td align="center" colspan="2">
+            <strong>Changes of this bug report</strong>
+          </td>
+        </tr><table><tr>
+        <td>
+        <strong>Michel&nbsp; edited on &nbsp;2003-09-30 14:11:27.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+The problem here, as Philippe and I view it, is that the return type of secondary constructors is not <code>void</code>, as we think it should, but rather the type of the constructed class. (In our views, constructors return nothing, they just initialise the instance they get as argument, as witnessed by calls to super-constructors).
+
+<p>This fact means that erasure adds a cast, which is invalid. Here is for example how a slightly modified version of your example looks like before and after erasure:
+<pre>
+[[Trees after phase expandmixins]]
+// Scala source: bug_160.scala
+interface Foo() extends java.lang.Object();
+class Foo$class(s: scala.Int) extends Object() with Foo() {
+  def Foo$class(): Foo$class = {
+    Foo$class(1)
+  }
+};
+
+[[Trees after phase erasure]]
+// Scala source: bug_160.scala
+interface Foo() extends java.lang.Object();
+class Foo$class(s: int) extends Object() with Foo() {
+  def Foo$class(): Foo$class = {
+    Foo$class(1)
+  }.asInstanceOf[Foo$class]()
+};
+</pre>
+The wrong part is the <code>asInstanceOf</code> in the last (code) line.
+
+<p>To solve this problem, we think the cleanest solution is to change the return type of secondary constructors to <code>void</code>. Otherwise, erasure could also be hacked. We have to discuss that together.
+</td></tr>
+<tr>
+        <td>
+        <strong>Martin&nbsp; edited on &nbsp;2003-10-06 10:33:59.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+For type-checking reasons, the return type of constructors needs to be the type of the constructed class. So, the only option we have is to fix erasure.
+
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Philippe&nbsp; edited on &nbsp;2003-10-15 11:26:08.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+<p> Moved AddConstructors before Erasure. Modified code of added initializers to avoid cast added in erasure that crashed backend. </p>
+
+</td></tr>
+<tr>
+        <td>
+        <strong>Philippe&nbsp; edited on &nbsp;2003-10-15 11:26:45.0</strong>
+        </td>
+        </tr>
+<tr><td bgcolor='#FFFFFF'>
+<p> Changed status </p>
+
+</td></tr></table>
+<!--DisplayBugsBlock_End-->  </body>
+</html>
